@@ -1,0 +1,183 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// German (Germany) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_TRAYMENU MENU
+BEGIN
+    POPUP "TrayMenu"
+    BEGIN
+        MENUITEM "Info",                        ID_TRAYMENU_INFO
+        MENUITEM SEPARATOR
+        MENUITEM "Mute on ...",                 ID_TRAYMENU_MUTEON, INACTIVE
+        MENUITEM "... Workstation lock",        ID_TRAYMENU_MUTEONLOCK, CHECKED
+        MENUITEM "... Screensaver start",       ID_TRAYMENU_MUTEONSCREENSAVER, CHECKED
+        MENUITEM SEPARATOR
+        MENUITEM "Restore Audio",               ID_TRAYMENU_RESTOREAUDIO, CHECKED
+        MENUITEM SEPARATOR
+        MENUITEM "Mute now",                    ID_TRAYMENU_MUTE
+        MENUITEM SEPARATOR
+        MENUITEM "Exit",                        ID_TRAYMENU_EXIT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUT DIALOGEX 0, 0, 251, 52
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION
+CAPTION "About WinMute"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,194,7,50,14
+    LTEXT           "WinMute v1.4",IDC_STATIC,43,9,67,11
+    CONTROL         "<a href=""http://lx-s.de"">lx-systems - lx-s.de</a>",IDC_LINK_HOMEPAGE,
+                    "SysLink",WS_TABSTOP,43,31,69,13
+    LTEXT           "Copyright © 2014 Alexander Steinhöfer",IDC_STATIC,43,20,148,12
+    ICON            IDI_APP,IDC_STATIC,13,7,20,20
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 244
+        VERTGUIDE, 43
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 45
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,4,0,0
+ PRODUCTVERSION 1,4,0,0
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "000004b0"
+        BEGIN
+            VALUE "CompanyName", "lx-s"
+            VALUE "FileDescription", "Automatic sound muter."
+            VALUE "FileVersion", "1.4.0.0"
+            VALUE "InternalName", "WinMute"
+            VALUE "LegalCopyright", "Copyright (C) 2013 Alexander Steinhöfer"
+            VALUE "OriginalFilename", "WinMute.exe"
+            VALUE "ProductName", "WinMute"
+            VALUE "ProductVersion", "1.4.0.0"
+        END
+        BLOCK "040704b0"
+        BEGIN
+            VALUE "CompanyName", "lx-s"
+            VALUE "FileDescription", "Automatisches Stummschalten bei PC Sperre."
+            VALUE "FileVersion", "1.4.0.0"
+            VALUE "InternalName", "WinMute"
+            VALUE "LegalCopyright", "Copyright (C) 2013 Alexander Steinhöfer"
+            VALUE "OriginalFilename", "WinMute.exe"
+            VALUE "ProductName", "WinMute"
+            VALUE "ProductVersion", "1.4.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0, 1200, 0x407, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_APP                 ICON                    "app.ico"
+#endif    // German (Germany) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
