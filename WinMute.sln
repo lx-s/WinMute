@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinMute", "WinMute\WinMute.vcxproj", "{488617F0-5DD3-42B5-81ED-A1E9B3117551}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A48C241D-70F5-4919-BE06-8C5BE99CCC23} = {A48C241D-70F5-4919-BE06-8C5BE99CCC23}

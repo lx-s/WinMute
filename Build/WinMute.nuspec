@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Do not remove this test for UTF-8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>winmute</id>
+    <title>WinMute</title>
+    <version>1.4.0.20140710</version>
+    <authors>Alexander Steinhöfer</authors>
+    <owners>Alexander Steinhöfer</owners>
+    <summary>Automatic sound muter</summary>
+    <description>WinMute automatically mutes your PC volume if you lock your screen or the screensaver is running.</description>
+    <projectUrl>http://lx-s.de/software/winmute</projectUrl>
+    <tags>windows utility audio</tags>
+    <copyright>© 2014, Alexander Steinhöfer</copyright>
+    <licenseUrl>http://files.lx-s.de/programs/WinMute/license.txt</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <releaseNotes></releaseNotes>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+    <file src="bin\**" target="bin" />
+  </files>
+</package>
