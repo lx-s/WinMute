@@ -25,6 +25,9 @@ ipch/
 *.opensdf
 *.sdf
 *.suo
+*.exp
+*.pdb
+*.lib
 WinMute/Release
 WinMute/Debug
 ScreensaverNotify/Debug
