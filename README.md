@@ -4,6 +4,10 @@
 WinMute automatically mutes your PC volume if you lock your screen or the screensaver is running.
 This is very helpful e.g. if you leave your desk and don't want to annoy your co-workers with random sounds or music from your computer.
 
+
+### Screenshot ###
+![Screenshot of WinMute](http://files.lx-s.de/programs/WinMute/screenshot.png "Screenshot of WinMute")
+
 ### Requirements ###
 Windows XP with Service Pack 3 or any newer version of Windows.
 
