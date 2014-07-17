@@ -60,6 +60,8 @@ private:
    typedef int(*RegisterHook)(HWND, UINT);
    typedef void(*UnregisterHook)(void);
 
+   bool alreadyNotified_;
+
 
    HINSTANCE hookDll_;
    HWND hWnd_, hNotifyWnd_;
@@ -69,6 +71,8 @@ private:
    UnregisterHook unregHook_;
 
    void StartScreensaverPollTimer(bool start = true);
+
+   bool IsScreensaverRunning();
 
    bool InitHookDll();
    bool RegisterWindowClass();

@@ -76,6 +76,7 @@ ScreensaverNotifier::ScreensaverNotifier() :
    hookDll_(nullptr),
    regHook_(nullptr),
    unregHook_(nullptr),
+   alreadyNotified_(false),
    hookWndMsg_(0)
 { }
 
@@ -205,6 +206,23 @@ void ScreensaverNotifier::StartScreensaverPollTimer(bool start)
 }
 
 /* ========================================================================== */
+/*    Other                                                                   */
+/* ========================================================================== */
+
+bool ScreensaverNotifier::IsScreensaverRunning()
+{
+   BOOL isRunning = FALSE;
+   if (SystemParametersInfo(SPI_GETSCREENSAVERRUNNING,
+                            0,
+                            &isRunning,
+                            FALSE) == NULL) {
+      PrintWindowsError(_T("SystemParametersInfo"));
+      return false;
+   }
+   return isRunning != 0;
+}
+
+/* ========================================================================== */
 /*    Window Proc                                                             */
 /* ========================================================================== */
 
@@ -220,25 +238,32 @@ LRESULT CALLBACK ScreensaverNotifier::WindowProc(HWND hWnd,
    }
    case WM_TIMER: {
       if (wParam == SCRSV_TIMER_ID) {
-         BOOL isRunning = FALSE;
-         if (SystemParametersInfo(SPI_GETSCREENSAVERRUNNING,
-                                  0,
-                                  &isRunning,
-                                  FALSE) == NULL) {
-            PrintWindowsError(_T("SystemParametersInfo"));
-         } else {
-            if (!isRunning) {
-               StartScreensaverPollTimer(false);
-               SendMessage(hNotifyWnd_, WM_SCRNSAVE_CHANGE, SCRNSAVE_STOP, 0);
-            }
+         if (!IsScreensaverRunning()) {
+            StartScreensaverPollTimer(false);
+            SendMessage(hNotifyWnd_, WM_SCRNSAVE_CHANGE, SCRNSAVE_STOP, 0);
+            alreadyNotified_ = false;
          }
       }
       return 0;
    }
    default:
       if (hookWndMsg_ != 0 && msg == hookWndMsg_) {
-         SendMessage(hNotifyWnd_, WM_SCRNSAVE_CHANGE, SCRNSAVE_START, 0);
-         StartScreensaverPollTimer();
+         /* Windows sends SC_SCREENSAVE when it tries to start a screensaver.
+            If screensaver is set to "none" or if another application cancels
+            this event, we would falsely mute windows.
+            To prevent that, we wait for a few milliseconds to and then check
+            if the screensaver has actually started. If yes, then send the
+            notification.
+         */
+         Sleep(500);
+         if (IsScreensaverRunning()) {
+            /* SC_SCREENSAVE might be fired multiple times */
+            if (!alreadyNotified_) {
+               alreadyNotified_ = true;
+               SendMessage(hNotifyWnd_, WM_SCRNSAVE_CHANGE, SCRNSAVE_START, 0);
+               StartScreensaverPollTimer();
+            }
+         }
       }
       break;
    }
