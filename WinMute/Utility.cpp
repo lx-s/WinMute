@@ -14,7 +14,7 @@ modification, are permitted provided that the following conditions are met:
       documentation and/or other materials provided with the distribution.
 
     * Neither the name of the author nor the names of its contributors may
-      be used to endorse or promote products derived from this software 
+      be used to endorse or promote products derived from this software
       without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -33,16 +33,16 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "StdAfx.h"
 
-void PrintWindowsError(LPTSTR lpszFunction, DWORD lastError) 
-{ 
+void PrintWindowsError(LPTSTR lpszFunction, DWORD lastError)
+{
    // Retrieve the system error message for the last-error code
    if (lastError == -1) {
-      lastError = GetLastError(); 
+      lastError = GetLastError();
    }
 
    LPVOID lpMsgBuf;
    if (FormatMessage(
-       FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+       FORMAT_MESSAGE_ALLOCATE_BUFFER |
        FORMAT_MESSAGE_FROM_SYSTEM |
        FORMAT_MESSAGE_IGNORE_INSERTS,
        nullptr, lastError, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
@@ -54,13 +54,15 @@ void PrintWindowsError(LPTSTR lpszFunction, DWORD lastError)
                              lstrlen(static_cast<LPCTSTR>(lpszFunction)) + 40)
                             * sizeof(TCHAR)));
       if (lpDisplayBuf) {
-         StringCchPrintf((LPTSTR)lpDisplayBuf, 
-                      LocalSize(lpDisplayBuf),
-                      _T("%s failed with error %d: %s"), 
-                      lpszFunction, lastError, lpMsgBuf);
+         StringCchPrintf((LPTSTR)lpDisplayBuf,
+                         LocalSize(lpDisplayBuf),
+                         _T("%s failed with error %ul: %s"),
+                         lpszFunction,
+                         lastError,
+                         reinterpret_cast<TCHAR*>(lpMsgBuf));
 
          MessageBox(nullptr, static_cast<LPCTSTR>(lpDisplayBuf), _T("Error"),
-                    MB_ICONERROR | MB_OK); 
+                    MB_ICONERROR | MB_OK);
 
          LocalFree(lpDisplayBuf);
       }

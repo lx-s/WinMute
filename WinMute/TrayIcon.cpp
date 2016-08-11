@@ -14,7 +14,7 @@ modification, are permitted provided that the following conditions are met:
       documentation and/or other materials provided with the distribution.
 
     * Neither the name of the author nor the names of its contributors may
-      be used to endorse or promote products derived from this software 
+      be used to endorse or promote products derived from this software
       without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -50,7 +50,7 @@ void TrayIcon::Init(HWND hWnd, UINT trayID, HICON hIcon,
                     const std::wstring& tooltip, bool show)
 {
    if (!hIcon) {
-      hIcon_ = LoadIcon(0, MAKEINTRESOURCE(IDI_APPLICATION));
+      hIcon_ = LoadIcon(0, IDI_APPLICATION);
    } else {
       hIcon_ = hIcon;
    }
@@ -142,9 +142,13 @@ bool TrayIcon::AddNotifyIcon()
    tnid.uFlags = NIF_ICON|NIF_TIP|NIF_MESSAGE;
    tnid.hIcon = hIcon_;
    tnid.uCallbackMessage = WM_TRAYICON;
-   lstrcpyn(tnid.szTip, tooltip_.c_str(), sizeof(tnid.szTip) / sizeof(TCHAR));
 
-   return Shell_NotifyIcon(NIM_ADD, &tnid) != 0;
+   if (SUCCEEDED(StringCchCopy(tnid.szTip,
+                               sizeof(tnid.szTip) / sizeof(TCHAR),
+                               tooltip_.c_str()))) {
+      return Shell_NotifyIcon(NIM_ADD, &tnid) != 0;
+   }
+   return false;
 }
 
 bool TrayIcon::RemoveNotifyIcon()
@@ -166,7 +170,11 @@ bool TrayIcon::ChangeText()
    tnid.hWnd = hWnd_;
    tnid.uID = trayID_;
    tnid.uFlags = NIF_TIP;
-   lstrcpyn(tnid.szTip, tooltip_.c_str(), sizeof(tnid.szTip) / sizeof(TCHAR));
 
-   return Shell_NotifyIcon(NIM_MODIFY, &tnid) != 0;
+   if (SUCCEEDED(StringCchCopy(tnid.szTip,
+                               sizeof(tnid.szTip) / sizeof(TCHAR),
+                               tooltip_.c_str()))) {
+      return Shell_NotifyIcon(NIM_MODIFY, &tnid) != 0;
+   }
+   return false;
 }

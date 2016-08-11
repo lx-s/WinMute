@@ -42,13 +42,13 @@ public:
    virtual bool IsMuted() = 0;
    virtual void Mute() = 0;
    virtual void UnMute() = 0;
-   virtual ~WinAudio() { };
+   virtual ~WinAudio() noexcept { };
 };
 
 class XPAudio : public WinAudio {
 public:
    XPAudio();
-   ~XPAudio();
+   ~XPAudio() noexcept;
 
    bool Init(HWND hParent);
    void ShouldReInit();
@@ -77,8 +77,8 @@ private:
    time_t muteTime_;
 
    // non copy-able
-   XPAudio(const XPAudio& other);
-   XPAudio& operator=(const XPAudio& other);
+   XPAudio(const XPAudio& other) = delete;
+   XPAudio& operator=(const XPAudio& other) = delete;
 };
 
 // Forwards
@@ -91,7 +91,7 @@ class MMNotificationClient;
 class VistaAudio : public WinAudio {
 public:
    VistaAudio();
-   ~VistaAudio();
+   ~VistaAudio() noexcept;
 
    bool Init(HWND hParent);
    void ShouldReInit();
@@ -113,6 +113,6 @@ private:
    HWND hParent_;
 
    // non copy-able
-   VistaAudio(const VistaAudio& other);
-   VistaAudio& operator=(const VistaAudio& other);
+   VistaAudio(const VistaAudio& other) = delete;
+   VistaAudio& operator=(const VistaAudio& other) = delete;
 };

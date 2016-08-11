@@ -14,7 +14,7 @@ modification, are permitted provided that the following conditions are met:
       documentation and/or other materials provided with the distribution.
 
     * Neither the name of the author nor the names of its contributors may
-      be used to endorse or promote products derived from this software 
+      be used to endorse or promote products derived from this software
       without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <mmdeviceapi.h>
 
 #pragma warning(disable : 4201)
-#  include <endpointvolume.h> 
+#  include <endpointvolume.h>
 #pragma warning(default : 4201)
 
 #include "WinAudio.h"
@@ -47,7 +47,9 @@ VistaAudio::VistaAudio() :
    wasapiAudioEvents_(nullptr), mmnAudioEvents_(nullptr),
    deviceEnumerator_(nullptr), reInit_(false)
 {
-   CoInitialize(nullptr);
+   if (FAILED(CoInitialize(nullptr))) {
+      throw std::exception("Failed to initialize COM Library");
+   }
 }
 
 VistaAudio::~VistaAudio()
@@ -86,7 +88,7 @@ bool VistaAudio::Init(HWND hParent)
       return false;
    }
 
-   if (FAILED(sessionManager2->GetAudioSessionControl(nullptr, 0, 
+   if (FAILED(sessionManager2->GetAudioSessionControl(nullptr, 0,
                                                       &sessionControl_))) {
       MessageBox(0, _T("Failed to retrieve session control."), PROGRAM_NAME,
                  MB_ICONERROR);

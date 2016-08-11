@@ -35,7 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 HINSTANCE hglobInstance;
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
+int WINAPI wWinMain(_In_ HINSTANCE hInstance,
+                   _In_opt_ HINSTANCE,
+                   _In_ PWSTR,
+                   _In_ int)
 {
    HANDLE hMutex = CreateMutex(nullptr, TRUE, _T("BinaryStudiosWinMute"));
    if (hMutex == NULL) {

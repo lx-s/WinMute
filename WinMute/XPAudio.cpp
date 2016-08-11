@@ -58,7 +58,7 @@ LRESULT CALLBACK MixerWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 static void PrintMixerError(const tstring& funcName, MMRESULT err)
 {
-//#ifdef _DEBUG
+#ifdef _DEBUG
    std::basic_string<TCHAR> error = funcName + L" failed with: ";
    switch (err) {
    case MIXERR_INVALCONTROL:
@@ -94,10 +94,10 @@ static void PrintMixerError(const tstring& funcName, MMRESULT err)
       }
    }
    MessageBox(0, error.c_str(), 0, MB_ICONERROR);
-//#else
-//   UNREFERENCED_PARAMETER(funcName);
-//   UNREFERENCED_PARAMETER(err);
-//#endif
+#else
+   UNREFERENCED_PARAMETER(funcName);
+   UNREFERENCED_PARAMETER(err);
+#endif
 }
 
 XPAudio::XPAudio() :
@@ -291,7 +291,7 @@ void XPAudio::SetDeviceValue(XPAudio::MixerDevice& md, DWORD val)
    mxcd.cChannels = 1;
 
    MIXERCONTROLDETAILS_UNSIGNED mxCtrlDetVolume = { val };
-   MIXERCONTROLDETAILS_BOOLEAN mxCtrlDetMuted   = { val };
+   MIXERCONTROLDETAILS_BOOLEAN mxCtrlDetMuted   = { static_cast<LONG>(val) };
 
    if (md.useMute) {
       mxcd.dwControlID = md.muteCtrlID;
