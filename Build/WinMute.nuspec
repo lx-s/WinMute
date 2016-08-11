@@ -16,11 +16,11 @@
 		<copyright>© 2016, Alexander Steinhöfer</copyright>
 		<licenseUrl>https://cdn.rawgit.com/lx-s/WinMute/1.4.3/LICENSE</licenseUrl>
 		<dependencies>
-			<dependency id="vcredist2015" version="14.0.23918.0" />
+			<dependency id="vcredist2015" />
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="tools/**" target="tools" />
+		<file src="tools\**" target="tools" />
 		<file src="bin\WinMute.exe" target="bin" />
 		<file src="bin\WinMute.exe.gui" target="bin" />
 		<file src="bin\ScreensaverNotify.dll" target="bin" />
