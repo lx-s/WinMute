@@ -41,13 +41,20 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
                    _In_ int)
 {
    HANDLE hMutex = CreateMutex(nullptr, TRUE, _T("LxSystemsWinMute"));
-   if (hMutex == NULL) {
+   if (hMutex == nullptr) {
       return FALSE;
    }
    if (GetLastError() == ERROR_ALREADY_EXISTS) {
       ReleaseMutex(hMutex);
-      MessageBox(0, _T("WinMute is already running."), PROGRAM_NAME,
-                 MB_ICONINFORMATION);
+         TaskDialog(nullptr,
+                    nullptr,
+                    PROGRAM_NAME,
+                    _T("WinMute is already running"),
+                    _T("Please look for a blue speaker icon in your Windows ")
+                    _T(" taskbar notification area."),
+                    TDCBF_OK_BUTTON,
+                    TD_ERROR_ICON,
+                    nullptr);
       return FALSE;
    }
 
@@ -59,10 +66,15 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
    INITCOMMONCONTROLSEX initComCtrl;
    initComCtrl.dwSize = sizeof(INITCOMMONCONTROLSEX);
    initComCtrl.dwICC = ICC_LINK_CLASS;
-   if (InitCommonControlsEx(&initComCtrl) == FALSE){
-      MessageBox(0, _T("Fatal Error:\n")
-                    _T("Failed to register extended window controls"),
-                PROGRAM_NAME, MB_ICONSTOP);
+   if (InitCommonControlsEx(&initComCtrl) == FALSE) {
+         TaskDialog(nullptr,
+                    nullptr,
+                    PROGRAM_NAME,
+                    _T("Failed to register extended window controls."),
+                    _T("Please try to restart the program."),
+                    TDCBF_OK_BUTTON,
+                    TD_ERROR_ICON,
+                    nullptr);
       ReleaseMutex(hMutex);
       return FALSE;
    }
@@ -70,8 +82,14 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
 
    // <Init COM>
    if (CoInitializeEx(0, COINIT_APARTMENTTHREADED) != S_OK) {
-      MessageBox(0, _T("Fatal Error:\nFailed to initialize COM library."),
-                    PROGRAM_NAME, MB_ICONERROR);
+      TaskDialog(nullptr,
+                  nullptr,
+                  PROGRAM_NAME,
+                  _T("Failed to initialize COM library."),
+                  _T("Please try to restart the program."),
+                  TDCBF_OK_BUTTON,
+                  TD_ERROR_ICON,
+                  nullptr);
       ReleaseMutex(hMutex);
       return FALSE;
    }

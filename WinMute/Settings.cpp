@@ -70,12 +70,12 @@ bool Settings::Init()
       DWORD regError = RegCreateKeyEx(HKEY_CURRENT_USER,
                                       LX_SYSTEMS_SUBKEY,
                                       0,
-                                      NULL,
+                                      nullptr,
                                       0,
                                       KEY_READ | KEY_WRITE,
-                                      NULL,
+                                      nullptr,
                                       &hRegSettingsKey_,
-                                      NULL);
+                                      nullptr);
       if (regError != ERROR_SUCCESS) {
          PrintWindowsError(_T("RegCreateKeyEx"), regError);
          return false;
@@ -101,7 +101,7 @@ DWORD Settings::QueryValue(SettingsKey key, DWORD defValue)
    DWORD regError = RegQueryValueEx(hRegSettingsKey_,
                                     keyStr,
                                     0,
-                                    NULL,
+                                    nullptr,
                                     reinterpret_cast<LPBYTE>(&value),
                                     &size);
    if (regError == ERROR_FILE_NOT_FOUND) {

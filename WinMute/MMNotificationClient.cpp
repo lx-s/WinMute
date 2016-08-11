@@ -38,7 +38,7 @@ POSSIBILITY OF SUCH DAMAGE.
 class WinAudio;
 
 MMNotificationClient::MMNotificationClient(WinAudio* notifyParent) :
-   ref_(1), pEnumerator_(NULL), notifyParent_(notifyParent)
+   ref_(1), pEnumerator_(nullptr), notifyParent_(notifyParent)
 {
 }
 
@@ -72,7 +72,7 @@ HRESULT STDMETHODCALLTYPE MMNotificationClient::QueryInterface(
       AddRef();
       *ppvInterface = (IMMNotificationClient*)this;
    } else {
-      *ppvInterface = NULL;
+      *ppvInterface = nullptr;
       return E_NOINTERFACE;
    }
    return S_OK;

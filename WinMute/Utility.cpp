@@ -60,10 +60,14 @@ void PrintWindowsError(LPTSTR lpszFunction, DWORD lastError)
                          lpszFunction,
                          lastError,
                          reinterpret_cast<TCHAR*>(lpMsgBuf));
-
-         MessageBox(nullptr, static_cast<LPCTSTR>(lpDisplayBuf), _T("Error"),
-                    MB_ICONERROR | MB_OK);
-
+         TaskDialog(nullptr,
+                    nullptr,
+                    PROGRAM_NAME,
+                    static_cast<LPCTSTR>(lpDisplayBuf),
+                    nullptr,
+                    TDCBF_OK_BUTTON,
+                    TD_ERROR_ICON,
+                    nullptr);
          LocalFree(lpDisplayBuf);
       }
       LocalFree(lpMsgBuf);

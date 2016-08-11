@@ -72,8 +72,15 @@ bool VistaAudio::Init(HWND hParent)
    IMMDevice *defaultDevice = nullptr;
    if(FAILED(deviceEnumerator_->GetDefaultAudioEndpoint(eRender, eConsole,
       &defaultDevice))) {
-      MessageBox(0, _T("Failed to get default audio endpoint device"),
-                 PROGRAM_NAME, MB_ICONERROR);
+      TaskDialog(nullptr,
+                 nullptr,
+                 PROGRAM_NAME,
+                 _T("Failed to get default audio endpoint device"),
+                 _T("WinMute is not able to recover from that condition.\n")
+                 _T("Please try restarting the program"),
+                 TDCBF_OK_BUTTON,
+                 TD_ERROR_ICON,
+                 nullptr);
       return false;
    }
 
@@ -82,16 +89,28 @@ bool VistaAudio::Init(HWND hParent)
    if (FAILED(defaultDevice->Activate(__uuidof(IAudioSessionManager2),
                                 CLSCTX_INPROC_SERVER, nullptr,
                                 reinterpret_cast<LPVOID*>(&sessionManager2)))) {
-      MessageBox(0, _T("Failed to retrieve audio session manager."),
-                 PROGRAM_NAME, MB_ICONERROR);
+      TaskDialog(nullptr,
+                 nullptr,
+                 PROGRAM_NAME,
+                 _T("Failed to retrieve audio session manager."),
+                 _T("Please try restarting the program"),
+                 TDCBF_OK_BUTTON,
+                 TD_ERROR_ICON,
+                 nullptr);
       SafeRelease(&defaultDevice);
       return false;
    }
 
    if (FAILED(sessionManager2->GetAudioSessionControl(nullptr, 0,
                                                       &sessionControl_))) {
-      MessageBox(0, _T("Failed to retrieve session control."), PROGRAM_NAME,
-                 MB_ICONERROR);
+      TaskDialog(nullptr,
+                 nullptr,
+                 PROGRAM_NAME,
+                 _T("Failed to retrieve session control."),
+                 _T("Please try restarting the program"),
+                 TDCBF_OK_BUTTON,
+                 TD_ERROR_ICON,
+                 nullptr);
       SafeRelease(&sessionManager2);
       return false;
    }
@@ -109,8 +128,14 @@ bool VistaAudio::Init(HWND hParent)
    if (FAILED(defaultDevice->Activate(__uuidof(IAudioEndpointVolume),
                                 CLSCTX_INPROC_SERVER, nullptr,
                                 reinterpret_cast<LPVOID*>(&endpointVolume_)))) {
-      MessageBox(0, _T("Failed to activate default audio device."),
-                 PROGRAM_NAME, MB_ICONERROR);
+      TaskDialog(nullptr,
+                 nullptr,
+                 PROGRAM_NAME,
+                 _T("Failed to activate default audio device."),
+                 _T("Please try restarting the program"),
+                 TDCBF_OK_BUTTON,
+                 TD_ERROR_ICON,
+                 nullptr);
       SafeRelease(&defaultDevice);
       return false;
    }

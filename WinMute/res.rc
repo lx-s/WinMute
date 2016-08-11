@@ -56,11 +56,11 @@ BEGIN
     BEGIN
         MENUITEM "Info",                        ID_TRAYMENU_INFO
         MENUITEM SEPARATOR
-        MENUITEM "Mute on ...",                 ID_TRAYMENU_MUTEON, INACTIVE
-        MENUITEM "... Workstation lock",        ID_TRAYMENU_MUTEONLOCK, CHECKED
-        MENUITEM "... Screensaver start",       ID_TRAYMENU_MUTEONSCREENSAVER, CHECKED
+        MENUITEM "Mute when ...",               ID_TRAYMENU_MUTEON, INACTIVE
+        MENUITEM "... Workstation is locked",   ID_TRAYMENU_MUTEONLOCK, CHECKED
+        MENUITEM "... Screensaver starts",      ID_TRAYMENU_MUTEONSCREENSAVER, CHECKED
         MENUITEM SEPARATOR
-        MENUITEM "Restore Audio",               ID_TRAYMENU_RESTOREAUDIO, CHECKED
+        MENUITEM "Restore Volume",              ID_TRAYMENU_RESTOREAUDIO, CHECKED
         MENUITEM SEPARATOR
         MENUITEM "Mute now",                    ID_TRAYMENU_MUTE
         MENUITEM SEPARATOR
@@ -80,10 +80,10 @@ CAPTION "About WinMute"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,194,7,50,14
-    LTEXT           "WinMute v1.4.2",IDC_STATIC,43,9,67,11
+    LTEXT           "WinMute v1.4.3",IDC_STATIC,43,9,67,11
     CONTROL         "<a href=""http://lx-s.de"">lx-systems - lx-s.de</a>",IDC_LINK_HOMEPAGE,
                     "SysLink",WS_TABSTOP,43,31,69,13
-    LTEXT           "Copyright © 2014 Alexander Steinhöfer",IDC_STATIC,43,20,148,12
+    LTEXT           "Copyright © 2016, Alexander Steinhöfer",IDC_STATIC,43,20,148,12
     ICON            IDI_APP,IDC_STATIC,13,7,20,20
 END
 
@@ -114,8 +114,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,4,2,0
- PRODUCTVERSION 1,4,2,0
+ FILEVERSION 1,4,3,0
+ PRODUCTVERSION 1,4,3,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -132,23 +132,23 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "lx-systems"
             VALUE "FileDescription", "Automatic sound muter."
-            VALUE "FileVersion", "1.4.2.0"
+            VALUE "FileVersion", "1.4.3.0"
             VALUE "InternalName", "WinMute"
-            VALUE "LegalCopyright", "Copyright (C) 2014, Alexander Steinhöfer"
+            VALUE "LegalCopyright", "Copyright (C) 2016, Alexander Steinhöfer"
             VALUE "OriginalFilename", "WinMute.exe"
             VALUE "ProductName", "WinMute"
-            VALUE "ProductVersion", "1.4.2.0"
+            VALUE "ProductVersion", "1.4.3.0"
         END
         BLOCK "040704b0"
         BEGIN
             VALUE "CompanyName", "lx-systems"
             VALUE "FileDescription", "Automatisches Stummschalten bei PC Sperre."
-            VALUE "FileVersion", "1.4.2.0"
+            VALUE "FileVersion", "1.4.3.0"
             VALUE "InternalName", "WinMute"
-            VALUE "LegalCopyright", "Copyright (C) 2014, Alexander Steinhöfer"
+            VALUE "LegalCopyright", "Copyright (C) 2016, Alexander Steinhöfer"
             VALUE "OriginalFilename", "WinMute.exe"
             VALUE "ProductName", "WinMute"
-            VALUE "ProductVersion", "1.4.2.0"
+            VALUE "ProductVersion", "1.4.3.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -166,6 +166,18 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_APP                 ICON                    "app.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_ABOUT AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 #endif    // German (Germany) resources
 /////////////////////////////////////////////////////////////////////////////
 

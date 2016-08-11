@@ -42,13 +42,13 @@ POSSIBILITY OF SUCH DAMAGE.
    ========================================================================== */
 
 #pragma data_seg(".shared")
-static HHOOK hook_ = NULL;
-static HWND hNotifyWnd_ = NULL;
+static HHOOK hook_ = nullptr;
+static HWND hNotifyWnd_ = nullptr;
 static UINT notifyWndMsgId_ = 0;
 #pragma data_seg()
 #pragma comment(linker, "/SECTION:.shared,RWS")
 
-static HINSTANCE hglobInstance_ = NULL;
+static HINSTANCE hglobInstance_ = nullptr;
 
 /* =============================================================================
       Hook Function
@@ -75,7 +75,7 @@ extern "C" {
 
    WINMUTEDLL_API int RegisterScreensaverHook(HWND hNotifyWnd, UINT notifyWndMsgId)
    {
-      if (hook_ != NULL) {
+      if (hook_ != nullptr) {
          UnregisterScreensaverHook();
       }
       hNotifyWnd_ = hNotifyWnd;
@@ -84,15 +84,15 @@ extern "C" {
                                reinterpret_cast<HOOKPROC>(MsgHookProc),
                                hglobInstance_,
                                0);
-      return hook_ != NULL;
+      return hook_ != nullptr;
    }
 
    WINMUTEDLL_API void UnregisterScreensaverHook()
    {
-      if (hook_ != NULL) {
+      if (hook_ != nullptr) {
          UnhookWindowsHookEx(hook_);
-         hook_ = NULL;
-         hNotifyWnd_ = NULL;
+         hook_ = nullptr;
+         hNotifyWnd_ = nullptr;
          notifyWndMsgId_ = 0;
       }
    }
@@ -101,7 +101,7 @@ extern "C" {
    {
       UNREFERENCED_PARAMETER(lpReserved);
 
-      if ((reason == DLL_PROCESS_ATTACH) && (hglobInstance_ == NULL)) {
+      if ((reason == DLL_PROCESS_ATTACH) && (hglobInstance_ == nullptr)) {
          hglobInstance_ = hInstance;
       }
 

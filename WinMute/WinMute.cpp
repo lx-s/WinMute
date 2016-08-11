@@ -102,8 +102,15 @@ bool WinMute::InitAudio()
    if (IsWindowsVistaOrGreater()) {
       audio_ = std::unique_ptr<WinAudio>(new VistaAudio);
    } else if (IsWindowsXPOrGreater()) {
-      MessageBox(0, _T("Only Windows Vista and newer is supported"),
-                 0, MB_ICONERROR);
+         TaskDialog(nullptr,
+                    nullptr,
+                    PROGRAM_NAME,
+                    _T("Only Windows Vista and newer is supported"),
+                    _T("For Windows XP support, please download WinMute ")
+                    _T(" version 1.4.2 or older"),
+                    TDCBF_OK_BUTTON,
+                    TD_ERROR_ICON,
+                    nullptr);
       return false;
    }
 
