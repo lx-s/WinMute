@@ -1,6 +1,13 @@
+Version 1.4.3 (2016-08-11)
+ * Maintenance release, no new features
+ * Upgraded to new compiler toolset
+ * Removed Windows XP as I can also no longer test it and as Visual Studio 2015
+   no longer supports this platform.
+ * Use more modern UI elements
+
 Version 1.4.1/1.4.2 (2014-07-17)
 
- * Fixed screenshot muting: It sometimes happened that WinMute 
+ * Fixed screenshot muting: It sometimes happened that WinMute
    muted Windows Audio for no apparent reason and "forgot" to
    unmute. This is now fixed.
 
@@ -12,7 +19,6 @@ Version 1.4 (2014-07-10)
 
  * Added a toggle switch to configure if WinMute should unmute at all after
    a workstation lock or a screensaver run
-
 
 Version 1.3 (2012-02-23)
 
@@ -33,13 +39,11 @@ Version 1.3 (2012-02-23)
 
  * XP: Actively tries to prevent other programs from unmuting the system.
 
-
 Version 1.2 (2011-05-30)
 
  * Fixed a bug where WinMute could malfunction if the audio
    device was changed or disconnected during a windows session.
 
-   
 Version 0.0 - 1.1
 
  * These documents have been lost forever...
