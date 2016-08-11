@@ -1,27 +1,9 @@
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
-
-# Visual Studio temporaries
-ipch/
+# Compilation temporaries and binaries
+Release/
+Debug/
+*.ipdb
+*.iobj
+*.ipdb
 *.aps
 *.opensdf
 *.sdf
@@ -29,11 +11,12 @@ ipch/
 *.exp
 *.pdb
 *.lib
-WinMute/Release
-WinMute/Debug
-ScreensaverNotify/Debug
-ScreensaverNotify/Release
 
-# Binary release files
-Bin/*.exe
-Bin/*.dll
+*.dll
+*.exe
+
+# Visual Studio temporaries
+ipch/
+*.VC.opendb
+*.VC.db
+*.lastcodeanalysissucceeded
