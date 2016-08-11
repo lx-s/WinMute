@@ -102,9 +102,7 @@ bool WinMute::InitAudio()
    if (IsWindowsVistaOrGreater()) {
       audio_ = std::unique_ptr<WinAudio>(new VistaAudio);
    } else if (IsWindowsXPOrGreater()) {
-      audio_ = std::unique_ptr<XPAudio>(new XPAudio);
-   } else {
-      MessageBox(0, _T("Only Windows versions XP and newer are supported"),
+      MessageBox(0, _T("Only Windows Vista and newer is supported"),
                  0, MB_ICONERROR);
       return false;
    }
@@ -137,7 +135,7 @@ bool WinMute::Init()
 {
    hAppIcon_ = LoadIcon(hglobInstance, MAKEINTRESOURCE(IDI_APP));
 
-   if (!settings_.Init() || 
+   if (!settings_.Init() ||
        !LoadDefaults()) {
       return false;
    }

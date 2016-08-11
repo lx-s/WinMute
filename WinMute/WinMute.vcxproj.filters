@@ -38,9 +38,6 @@
     <ClCompile Include="VistaAudio.cpp">
       <Filter>Source Files\Audio</Filter>
     </ClCompile>
-    <ClCompile Include="XPAudio.cpp">
-      <Filter>Source Files\Audio</Filter>
-    </ClCompile>
     <ClCompile Include="TrayIcon.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>

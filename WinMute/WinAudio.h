@@ -45,42 +45,6 @@ public:
    virtual ~WinAudio() noexcept { };
 };
 
-class XPAudio : public WinAudio {
-public:
-   XPAudio();
-   ~XPAudio() noexcept;
-
-   bool Init(HWND hParent);
-   void ShouldReInit();
-   bool IsMuted();
-   void Mute();
-   void UnMute();
-
-   LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
-private:
-   struct MixerDevice {
-      HMIXER hMixer;
-      bool useMute;
-      DWORD volCtrlID;
-      DWORD muteCtrlID;
-      DWORD oldValue;
-   };
-   bool InitNotifyWindow(HWND hParent);
-   bool GetMuteControl(MixerDevice& md);
-   DWORD GetOldControlValue(const MixerDevice& md);
-   void MuteDevice(MixerDevice& md, bool saveOldValue);
-   void SetDeviceValue(MixerDevice& md, DWORD val);
-
-   std::vector<MixerDevice> mixers_;
-   HWND hNotifyWnd_;
-   bool currentlyMuted_;
-   time_t muteTime_;
-
-   // non copy-able
-   XPAudio(const XPAudio& other) = delete;
-   XPAudio& operator=(const XPAudio& other) = delete;
-};
-
 // Forwards
 struct IAudioEndpointVolume;
 struct IAudioSessionControl;

@@ -191,7 +191,6 @@
     <ClCompile Include="VistaAudioSessionEvents.cpp" />
     <ClCompile Include="WinMain.cpp" />
     <ClCompile Include="WinMute.cpp" />
-    <ClCompile Include="XPAudio.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MMNotificationClient.h" />
