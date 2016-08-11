@@ -7,7 +7,7 @@ Version 1.4.3 (2016-08-11)
 
 Version 1.4.1/1.4.2 (2014-07-17)
 
- * Fixed screenshot muting: It sometimes happened that WinMute
+ * Fixed screensaver muting: It sometimes happened that WinMute
    muted Windows Audio for no apparent reason and "forgot" to
    unmute. This is now fixed.
 
