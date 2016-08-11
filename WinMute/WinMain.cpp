@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2014 Alexander Steinhoefer
+           Copyright (C) 2016, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
                    _In_ PWSTR,
                    _In_ int)
 {
-   HANDLE hMutex = CreateMutex(nullptr, TRUE, _T("BinaryStudiosWinMute"));
+   HANDLE hMutex = CreateMutex(nullptr, TRUE, _T("LxSystemsWinMute"));
    if (hMutex == NULL) {
       return FALSE;
    }

@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2014 Alexander Steinhoefer
+           Copyright (C) 2016, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@ modification, are permitted provided that the following conditions are met:
       documentation and/or other materials provided with the distribution.
 
     * Neither the name of the author nor the names of its contributors may
-      be used to endorse or promote products derived from this software 
+      be used to endorse or promote products derived from this software
       without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -122,7 +122,7 @@ HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnStateChanged(
 }
 
 /* See
- * http://blogs.msdn.com/b/larryosterman/archive/2007/10/31/what-happens-when-audio-rendering-fails.aspx 
+ * http://blogs.msdn.com/b/larryosterman/archive/2007/10/31/what-happens-when-audio-rendering-fails.aspx
  * for detailed information about each of these entries */
 HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnSessionDisconnected(
                                   AudioSessionDisconnectReason disconnectReason)

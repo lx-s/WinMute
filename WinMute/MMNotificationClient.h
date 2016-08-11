@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2014 Alexander Steinhoefer
+           Copyright (C) 2016, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@ modification, are permitted provided that the following conditions are met:
       documentation and/or other materials provided with the distribution.
 
     * Neither the name of the author nor the names of its contributors may
-      be used to endorse or promote products derived from this software 
+      be used to endorse or promote products derived from this software
       without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -30,7 +30,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
-  
+
 #include "StdAfx.h"
 #include <Mmdeviceapi.h>
 
@@ -40,7 +40,7 @@ class MMNotificationClient : public IMMNotificationClient {
 public:
    MMNotificationClient(WinAudio* notifyParent);
    ~MMNotificationClient();
-  
+
    ULONG STDMETHODCALLTYPE AddRef();
    ULONG STDMETHODCALLTYPE Release();
    HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, VOID **ppvInterface);

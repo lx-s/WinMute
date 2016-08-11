@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2014 Alexander Steinhoefer
+           Copyright (C) 2016, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@ modification, are permitted provided that the following conditions are met:
       documentation and/or other materials provided with the distribution.
 
     * Neither the name of the author nor the names of its contributors may
-      be used to endorse or promote products derived from this software 
+      be used to endorse or promote products derived from this software
       without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -30,28 +30,28 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
-  
+
 #include "StdAfx.h"
 #include "WinAudio.h"
 #include "MMNotificationClient.h"
 
 class WinAudio;
- 
+
 MMNotificationClient::MMNotificationClient(WinAudio* notifyParent) :
    ref_(1), pEnumerator_(NULL), notifyParent_(notifyParent)
 {
 }
-  
+
 MMNotificationClient::~MMNotificationClient()
 {
    SafeRelease(&pEnumerator_);
 }
-  
+
 ULONG STDMETHODCALLTYPE MMNotificationClient::AddRef()
 {
    return InterlockedIncrement(&ref_);
 }
-  
+
 ULONG STDMETHODCALLTYPE MMNotificationClient::Release()
 {
    ULONG ref = InterlockedDecrement(&ref_);
@@ -60,7 +60,7 @@ ULONG STDMETHODCALLTYPE MMNotificationClient::Release()
    }
    return ref;
 }
-  
+
 HRESULT STDMETHODCALLTYPE MMNotificationClient::QueryInterface(
                                                             REFIID riid,
                                                             VOID **ppvInterface)
@@ -78,7 +78,7 @@ HRESULT STDMETHODCALLTYPE MMNotificationClient::QueryInterface(
    return S_OK;
 }
 
-  
+
 HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDefaultDeviceChanged(
                                                      EDataFlow,
                                                      ERole,
@@ -89,12 +89,12 @@ HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDefaultDeviceChanged(
    }
    return S_OK;
 }
-  
+
 HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceAdded(LPCWSTR)
 {
    return S_OK;
 }
-  
+
 HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceRemoved(LPCWSTR)
 {
    if (notifyParent_) {
@@ -102,18 +102,17 @@ HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceRemoved(LPCWSTR)
    }
    return S_OK;
 }
-  
+
 HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceStateChanged(LPCWSTR,
                                                                      DWORD)
 {
    return S_OK;
 }
-  
+
 HRESULT STDMETHODCALLTYPE MMNotificationClient::OnPropertyValueChanged(
                                                               LPCWSTR,
                                                               const PROPERTYKEY)
 {
    return S_OK;
 }
- 
-  
+

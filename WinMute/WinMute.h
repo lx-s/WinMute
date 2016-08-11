@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2014 Alexander Steinhoefer
+           Copyright (C) 2016, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -45,9 +45,7 @@ public:
    bool Init();
    void Close();
 
-   HWND GetWnd();
-
-   // for internal use
+  // for internal use
    LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 private:
    HWND hWnd_;
@@ -71,9 +69,8 @@ private:
    void Unload();
 
    void CheckOrUncheckMenu(UINT item, bool* setting);
-   
 
    // Disable copying
-   WinMute(const WinMute&);
-   WinMute& operator=(const WinMute&);
+   WinMute(const WinMute&) = delete;
+   WinMute& operator=(const WinMute&) = delete;
 };
