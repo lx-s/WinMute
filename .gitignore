@@ -14,9 +14,11 @@ Debug/
 
 *.dll
 *.exe
+*.nupkg
 
 # Visual Studio temporaries
 ipch/
 *.VC.opendb
 *.VC.db
 *.lastcodeanalysissucceeded
+
