@@ -1,11 +1,32 @@
-﻿
-Note: Include this file if including binaries you have the right to distribute. 
-Otherwise delete. this file.
+﻿VERIFICATION
 
-===DELETE ABOVE THIS LINE AND THIS LINE===
+Powershell> Get-ChildItem | Get-FileHash -Algorithm SHA256 | Format-List
+----------------------------------------------------------------------------
 
-VERIFICATION
-Verification is intended to assist the Chocolatey moderators and community
-in verifying that this package's contents are trustworthy.
- 
-<Include details of how to verify checksum contents>
+Algorithm : SHA256
+Hash      : 2AE9670B2E1215105620C983A148B2679A96D736670DFE69501A97092DD246D3
+Path      : C:\Dev\Code\WinMute\Build\bin\changelog.txt
+
+Algorithm : SHA256
+Hash      : C651A85E6D136560CBABA5FEAAAEFB254FE8B07FD96A426A500B9CF02B265A2F
+Path      : C:\Dev\Code\WinMute\Build\bin\license.txt
+
+Algorithm : SHA256
+Hash      : 0648F323298A88FAF9F4053852810C2EB890BE1EE2BD76AF4348B9854BB0F9A5
+Path      : C:\Dev\Code\WinMute\Build\bin\liesmich.html
+
+Algorithm : SHA256
+Hash      : 9324AC3BF0B357BBA182FBE26A9666DE65FD562B20E01C4734A027DF9F4DBBBD
+Path      : C:\Dev\Code\WinMute\Build\bin\readme.html
+
+Algorithm : SHA256
+Hash      : 9FED9E6799C89A05F548C858E2B124F417337AF6DC31DB90EDCEECE0637D133E
+Path      : C:\Dev\Code\WinMute\Build\bin\ScreensaverNotify.dll
+
+Algorithm : SHA256
+Hash      : 493FBAB27B09C6C88F01D3904141F2D7CDE9C12C0E91041BEB4E20D0F450C3C2
+Path      : C:\Dev\Code\WinMute\Build\bin\WinMute.exe
+
+Algorithm : SHA256
+Hash      : E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855
+Path      : C:\Dev\Code\WinMute\Build\bin\WinMute.exe.gui
