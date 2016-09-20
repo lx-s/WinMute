@@ -9,7 +9,7 @@ This is very helpful e.g. if you leave your desk and don't want to annoy your co
 ![Screenshot of WinMute](http://files.lx-s.de/programs/WinMute/screenshot.png "Screenshot of WinMute")
 
 ### Requirements ###
-Windows XP with Service Pack 3 or any newer version of Windows.
+Windows Vista or any newer version of Windows.
 
 ### Installation ###
 Unzip it to your favourite directory and you are all set up!
