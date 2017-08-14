@@ -21,4 +21,6 @@ ipch/
 *.VC.opendb
 *.VC.db
 *.lastcodeanalysissucceeded
+.vs/
+Bin/
 

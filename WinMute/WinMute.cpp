@@ -48,7 +48,7 @@ static LRESULT CALLBACK WinMuteWndProc(HWND hWnd, UINT msg, WPARAM wParam,
    case WM_NCCREATE: {
       LPCREATESTRUCTW cs = reinterpret_cast<LPCREATESTRUCTW>(lParam);
       SetWindowLongPtr(hWnd, GWLP_USERDATA,
-                       reinterpret_cast<LONG>(cs->lpCreateParams));
+                       reinterpret_cast<LONG_PTR>(cs->lpCreateParams));
       return TRUE;
    }
    default:

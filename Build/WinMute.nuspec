@@ -3,20 +3,20 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
 	<metadata>
 		<id>winmute</id>
-		<version>1.4.3.20160811</version>
+		<version>1.4.4.20170814</version>
 		<title>WinMute</title>
 		<authors>Alexander Steinhöfer</authors>
 		<owners>Alexander Steinhöfer</owners>
 		<packageSourceUrl>https://github.com/lx-s/WinMute/releases</packageSourceUrl>
 		<projectUrl>https://github.com/lx-s/WinMute/</projectUrl>
-		<iconUrl>https://cdn.rawgit.com/lx-s/WinMute/1.4.3/WinMute/app.ico</iconUrl>
+		<iconUrl>https://cdn.rawgit.com/lx-s/WinMute/1.4.4/WinMute/app.ico</iconUrl>
 		<tags>winmute windows utility audio</tags>
 		<summary>Automatic sound muter</summary>
 		<description>WinMute automatically mutes your PC volume if you lock your screen or the screensaver is running.</description>
 		<copyright>© 2016, Alexander Steinhöfer</copyright>
-		<licenseUrl>https://cdn.rawgit.com/lx-s/WinMute/1.4.3/LICENSE</licenseUrl>
+		<licenseUrl>https://cdn.rawgit.com/lx-s/WinMute/1.4.4/LICENSE</licenseUrl>
 		<dependencies>
-			<dependency id="vcredist2015" />
+			<dependency id="vcredist2017" />
 		</dependencies>
 	</metadata>
 	<files>
