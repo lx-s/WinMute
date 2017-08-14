@@ -51,6 +51,7 @@ private:
    HWND hWnd_;
    HMENU hTrayMenu_;
    HICON hAppIcon_;
+   HICON hTrayIcon_;
    bool muteOnLock_,
         muteOnScreensaver_,
         restoreAudio_;

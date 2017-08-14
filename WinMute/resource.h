@@ -5,6 +5,8 @@
 #define IDR_TRAYMENU                    101
 #define IDD_ABOUT                       102
 #define IDI_APP                         106
+#define IDI_ICON1                       107
+#define IDI_TRAY                        107
 #define IDC_LINK_HOMEPAGE               1001
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_EXIT                40002
@@ -23,7 +25,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        107
+#define _APS_NEXT_RESOURCE_VALUE        108
 #define _APS_NEXT_COMMAND_VALUE         40013
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           101

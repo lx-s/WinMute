@@ -239,6 +239,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.ico" />
+    <None Include="tray.ico" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res.rc" />

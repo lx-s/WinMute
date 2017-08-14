@@ -61,7 +61,9 @@ static LRESULT CALLBACK WinMuteWndProc(HWND hWnd, UINT msg, WPARAM wParam,
 WinMute::WinMute() :
    muteOnLock_(true),
    muteOnScreensaver_(true),
-   restoreAudio_(true)
+   restoreAudio_(true),
+   hTrayIcon_(NULL),
+   hTrayMenu_(NULL)
 { }
 
 WinMute::~WinMute()
@@ -172,7 +174,12 @@ bool WinMute::Init()
       return false;
    }
 
-   trayIcon_.Init(hWnd_, 0, hAppIcon_, _T("WinMute"), true);
+   hTrayIcon_ = LoadIcon(hglobInstance, MAKEINTRESOURCE(IDI_TRAY));
+   if (hTrayIcon_ == NULL) {
+      PrintWindowsError(_T("LoadIcon"));
+      return false;
+   }
+   trayIcon_.Init(hWnd_, 0, hTrayIcon_, _T("WinMute"), true);
    return true;
 }
 
