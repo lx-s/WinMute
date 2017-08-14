@@ -9,7 +9,8 @@ This is very helpful e.g. if you leave your desk and don't want to annoy your co
 ![Screenshot of WinMute](http://files.lx-s.de/programs/WinMute/screenshot.png "Screenshot of WinMute")
 
 ### Requirements ###
-Windows Vista or any newer version of Windows.
+* Windows Vista or any newer version of Windows.
+* [Visual Studio 2017 Redistributable](https://go.microsoft.com/fwlink/?LinkId=746572)
 
 ### Installation ###
 Unzip it to your favourite directory and you are all set up!
