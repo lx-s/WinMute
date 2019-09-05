@@ -59,11 +59,13 @@ static LRESULT CALLBACK WinMuteWndProc(HWND hWnd, UINT msg, WPARAM wParam,
 }
 
 WinMute::WinMute() :
+   hWnd_(nullptr),
+   hTrayMenu_(nullptr),
+   hAppIcon_(nullptr),
+   hTrayIcon_(nullptr),
    muteOnLock_(true),
    muteOnScreensaver_(true),
-   restoreAudio_(true),
-   hTrayIcon_(NULL),
-   hTrayMenu_(NULL)
+   restoreAudio_(true)
 { }
 
 WinMute::~WinMute()
@@ -90,8 +92,7 @@ bool WinMute::RegisterWindowClass()
 bool WinMute::InitWindow()
 {
    hWnd_ = CreateWindowEx(WS_EX_TOOLWINDOW, WINMUTE_CLASS_NAME, PROGRAM_NAME,
-                          WS_POPUP, 0, 0, 0, 0, HWND_MESSAGE, 0, hglobInstance,
-                          this);
+      WS_POPUP, 0, 0, 0, 0, HWND_MESSAGE, 0, hglobInstance, this);
    if (hWnd_ == nullptr) {
       PrintWindowsError(_T("CreateWindowEx"));
       return false;
@@ -104,15 +105,11 @@ bool WinMute::InitAudio()
    if (IsWindowsVistaOrGreater()) {
       audio_ = std::unique_ptr<WinAudio>(new VistaAudio);
    } else if (IsWindowsXPOrGreater()) {
-         TaskDialog(nullptr,
-                    nullptr,
-                    PROGRAM_NAME,
-                    _T("Only Windows Vista and newer is supported"),
-                    _T("For Windows XP support, please download WinMute ")
-                    _T(" version 1.4.2 or older"),
-                    TDCBF_OK_BUTTON,
-                    TD_ERROR_ICON,
-                    nullptr);
+         TaskDialog(nullptr, nullptr, PROGRAM_NAME,
+           _T("Only Windows Vista and newer is supported"),
+           _T("For Windows XP support, please download WinMute ")
+           _T(" version 1.4.2 or older"),
+           TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
       return false;
    }
 
@@ -130,11 +127,11 @@ bool WinMute::InitTrayMenu()
       PrintWindowsError(_T("LoadMenu"));
       return false;
    } else if (CheckMenuItem(hTrayMenu_, ID_TRAYMENU_MUTEONLOCK,
-                               muteOnLock_ ? MF_CHECKED : MF_UNCHECKED) == -1 ||
+                 muteOnLock_ ? MF_CHECKED : MF_UNCHECKED) == -1 ||
               CheckMenuItem(hTrayMenu_, ID_TRAYMENU_MUTEONSCREENSAVER,
-                        muteOnScreensaver_ ? MF_CHECKED : MF_UNCHECKED) == -1 ||
+                 muteOnScreensaver_ ? MF_CHECKED : MF_UNCHECKED) == -1 ||
               CheckMenuItem(hTrayMenu_, ID_TRAYMENU_RESTOREAUDIO,
-                             restoreAudio_ ? MF_CHECKED : MF_UNCHECKED) == -1) {
+                 restoreAudio_ ? MF_CHECKED : MF_UNCHECKED) == -1) {
       return false;
    }
    return true;
@@ -194,7 +191,7 @@ bool WinMute::LoadDefaults()
    return true;
 }
 
-void WinMute::CheckOrUncheckMenu(UINT item, bool* setting)
+void WinMute::ToggleMenuCheck(UINT item, bool* setting)
 {
    UINT state = GetMenuState(hTrayMenu_, item, MF_BYCOMMAND);
    if (state & MF_CHECKED) {
@@ -206,8 +203,8 @@ void WinMute::CheckOrUncheckMenu(UINT item, bool* setting)
    }
 }
 
-LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg, WPARAM wParam,
-                                                          LPARAM lParam)
+LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg,
+   WPARAM wParam, LPARAM lParam)
 {
    static UINT uTaskbarRestart = 0;
    switch (msg) {
@@ -227,15 +224,15 @@ LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg, WPARAM wParam,
          SendMessage(hWnd, WM_CLOSE, 0, 0);
          break;
       case ID_TRAYMENU_MUTEONLOCK:
-         CheckOrUncheckMenu(ID_TRAYMENU_MUTEONLOCK, &muteOnLock_);
+         ToggleMenuCheck(ID_TRAYMENU_MUTEONLOCK, &muteOnLock_);
          settings_.SetValue(SettingsKey::MUTE_ON_LOCK, muteOnLock_);
          break;
       case ID_TRAYMENU_RESTOREAUDIO:
-         CheckOrUncheckMenu(ID_TRAYMENU_RESTOREAUDIO, &restoreAudio_);
+         ToggleMenuCheck(ID_TRAYMENU_RESTOREAUDIO, &restoreAudio_);
          settings_.SetValue(SettingsKey::RESTORE_AUDIO, restoreAudio_);
          break;
       case ID_TRAYMENU_MUTEONSCREENSAVER:
-         CheckOrUncheckMenu(ID_TRAYMENU_MUTEONSCREENSAVER, &muteOnScreensaver_);
+         ToggleMenuCheck(ID_TRAYMENU_MUTEONSCREENSAVER, &muteOnScreensaver_);
          settings_.SetValue(SettingsKey::MUTE_ON_SCREENSAVER, muteOnScreensaver_);
          if (muteOnScreensaver_) {
             scrnSaverNoti_.ActivateNotifications(hWnd_);
@@ -245,7 +242,7 @@ LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg, WPARAM wParam,
          break;
       case ID_TRAYMENU_MUTE: {
          bool state = false;
-         CheckOrUncheckMenu(ID_TRAYMENU_MUTE, &state);
+         ToggleMenuCheck(ID_TRAYMENU_MUTE, &state);
          if (!state) {
             audio_->UnMute();
          } else {
@@ -265,7 +262,7 @@ LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg, WPARAM wParam,
          GetCursorPos(&p);
          SetForegroundWindow(hWnd);
          TrackPopupMenuEx(GetSubMenu(hTrayMenu_, 0), TPM_NONOTIFY | TPM_TOPALIGN
-                          | TPM_LEFTALIGN, p.x, p.y, hWnd_, nullptr);
+            | TPM_LEFTALIGN , p.x, p.y, hWnd_, nullptr);
          PostMessage(hWnd, WM_NULL, 0, 0);
          break;
       }

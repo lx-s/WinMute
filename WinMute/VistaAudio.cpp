@@ -42,10 +42,16 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "VistaAudioSessionEvents.h"
 #include "MMNotificationClient.h"
 
+
 VistaAudio::VistaAudio() :
-   endpointVolume_(nullptr), sessionControl_(nullptr),
-   wasapiAudioEvents_(nullptr), mmnAudioEvents_(nullptr),
-   deviceEnumerator_(nullptr), reInit_(false)
+   endpointVolume_(nullptr),
+   sessionControl_(nullptr),
+   deviceEnumerator_(nullptr),
+   wasapiAudioEvents_(nullptr),
+   mmnAudioEvents_(nullptr),
+   reInit_(false),
+   oldVolume_(0),
+   hParent_(nullptr)
 {
    if (FAILED(CoInitialize(nullptr))) {
       throw std::exception("Failed to initialize COM Library");
@@ -64,26 +70,27 @@ bool VistaAudio::Init(HWND hParent)
    reInit_ = false;
 
    if(FAILED(CoCreateInstance(__uuidof(MMDeviceEnumerator),
-                       nullptr, CLSCTX_INPROC_SERVER,
-                       IID_PPV_ARGS(&deviceEnumerator_)))) {
+         nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&deviceEnumerator_)))) {
      return false;
    }
 
    IMMDevice *defaultDevice = nullptr;
-   if(FAILED(deviceEnumerator_->GetDefaultAudioEndpoint(eRender, eConsole,
-      &defaultDevice))) {
-      TaskDialog(nullptr,
-                 nullptr,
-                 PROGRAM_NAME,
-                 _T("Failed to get default audio endpoint device"),
-                 _T("WinMute is not able to recover from that condition.\n")
-                 _T("Please try restarting the program"),
-                 TDCBF_OK_BUTTON,
-                 TD_ERROR_ICON,
-                 nullptr);
+   HRESULT hr = deviceEnumerator_->GetDefaultAudioEndpoint(eRender, eConsole,
+      &defaultDevice);
+   if(FAILED(hr)) {
+      if (hr != E_NOTFOUND) {
+         TaskDialog(nullptr,
+                    nullptr,
+                    PROGRAM_NAME,
+                    _T("Failed to get default audio endpoint device"),
+                    _T("WinMute is not able to recover from that condition.\n")
+                    _T("Please try restarting the program"),
+                    TDCBF_OK_BUTTON,
+                    TD_ERROR_ICON,
+                    nullptr);
+      }
       return false;
    }
-
 
    IAudioSessionManager2* sessionManager2 = nullptr;
    if (FAILED(defaultDevice->Activate(__uuidof(IAudioSessionManager2),
@@ -177,7 +184,7 @@ bool VistaAudio::CheckForReInit()
 
 bool VistaAudio::IsMuted()
 {
-   if (CheckForReInit()) {
+   if (CheckForReInit() && endpointVolume_ != nullptr) {
       BOOL isMuted = FALSE;
       endpointVolume_->GetMute(&isMuted);
       return isMuted == TRUE;
@@ -187,7 +194,7 @@ bool VistaAudio::IsMuted()
 
 void VistaAudio::Mute()
 {
-   if (CheckForReInit()) {
+   if (CheckForReInit() && endpointVolume_ != nullptr) {
       BOOL isMuted = FALSE;
       endpointVolume_->GetMute(&isMuted);
       if (!isMuted) {
@@ -198,7 +205,7 @@ void VistaAudio::Mute()
 
 void VistaAudio::UnMute()
 {
-   if (CheckForReInit()) {
+   if (CheckForReInit() && endpointVolume_ != nullptr) {
       BOOL isMuted = TRUE;
       endpointVolume_->GetMute(&isMuted);
       if (isMuted) {

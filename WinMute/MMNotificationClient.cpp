@@ -62,8 +62,7 @@ ULONG STDMETHODCALLTYPE MMNotificationClient::Release()
 }
 
 HRESULT STDMETHODCALLTYPE MMNotificationClient::QueryInterface(
-                                                            REFIID riid,
-                                                            VOID **ppvInterface)
+   REFIID riid, VOID **ppvInterface)
 {
    if (IID_IUnknown == riid) {
       AddRef();
@@ -80,9 +79,7 @@ HRESULT STDMETHODCALLTYPE MMNotificationClient::QueryInterface(
 
 
 HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDefaultDeviceChanged(
-                                                     EDataFlow,
-                                                     ERole,
-                                                     LPCWSTR)
+   EDataFlow, ERole, LPCWSTR)
 {
    if (notifyParent_) {
       notifyParent_->ShouldReInit();
@@ -103,15 +100,14 @@ HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceRemoved(LPCWSTR)
    return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceStateChanged(LPCWSTR,
-                                                                     DWORD)
+HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceStateChanged(
+   LPCWSTR, DWORD)
 {
    return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE MMNotificationClient::OnPropertyValueChanged(
-                                                              LPCWSTR,
-                                                              const PROPERTYKEY)
+   LPCWSTR, const PROPERTYKEY)
 {
    return S_OK;
 }

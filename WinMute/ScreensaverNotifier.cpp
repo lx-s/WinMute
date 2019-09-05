@@ -73,11 +73,13 @@ static LRESULT CALLBACK ScrsvrWndProc(HWND hWnd, UINT msg, WPARAM wParam,
 /* ========================================================================== */
 
 ScreensaverNotifier::ScreensaverNotifier() :
-   hookDll_(nullptr),
-   regHook_(nullptr),
-   unregHook_(nullptr),
    alreadyNotified_(false),
-   hookWndMsg_(0)
+   hookDll_(nullptr),
+   hWnd_(nullptr),
+   hNotifyWnd_(nullptr),
+   hookWndMsg_(0),
+   regHook_(nullptr),
+   unregHook_(nullptr)
 { }
 
 ScreensaverNotifier::~ScreensaverNotifier()

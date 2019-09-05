@@ -69,7 +69,7 @@ private:
 
    void Unload();
 
-   void CheckOrUncheckMenu(UINT item, bool* setting);
+   void ToggleMenuCheck(UINT item, bool* setting);
 
    // Disable copying
    WinMute(const WinMute&) = delete;

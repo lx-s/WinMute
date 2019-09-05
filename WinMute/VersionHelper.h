@@ -37,7 +37,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #ifndef _versionhelpers_H_INCLUDED_ // avoid conflict with MS versionhelpers
 
-inline bool IsWindowsVersionOrGreater(WORD wMajorVersion, WORD wMinorVersion, WORD wServicePackMajor)
+inline bool IsWindowsVersionOrGreater(WORD wMajorVersion,
+   WORD wMinorVersion,
+   WORD wServicePackMajor)
 {
    OSVERSIONINFOEXW osvi = { sizeof(osvi), 0, 0, 0, 0, { 0 }, 0, 0 };
    DWORDLONG        const dwlConditionMask = VerSetConditionMask(
@@ -51,17 +53,23 @@ inline bool IsWindowsVersionOrGreater(WORD wMajorVersion, WORD wMinorVersion, WO
    osvi.dwMinorVersion = wMinorVersion;
    osvi.wServicePackMajor = wServicePackMajor;
 
-   return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE;
+   return VerifyVersionInfoW(&osvi,
+      VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR,
+      dwlConditionMask) != FALSE;
 }
 
 inline bool IsWindowsXPOrGreater()
 {
-   return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WINXP), LOBYTE(_WIN32_WINNT_WINXP), 0);
+   return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WINXP),
+      LOBYTE(_WIN32_WINNT_WINXP),
+      0);
 }
 
 inline bool IsWindowsVistaOrGreater()
 {
-   return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_VISTA), LOBYTE(_WIN32_WINNT_VISTA), 0);
+   return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_VISTA),
+      LOBYTE(_WIN32_WINNT_VISTA),
+      0);
 }
 
 #endif
