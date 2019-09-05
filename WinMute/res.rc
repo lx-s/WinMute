@@ -25,18 +25,18 @@ LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE 
+1 TEXTINCLUDE
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE 
+2 TEXTINCLUDE
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE 
+3 TEXTINCLUDE
 BEGIN
     "\r\n"
     "\0"
@@ -80,10 +80,10 @@ CAPTION "About WinMute"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,194,7,50,14
-    LTEXT           "WinMute v1.4.4",IDC_STATIC,43,9,67,11
+    LTEXT           "WinMute v1.4.5",IDC_STATIC,43,9,67,11
     CONTROL         "<a href=""https://lx-s.de"">lx-systems - lx-s.de</a>",IDC_LINK_HOMEPAGE,
                     "SysLink",WS_TABSTOP,43,31,69,13
-    LTEXT           "Copyright © 2017, Alexander Steinhöfer",IDC_STATIC,43,20,148,12
+    LTEXT           "Copyright © 2019, Alexander Steinhöfer",IDC_STATIC,43,20,148,12
     ICON            IDI_APP,IDC_STATIC,13,9,21,20,SS_CENTERIMAGE
 END
 
@@ -114,8 +114,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,4,3,0
- PRODUCTVERSION 1,4,3,0
+ FILEVERSION 1,4,5,0
+ PRODUCTVERSION 1,4,5,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -131,24 +131,24 @@ BEGIN
         BLOCK "000004b0"
         BEGIN
             VALUE "CompanyName", "lx-systems"
-            VALUE "FileDescription", "Automatic sound muter."
-            VALUE "FileVersion", "1.4.3.0"
+            VALUE "FileDescription", "Automatic volume muting, when PC is locked."
+            VALUE "FileVersion", "1.4.5.0"
             VALUE "InternalName", "WinMute"
-            VALUE "LegalCopyright", "Copyright (c) 2017, Alexander Steinhöfer"
+            VALUE "LegalCopyright", "Copyright (c) 2019, Alexander Steinhöfer"
             VALUE "OriginalFilename", "WinMute.exe"
             VALUE "ProductName", "WinMute"
-            VALUE "ProductVersion", "1.4.3.0"
+            VALUE "ProductVersion", "1.4.5.0"
         END
         BLOCK "040704b0"
         BEGIN
             VALUE "CompanyName", "lx-systems"
-            VALUE "FileDescription", "Automatisches Stummschalten bei PC Sperre."
-            VALUE "FileVersion", "1.4.3.0"
+            VALUE "FileDescription", "Automatisches Stummschalten beim Sperren der Workstation."
+            VALUE "FileVersion", "1.4.5.0"
             VALUE "InternalName", "WinMute"
-            VALUE "LegalCopyright", "Copyright (c) 2017, Alexander Steinhöfer"
+            VALUE "LegalCopyright", "Copyright (c) 2019, Alexander Steinhöfer"
             VALUE "OriginalFilename", "WinMute.exe"
             VALUE "ProductName", "WinMute"
-            VALUE "ProductVersion", "1.4.3.0"
+            VALUE "ProductVersion", "1.4.5.0"
         END
     END
     BLOCK "VarFileInfo"
