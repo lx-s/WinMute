@@ -162,7 +162,7 @@
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
@@ -173,6 +173,7 @@
       <EnablePREfast>true</EnablePREfast>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <ControlFlowGuard>Guard</ControlFlowGuard>
+      <OmitFramePointers />
     </ClCompile>
     <Link>
       <AdditionalDependencies>strsafe.lib;comctl32.lib;WtsApi32.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>

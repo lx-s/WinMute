@@ -84,8 +84,8 @@ BEGIN
     LTEXT           "WinMute v1.4.6",IDC_STATIC,43,9,67,11
     CONTROL         "<a href=""https://lx-s.de"">lx-systems - lx-s.de</a>",IDC_LINK_HOMEPAGE,
                     "SysLink",WS_TABSTOP,43,35,69,13
-    LTEXT           "Copyright © 2016, Alexander Steinhöfer",IDC_STATIC,43,22,148,12
-    ICON            IDI_APP,IDC_STATIC,13,12,21,20,SS_CENTERIMAGE
+    LTEXT           "Copyright © 2020, Alexander Steinhöfer",IDC_STATIC,43,22,148,12
+    ICON            IDI_APP,IDC_STATIC,13,12,20,20,SS_CENTERIMAGE
     CONTROL         "<a href=""https://github.com/lx-s/WinMute/issues/"">Support</a>",IDC_LINK_SUPPORT,
                     "SysLink",WS_TABSTOP,119,35,36,13
 END
