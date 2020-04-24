@@ -43,14 +43,15 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
          EndDialog(hDlg, 0);
       }
       return 0;
-   case WM_NOTIFY:
-      switch (((LPNMHDR)lParam)->code) {
+   case WM_NOTIFY: {
+      PNMLINK pNmLink = (PNMLINK)lParam;
+      switch (pNmLink->hdr.code) {
          case NM_CLICK:
          case NM_RETURN: {
-            PNMLINK pNMLink = (PNMLINK)lParam;
-            LITEM item = pNMLink->item;
-            if ((((LPNMHDR)lParam)->idFrom == IDC_LINK_HOMEPAGE) &&
-                 (item.iLink == 0)) {
+            UINT_PTR ctrlId = pNmLink->hdr.idFrom;
+            LITEM item = pNmLink->item;
+            if ((ctrlId == IDC_LINK_HOMEPAGE || ctrlId == IDC_LINK_SUPPORT)
+                && item.iLink == 0) {
                ShellExecute(nullptr, _T("open"), item.szUrl, nullptr, nullptr,
                             SW_SHOW);
             }
@@ -58,6 +59,7 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
          }
       }
       return TRUE;
+   }
    case WM_CLOSE:
       EndDialog(hDlg, 0);
       return TRUE;

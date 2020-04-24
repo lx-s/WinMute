@@ -41,18 +41,19 @@ void PrintWindowsError(LPTSTR lpszFunction, DWORD lastError)
    }
 
    LPVOID lpMsgBuf;
-   if (FormatMessage(
-       FORMAT_MESSAGE_ALLOCATE_BUFFER |
-       FORMAT_MESSAGE_FROM_SYSTEM |
-       FORMAT_MESSAGE_IGNORE_INSERTS,
-       nullptr, lastError, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-       reinterpret_cast<LPTSTR>(&lpMsgBuf), 0, nullptr) != 0) {
-
+   if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                     FORMAT_MESSAGE_FROM_SYSTEM |
+                     FORMAT_MESSAGE_IGNORE_INSERTS,
+                     nullptr, lastError,
+                     MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                     reinterpret_cast<LPTSTR>(&lpMsgBuf), 0, nullptr) != 0) {
+      size_t displayBufSize = 
+          ((size_t)lstrlen(static_cast<LPCTSTR>(lpMsgBuf)) +
+           (size_t)lstrlen(static_cast<LPCTSTR>(lpszFunction))
+            + 40) * sizeof(TCHAR);
       // Display the error message and exit the process
-      LPVOID lpDisplayBuf = reinterpret_cast<LPVOID>(LocalAlloc(LMEM_ZEROINIT,
-                            (lstrlen(static_cast<LPCTSTR>(lpMsgBuf)) +
-                             lstrlen(static_cast<LPCTSTR>(lpszFunction)) + 40)
-                            * sizeof(TCHAR)));
+      LPVOID lpDisplayBuf = reinterpret_cast<LPVOID>(
+                                     LocalAlloc(LMEM_ZEROINIT, displayBufSize));
       if (lpDisplayBuf) {
          StringCchPrintf((LPTSTR)lpDisplayBuf,
                          LocalSize(lpDisplayBuf),

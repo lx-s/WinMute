@@ -1,4 +1,9 @@
-Verion 1.4.5 (2019-09-04)
+Version 1.4.6 (2020-04-24)
+ * Compiled with spectre migitations... just 'cause
+ * Added "Support"-Link to About dialog
+ * Small menu redesign.
+
+Version 1.4.5 (2019-09-04)
  * Fixed crash when all audio endpoints are removed while the program is running
    (might happen, when connecting to your PC via RDP).
  * Upgraded compiler toolset to VS2019
