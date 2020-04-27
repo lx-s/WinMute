@@ -6,7 +6,7 @@ This is very helpful e.g. if you leave your desk and don't want to annoy your co
 
 
 ### Screenshot ###
-![Screenshot of WinMute](http://files.lx-s.de/programs/WinMute/screenshot.png? "Screenshot of WinMute")
+![Screenshot of WinMute](https://raw.githubusercontent.com/lx-s/WinMute/master/Dist/screenshot.png? "Screenshot of WinMute")
 
 ### Requirements ###
 * Windows Vista or any newer version of Windows.
