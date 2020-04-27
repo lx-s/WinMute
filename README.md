@@ -10,7 +10,7 @@ This is very helpful e.g. if you leave your desk and don't want to annoy your co
 
 ### Requirements ###
 * Windows Vista or any newer version of Windows.
-* [Visual Studio 2017 Redistributable](https://go.microsoft.com/fwlink/?LinkId=746572)
+* [Visual Studio 2019 Redistributable](https://support.microsoft.com/help/2977003/the-latest-supported-visual-c-downloads)
 
 ### Installation ###
 Unzip it to your favourite directory and you are all set up!
