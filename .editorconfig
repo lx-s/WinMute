@@ -1,0 +1,9 @@
+[*.{c,c++,cc,cpp,cxx,h,h++,hh,hpp,hxx,inl,ipp,tlh,tli}]
+vc_generate_documentation_comments = doxygen_triple_slash
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+indent_style = space
+indent_size = 3
+insert_final_newline = true
+trim_trailing_whitespace = true
