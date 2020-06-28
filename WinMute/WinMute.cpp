@@ -58,14 +58,23 @@ static LRESULT CALLBACK WinMuteWndProc(HWND hWnd, UINT msg, WPARAM wParam,
                  : DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
+WinMute::MuteConfig::MuteConfig()
+{
+   this->withRestore.muteOnLock = true;
+   this->withRestore.muteOnScreensaver = true;
+   this->withRestore.muteOnRemoteSession = true;
+   this->restoreAudio = true;
+
+   this->noRestore.muteOnLogoff = false;
+   this->noRestore.muteOnSuspend = false;
+   this->noRestore.muteOnShutdown = false;
+}
+
 WinMute::WinMute() :
    hWnd_(nullptr),
    hTrayMenu_(nullptr),
    hAppIcon_(nullptr),
-   hTrayIcon_(nullptr),
-   muteOnLock_(true),
-   muteOnScreensaver_(true),
-   restoreAudio_(true)
+   hTrayIcon_(nullptr)
 { }
 
 WinMute::~WinMute()
@@ -120,22 +129,25 @@ bool WinMute::InitAudio()
    return true;
 }
 
+#define CHECK_MENU_ITEM(cond) (cond) ? MF_CHECKED : MF_UNCHECKED
 bool WinMute::InitTrayMenu()
 {
    hTrayMenu_ = LoadMenu(hglobInstance, MAKEINTRESOURCE(IDR_TRAYMENU));
    if (!hTrayMenu_) {
       PrintWindowsError(_T("LoadMenu"));
       return false;
-   } else if (CheckMenuItem(hTrayMenu_, ID_TRAYMENU_MUTEONLOCK,
-                 muteOnLock_ ? MF_CHECKED : MF_UNCHECKED) == -1 ||
-              CheckMenuItem(hTrayMenu_, ID_TRAYMENU_MUTEONSCREENSAVER,
-                 muteOnScreensaver_ ? MF_CHECKED : MF_UNCHECKED) == -1 ||
-              CheckMenuItem(hTrayMenu_, ID_TRAYMENU_RESTOREAUDIO,
-                 restoreAudio_ ? MF_CHECKED : MF_UNCHECKED) == -1) {
+   } else if (
+      CheckMenuItem(hTrayMenu_, ID_TRAYMENU_MUTEONLOCK,
+         CHECK_MENU_ITEM(muteConfig_.withRestore.muteOnLock)) == -1 ||
+      CheckMenuItem(hTrayMenu_, ID_TRAYMENU_MUTEONSCREENSAVER,
+         CHECK_MENU_ITEM(muteConfig_.withRestore.muteOnScreensaver)) == -1 ||
+      CheckMenuItem(hTrayMenu_, ID_TRAYMENU_RESTOREAUDIO,
+         CHECK_MENU_ITEM(muteConfig_.restoreAudio)) == -1) {
       return false;
    }
    return true;
 }
+#undef CHECK_MENU_ITEM
 
 bool WinMute::Init()
 {
@@ -156,7 +168,7 @@ bool WinMute::Init()
       return false;
    }
 
-   if (muteOnScreensaver_) {
+   if (muteConfig_.withRestore.muteOnScreensaver) {
       if (!scrnSaverNoti_.ActivateNotifications(hWnd_)) {
          return false;
       }
@@ -182,11 +194,11 @@ bool WinMute::Init()
 
 bool WinMute::LoadDefaults()
 {
-   muteOnLock_ =
+   muteConfig_.withRestore.muteOnLock =
       settings_.QueryValue(SettingsKey::MUTE_ON_LOCK, 1) != 0;
-   muteOnScreensaver_ =
+   muteConfig_.withRestore.muteOnScreensaver =
       settings_.QueryValue(SettingsKey::MUTE_ON_SCREENSAVER, 1) != 0;
-   restoreAudio_ =
+   muteConfig_.restoreAudio =
       settings_.QueryValue(SettingsKey::RESTORE_AUDIO, 1) != 0;
    return true;
 }
@@ -224,22 +236,33 @@ LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg,
          SendMessage(hWnd, WM_CLOSE, 0, 0);
          break;
       case ID_TRAYMENU_MUTEONLOCK:
-         ToggleMenuCheck(ID_TRAYMENU_MUTEONLOCK, &muteOnLock_);
-         settings_.SetValue(SettingsKey::MUTE_ON_LOCK, muteOnLock_);
+         ToggleMenuCheck(ID_TRAYMENU_MUTEONLOCK,
+                         &muteConfig_.withRestore.muteOnLock);
+         settings_.SetValue(SettingsKey::MUTE_ON_LOCK,
+                            muteConfig_.withRestore.muteOnLock);
          break;
       case ID_TRAYMENU_RESTOREAUDIO:
-         ToggleMenuCheck(ID_TRAYMENU_RESTOREAUDIO, &restoreAudio_);
-         settings_.SetValue(SettingsKey::RESTORE_AUDIO, restoreAudio_);
+         ToggleMenuCheck(ID_TRAYMENU_RESTOREAUDIO, &muteConfig_.restoreAudio);
+         settings_.SetValue(SettingsKey::RESTORE_AUDIO,
+                            muteConfig_.restoreAudio);
          break;
       case ID_TRAYMENU_MUTEONSCREENSAVER:
-         ToggleMenuCheck(ID_TRAYMENU_MUTEONSCREENSAVER, &muteOnScreensaver_);
-         settings_.SetValue(SettingsKey::MUTE_ON_SCREENSAVER, muteOnScreensaver_);
-         if (muteOnScreensaver_) {
+         ToggleMenuCheck(ID_TRAYMENU_MUTEONSCREENSAVER,
+                         &muteConfig_.withRestore.muteOnScreensaver);
+         settings_.SetValue(SettingsKey::MUTE_ON_SCREENSAVER,
+                            muteConfig_.withRestore.muteOnScreensaver);
+         if (muteConfig_.withRestore.muteOnScreensaver) {
             scrnSaverNoti_.ActivateNotifications(hWnd_);
          } else {
             scrnSaverNoti_.ClearNotifications();
          }
          break;
+      case ID_TRAYMENU_MUTEONSHUTDOWN:
+          break;
+      case ID_TRAYMENU_MUTEONSUSPEND:
+          break;
+      case ID_TRAYMENU_MUTEONLOGOFF:
+          break;
       case ID_TRAYMENU_MUTE: {
          bool state = false;
          ToggleMenuCheck(ID_TRAYMENU_MUTE, &state);
@@ -279,13 +302,31 @@ LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg,
       static bool wasAlreadyMuted = false;
       if (wParam == WTS_SESSION_LOCK) {
          wasAlreadyMuted = audio_->IsMuted();
-         if (!wasAlreadyMuted && muteOnLock_) {
+         if (!wasAlreadyMuted && muteConfig_.withRestore.muteOnLock) {
             audio_->Mute();
          }
       } else if (wParam == WTS_SESSION_UNLOCK) {
-         if (!wasAlreadyMuted && muteOnLock_ && restoreAudio_) {
+         if (!wasAlreadyMuted &&
+             muteConfig_.restoreAudio &&
+             muteConfig_.withRestore.muteOnLock) {
             audio_->UnMute();
          }
+      } else if (wParam == WTS_SESSION_LOGOFF) {
+          if (muteConfig_.noRestore.muteOnLogoff) {
+              audio_->Mute();
+          }
+      } else if (wParam == WTS_REMOTE_DISCONNECT) {
+          wasAlreadyMuted = audio_->IsMuted();
+          if (!wasAlreadyMuted &&
+              muteConfig_.withRestore.muteOnRemoteSession) {
+              audio_->Mute();
+          }
+      } else if (wParam == WTS_REMOTE_DISCONNECT) {
+          if (!wasAlreadyMuted &&
+              muteConfig_.restoreAudio &&
+              muteConfig_.withRestore.muteOnRemoteSession) {
+              audio_->UnMute();
+          }
       }
       return 0;
    }
@@ -293,11 +334,13 @@ LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg,
       static bool wasAlreadyMuted = false;
       if (wParam == SCRNSAVE_START) {
          wasAlreadyMuted = audio_->IsMuted();
-         if (!wasAlreadyMuted && muteOnScreensaver_) {
+         if (!wasAlreadyMuted && muteConfig_.withRestore.muteOnScreensaver) {
             audio_->Mute();
          }
       } else if (wParam == SCRNSAVE_STOP) {
-         if (!wasAlreadyMuted && muteOnScreensaver_ && restoreAudio_) {
+         if (!wasAlreadyMuted && 
+             muteConfig_.restoreAudio &&
+             muteConfig_.withRestore.muteOnScreensaver) {
             audio_->UnMute();
          }
       }

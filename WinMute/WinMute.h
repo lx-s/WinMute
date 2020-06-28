@@ -52,9 +52,21 @@ private:
    HMENU hTrayMenu_;
    HICON hAppIcon_;
    HICON hTrayIcon_;
-   bool muteOnLock_,
-        muteOnScreensaver_,
-        restoreAudio_;
+
+   struct MuteConfig {
+      MuteConfig();
+      struct {
+         bool muteOnLock;
+         bool muteOnScreensaver;
+         bool muteOnRemoteSession;
+      } withRestore;
+      struct {
+         bool muteOnLogoff;
+         bool muteOnShutdown;
+         bool muteOnSuspend;
+      } noRestore;
+      bool restoreAudio;
+   } muteConfig_;
 
    TrayIcon trayIcon_;
    std::unique_ptr<WinAudio> audio_;
