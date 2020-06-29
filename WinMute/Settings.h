@@ -36,9 +36,12 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "StdAfx.h"
 
 enum class SettingsKey {
-   MUTE_ON_LOCK,
-   MUTE_ON_SCREENSAVER,
-   RESTORE_AUDIO
+     MUTE_ON_LOCK
+   , MUTE_ON_SCREENSAVER
+   , RESTORE_AUDIO
+   , MUTE_ON_SUSPEND
+   , MUTE_ON_SHUTDOWN
+   , MUTE_ON_LOGOUT
 };
 
 class Settings {

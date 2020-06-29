@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2017, Alexander Steinhoefer
+           Copyright (c) 2020, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -60,14 +60,13 @@ static LRESULT CALLBACK WinMuteWndProc(HWND hWnd, UINT msg, WPARAM wParam,
 
 WinMute::MuteConfig::MuteConfig()
 {
-   this->withRestore.muteOnLock = true;
-   this->withRestore.muteOnScreensaver = true;
-   this->withRestore.muteOnRemoteSession = true;
+   this->withRestore.onLock = true;
+   this->withRestore.onScreensaver = true;
    this->restoreAudio = true;
 
-   this->noRestore.muteOnLogoff = false;
-   this->noRestore.muteOnSuspend = false;
-   this->noRestore.muteOnShutdown = false;
+   this->noRestore.onLogoff = false;
+   this->noRestore.onSuspend = false;
+   this->noRestore.onShutdown = false;
 }
 
 WinMute::WinMute() :
@@ -129,7 +128,9 @@ bool WinMute::InitAudio()
    return true;
 }
 
-#define CHECK_MENU_ITEM(cond) (cond) ? MF_CHECKED : MF_UNCHECKED
+#define CHECK_MENU_ITEM(id, cond)                                              \
+   (CheckMenuItem(hTrayMenu_, ID_TRAYMENU_ ## id,                              \
+                  (cond) ? MF_CHECKED : MF_UNCHECKED) != -1)
 bool WinMute::InitTrayMenu()
 {
    hTrayMenu_ = LoadMenu(hglobInstance, MAKEINTRESOURCE(IDR_TRAYMENU));
@@ -137,12 +138,12 @@ bool WinMute::InitTrayMenu()
       PrintWindowsError(_T("LoadMenu"));
       return false;
    } else if (
-      CheckMenuItem(hTrayMenu_, ID_TRAYMENU_MUTEONLOCK,
-         CHECK_MENU_ITEM(muteConfig_.withRestore.muteOnLock)) == -1 ||
-      CheckMenuItem(hTrayMenu_, ID_TRAYMENU_MUTEONSCREENSAVER,
-         CHECK_MENU_ITEM(muteConfig_.withRestore.muteOnScreensaver)) == -1 ||
-      CheckMenuItem(hTrayMenu_, ID_TRAYMENU_RESTOREAUDIO,
-         CHECK_MENU_ITEM(muteConfig_.restoreAudio)) == -1) {
+      !CHECK_MENU_ITEM(MUTEONLOCK, muteConfig_.withRestore.onLock) ||
+      !CHECK_MENU_ITEM(MUTEONSCREENSAVER, muteConfig_.withRestore.onScreensaver) ||
+      !CHECK_MENU_ITEM(RESTOREAUDIO, muteConfig_.restoreAudio) ||
+      !CHECK_MENU_ITEM(MUTEONSUSPEND, muteConfig_.noRestore.onSuspend) ||
+      !CHECK_MENU_ITEM(MUTEONSHUTDOWN, muteConfig_.noRestore.onShutdown) ||
+      !CHECK_MENU_ITEM(MUTEONLOGOUT, muteConfig_.noRestore.onLogoff)) {
       return false;
    }
    return true;
@@ -168,7 +169,7 @@ bool WinMute::Init()
       return false;
    }
 
-   if (muteConfig_.withRestore.muteOnScreensaver) {
+   if (muteConfig_.withRestore.onScreensaver) {
       if (!scrnSaverNoti_.ActivateNotifications(hWnd_)) {
          return false;
       }
@@ -194,12 +195,20 @@ bool WinMute::Init()
 
 bool WinMute::LoadDefaults()
 {
-   muteConfig_.withRestore.muteOnLock =
+   muteConfig_.withRestore.onLock =
       settings_.QueryValue(SettingsKey::MUTE_ON_LOCK, 1) != 0;
-   muteConfig_.withRestore.muteOnScreensaver =
+   muteConfig_.withRestore.onScreensaver =
       settings_.QueryValue(SettingsKey::MUTE_ON_SCREENSAVER, 1) != 0;
    muteConfig_.restoreAudio =
       settings_.QueryValue(SettingsKey::RESTORE_AUDIO, 1) != 0;
+
+   muteConfig_.noRestore.onLogoff =
+      settings_.QueryValue(SettingsKey::MUTE_ON_LOGOUT, 0) != 0;
+   muteConfig_.noRestore.onSuspend =
+      settings_.QueryValue(SettingsKey::MUTE_ON_SUSPEND, 0) != 0;
+   muteConfig_.noRestore.onShutdown =
+      settings_.QueryValue(SettingsKey::MUTE_ON_SHUTDOWN, 0) != 0;
+
    return true;
 }
 
@@ -235,34 +244,6 @@ LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg,
       case ID_TRAYMENU_EXIT:
          SendMessage(hWnd, WM_CLOSE, 0, 0);
          break;
-      case ID_TRAYMENU_MUTEONLOCK:
-         ToggleMenuCheck(ID_TRAYMENU_MUTEONLOCK,
-                         &muteConfig_.withRestore.muteOnLock);
-         settings_.SetValue(SettingsKey::MUTE_ON_LOCK,
-                            muteConfig_.withRestore.muteOnLock);
-         break;
-      case ID_TRAYMENU_RESTOREAUDIO:
-         ToggleMenuCheck(ID_TRAYMENU_RESTOREAUDIO, &muteConfig_.restoreAudio);
-         settings_.SetValue(SettingsKey::RESTORE_AUDIO,
-                            muteConfig_.restoreAudio);
-         break;
-      case ID_TRAYMENU_MUTEONSCREENSAVER:
-         ToggleMenuCheck(ID_TRAYMENU_MUTEONSCREENSAVER,
-                         &muteConfig_.withRestore.muteOnScreensaver);
-         settings_.SetValue(SettingsKey::MUTE_ON_SCREENSAVER,
-                            muteConfig_.withRestore.muteOnScreensaver);
-         if (muteConfig_.withRestore.muteOnScreensaver) {
-            scrnSaverNoti_.ActivateNotifications(hWnd_);
-         } else {
-            scrnSaverNoti_.ClearNotifications();
-         }
-         break;
-      case ID_TRAYMENU_MUTEONSHUTDOWN:
-          break;
-      case ID_TRAYMENU_MUTEONSUSPEND:
-          break;
-      case ID_TRAYMENU_MUTEONLOGOFF:
-          break;
       case ID_TRAYMENU_MUTE: {
          bool state = false;
          ToggleMenuCheck(ID_TRAYMENU_MUTE, &state);
@@ -272,8 +253,47 @@ LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg,
             audio_->Mute();
          }
          break;
-      } default:
-         __assume(0);
+      }
+      case ID_TRAYMENU_MUTEONLOCK:
+         ToggleMenuCheck(ID_TRAYMENU_MUTEONLOCK,
+                         &muteConfig_.withRestore.onLock);
+         settings_.SetValue(SettingsKey::MUTE_ON_LOCK,
+                            muteConfig_.withRestore.onLock);
+         break;
+      case ID_TRAYMENU_RESTOREAUDIO:
+         ToggleMenuCheck(ID_TRAYMENU_RESTOREAUDIO, &muteConfig_.restoreAudio);
+         settings_.SetValue(SettingsKey::RESTORE_AUDIO,
+                            muteConfig_.restoreAudio);
+         break;
+      case ID_TRAYMENU_MUTEONSCREENSAVER:
+         ToggleMenuCheck(ID_TRAYMENU_MUTEONSCREENSAVER,
+                         &muteConfig_.withRestore.onScreensaver);
+         settings_.SetValue(SettingsKey::MUTE_ON_SCREENSAVER,
+                            muteConfig_.withRestore.onScreensaver);
+         if (muteConfig_.withRestore.onScreensaver) {
+            scrnSaverNoti_.ActivateNotifications(hWnd_);
+         } else {
+            scrnSaverNoti_.ClearNotifications();
+         }
+         break;
+      case ID_TRAYMENU_MUTEONSHUTDOWN:
+         ToggleMenuCheck(ID_TRAYMENU_MUTEONSHUTDOWN,
+                         &muteConfig_.noRestore.onShutdown);
+         settings_.SetValue(SettingsKey::MUTE_ON_LOGOUT,
+                            muteConfig_.noRestore.onShutdown);
+          break;
+      case ID_TRAYMENU_MUTEONSUSPEND:
+         ToggleMenuCheck(ID_TRAYMENU_MUTEONSUSPEND,
+                         &muteConfig_.noRestore.onSuspend);
+         settings_.SetValue(SettingsKey::MUTE_ON_SUSPEND,
+                            muteConfig_.noRestore.onSuspend);
+         break;
+      case ID_TRAYMENU_MUTEONLOGOUT:
+         ToggleMenuCheck(ID_TRAYMENU_MUTEONLOGOUT,
+                         &muteConfig_.noRestore.onLogoff);
+         settings_.SetValue(SettingsKey::MUTE_ON_LOGOUT,
+                            muteConfig_.noRestore.onLogoff);
+         break;
       }
       return 0;
    }
@@ -302,45 +322,47 @@ LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg,
       static bool wasAlreadyMuted = false;
       if (wParam == WTS_SESSION_LOCK) {
          wasAlreadyMuted = audio_->IsMuted();
-         if (!wasAlreadyMuted && muteConfig_.withRestore.muteOnLock) {
+         if (!wasAlreadyMuted && muteConfig_.withRestore.onLock) {
             audio_->Mute();
          }
       } else if (wParam == WTS_SESSION_UNLOCK) {
          if (!wasAlreadyMuted &&
              muteConfig_.restoreAudio &&
-             muteConfig_.withRestore.muteOnLock) {
+             muteConfig_.withRestore.onLock) {
             audio_->UnMute();
          }
-      } else if (wParam == WTS_SESSION_LOGOFF) {
-          if (muteConfig_.noRestore.muteOnLogoff) {
-              audio_->Mute();
-          }
-      } else if (wParam == WTS_REMOTE_DISCONNECT) {
-          wasAlreadyMuted = audio_->IsMuted();
-          if (!wasAlreadyMuted &&
-              muteConfig_.withRestore.muteOnRemoteSession) {
-              audio_->Mute();
-          }
-      } else if (wParam == WTS_REMOTE_DISCONNECT) {
-          if (!wasAlreadyMuted &&
-              muteConfig_.restoreAudio &&
-              muteConfig_.withRestore.muteOnRemoteSession) {
-              audio_->UnMute();
-          }
       }
       return 0;
    }
+   case WM_POWERBROADCAST:
+      if (wParam == PBT_APMSUSPEND) {
+         if (muteConfig_.noRestore.onSuspend) {
+            audio_->Mute();
+         }
+      }
+      break;
+   case WM_QUERYENDSESSION:
+      if (lParam == 0) { // Shutdown
+         if (muteConfig_.noRestore.onShutdown) {
+            audio_->Mute();
+         }
+      } else if (lParam == ENDSESSION_LOGOFF) {
+         if (muteConfig_.noRestore.onLogoff) {
+            audio_->Mute();
+         }
+      }
+      break;
    case WM_SCRNSAVE_CHANGE: {
       static bool wasAlreadyMuted = false;
       if (wParam == SCRNSAVE_START) {
          wasAlreadyMuted = audio_->IsMuted();
-         if (!wasAlreadyMuted && muteConfig_.withRestore.muteOnScreensaver) {
+         if (!wasAlreadyMuted && muteConfig_.withRestore.onScreensaver) {
             audio_->Mute();
          }
       } else if (wParam == SCRNSAVE_STOP) {
          if (!wasAlreadyMuted && 
              muteConfig_.restoreAudio &&
-             muteConfig_.withRestore.muteOnScreensaver) {
+             muteConfig_.withRestore.onScreensaver) {
             audio_->UnMute();
          }
       }

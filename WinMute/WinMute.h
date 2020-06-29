@@ -56,16 +56,15 @@ private:
    struct MuteConfig {
       MuteConfig();
       struct {
-         bool muteOnLock;
-         bool muteOnScreensaver;
-         bool muteOnRemoteSession;
+         bool onLock;
+         bool onScreensaver;
       } withRestore;
-      struct {
-         bool muteOnLogoff;
-         bool muteOnShutdown;
-         bool muteOnSuspend;
-      } noRestore;
       bool restoreAudio;
+      struct {
+         bool onLogoff;
+         bool onShutdown;
+         bool onSuspend;
+      } noRestore;
    } muteConfig_;
 
    TrayIcon trayIcon_;

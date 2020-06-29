@@ -1,3 +1,6 @@
+Version 1.5.0 (2020-xx-yy)
+ * Added support for mute on suspend, shutdown and logout
+   Automatic audio-restore is disabled for these events.
 Version 1.4.6 (2020-04-24)
  * Compiled with spectre migitations... just 'cause
  * Added "Support"-Link to About dialog

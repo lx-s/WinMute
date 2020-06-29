@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
    <meta charset="utf-8">
-   <title>WinMute 1.4.6 - Readme</title>
+   <title>WinMute 1.5.0 - Readme</title>
 
    <style type="text/css">
    <!--
@@ -17,16 +17,24 @@
    </style>
 </head>
 <body>
-   <h1>WinMute 1.4.6</h1>
+   <h1>WinMute 1.5.0</h1>
    <p class="copyright">&copy; Copyright 2020, by Alexander Steinh&ouml;fer - <a href="http://www.lx-s.de">www.lx-s.de</a></p>
 
    <h2>About</h2>
-   <p>WinMute automatically mutes your PC volume if you lock your screen or the screensaver is running.</p>
+   <p>WinMute automatically can mute your volume when</p>
+   <ol>
+    <li>You lock your PC.</li>
+    <li>The screensaver turns on.</li>
+    <li>Your PC shuts down</li>
+    <li>You log off</li>
+    <li>Your PC goes to sleep</li>
+   </ol>
 
    <p>
       This is very helpful e.g. if you leave your desk and don't want
       to annoy your co-workers with random sounds or music from
-      your computer.
+      your computer or don't want music blasting out of your speakers,
+      the next time you power on your pc during a presentation.
    </p>
 
    <a name="requirements"></a>
@@ -46,31 +54,31 @@
       If you want WinMute to automatically start with your windows,
       just create a shortcut to the winmute.exe file in the "Startup"
       folder located in your Windows Startmenu (to open this folder,
-	  press Win+R and enter "Shell:Startup", then click "OK").
+      press Win+R and enter "Shell:Startup", then click "OK").
    </p>
 
    <h2>Uninstalling WinMute</h2>
    <p>
       Just delete the WinMute.exe and ScreensaverNotify.dll* file from your hard drive.
-	  If you want to also remove your personal WinMute settings, then open
-	  the registry (regedit.exe) and delete the Folder located in
-	  HKEY_CURRENT_USER\Software\lx-systems\WinMute.
+      If you want to also remove your personal WinMute settings, then open
+      the registry (regedit.exe) and delete the Folder located in
+      HKEY_CURRENT_USER\Software\lx-systems\WinMute.
    </p>
    <p>
-	* It can happen, that you cannot remove this DLL file right away.
-	  If you get an error trying to remove it, just wait until your next reboot
-	  and delete it afterwards. This is unfortunately a windows limitation.
+    * It can happen, that you cannot remove this DLL file right away.
+      If you get an error trying to remove it, just wait until your next reboot
+      and delete it afterwards. This is unfortunately a windows limitation.
    </p>
 
    <h2>Usage</h2>
    <p>Start it and that's it!</p>
    <p>
       Whenever you lock your screen from now on or the screensaver starts,
-	  WinMute will automatically mute your windows volume, and unmute it
-	  right away when you come back to your pc.<br>
+      WinMute will automatically mute your windows volume, and unmute it
+      right away when you come back to your pc.<br>
       If you want to disable this behaviour temporary, right-click
-	  on the taskbar notification icon and uncheck the menu item
-	  "Mute on Workstationlock" / "Mute on Screensaver start".
+      on the taskbar notification icon and uncheck the menu item
+      "Mute on Workstationlock" / "Mute on Screensaver start".
    </p>
 </body>
 </html>

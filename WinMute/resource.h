@@ -23,13 +23,25 @@
 #define ID_TRAYMENU_40011               40011
 #define ID_TRAYMENU_MUTEON              40012
 #define ID_TRAYMENU_AFTERWARDS          40013
+#define ID_TRAYMENU_MUTEONSUSPEND       40014
+#define ID_TRAYMENU_40015               40015
+#define ID_TRAYMENU_SPECIAL             40016
+#define ID_SPECIAL_MUTEWHEN             40017
+#define ID_TRAYMENU_40018               40018
+#define ID_TRAYMENU_40019               40019
+#define ID_TRAYMENU_40020               40020
+#define ID_TRAYMENU_MUTEONSHUTDOWN      40021
+#define ID_TRAYMENU_MUTEONSLEEP         40022
+#define ID_TRAYMENU_MUTEONLOGOFF        40023
+#define ID_TRAYMENU_MUTEONLOGOUT        40024
+#define ID_TRAYMENU_40025               40025
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        108
-#define _APS_NEXT_COMMAND_VALUE         40014
+#define _APS_NEXT_COMMAND_VALUE         40026
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

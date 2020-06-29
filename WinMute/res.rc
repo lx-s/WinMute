@@ -60,8 +60,12 @@ BEGIN
         MENUITEM "... Workstation is locked",   ID_TRAYMENU_MUTEONLOCK, CHECKED
         MENUITEM "... Screensaver starts",      ID_TRAYMENU_MUTEONSCREENSAVER, CHECKED
         MENUITEM SEPARATOR
-        MENUITEM "Afterwards...",               ID_TRAYMENU_AFTERWARDS, INACTIVE
-        MENUITEM "... Restore volume",          ID_TRAYMENU_RESTOREAUDIO, CHECKED
+        MENUITEM "... Restore volume when returning", ID_TRAYMENU_RESTOREAUDIO, CHECKED
+        MENUITEM SEPARATOR
+        MENUITEM "Mute on (no volume restore)...", ID_TRAYMENU_AFTERWARDS, INACTIVE
+        MENUITEM "... Shutdown",                ID_TRAYMENU_MUTEONSHUTDOWN
+        MENUITEM "... Sleep",                   ID_TRAYMENU_MUTEONSUSPEND
+        MENUITEM "... Logout",                  ID_TRAYMENU_MUTEONLOGOUT
         MENUITEM SEPARATOR
         MENUITEM "Mute now",                    ID_TRAYMENU_MUTE
         MENUITEM SEPARATOR
@@ -81,7 +85,7 @@ CAPTION "About WinMute"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,194,7,50,14
-    LTEXT           "WinMute v1.4.6",IDC_STATIC,43,9,67,11
+    LTEXT           "WinMute v1.5.0",IDC_STATIC,43,9,67,11
     CONTROL         "<a href=""https://lx-s.de"">lx-systems - lx-s.de</a>",IDC_LINK_HOMEPAGE,
                     "SysLink",WS_TABSTOP,43,35,69,13
     LTEXT           "Copyright © 2020, Alexander Steinhöfer",IDC_STATIC,43,22,148,12
@@ -117,8 +121,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,4,6,0
- PRODUCTVERSION 1,4,6,0
+ FILEVERSION 1,5,0,0
+ PRODUCTVERSION 1,5,0,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -134,24 +138,24 @@ BEGIN
         BLOCK "000004b0"
         BEGIN
             VALUE "CompanyName", "lx-systems"
-            VALUE "FileDescription", "Automatic volume muting, when PC is locked."
-            VALUE "FileVersion", "1.4.6.0"
+            VALUE "FileDescription", "Automatic volume muting."
+            VALUE "FileVersion", "1.5.0.0"
             VALUE "InternalName", "WinMute"
             VALUE "LegalCopyright", "Copyright (c) 2020, Alexander Steinhöfer"
             VALUE "OriginalFilename", "WinMute.exe"
             VALUE "ProductName", "WinMute"
-            VALUE "ProductVersion", "1.4.6.0"
+            VALUE "ProductVersion", "1.5.0.0"
         END
         BLOCK "040704b0"
         BEGIN
             VALUE "CompanyName", "lx-systems"
-            VALUE "FileDescription", "Automatisches Stummschalten beim Sperren der Workstation."
-            VALUE "FileVersion", "1.4.6.0"
+            VALUE "FileDescription", "Automatisches Stummschalten des PCs."
+            VALUE "FileVersion", "1.5.0.0"
             VALUE "InternalName", "WinMute"
             VALUE "LegalCopyright", "Copyright (c) 2020, Alexander Steinhöfer"
             VALUE "OriginalFilename", "WinMute.exe"
             VALUE "ProductName", "WinMute"
-            VALUE "ProductVersion", "1.4.6.0"
+            VALUE "ProductVersion", "1.5.0.0"
         END
     END
     BLOCK "VarFileInfo"
