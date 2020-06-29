@@ -100,7 +100,7 @@ bool WinMute::RegisterWindowClass()
 bool WinMute::InitWindow()
 {
    hWnd_ = CreateWindowEx(WS_EX_TOOLWINDOW, WINMUTE_CLASS_NAME, PROGRAM_NAME,
-      WS_POPUP, 0, 0, 0, 0, HWND_MESSAGE, 0, hglobInstance, this);
+      WS_POPUP, 0, 0, 0, 0, NULL, 0, hglobInstance, this);
    if (hWnd_ == nullptr) {
       PrintWindowsError(_T("CreateWindowEx"));
       return false;
@@ -346,7 +346,7 @@ LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg,
          if (muteConfig_.noRestore.onShutdown) {
             audio_->Mute();
          }
-      } else if (lParam == ENDSESSION_LOGOFF) {
+      } else if ((lParam & ENDSESSION_LOGOFF)) {
          if (muteConfig_.noRestore.onLogoff) {
             audio_->Mute();
          }

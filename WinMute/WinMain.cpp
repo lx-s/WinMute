@@ -50,7 +50,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
                     nullptr,
                     PROGRAM_NAME,
                     _T("WinMute is already running"),
-                    _T("Please look for a blue speaker icon in your Windows ")
+                    _T("Please look for a white speaker icon in your Windows ")
                     _T(" taskbar notification area."),
                     TDCBF_OK_BUTTON,
                     TD_ERROR_ICON,
