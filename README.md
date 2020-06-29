@@ -1,9 +1,15 @@
 # WinMute #
 
 ### About ###
-WinMute automatically mutes your PC volume if you lock your screen or the screensaver is running.
-This is very helpful e.g. if you leave your desk and don't want to annoy your co-workers with random sounds or music from your computer.
+WinMute can automatically mute your PC volume when
 
+* you lock your PC.
+* the screensaver turns on.
+* your PC shuts down
+* you log off
+* your PC goes to sleep
+
+This is very helpful e.g. if you leave your desk and don't want to annoy your co-workers with random sounds or music from your computer or don't want music blasting out of your speakers, the next time you power on your pc during a presentation. 
 
 ### Screenshot ###
 ![Screenshot of WinMute](https://raw.githubusercontent.com/lx-s/WinMute/master/Dist/screenshot.png? "Screenshot of WinMute")
