@@ -279,7 +279,7 @@ LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg,
       case ID_TRAYMENU_MUTEONSHUTDOWN:
          ToggleMenuCheck(ID_TRAYMENU_MUTEONSHUTDOWN,
                          &muteConfig_.noRestore.onShutdown);
-         settings_.SetValue(SettingsKey::MUTE_ON_LOGOUT,
+         settings_.SetValue(SettingsKey::MUTE_ON_SHUTDOWN,
                             muteConfig_.noRestore.onShutdown);
           break;
       case ID_TRAYMENU_MUTEONSUSPEND:
