@@ -53,7 +53,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
                     _T("Please look for a white speaker icon in your Windows ")
                     _T(" taskbar notification area."),
                     TDCBF_OK_BUTTON,
-                    TD_ERROR_ICON,
+                    TD_INFORMATION_ICON,
                     nullptr);
       return FALSE;
    }
