@@ -1,3 +1,7 @@
+Version 1.6.0 (2020-10-27)
+ * Added "Quiet Hours", a time frame where WinMute automatically
+   mutes and afterwards unmutes your workstatiob
+
 Version 1.5.0 (2020-06-29)
  * Added support for mute on suspend, shutdown and logout
    Automatic audio-restore is disabled for these events.

@@ -484,7 +484,7 @@ static int GetDiffMillseconds(const LPSYSTEMTIME t1, const LPSYSTEMTIME t2)
    return static_cast<int>(res);
 }
 
-void QuietHoursTimer(HWND hWnd, UINT msg, UINT_PTR id, DWORD msSinceSysStart)
+VOID CALLBACK QuietHoursTimer(HWND hWnd, UINT msg, UINT_PTR id, DWORD msSinceSysStart)
 {
    UNREFERENCED_PARAMETER( msg );
    UNREFERENCED_PARAMETER( msSinceSysStart );
