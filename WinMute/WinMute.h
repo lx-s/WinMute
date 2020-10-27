@@ -37,7 +37,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 class WinAudio;
 
-#define WM_WINMUTE_QUIETHOURS_CHANGE (WM_APP + 200)
+static const int WM_WINMUTE_QUIETHOURS_CHANGE = WM_APP + 200;
+static const int WM_WINMUTE_MUTE = WM_APP + 201;
+static const int QUIETHOURS_TIMER_START_ID = 271020;
+static const int QUIETHOURS_TIMER_END_ID = 271021;
 
 class WinMute {
 public:
@@ -84,6 +87,8 @@ private:
    bool InitAudio();
    bool InitTrayMenu();
    bool LoadDefaults();
+
+   void SetQuietHours();
 
    void Unload();
 

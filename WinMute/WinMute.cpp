@@ -133,8 +133,8 @@ bool WinMute::InitAudio()
    return true;
 }
 
-#define CHECK_MENU_ITEM(id, cond)                                              \
-   (CheckMenuItem(hTrayMenu_, ID_TRAYMENU_ ## id,                              \
+#define CHECK_MENU_ITEM(id, cond) \
+   (CheckMenuItem(hTrayMenu_, ID_TRAYMENU_ ## id, \
                   (cond) ? MF_CHECKED : MF_UNCHECKED) != -1)
 bool WinMute::InitTrayMenu()
 {
@@ -190,6 +190,8 @@ bool WinMute::Init()
       return false;
    }
 
+   SetQuietHours();
+
    hTrayIcon_ = LoadIcon(hglobInstance, MAKEINTRESOURCE(IDI_TRAY));
    if (hTrayIcon_ == NULL) {
       PrintWindowsError(_T("LoadIcon"));
@@ -217,6 +219,10 @@ bool WinMute::LoadDefaults()
 
    muteConfig_.quietHours.enabled =
       settings_.QueryValue(SettingsKey::QUIETHOURS_ENABLE, 0) != 0;
+   muteConfig_.quietHours.start =
+      settings_.QueryValue(SettingsKey::QUIETHOURS_START, 0);
+   muteConfig_.quietHours.end =
+      settings_.QueryValue(SettingsKey::QUIETHOURS_END, 0);
 
    return true;
 }
@@ -233,8 +239,11 @@ void WinMute::ToggleMenuCheck(UINT item, bool* setting)
    }
 }
 
-LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg,
-   WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WinMute::WindowProc(
+   HWND hWnd,
+   UINT msg,
+   WPARAM wParam,
+   LPARAM lParam)
 {
    static UINT uTaskbarRestart = 0;
    switch (msg) {
@@ -370,7 +379,34 @@ LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg,
          }
       }
       break;
+   case WM_WINMUTE_MUTE: {
+      bool mute = !!static_cast<int>(wParam);
+      if (mute) {
+         audio_->Mute();
+      } else {
+         audio_->UnMute();
+      }
+      return 0;
+   }
    case WM_WINMUTE_QUIETHOURS_CHANGE: {
+      muteConfig_.quietHours.enabled = settings_.QueryValue(
+         SettingsKey::QUIETHOURS_ENABLE,
+         0);
+      CheckMenuItem(
+         hTrayMenu_,
+         ID_TRAYMENU_CONFIGUREQUIETHOURS,
+         (muteConfig_.quietHours.enabled) ? MF_CHECKED : MF_UNCHECKED);
+
+      if (muteConfig_.quietHours.enabled) {
+         muteConfig_.quietHours.start = settings_.QueryValue(
+            SettingsKey::QUIETHOURS_START,
+            0);
+         muteConfig_.quietHours.end = settings_.QueryValue(
+            SettingsKey::QUIETHOURS_END,
+            0);
+      }
+      SetQuietHours();
+
       return 0;
    }
    case WM_SCRNSAVE_CHANGE: {
@@ -398,6 +434,105 @@ LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg,
    }
 
    return DefWindowProc(hWnd, msg, wParam, lParam);
+}
+
+static bool QuietHoursShouldAlreadyHaveStarted(
+   const LPSYSTEMTIME now,
+   const LPSYSTEMTIME qhStart,
+   const LPSYSTEMTIME qhEnd)
+{
+   bool shouldAlreadyHaveStarted = false;
+
+   if (qhEnd->wHour > now->wHour ||
+       qhEnd->wHour == now->wHour && qhEnd->wMinute > now->wMinute ||
+       qhEnd->wHour == now->wHour && qhEnd->wMinute == now->wMinute && qhEnd->wSecond > now->wSecond) {
+      if (qhStart->wHour < now->wHour ||
+         qhStart->wHour == now->wHour && qhStart->wMinute < now->wMinute ||
+         qhStart->wHour == now->wHour && qhStart->wMinute == now->wMinute && qhStart->wSecond < now->wSecond) {
+         shouldAlreadyHaveStarted = true;
+      }
+   }
+   return shouldAlreadyHaveStarted;
+}
+
+/**
+ * Gets the number of milliseconds that t2 would have to add, to reach t1.
+ * Takes day wrap around into consideration.
+ */
+static int GetDiffMillseconds(const LPSYSTEMTIME t1, const LPSYSTEMTIME t2)
+{
+   FILETIME ftT1;
+   FILETIME ftT2;
+   ULARGE_INTEGER ulT1;
+   ULARGE_INTEGER ulT2;
+   __int64 res;
+   SystemTimeToFileTime(t1, &ftT1);
+   ulT1.LowPart = ftT1.dwLowDateTime;
+   ulT1.HighPart = ftT1.dwHighDateTime;
+   SystemTimeToFileTime(t2, &ftT2);
+   ulT2.LowPart = ftT2.dwLowDateTime;
+   ulT2.HighPart = ftT2.dwHighDateTime;
+
+   res = ulT1.QuadPart - ulT2.QuadPart;
+
+   res /= (1000000000 / 100); // To seconds 
+   if (res < 0) { // Add 24 Hours for Wrap Around
+      res += 24 * 60 * 60;
+   }
+   res *= 1000; // To Milliseconds
+
+   return static_cast<int>(res);
+}
+
+void QuietHoursTimer(HWND hWnd, UINT msg, UINT_PTR id, DWORD msSinceSysStart)
+{
+   UNREFERENCED_PARAMETER( msg );
+   UNREFERENCED_PARAMETER( msSinceSysStart );
+   if (id == QUIETHOURS_TIMER_START_ID) {
+      SendMessage(hWnd, WM_WINMUTE_MUTE, 1, 0);
+      SendMessage(hWnd, WM_WINMUTE_QUIETHOURS_CHANGE, 0, 0);
+      KillTimer(hWnd, id);
+   } else if (id == QUIETHOURS_TIMER_END_ID) {
+      SendMessage(hWnd, WM_WINMUTE_MUTE, 0, 0);
+      SendMessage(hWnd, WM_WINMUTE_QUIETHOURS_CHANGE, 0, 0);
+      KillTimer(hWnd, id);
+   }
+}
+
+void WinMute::SetQuietHours()
+{
+   if (!muteConfig_.quietHours.enabled) {
+      KillTimer(hWnd_, QUIETHOURS_TIMER_START_ID);
+      KillTimer(hWnd_, QUIETHOURS_TIMER_END_ID);
+   } else {
+      SYSTEMTIME now;
+      SYSTEMTIME start;
+      SYSTEMTIME end;
+      GetLocalTime(&now);
+      GetLocalTime(&start);
+      GetLocalTime(&end);
+
+      start.wSecond = static_cast<WORD>(muteConfig_.quietHours.start % 60);
+      start.wMinute = static_cast<WORD>(((muteConfig_.quietHours.start - start.wSecond) / 60) % 60);
+      start.wHour = static_cast<WORD>((muteConfig_.quietHours.start - start.wMinute - start.wSecond) / 3600);
+
+      end.wSecond = static_cast<WORD>(muteConfig_.quietHours.end % 60);
+      end.wMinute = static_cast<WORD>(((muteConfig_.quietHours.end - end.wSecond) / 60) % 60);
+      end.wHour = static_cast<WORD>((muteConfig_.quietHours.end - end.wMinute - end.wSecond) / 3600);
+
+      if (QuietHoursShouldAlreadyHaveStarted(&now, &start, &end)) {
+         int timerQhEnd = GetDiffMillseconds(&end, &now);
+         audio_->Mute();
+         if (SetTimer(hWnd_, QUIETHOURS_TIMER_END_ID, timerQhEnd, QuietHoursTimer) == 0) {
+            MessageBox(hWnd_, _T("Failed to create Timer"), PROGRAM_NAME, MB_OK);
+         }
+      } else {
+         int timerQhStart = GetDiffMillseconds(&start, &now);
+         if (SetTimer(hWnd_, QUIETHOURS_TIMER_START_ID, timerQhStart, QuietHoursTimer) == 0) {
+            MessageBox(hWnd_, _T("Failed to create Timer"), PROGRAM_NAME, MB_OK);
+         }
+      }
+   }
 }
 
 void WinMute::Unload()
