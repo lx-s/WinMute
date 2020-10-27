@@ -37,6 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 extern HINSTANCE hglobInstance;
 extern INT_PTR CALLBACK AboutDlgProc(HWND, UINT, WPARAM, LPARAM);
+extern INT_PTR CALLBACK QuietHoursDlgProc(HWND, UINT, WPARAM, LPARAM);
 
 static LPCTSTR WINMUTE_CLASS_NAME = _T("WinMute");
 
@@ -67,6 +68,10 @@ WinMute::MuteConfig::MuteConfig()
    this->noRestore.onLogoff = false;
    this->noRestore.onSuspend = false;
    this->noRestore.onShutdown = false;
+
+   this->quietHours.enabled = false;
+   this->quietHours.start = 0;
+   this->quietHours.end = 0;
 }
 
 WinMute::WinMute() :
@@ -143,7 +148,8 @@ bool WinMute::InitTrayMenu()
       !CHECK_MENU_ITEM(RESTOREAUDIO, muteConfig_.restoreAudio) ||
       !CHECK_MENU_ITEM(MUTEONSUSPEND, muteConfig_.noRestore.onSuspend) ||
       !CHECK_MENU_ITEM(MUTEONSHUTDOWN, muteConfig_.noRestore.onShutdown) ||
-      !CHECK_MENU_ITEM(MUTEONLOGOUT, muteConfig_.noRestore.onLogoff)) {
+      !CHECK_MENU_ITEM(MUTEONLOGOUT, muteConfig_.noRestore.onLogoff) ||
+      !CHECK_MENU_ITEM(CONFIGUREQUIETHOURS, muteConfig_.quietHours.enabled)) {
       return false;
    }
    return true;
@@ -209,6 +215,9 @@ bool WinMute::LoadDefaults()
    muteConfig_.noRestore.onShutdown =
       settings_.QueryValue(SettingsKey::MUTE_ON_SHUTDOWN, 0) != 0;
 
+   muteConfig_.quietHours.enabled =
+      settings_.QueryValue(SettingsKey::QUIETHOURS_ENABLE, 0) != 0;
+
    return true;
 }
 
@@ -236,10 +245,19 @@ LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg,
    case WM_COMMAND: {
       switch (LOWORD(wParam)) {
       case ID_TRAYMENU_INFO:
-         DialogBox(hglobInstance,
-                   MAKEINTRESOURCE(IDD_ABOUT),
-                   hWnd_,
-                   AboutDlgProc);
+         DialogBox(
+            hglobInstance,
+            MAKEINTRESOURCE(IDD_ABOUT),
+            hWnd_,
+            AboutDlgProc);
+         break;
+      case ID_TRAYMENU_CONFIGUREQUIETHOURS:
+         DialogBoxParam(
+            hglobInstance,
+            MAKEINTRESOURCE(IDD_QUIETHOURS),
+            hWnd_,
+            QuietHoursDlgProc,
+            reinterpret_cast<LPARAM>(&settings_));
          break;
       case ID_TRAYMENU_EXIT:
          SendMessage(hWnd, WM_CLOSE, 0, 0);
@@ -352,6 +370,9 @@ LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg,
          }
       }
       break;
+   case WM_WINMUTE_QUIETHOURS_CHANGE: {
+      return 0;
+   }
    case WM_SCRNSAVE_CHANGE: {
       static bool wasAlreadyMuted = false;
       if (wParam == SCRNSAVE_START) {
@@ -369,7 +390,7 @@ LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg,
       return 0;
    }
    default:
-      if (msg == uTaskbarRestart) { // restore trayicon if explorer.exe crashes
+      if (msg == uTaskbarRestart) { // Restore trayicon if explorer.exe crashes
          trayIcon_.Hide();
          trayIcon_.Show();
       }

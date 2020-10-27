@@ -7,9 +7,13 @@
 #define IDI_APP                         106
 #define IDI_ICON1                       107
 #define IDI_TRAY                        107
+#define IDD_QUIETHOURS                  108
 #define IDC_LINK_HOMEPAGE               1001
 #define IDC_LINK_HOMEPAGE2              1002
 #define IDC_LINK_SUPPORT                1002
+#define IDC_QUIETHOURS_START            1002
+#define IDC_ENABLEQUIETHOURS            1003
+#define IDC_QUIETHOURS_END              1004
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_EXIT                40002
 #define ID_TRAYMENU_MUTEONLOCK          40003
@@ -35,14 +39,16 @@
 #define ID_TRAYMENU_MUTEONLOGOFF        40023
 #define ID_TRAYMENU_MUTEONLOGOUT        40024
 #define ID_TRAYMENU_40025               40025
+#define ID_TRAYMENU_CONFIGUREQUIETHOURS 40026
+#define ID_TRAYMENU_40027               40027
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        108
-#define _APS_NEXT_COMMAND_VALUE         40026
-#define _APS_NEXT_CONTROL_VALUE         1002
+#define _APS_NEXT_RESOURCE_VALUE        110
+#define _APS_NEXT_COMMAND_VALUE         40028
+#define _APS_NEXT_CONTROL_VALUE         1004
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

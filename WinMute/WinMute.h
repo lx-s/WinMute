@@ -37,6 +37,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 class WinAudio;
 
+#define WM_WINMUTE_QUIETHOURS_CHANGE (WM_APP + 200)
+
 class WinMute {
 public:
    WinMute();
@@ -65,6 +67,11 @@ private:
          bool onShutdown;
          bool onSuspend;
       } noRestore;
+      struct {
+         int enabled;
+         time_t start;
+         time_t end;
+      } quietHours;
    } muteConfig_;
 
    TrayIcon trayIcon_;

@@ -56,6 +56,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <algorithm>
 
 #include <windows.h>
+#include <windowsx.h>
 #include <commctrl.h>
 #include <WtsApi32.h>
 #include <tchar.h>

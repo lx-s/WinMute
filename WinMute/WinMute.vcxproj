@@ -215,6 +215,7 @@
   <ItemGroup>
     <ClCompile Include="AboutDlg.cpp" />
     <ClCompile Include="MMNotificationClient.cpp" />
+    <ClCompile Include="QuietHoursDlg.cpp" />
     <ClCompile Include="ScreensaverNotifier.cpp" />
     <ClCompile Include="Settings.cpp" />
     <ClCompile Include="StdAfx.cpp">

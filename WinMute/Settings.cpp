@@ -58,6 +58,16 @@ static LPCWSTR KeyToStr(SettingsKey key)
       break;
    case SettingsKey::MUTE_ON_LOGOUT:
       keyStr = _T("MuteOnLogout");
+      break;
+   case SettingsKey::QUIETHOURS_ENABLE:
+      keyStr = _T("QuietHoursEnabled");
+      break;
+   case SettingsKey::QUIETHOURS_START:
+      keyStr = _T("QuietHoursStart");
+      break;
+   case SettingsKey::QUIETHOURS_END:
+      keyStr = _T("QuietHoursEnd");
+      break;
    }
    return keyStr;
 }
@@ -75,15 +85,16 @@ Settings::~Settings()
 bool Settings::Init()
 {
    if (hRegSettingsKey_ == nullptr) {
-      DWORD regError = RegCreateKeyEx(HKEY_CURRENT_USER,
-                                      LX_SYSTEMS_SUBKEY,
-                                      0,
-                                      nullptr,
-                                      0,
-                                      KEY_READ | KEY_WRITE,
-                                      nullptr,
-                                      &hRegSettingsKey_,
-                                      nullptr);
+      DWORD regError = RegCreateKeyEx(
+         HKEY_CURRENT_USER,
+         LX_SYSTEMS_SUBKEY,
+         0,
+         nullptr,
+         0,
+         KEY_READ | KEY_WRITE,
+         nullptr,
+         &hRegSettingsKey_,
+         nullptr);
       if (regError != ERROR_SUCCESS) {
          PrintWindowsError(_T("RegCreateKeyEx"), regError);
          return false;
@@ -106,12 +117,13 @@ DWORD Settings::QueryValue(SettingsKey key, DWORD defValue)
 
    DWORD value;
    DWORD size = sizeof(DWORD);
-   DWORD regError = RegQueryValueEx(hRegSettingsKey_,
-                                    keyStr,
-                                    0,
-                                    nullptr,
-                                    reinterpret_cast<LPBYTE>(&value),
-                                    &size);
+   DWORD regError = RegQueryValueEx(
+      hRegSettingsKey_,
+      keyStr,
+      0,
+      nullptr,
+      reinterpret_cast<LPBYTE>(&value),
+      &size);
    if (regError == ERROR_FILE_NOT_FOUND) {
       return defValue;
    } else if (regError != ERROR_SUCCESS) {
@@ -127,12 +139,13 @@ bool Settings::SetValue(SettingsKey key, DWORD value)
    auto keyStr = KeyToStr(key);
    assert(keyStr != nullptr);
 
-   DWORD regError = RegSetValueEx(hRegSettingsKey_,
-                                  keyStr,
-                                  0,
-                                  REG_DWORD,
-                                  reinterpret_cast<BYTE*>(&value),
-                                  sizeof(DWORD));
+   DWORD regError = RegSetValueEx(
+      hRegSettingsKey_,
+      keyStr,
+      0,
+      REG_DWORD,
+      reinterpret_cast<BYTE*>(&value),
+      sizeof(DWORD));
    if (regError != ERROR_SUCCESS) {
       PrintWindowsError(_T("RegCreateKeyEx"), regError);
       return false;

@@ -59,6 +59,9 @@
     <ClCompile Include="Settings.cpp">
       <Filter>Source Files\Settings</Filter>
     </ClCompile>
+    <ClCompile Include="QuietHoursDlg.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">

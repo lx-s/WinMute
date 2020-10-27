@@ -42,6 +42,9 @@ enum class SettingsKey {
    , MUTE_ON_SUSPEND
    , MUTE_ON_SHUTDOWN
    , MUTE_ON_LOGOUT
+   , QUIETHOURS_ENABLE
+   , QUIETHOURS_START
+   , QUIETHOURS_END
 };
 
 class Settings {
