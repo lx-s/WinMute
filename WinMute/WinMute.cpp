@@ -71,6 +71,7 @@ WinMute::MuteConfig::MuteConfig()
 
    this->quietHours.enabled = false;
    this->quietHours.forceUnmute = false;
+   this->quietHours.notifications = false;
    this->quietHours.start = 0;
    this->quietHours.end = 0;
 }
@@ -223,6 +224,8 @@ bool WinMute::LoadDefaults()
       settings_.QueryValue(SettingsKey::QUIETHOURS_ENABLE, 0) != 0;
    muteConfig_.quietHours.forceUnmute =
       settings_.QueryValue(SettingsKey::QUIETHOURS_FORCEUNMUTE, 0) != 0;
+   muteConfig_.quietHours.notifications =
+      settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS, 0) != 0;
    muteConfig_.quietHours.start =
       settings_.QueryValue(SettingsKey::QUIETHOURS_START, 0);
    muteConfig_.quietHours.end =
@@ -385,21 +388,27 @@ LRESULT CALLBACK WinMute::WindowProc(
    case WM_WINMUTE_QUIETHOURS_START:
       wsAlreadyMuted_ = audio_->IsMuted();
       audio_->Mute();
-      trayIcon_.ShowPopup(
-         _T("WinMute: Quiet hours started"),
-         _T("Your workstation audio is now muted"));
+      if (muteConfig_.quietHours.notifications) {
+         trayIcon_.ShowPopup(
+            _T("WinMute: Quiet hours started"),
+            _T("Your workstation audio is now muted"));
+      }
       return 0;
    case WM_WINMUTE_QUIETHOURS_END:
       if (wsAlreadyMuted_ && muteConfig_.quietHours.forceUnmute ||
           !wsAlreadyMuted_) {
          audio_->UnMute();
-         trayIcon_.ShowPopup(
-            _T("WinMute: Quiet Hours ended"),
-            _T("Your workstation audio has been restored."));
+         if (muteConfig_.quietHours.notifications) {
+            trayIcon_.ShowPopup(
+               _T("WinMute: Quiet Hours ended"),
+               _T("Your workstation audio has been restored."));
+         }
       } else {
-         trayIcon_.ShowPopup(
-            _T("WinMute: Quiet Hours ended"),
-            _T("Quiet hours ended, your workstation remains muted."));
+         if (muteConfig_.quietHours.notifications) {
+            trayIcon_.ShowPopup(
+               _T("WinMute: Quiet Hours ended"),
+               _T("Quiet hours ended, your workstation remains muted."));
+         }
       }
       return 0;
    case WM_WINMUTE_MUTE: {
@@ -414,6 +423,12 @@ LRESULT CALLBACK WinMute::WindowProc(
    case WM_WINMUTE_QUIETHOURS_CHANGE: {
       muteConfig_.quietHours.enabled = settings_.QueryValue(
          SettingsKey::QUIETHOURS_ENABLE,
+         0);
+      muteConfig_.quietHours.forceUnmute = settings_.QueryValue(
+         SettingsKey::QUIETHOURS_FORCEUNMUTE,
+         0);
+      muteConfig_.quietHours.notifications = settings_.QueryValue(
+         SettingsKey::QUIETHOURS_NOTIFICATIONS,
          0);
       CheckMenuItem(
          hTrayMenu_,

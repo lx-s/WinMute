@@ -75,6 +75,7 @@ private:
       struct {
          bool enabled;
          bool forceUnmute;
+         bool notifications;
          time_t start;
          time_t end;
       } quietHours;

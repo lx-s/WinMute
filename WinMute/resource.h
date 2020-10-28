@@ -15,6 +15,8 @@
 #define IDC_ENABLEQUIETHOURS            1003
 #define IDC_QUIETHOURS_END              1004
 #define IDC_FORCEUNMUTE                 1005
+#define IDC_FORCEUNMUTE2                1006
+#define IDC_SHOWNOTIFICATIONS           1006
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_EXIT                40002
 #define ID_TRAYMENU_MUTEONLOCK          40003

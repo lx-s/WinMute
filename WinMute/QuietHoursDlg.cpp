@@ -56,6 +56,7 @@ static bool SaveQuietHours(
    Settings *settings,
    const int enabled,
    const int forceUnmute,
+   const int showNotifications,
    const LPSYSTEMTIME start,
    const LPSYSTEMTIME end)
 {
@@ -80,6 +81,7 @@ static bool SaveQuietHours(
 
    if (!settings->SetValue(SettingsKey::QUIETHOURS_ENABLE, enabled) ||
        !settings->SetValue(SettingsKey::QUIETHOURS_FORCEUNMUTE, forceUnmute) ||
+       !settings->SetValue(SettingsKey::QUIETHOURS_NOTIFICATIONS, showNotifications) ||
        !settings->SetValue(SettingsKey::QUIETHOURS_START, setStart) ||
        !settings->SetValue(SettingsKey::QUIETHOURS_END, setEnd)) {
       TaskDialog(
@@ -104,6 +106,7 @@ INT_PTR CALLBACK QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
    case WM_INITDIALOG: {
       HWND hEnable = GetDlgItem(hDlg, IDC_ENABLEQUIETHOURS);
       HWND hForce = GetDlgItem(hDlg, IDC_FORCEUNMUTE);
+      HWND hNotify = GetDlgItem(hDlg, IDC_SHOWNOTIFICATIONS);
       HWND hStart = GetDlgItem(hDlg, IDC_QUIETHOURS_START);
       HWND hEnd = GetDlgItem(hDlg, IDC_QUIETHOURS_END);
       Settings *settings = reinterpret_cast<Settings*>(lParam);
@@ -116,7 +119,11 @@ INT_PTR CALLBACK QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
       DWORD qhForceUnmute = !!settings->QueryValue(SettingsKey::QUIETHOURS_FORCEUNMUTE, FALSE);
       Button_SetCheck(hForce, qhForceUnmute ? BST_CHECKED : BST_UNCHECKED);
 
+      DWORD qhNotifications = !!settings->QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS, FALSE);
+      Button_SetCheck(hNotify, qhNotifications ? BST_CHECKED : BST_UNCHECKED);
+
       EnableWindow(hForce, qhEnabled);
+      EnableWindow(hNotify, qhEnabled);
       EnableWindow(hStart, qhEnabled);
       EnableWindow(hEnd, qhEnabled);
 
@@ -146,6 +153,7 @@ INT_PTR CALLBACK QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
    case WM_COMMAND: {
       HWND hEnable = GetDlgItem(hDlg, IDC_ENABLEQUIETHOURS);
       HWND hForce = GetDlgItem(hDlg, IDC_FORCEUNMUTE);
+      HWND hNotify = GetDlgItem(hDlg, IDC_SHOWNOTIFICATIONS);
       HWND hStart = GetDlgItem(hDlg, IDC_QUIETHOURS_START);
       HWND hEnd = GetDlgItem(hDlg, IDC_QUIETHOURS_END);
       if (LOWORD(wParam) == IDOK) {
@@ -154,10 +162,11 @@ INT_PTR CALLBACK QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
          Settings *settings = reinterpret_cast<Settings*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
          int qhEnabled = Button_GetCheck(hEnable) == BST_CHECKED;
          int qhForceUnmute = Button_GetCheck(hForce) == BST_CHECKED;
+         int qhNotifications = Button_GetCheck(hNotify) == BST_CHECKED;
          DateTime_GetSystemtime(hStart, &start);
          DateTime_GetSystemtime(hEnd, &end);
          settings->SetValue(SettingsKey::QUIETHOURS_ENABLE, qhEnabled);
-         if (SaveQuietHours(settings, qhEnabled, qhForceUnmute, &start, &end)) {
+         if (SaveQuietHours(settings, qhEnabled, qhForceUnmute, qhNotifications, &start, &end)) {
             SendMessage(GetParent(hDlg), WM_WINMUTE_QUIETHOURS_CHANGE, 0, 0);
             EndDialog(hDlg, 0);
          }
