@@ -46,7 +46,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #define STRICT
-#define _WIN32_WINNT 0x0600
+#define _WIN32_WINNT 0x0601
 #include <sdkddkver.h>
 
 #include <cassert>

@@ -62,6 +62,9 @@ static LPCWSTR KeyToStr(SettingsKey key)
    case SettingsKey::QUIETHOURS_ENABLE:
       keyStr = _T("QuietHoursEnabled");
       break;
+   case SettingsKey::QUIETHOURS_FORCEUNMUTE:
+      keyStr = _T("QuietHoursForceUnmute");
+      break;
    case SettingsKey::QUIETHOURS_START:
       keyStr = _T("QuietHoursStart");
       break;

@@ -96,19 +96,21 @@ BEGIN
                     "SysLink",WS_TABSTOP,119,35,36,13
 END
 
-IDD_QUIETHOURS DIALOGEX 0, 0, 201, 146
+IDD_QUIETHOURS DIALOGEX 0, 0, 201, 190
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Configure Quiet Hours"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "Enable Quiet Hours",IDC_ENABLEQUIETHOURS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,38,77,10
+    CONTROL         "Enable Quiet Hours",IDC_ENABLEQUIETHOURS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,42,77,10
     CONTROL         "",IDC_QUIETHOURS_START,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,79,58,54,15
     CONTROL         "",IDC_QUIETHOURS_END,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,79,80,54,15
-    DEFPUSHBUTTON   "Save",IDOK,63,120,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,123,120,50,14
-    LTEXT           "During Quiet Hours WinMute automatically mutes your PC volumes and unmutes it afterwards.",IDC_STATIC,15,9,174,24
+    CONTROL         "Force unmute",IDC_FORCEUNMUTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,31,102,60,10
+    DEFPUSHBUTTON   "Save",IDOK,63,165,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,123,165,50,14
+    LTEXT           "If force unmute is enabled, WinMute will unmute your workstation when quiet hours end and not take into account if your workstation was already muted before quiet hours started.",IDC_STATIC,32,115,162,38
     LTEXT           "Start time:",IDC_STATIC,31,60,42,12
     LTEXT           "End time:",IDC_STATIC,31,82,43,12
+    LTEXT           "During Quiet Hours WinMute automatically mutes your PC volumes and unmutes it afterwards.",IDC_STATIC,14,15,180,24
 END
 
 
@@ -134,7 +136,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 194
         TOPMARGIN, 7
-        BOTTOMMARGIN, 139
+        BOTTOMMARGIN, 183
     END
 END
 #endif    // APSTUDIO_INVOKED

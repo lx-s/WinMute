@@ -124,6 +124,24 @@ void TrayIcon::ChangeText(const std::wstring& tooltip)
       ChangeText();
 }
 
+void TrayIcon::ShowPopup(
+   const std::wstring &title,
+   const std::wstring &text)
+{
+   NOTIFYICONDATA tnid;
+   tnid.cbSize = sizeof(NOTIFYICONDATA);
+   tnid.hWnd = hWnd_;
+   tnid.uID = trayID_;
+   tnid.uFlags = NIF_INFO;
+   tnid.dwInfoFlags = NIIF_INFO | NIIF_NOSOUND | NIIF_LARGE_ICON
+                     | NIIF_RESPECT_QUIET_TIME;
+   tnid.uTimeout = 10 * 1000;
+   wcscpy_s(tnid.szInfoTitle, sizeof(tnid.szInfoTitle)/sizeof(TCHAR), title.c_str());
+   wcscpy_s(tnid.szInfo, sizeof(tnid.szInfo)/sizeof(TCHAR), text.c_str());
+
+   Shell_NotifyIcon(NIM_MODIFY, &tnid);
+}
+
 void TrayIcon::DestroyTrayIcon()
 {
    if (hIcon_) {
@@ -178,3 +196,5 @@ bool TrayIcon::ChangeText()
    }
    return false;
 }
+
+

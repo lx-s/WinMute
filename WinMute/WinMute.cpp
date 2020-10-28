@@ -70,6 +70,7 @@ WinMute::MuteConfig::MuteConfig()
    this->noRestore.onShutdown = false;
 
    this->quietHours.enabled = false;
+   this->quietHours.forceUnmute = false;
    this->quietHours.start = 0;
    this->quietHours.end = 0;
 }
@@ -78,7 +79,8 @@ WinMute::WinMute() :
    hWnd_(nullptr),
    hTrayMenu_(nullptr),
    hAppIcon_(nullptr),
-   hTrayIcon_(nullptr)
+   hTrayIcon_(nullptr),
+   wsAlreadyMuted_(false)
 { }
 
 WinMute::~WinMute()
@@ -219,6 +221,8 @@ bool WinMute::LoadDefaults()
 
    muteConfig_.quietHours.enabled =
       settings_.QueryValue(SettingsKey::QUIETHOURS_ENABLE, 0) != 0;
+   muteConfig_.quietHours.forceUnmute =
+      settings_.QueryValue(SettingsKey::QUIETHOURS_FORCEUNMUTE, 0) != 0;
    muteConfig_.quietHours.start =
       settings_.QueryValue(SettingsKey::QUIETHOURS_START, 0);
    muteConfig_.quietHours.end =
@@ -346,14 +350,13 @@ LRESULT CALLBACK WinMute::WindowProc(
       return 0;
    }
    case WM_WTSSESSION_CHANGE: {
-      static bool wasAlreadyMuted = false;
       if (wParam == WTS_SESSION_LOCK) {
-         wasAlreadyMuted = audio_->IsMuted();
-         if (!wasAlreadyMuted && muteConfig_.withRestore.onLock) {
+         wsAlreadyMuted_ = audio_->IsMuted();
+         if (!wsAlreadyMuted_ && muteConfig_.withRestore.onLock) {
             audio_->Mute();
          }
       } else if (wParam == WTS_SESSION_UNLOCK) {
-         if (!wasAlreadyMuted &&
+         if (!wsAlreadyMuted_ &&
              muteConfig_.restoreAudio &&
              muteConfig_.withRestore.onLock) {
             audio_->UnMute();
@@ -379,6 +382,26 @@ LRESULT CALLBACK WinMute::WindowProc(
          }
       }
       break;
+   case WM_WINMUTE_QUIETHOURS_START:
+      wsAlreadyMuted_ = audio_->IsMuted();
+      audio_->Mute();
+      trayIcon_.ShowPopup(
+         _T("WinMute: Quiet hours started"),
+         _T("Your workstation audio is now muted"));
+      return 0;
+   case WM_WINMUTE_QUIETHOURS_END:
+      if (wsAlreadyMuted_ && muteConfig_.quietHours.forceUnmute ||
+          !wsAlreadyMuted_) {
+         audio_->UnMute();
+         trayIcon_.ShowPopup(
+            _T("WinMute: Quiet Hours ended"),
+            _T("Your workstation audio has been restored."));
+      } else {
+         trayIcon_.ShowPopup(
+            _T("WinMute: Quiet Hours ended"),
+            _T("Quiet hours ended, your workstation remains muted."));
+      }
+      return 0;
    case WM_WINMUTE_MUTE: {
       bool mute = !!static_cast<int>(wParam);
       if (mute) {
@@ -410,14 +433,13 @@ LRESULT CALLBACK WinMute::WindowProc(
       return 0;
    }
    case WM_SCRNSAVE_CHANGE: {
-      static bool wasAlreadyMuted = false;
       if (wParam == SCRNSAVE_START) {
-         wasAlreadyMuted = audio_->IsMuted();
-         if (!wasAlreadyMuted && muteConfig_.withRestore.onScreensaver) {
+         wsAlreadyMuted_ = audio_->IsMuted();
+         if (!wsAlreadyMuted_ && muteConfig_.withRestore.onScreensaver) {
             audio_->Mute();
          }
       } else if (wParam == SCRNSAVE_STOP) {
-         if (!wasAlreadyMuted && 
+         if (!wsAlreadyMuted_ &&
              muteConfig_.restoreAudio &&
              muteConfig_.withRestore.onScreensaver) {
             audio_->UnMute();
@@ -475,7 +497,7 @@ static int GetDiffMillseconds(const LPSYSTEMTIME t1, const LPSYSTEMTIME t2)
 
    res = ulT1.QuadPart - ulT2.QuadPart;
 
-   res /= (1000000000 / 100); // To seconds 
+   res /= (1000000000 / 100); // To seconds
    if (res < 0) { // Add 24 Hours for Wrap Around
       res += 24 * 60 * 60;
    }
@@ -489,11 +511,11 @@ VOID CALLBACK QuietHoursTimer(HWND hWnd, UINT msg, UINT_PTR id, DWORD msSinceSys
    UNREFERENCED_PARAMETER( msg );
    UNREFERENCED_PARAMETER( msSinceSysStart );
    if (id == QUIETHOURS_TIMER_START_ID) {
-      SendMessage(hWnd, WM_WINMUTE_MUTE, 1, 0);
+      SendMessage(hWnd, WM_WINMUTE_QUIETHOURS_START, 0, 0);
       SendMessage(hWnd, WM_WINMUTE_QUIETHOURS_CHANGE, 0, 0);
       KillTimer(hWnd, id);
    } else if (id == QUIETHOURS_TIMER_END_ID) {
-      SendMessage(hWnd, WM_WINMUTE_MUTE, 0, 0);
+      SendMessage(hWnd, WM_WINMUTE_QUIETHOURS_END, 0, 0);
       SendMessage(hWnd, WM_WINMUTE_QUIETHOURS_CHANGE, 0, 0);
       KillTimer(hWnd, id);
    }

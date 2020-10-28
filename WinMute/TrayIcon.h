@@ -49,6 +49,7 @@ public:
    bool IsShown() const { return iconVisible_; }
    void ChangeIcon(HICON hNewIcon);
    void ChangeText(const std::wstring& tooltip);
+   void ShowPopup(const std::wstring& title, const std::wstring& text);
 
 private:
    void DestroyTrayIcon();

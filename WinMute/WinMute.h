@@ -39,6 +39,8 @@ class WinAudio;
 
 static const int WM_WINMUTE_QUIETHOURS_CHANGE = WM_APP + 200;
 static const int WM_WINMUTE_MUTE = WM_APP + 201;
+static const int WM_WINMUTE_QUIETHOURS_START = WM_APP + 202;
+static const int WM_WINMUTE_QUIETHOURS_END = WM_APP + 203;
 static const int QUIETHOURS_TIMER_START_ID = 271020;
 static const int QUIETHOURS_TIMER_END_ID = 271021;
 
@@ -71,11 +73,14 @@ private:
          bool onSuspend;
       } noRestore;
       struct {
-         int enabled;
+         bool enabled;
+         bool forceUnmute;
          time_t start;
          time_t end;
       } quietHours;
    } muteConfig_;
+
+   bool wsAlreadyMuted_;
 
    TrayIcon trayIcon_;
    std::unique_ptr<WinAudio> audio_;
