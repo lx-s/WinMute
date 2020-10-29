@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "StdAfx.h"
 
 TrayIcon::TrayIcon() :
-   hIcon_(0), trayID_(0), hWnd_(0), iconVisible_(false)
+   iconVisible_(false), trayID_(0), hIcon_(0), hWnd_(0)
 {
 
 }

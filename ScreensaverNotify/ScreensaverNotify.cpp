@@ -56,12 +56,10 @@ static HINSTANCE hglobInstance_ = nullptr;
 
 LRESULT CALLBACK MsgHookProc(UINT code, WPARAM wParam, LPARAM lParam)
 {
-   if (code >= 0) {
-      MSG const * const msg = reinterpret_cast<LPMSG>(lParam);
-      if (msg->message == WM_SYSCOMMAND) {
-         if (msg->wParam == SC_SCREENSAVE) {
-            PostMessage(hNotifyWnd_, notifyWndMsgId_, wParam, lParam);
-         }
+   MSG const * const msg = reinterpret_cast<LPMSG>(lParam);
+   if (msg->message == WM_SYSCOMMAND) {
+      if (msg->wParam == SC_SCREENSAVE) {
+         PostMessage(hNotifyWnd_, notifyWndMsgId_, wParam, lParam);
       }
    }
    return CallNextHookEx(hook_, code, wParam, lParam);

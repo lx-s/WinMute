@@ -38,7 +38,7 @@ class WinAudio;
 
 class VistaAudioSessionEvents : public IAudioSessionEvents {
 public:
-   VistaAudioSessionEvents(WinAudio* notifyParent);
+   explicit VistaAudioSessionEvents(WinAudio* notifyParent);
    ~VistaAudioSessionEvents();
 
    // IUnknown methods -- AddRef, Release, and QueryInterface

@@ -46,15 +46,15 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
    }
    if (GetLastError() == ERROR_ALREADY_EXISTS) {
       ReleaseMutex(hMutex);
-         TaskDialog(nullptr,
-                    nullptr,
-                    PROGRAM_NAME,
-                    _T("WinMute is already running"),
-                    _T("Please look for a white speaker icon in your Windows ")
-                    _T(" taskbar notification area."),
-                    TDCBF_OK_BUTTON,
-                    TD_INFORMATION_ICON,
-                    nullptr);
+      TaskDialog(nullptr,
+                 nullptr,
+                 PROGRAM_NAME,
+                 _T("WinMute is already running"),
+                 _T("Please look for a white speaker icon in your Windows ")
+                 _T(" taskbar notification area."),
+                 TDCBF_OK_BUTTON,
+                 TD_INFORMATION_ICON,
+                 nullptr);
       return FALSE;
    }
 

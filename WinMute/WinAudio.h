@@ -57,11 +57,11 @@ public:
    VistaAudio();
    ~VistaAudio() noexcept;
 
-   bool Init(HWND hParent);
-   void ShouldReInit();
-   bool IsMuted();
-   void Mute();
-   void UnMute();
+   bool Init(HWND hParent) override;
+   void ShouldReInit() override;
+   bool IsMuted() override;
+   void Mute() override;
+   void UnMute() override;
 private:
    void Uninit();
    bool CheckForReInit();

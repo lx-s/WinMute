@@ -38,7 +38,7 @@ class WinAudio;
 
 class MMNotificationClient : public IMMNotificationClient {
 public:
-   MMNotificationClient(WinAudio* notifyParent);
+   explicit MMNotificationClient(WinAudio* notifyParent);
    ~MMNotificationClient();
 
    ULONG STDMETHODCALLTYPE AddRef();
