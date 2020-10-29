@@ -94,7 +94,9 @@ private:
    bool InitTrayMenu();
    bool LoadDefaults();
 
-   void SetQuietHours();
+   void ResetQuietHours();
+   void SetQuietHoursStart();
+   void SetQuietHoursEnd();
 
    void Unload();
 

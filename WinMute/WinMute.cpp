@@ -193,7 +193,7 @@ bool WinMute::Init()
       return false;
    }
 
-   SetQuietHours();
+   ResetQuietHours();
 
    hTrayIcon_ = LoadIcon(hglobInstance, MAKEINTRESOURCE(IDI_TRAY));
    if (hTrayIcon_ == NULL) {
@@ -393,6 +393,7 @@ LRESULT CALLBACK WinMute::WindowProc(
             _T("WinMute: Quiet hours started"),
             _T("Your workstation audio is now muted"));
       }
+      SetQuietHoursEnd();
       return 0;
    case WM_WINMUTE_QUIETHOURS_END:
       if (wsAlreadyMuted_ && muteConfig_.quietHours.forceUnmute ||
@@ -407,9 +408,11 @@ LRESULT CALLBACK WinMute::WindowProc(
          if (muteConfig_.quietHours.notifications) {
             trayIcon_.ShowPopup(
                _T("WinMute: Quiet Hours ended"),
-               _T("Quiet hours ended, your workstation remains muted."));
+               _T("Quiet hours ended, since your your audio was already muted ")
+               _T("and force unmute is off, your workstation will remain muted."));
          }
       }
+      SetQuietHoursStart();
       return 0;
    case WM_WINMUTE_MUTE: {
       bool mute = !!static_cast<int>(wParam);
@@ -443,7 +446,7 @@ LRESULT CALLBACK WinMute::WindowProc(
             SettingsKey::QUIETHOURS_END,
             0);
       }
-      SetQuietHours();
+      ResetQuietHours();
 
       return 0;
    }
@@ -478,18 +481,30 @@ static bool QuietHoursShouldAlreadyHaveStarted(
    const LPSYSTEMTIME qhStart,
    const LPSYSTEMTIME qhEnd)
 {
-   bool shouldAlreadyHaveStarted = false;
+   FILETIME ftNow;
+   FILETIME ftStart;
+   FILETIME ftEnd;
+   ULARGE_INTEGER ulNow;
+   ULARGE_INTEGER ulStart;
+   ULARGE_INTEGER ulEnd;
 
-   if (qhEnd->wHour > now->wHour ||
-       qhEnd->wHour == now->wHour && qhEnd->wMinute > now->wMinute ||
-       qhEnd->wHour == now->wHour && qhEnd->wMinute == now->wMinute && qhEnd->wSecond > now->wSecond) {
-      if (qhStart->wHour < now->wHour ||
-         qhStart->wHour == now->wHour && qhStart->wMinute < now->wMinute ||
-         qhStart->wHour == now->wHour && qhStart->wMinute == now->wMinute && qhStart->wSecond < now->wSecond) {
-         shouldAlreadyHaveStarted = true;
-      }
+   SystemTimeToFileTime(now, &ftNow);
+   SystemTimeToFileTime(qhStart, &ftStart);
+   SystemTimeToFileTime(qhEnd, &ftEnd);
+
+   ulNow.LowPart = ftNow.dwLowDateTime;
+   ulNow.HighPart = ftNow.dwHighDateTime;
+   ulStart.LowPart = ftStart.dwLowDateTime;
+   ulStart.HighPart = ftStart.dwHighDateTime;
+   ulEnd.LowPart = ftEnd.dwLowDateTime;
+   ulEnd.HighPart = ftEnd.dwHighDateTime;
+
+   if (ulEnd.QuadPart - ulNow.QuadPart > 0 &&
+        ulStart.QuadPart - ulNow.QuadPart < 0) {
+      return true;
    }
-   return shouldAlreadyHaveStarted;
+
+   return false;
 }
 
 /**
@@ -526,17 +541,15 @@ VOID CALLBACK QuietHoursTimer(HWND hWnd, UINT msg, UINT_PTR id, DWORD msSinceSys
    UNREFERENCED_PARAMETER( msg );
    UNREFERENCED_PARAMETER( msSinceSysStart );
    if (id == QUIETHOURS_TIMER_START_ID) {
+      KillTimer(hWnd, id);
       SendMessage(hWnd, WM_WINMUTE_QUIETHOURS_START, 0, 0);
-      SendMessage(hWnd, WM_WINMUTE_QUIETHOURS_CHANGE, 0, 0);
-      KillTimer(hWnd, id);
    } else if (id == QUIETHOURS_TIMER_END_ID) {
-      SendMessage(hWnd, WM_WINMUTE_QUIETHOURS_END, 0, 0);
-      SendMessage(hWnd, WM_WINMUTE_QUIETHOURS_CHANGE, 0, 0);
       KillTimer(hWnd, id);
+      SendMessage(hWnd, WM_WINMUTE_QUIETHOURS_END, 0, 0);
    }
 }
 
-void WinMute::SetQuietHours()
+void WinMute::ResetQuietHours()
 {
    if (!muteConfig_.quietHours.enabled) {
       KillTimer(hWnd_, QUIETHOURS_TIMER_START_ID);
@@ -569,6 +582,44 @@ void WinMute::SetQuietHours()
             MessageBox(hWnd_, _T("Failed to create Timer"), PROGRAM_NAME, MB_OK);
          }
       }
+   }
+}
+
+void WinMute::SetQuietHoursStart()
+{
+   SYSTEMTIME now;
+   SYSTEMTIME start;
+
+   GetLocalTime(&now);
+   GetLocalTime(&start);
+
+   start.wSecond = static_cast<WORD>(muteConfig_.quietHours.start % 60);
+   start.wMinute = static_cast<WORD>(((muteConfig_.quietHours.start - start.wSecond) / 60) % 60);
+   start.wHour = static_cast<WORD>((muteConfig_.quietHours.start - start.wMinute - start.wSecond) / 3600);
+
+   int timerQhStart = GetDiffMillseconds(&start, &now);
+   if (SetTimer(hWnd_, QUIETHOURS_TIMER_START_ID, timerQhStart, QuietHoursTimer) == 0) {
+      MessageBox(hWnd_, _T("Failed to create Timer"), PROGRAM_NAME, MB_OK);
+   }
+}
+
+void WinMute::SetQuietHoursEnd()
+{
+   SYSTEMTIME now;
+   SYSTEMTIME end;
+
+   GetLocalTime(&now);
+   GetLocalTime(&end);
+
+   end.wSecond = static_cast<WORD>(muteConfig_.quietHours.end % 60);
+   end.wMinute = static_cast<WORD>(((muteConfig_.quietHours.end - end.wSecond) / 60) % 60);
+   end.wHour = static_cast<WORD>((muteConfig_.quietHours.end - end.wMinute - end.wSecond) / 3600);
+
+   int timerQhEnd = GetDiffMillseconds(&end, &now);
+   if (timerQhEnd <= 0) {
+      SendMessage(hWnd_, WM_WINMUTE_QUIETHOURS_END, 0, 0);
+   } else if (SetTimer(hWnd_, QUIETHOURS_TIMER_END_ID, timerQhEnd, QuietHoursTimer) == 0) {
+      MessageBox(hWnd_, _T("Failed to create Timer"), PROGRAM_NAME, MB_OK);
    }
 }
 
