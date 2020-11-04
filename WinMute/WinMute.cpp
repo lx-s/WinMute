@@ -193,14 +193,15 @@ bool WinMute::Init()
       return false;
    }
 
-   ResetQuietHours();
-
    hTrayIcon_ = LoadIcon(hglobInstance, MAKEINTRESOURCE(IDI_TRAY));
    if (hTrayIcon_ == NULL) {
       PrintWindowsError(_T("LoadIcon"));
       return false;
    }
    trayIcon_.Init(hWnd_, 0, hTrayIcon_, _T("WinMute"), true);
+
+   ResetQuietHours();
+
    return true;
 }
 
@@ -476,31 +477,31 @@ LRESULT CALLBACK WinMute::WindowProc(
    return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
+static __int64 ConvertSystemTimeTo100NS(const LPSYSTEMTIME sysTime)
+{
+   FILETIME ft;
+   SystemTimeToFileTime(sysTime, &ft);
+   ULARGE_INTEGER ulInt;
+   ulInt.HighPart = ft.dwHighDateTime;
+   ulInt.LowPart = ft.dwLowDateTime;
+   return static_cast<__int64>(ulInt.QuadPart);
+}
+
 static bool QuietHoursShouldAlreadyHaveStarted(
    const LPSYSTEMTIME now,
    const LPSYSTEMTIME qhStart,
    const LPSYSTEMTIME qhEnd)
 {
-   FILETIME ftNow;
-   FILETIME ftStart;
-   FILETIME ftEnd;
-   ULARGE_INTEGER ulNow;
-   ULARGE_INTEGER ulStart;
-   ULARGE_INTEGER ulEnd;
+   __int64 iStart = ConvertSystemTimeTo100NS(qhStart);
+   __int64 iEnd = ConvertSystemTimeTo100NS(qhEnd);
+   __int64 iNow = ConvertSystemTimeTo100NS(now);
 
-   SystemTimeToFileTime(now, &ftNow);
-   SystemTimeToFileTime(qhStart, &ftStart);
-   SystemTimeToFileTime(qhEnd, &ftEnd);
+   if (iEnd < iStart) {
+      // Add one day
+      iEnd += 864000000000ll;
+   }
 
-   ulNow.LowPart = ftNow.dwLowDateTime;
-   ulNow.HighPart = ftNow.dwHighDateTime;
-   ulStart.LowPart = ftStart.dwLowDateTime;
-   ulStart.HighPart = ftStart.dwHighDateTime;
-   ulEnd.LowPart = ftEnd.dwLowDateTime;
-   ulEnd.HighPart = ftEnd.dwHighDateTime;
-
-   if (ulEnd.QuadPart - ulNow.QuadPart > 0 &&
-        ulStart.QuadPart - ulNow.QuadPart < 0) {
+   if (iEnd - iNow > 0 && iStart - iNow < 0) {
       return true;
    }
 
@@ -513,19 +514,10 @@ static bool QuietHoursShouldAlreadyHaveStarted(
  */
 static int GetDiffMillseconds(const LPSYSTEMTIME t1, const LPSYSTEMTIME t2)
 {
-   FILETIME ftT1;
-   FILETIME ftT2;
-   ULARGE_INTEGER ulT1;
-   ULARGE_INTEGER ulT2;
-   __int64 res;
-   SystemTimeToFileTime(t1, &ftT1);
-   ulT1.LowPart = ftT1.dwLowDateTime;
-   ulT1.HighPart = ftT1.dwHighDateTime;
-   SystemTimeToFileTime(t2, &ftT2);
-   ulT2.LowPart = ftT2.dwLowDateTime;
-   ulT2.HighPart = ftT2.dwHighDateTime;
+   __int64 it1 = ConvertSystemTimeTo100NS(t1);
+   __int64 it2 = ConvertSystemTimeTo100NS(t2);
 
-   res = ulT1.QuadPart - ulT2.QuadPart;
+   __int64 res = it1 - it2;
 
    res /= (1000000000 / 100); // To seconds
    if (res < 0) { // Add 24 Hours for Wrap Around

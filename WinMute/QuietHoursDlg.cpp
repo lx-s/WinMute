@@ -37,17 +37,11 @@ static bool IsValidTimeRange(
    const LPSYSTEMTIME start,
    const LPSYSTEMTIME end)
 {
-   bool isValid = false;
-   if (start->wHour == end->wHour) {
-      if (start->wMinute == end->wMinute) {
-         if (start->wSecond < end->wSecond) {
-            isValid = true;
-         }
-      } else if (start->wMinute < end->wMinute) {
-         isValid = true;
-      }
-   } else if (start->wHour < end->wHour) {
-      isValid = true;
+   bool isValid = true;
+   if (start->wHour == end->wHour &&
+       start->wMinute == end->wMinute &&
+       start->wSecond == end->wSecond) {
+      isValid = false;
    }
    return isValid;
 }
@@ -67,8 +61,8 @@ static bool SaveQuietHours(
             nullptr,
             PROGRAM_NAME,
             _T("Invalid time range"),
-            _T("Quiet hours must end before they start.\n")
-            _T("Please correct your input.\n"),
+            _T("Can't start and stop at the same time.\n")
+            _T("Please correct your time range.\n"),
             TDCBF_OK_BUTTON,
             TD_WARNING_ICON,
             nullptr);
