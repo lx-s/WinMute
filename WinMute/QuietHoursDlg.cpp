@@ -170,6 +170,8 @@ INT_PTR CALLBACK QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
          int qhEnabled = Button_GetCheck(hEnable) == BST_CHECKED;
          EnableWindow(hStart, qhEnabled);
          EnableWindow(hEnd, qhEnabled);
+         EnableWindow(hNotify, qhEnabled);
+         EnableWindow(hForce, qhEnabled);
       }
       return 0;
    }
