@@ -74,6 +74,7 @@ static LRESULT CALLBACK ScrsvrWndProc(HWND hWnd, UINT msg, WPARAM wParam,
 
 ScreensaverNotifier::ScreensaverNotifier() :
    alreadyNotified_(false),
+   isRegistered_(false),
    hookDll_(nullptr),
    hWnd_(nullptr),
    hNotifyWnd_(nullptr),
@@ -104,15 +105,16 @@ bool ScreensaverNotifier::Init()
 
 bool ScreensaverNotifier::InitWindow()
 {
-   hWnd_ = CreateWindowEx(WS_EX_TOOLWINDOW,
-                         SCRSVER_NOTIFY_WND_CLASS,
-                         nullptr,
-                         WS_POPUP,
-                         0, 0, 0, 0,
-                         HWND_MESSAGE,
-                         0,
-                         hglobInstance,
-                         this);
+   hWnd_ = CreateWindowEx(
+      WS_EX_TOOLWINDOW,
+      SCRSVER_NOTIFY_WND_CLASS,
+      nullptr,
+      WS_POPUP,
+      0, 0, 0, 0,
+      HWND_MESSAGE,
+      0,
+      hglobInstance,
+      this);
    if (hWnd_ == nullptr) {
       PrintWindowsError(_T("CreateWindow"));
       return false;
@@ -169,9 +171,13 @@ bool ScreensaverNotifier::RegisterWindowClass()
 void ScreensaverNotifier::Unload()
 {
    if (hookDll_) {
+      if (isRegistered_ && unregHook_) {
+         unregHook_();
+      }
       FreeLibrary(hookDll_);
       regHook_ = nullptr;
       unregHook_ = nullptr;
+      hookDll_ = nullptr;
    }
 }
 
@@ -183,7 +189,10 @@ bool ScreensaverNotifier::ActivateNotifications(HWND hNotifyWnd)
 {
    hNotifyWnd_ = hNotifyWnd;
    if (regHook_ != nullptr) {
-      return regHook_(hWnd_, hookWndMsg_) != 0;
+      if (regHook_(hWnd_, hookWndMsg_)) {
+         isRegistered_ = true;
+         return true;
+      }
    }
    return false;
 }
@@ -191,7 +200,7 @@ bool ScreensaverNotifier::ActivateNotifications(HWND hNotifyWnd)
 void ScreensaverNotifier::ClearNotifications()
 {
    hNotifyWnd_ = nullptr;
-   if (unregHook_ != nullptr) {
+   if (isRegistered_ && unregHook_ != nullptr) {
       unregHook_();
    }
 }
@@ -214,10 +223,11 @@ void ScreensaverNotifier::StartScreensaverPollTimer(bool start)
 bool ScreensaverNotifier::IsScreensaverRunning()
 {
    BOOL isRunning = FALSE;
-   if (SystemParametersInfo(SPI_GETSCREENSAVERRUNNING,
-                            0,
-                            &isRunning,
-                            FALSE) == FALSE) {
+   if (SystemParametersInfo(
+         SPI_GETSCREENSAVERRUNNING,
+         0,
+         &isRunning,
+         FALSE) == FALSE) {
       PrintWindowsError(_T("SystemParametersInfo"));
       return false;
    }
@@ -228,10 +238,11 @@ bool ScreensaverNotifier::IsScreensaverRunning()
 /*    Window Proc                                                             */
 /* ========================================================================== */
 
-LRESULT CALLBACK ScreensaverNotifier::WindowProc(HWND hWnd,
-                                                 UINT msg,
-                                                 WPARAM wParam,
-                                                 LPARAM lParam)
+LRESULT CALLBACK ScreensaverNotifier::WindowProc(
+   HWND hWnd,
+   UINT msg,
+   WPARAM wParam,
+   LPARAM lParam)
 {
    static UINT uTaskbarRestart = 0;
    switch (msg) {
