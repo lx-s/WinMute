@@ -517,13 +517,13 @@ static int GetDiffMillseconds(const LPSYSTEMTIME t1, const LPSYSTEMTIME t2)
    __int64 it1 = ConvertSystemTimeTo100NS(t1);
    __int64 it2 = ConvertSystemTimeTo100NS(t2);
 
-   __int64 res = it1 - it2;
-
-   res /= (1000000000 / 100); // To seconds
-   if (res < 0) { // Add 24 Hours for Wrap Around
-      res += 24 * 60 * 60;
+   // 100NS to Milliseconds;
+   it1 /= 10000;
+   it2 /= 10000;
+   if (it1 < it2) { // add one day wrap around
+      it1 += 24 * 60 * 60 * 1000;
    }
-   res *= 1000; // To Milliseconds
+   __int64 res = it1 - it2;
 
    return static_cast<int>(res);
 }
