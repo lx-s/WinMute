@@ -61,7 +61,7 @@ private:
    typedef void(*UnregisterHook)(void);
 
    bool alreadyNotified_;
-
+   bool isRegistered_;
 
    HINSTANCE hookDll_;
    HWND hWnd_, hNotifyWnd_;

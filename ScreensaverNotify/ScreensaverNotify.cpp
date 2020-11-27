@@ -34,19 +34,19 @@ POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <SDKDDKVer.h>
+#include <tchar.h>
 #include "ScreensaverNotify.h"
-
 
 /* =============================================================================
       DLL Globals
    ========================================================================== */
 
-#pragma data_seg(".shared")
+#pragma data_seg(".HOOKDATA")
 static HHOOK hook_ = nullptr;
 static HWND hNotifyWnd_ = nullptr;
 static UINT notifyWndMsgId_ = 0;
 #pragma data_seg()
-#pragma comment(linker, "/SECTION:.shared,RWS")
+#pragma comment(linker, "/SECTION:.HOOKDATA,RWS")
 
 static HINSTANCE hglobInstance_ = nullptr;
 
@@ -54,7 +54,7 @@ static HINSTANCE hglobInstance_ = nullptr;
       Hook Function
    ========================================================================== */
 
-LRESULT CALLBACK MsgHookProc(UINT code, WPARAM wParam, LPARAM lParam)
+static LRESULT CALLBACK MsgHookProc(UINT code, WPARAM wParam, LPARAM lParam)
 {
    MSG const * const msg = reinterpret_cast<LPMSG>(lParam);
    if (msg->message == WM_SYSCOMMAND) {
@@ -78,10 +78,15 @@ extern "C" {
       }
       hNotifyWnd_ = hNotifyWnd;
       notifyWndMsgId_ = notifyWndMsgId;
-      hook_ = SetWindowsHookEx(WH_GETMESSAGE,
-                               reinterpret_cast<HOOKPROC>(MsgHookProc),
-                               hglobInstance_,
-                               0);
+      hook_ = SetWindowsHookEx(
+         WH_GETMESSAGE,
+         reinterpret_cast<HOOKPROC>(MsgHookProc),
+         hglobInstance_,
+         0);
+      if (hook_ == nullptr) {
+         MessageBoxW(NULL, _T("Failed to install hook"), _T("WinMute"),
+                     MB_ICONERROR);
+      }
       return hook_ != nullptr;
    }
 
@@ -99,8 +104,16 @@ extern "C" {
    {
       UNREFERENCED_PARAMETER(lpReserved);
 
-      if ((reason == DLL_PROCESS_ATTACH) && (hglobInstance_ == nullptr)) {
+      switch (reason) {
+      case DLL_PROCESS_ATTACH:
          hglobInstance_ = hInstance;
+         DisableThreadLibraryCalls(hInstance);
+         break;
+      case DLL_PROCESS_DETACH:
+         UnregisterScreensaverHook();
+         break;
+      default:
+         break;
       }
 
       return TRUE;
