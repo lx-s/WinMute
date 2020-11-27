@@ -9,7 +9,7 @@ WinMute can automatically mute your PC volume when
 * you log off
 * your PC goes to sleep
 
-This is very helpful e.g. if you leave your desk and don't want to annoy your co-workers with random sounds or music from your computer or don't want music blasting out of your speakers, the next time you power on your pc during a presentation. 
+This is very helpful e.g. if you leave your desk and don't want to annoy your co-workers with random sounds or music from your computer or don't want music blasting out of your speakers, the next time you power on your pc during a presentation.
 
 ### Screenshot ###
 ![Screenshot of WinMute](https://raw.githubusercontent.com/lx-s/WinMute/master/Dist/screenshot.png? "Screenshot of WinMute")
@@ -30,9 +30,19 @@ If you want to also remove your personal WinMute settings, open the registry via
 
 *Note:* It's possible that you cannot remove the `ScreensaverNotify.dll` file right away. If you get an error trying to remove it, just wait until your next reboot and delete it afterwards. This is unfortunately a windows limitation.
 
-
 ### Usage ###
 Just start it and you are good to go!
 
 Whenever you lock your screen from now on or the screensaver starts, WinMute will automatically mute your windows volume, and unmute it right away when you come back to your pc.
 If you want to disable this behaviour temporary, right-click on the taskbar notification icon and uncheck the menu item `Mute on Workstationlock` / `Mute on Screensaver start`.
+
+### Known Issues ###
+Screensaver detection does not work perfectly at the present time. This is because to detect the screensaver start, a process has to register a global
+hook into each application since only the active window gets notified of the screensaver starting.
+
+WinMute uses a 64bit (or 32bit DLL, depending on which version you downloaded), and can only inject its ScreensaverNotify.dll into processes
+with the same bitness.
+
+Because of this (windows-)limititation, WinMute gets only notified when the active foreground windows' process matches the DLLs bitness.
+
+**tl;dr**: If you use WinMute with 64-bit or 32-bit then screensaver detection only works, when the active program is also a 64-bit or 32-bit program.
