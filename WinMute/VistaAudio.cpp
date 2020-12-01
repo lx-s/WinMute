@@ -77,6 +77,7 @@ bool VistaAudio::Init(HWND hParent)
    IMMDevice *defaultDevice = nullptr;
    HRESULT hr = deviceEnumerator_->GetDefaultAudioEndpoint(eRender, eConsole,
       &defaultDevice);
+
    if(FAILED(hr)) {
       if (hr != E_NOTFOUND) {
          TaskDialog(nullptr,

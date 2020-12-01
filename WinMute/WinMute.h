@@ -82,8 +82,7 @@ private:
    } muteConfig_;
 
    bool wasAlreadyMuted_;
-   bool mutedByScreensaver_;
-   bool mutedByLock_;
+   int muteCounter_;
 
    TrayIcon trayIcon_;
    std::unique_ptr<WinAudio> audio_;

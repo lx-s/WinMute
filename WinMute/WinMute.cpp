@@ -82,8 +82,7 @@ WinMute::WinMute() :
    hAppIcon_(nullptr),
    hTrayIcon_(nullptr),
    wasAlreadyMuted_(false),
-   mutedByScreensaver_(false),
-   mutedByLock_(false)
+   muteCounter_(0)
 { }
 
 WinMute::~WinMute()
@@ -359,23 +358,23 @@ LRESULT CALLBACK WinMute::WindowProc(
    }
    case WM_WTSSESSION_CHANGE: {
       if (wParam == WTS_SESSION_LOCK) {
-         if (!mutedByScreensaver_) {
-            wasAlreadyMuted_ = audio_->IsMuted();
+         if (muteCounter_ == 0 && audio_->IsMuted()) {
+            muteCounter_ = 1;
          }
-         if (!mutedByScreensaver_ &&
-             !wasAlreadyMuted_ &&
-             muteConfig_.withRestore.onLock) {
-            audio_->Mute();
+         if (muteConfig_.withRestore.onLock) {
+            if (muteCounter_ == 0) {
+               audio_->Mute();
+            }
+            muteCounter_ += 1;
          }
       }
       else if (wParam == WTS_SESSION_UNLOCK) {
-         if (!wasAlreadyMuted_ &&
-             !mutedByScreensaver_ &&
-             muteConfig_.restoreAudio &&
+         if (muteConfig_.restoreAudio &&
              muteConfig_.withRestore.onLock) {
-            audio_->UnMute();
+            if (--muteCounter_ == 0) {
+               audio_->UnMute();
+            }
          }
-         mutedByLock_ = false;
       }
       return 0;
    }
@@ -399,10 +398,9 @@ LRESULT CALLBACK WinMute::WindowProc(
       }
       break;
    case WM_WINMUTE_QUIETHOURS_START:
-      if (mutedByScreensaver_) {
-         wasAlreadyMuted_ = audio_->IsMuted();
-      }
+      muteCounter_ = !!audio_->IsMuted();
       audio_->Mute();
+      muteCounter_ += 1;
       if (muteConfig_.quietHours.notifications) {
          trayIcon_.ShowPopup(
             _T("WinMute: Quiet hours started"),
@@ -411,8 +409,9 @@ LRESULT CALLBACK WinMute::WindowProc(
       SetQuietHoursEnd();
       return 0;
    case WM_WINMUTE_QUIETHOURS_END:
-      if (wasAlreadyMuted_ && muteConfig_.quietHours.forceUnmute ||
-          !wasAlreadyMuted_) {
+      muteCounter_ -= 1;
+      if (muteCounter_ > 0 && muteConfig_.quietHours.forceUnmute ||
+          muteCounter_ == 0) {
          audio_->UnMute();
          if (muteConfig_.quietHours.notifications) {
             trayIcon_.ShowPopup(
@@ -467,20 +466,20 @@ LRESULT CALLBACK WinMute::WindowProc(
    }
    case WM_SCRNSAVE_CHANGE: {
       if (wParam == SCRNSAVE_START) {
-         wasAlreadyMuted_ = audio_->IsMuted();
-         if (!wasAlreadyMuted_ &&
-             muteConfig_.withRestore.onScreensaver) {
-            audio_->Mute();
-            mutedByScreensaver_ = true;
+         muteCounter_ = !!audio_->IsMuted();
+         if (muteConfig_.withRestore.onScreensaver) {
+            if (muteCounter_ == 0) {
+               audio_->Mute();
+            }
+            muteCounter_ += 1;
          }
       } else if (wParam == SCRNSAVE_STOP) {
-         if (!wasAlreadyMuted_ &&
-             !mutedByLock_ &&
-             muteConfig_.restoreAudio &&
+         if (muteConfig_.restoreAudio &&
              muteConfig_.withRestore.onScreensaver) {
-            audio_->UnMute();
+            if (--muteCounter_ == 0) {
+               audio_->UnMute();
+            }
          }
-         mutedByScreensaver_ = false;
       }
       return 0;
    }
