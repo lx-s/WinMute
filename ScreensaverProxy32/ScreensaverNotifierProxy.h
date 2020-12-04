@@ -31,46 +31,34 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#include "StdAfx.h"
+#pragma once
 
-void PrintWindowsError(LPTSTR lpszFunction, DWORD lastError)
-{
-   // Retrieve the system error message for the last-error code
-   if (lastError == -1) {
-      lastError = GetLastError();
-   }
+#include <windows.h>
 
-   LPVOID lpMsgBuf;
-   if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                     FORMAT_MESSAGE_FROM_SYSTEM |
-                     FORMAT_MESSAGE_IGNORE_INSERTS,
-                     nullptr, lastError,
-                     MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                     reinterpret_cast<LPTSTR>(&lpMsgBuf), 0, nullptr) != 0) {
-      size_t displayBufSize = 
-          ((size_t)lstrlen(static_cast<LPCTSTR>(lpMsgBuf)) +
-           (size_t)lstrlen(static_cast<LPCTSTR>(lpszFunction))
-            + 40) * sizeof(TCHAR);
-      // Display the error message and exit the process
-      LPVOID lpDisplayBuf = reinterpret_cast<LPVOID>(
-                                     LocalAlloc(LMEM_ZEROINIT, displayBufSize));
-      if (lpDisplayBuf) {
-         StringCchPrintf((LPTSTR)lpDisplayBuf,
-                         LocalSize(lpDisplayBuf),
-                         _T("%s failed with error %u: %s"),
-                         lpszFunction,
-                         lastError,
-                         reinterpret_cast<TCHAR*>(lpMsgBuf));
-         TaskDialog(nullptr,
-                    nullptr,
-                    PROGRAM_NAME,
-                    static_cast<LPCTSTR>(lpDisplayBuf),
-                    nullptr,
-                    TDCBF_OK_BUTTON,
-                    TD_ERROR_ICON,
-                    nullptr);
-         LocalFree(lpDisplayBuf);
-      }
-      LocalFree(lpMsgBuf);
-   }
-}
+class ScreensaverNotifierProxy {
+public:
+   ScreensaverNotifierProxy();
+   ~ScreensaverNotifierProxy();
+
+   ScreensaverNotifierProxy(const ScreensaverNotifierProxy&) = delete;
+   ScreensaverNotifierProxy& operator= (const ScreensaverNotifierProxy&) = delete;
+
+   bool Init(int msgId);
+   void Unload();
+private:
+   typedef int(*RegisterHook)(HWND, UINT);
+   typedef void(*UnregisterHook)(void);
+
+   bool isRegistered_;
+
+   HINSTANCE hookDll_;
+   HWND hNotifyWnd_;
+   UINT notifyWndMsg_;
+
+   RegisterHook regHook_;
+   UnregisterHook unregHook_;
+
+   bool InitHookDll();
+   bool InitNotifyWnd();
+   bool ActivateNotifications();
+};

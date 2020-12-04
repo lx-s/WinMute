@@ -65,6 +65,7 @@ private:
 
    HINSTANCE hookDll_;
    HWND hWnd_, hNotifyWnd_;
+   HANDLE hJob_;
    UINT hookWndMsg_;
 
    RegisterHook regHook_;
@@ -74,6 +75,7 @@ private:
 
    bool IsScreensaverRunning();
 
+   bool InitHook32();
    bool InitHookDll();
    bool RegisterWindowClass();
    bool InitWindow();

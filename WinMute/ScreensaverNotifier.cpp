@@ -40,7 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 extern HINSTANCE hglobInstance;
 
-static LPCTSTR SCRSVER_NOTIFY_WND_CLASS = _T("ScreensaverNotify");
+static LPCTSTR SCRSVER_NOTIFY_WND_CLASS = _T("LXS_WinMuteScreensaverNotifyClass");
 
 #define SCRSV_TIMER_ID 1
 
@@ -78,6 +78,7 @@ ScreensaverNotifier::ScreensaverNotifier() :
    hookDll_(nullptr),
    hWnd_(nullptr),
    hNotifyWnd_(nullptr),
+   hJob_(nullptr),
    hookWndMsg_(0),
    regHook_(nullptr),
    unregHook_(nullptr)
@@ -98,9 +99,10 @@ bool ScreensaverNotifier::Init()
       return true;
    }
    return RegisterWindowClass() &&
-          InitWindow()          &&
-          InitWindowMessage()   &&
-          InitHookDll();
+      InitWindow() &&
+      InitWindowMessage() &&
+      InitHookDll() &&
+      InitHook32();
 }
 
 bool ScreensaverNotifier::InitWindow()
@@ -108,10 +110,10 @@ bool ScreensaverNotifier::InitWindow()
    hWnd_ = CreateWindowEx(
       WS_EX_TOOLWINDOW,
       SCRSVER_NOTIFY_WND_CLASS,
-      nullptr,
+      _T("LXS_WinMute_ScreensaverNotify"),
       WS_POPUP,
       0, 0, 0, 0,
-      HWND_MESSAGE,
+      NULL,
       0,
       hglobInstance,
       this);
@@ -119,6 +121,7 @@ bool ScreensaverNotifier::InitWindow()
       PrintWindowsError(_T("CreateWindow"));
       return false;
    }
+   ShowWindow(hWnd_, SW_HIDE);
    return true;
 }
 
@@ -130,6 +133,64 @@ bool ScreensaverNotifier::InitWindowMessage()
       return false;
    }
    return true;
+}
+
+bool ScreensaverNotifier::InitHook32()
+{
+   bool success = false;
+#ifdef _UNICODE
+   wchar_t commandLine[MAX_PATH + 1];
+   swprintf_s(commandLine, L"/msgId:%d", hookWndMsg_);
+#else
+   char commandLine[MAX_PATH + 1];
+   sprintf_s(commandLine, "/msgId:%d", hookWndMsg_));
+#endif
+
+   JOBOBJECT_EXTENDED_LIMIT_INFORMATION jobInfo;
+   ZeroMemory(&jobInfo, sizeof(jobInfo));
+   jobInfo.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+
+   STARTUPINFO startupInfo;
+   PROCESS_INFORMATION procInfo;
+   ZeroMemory(&startupInfo, sizeof(startupInfo));
+   ZeroMemory(&procInfo, sizeof(procInfo));
+
+   hJob_ = CreateJobObject(NULL, NULL);
+   if (hJob_ == nullptr) {
+      PrintWindowsError(_T("CreateJobObject"), GetLastError());
+   } else if (SetInformationJobObject(
+         hJob_,
+         JobObjectExtendedLimitInformation,
+         &jobInfo,
+         sizeof(jobInfo)) == FALSE) {
+      PrintWindowsError(_T("SetInformationJobObject"), GetLastError());
+      CloseHandle(hJob_);
+   } else if (CreateProcess(
+         _T(".\\ScreensaverProxy32.exe"),
+         commandLine,
+         NULL,
+         NULL,
+         FALSE,
+         NORMAL_PRIORITY_CLASS,
+         NULL,
+         NULL,
+         &startupInfo,
+         &procInfo) == FALSE) {
+      PrintWindowsError(_T("CreateProcess"));
+      CloseHandle(hJob_);
+      hJob_ = nullptr;
+   } else {
+      if (AssignProcessToJobObject(hJob_, procInfo.hProcess) == FALSE) {
+         PrintWindowsError(_T("AssignProcessToJobObject"), GetLastError());
+         CloseHandle(hJob_);
+         hJob_ = nullptr;
+      } else {
+         success = true;
+      }
+      CloseHandle(procInfo.hProcess);
+      CloseHandle(procInfo.hThread);
+   }
+   return success;
 }
 
 bool ScreensaverNotifier::InitHookDll()
@@ -149,7 +210,6 @@ bool ScreensaverNotifier::InitHookDll()
       }
    }
    return hookDll_ != nullptr;
-
 }
 
 bool ScreensaverNotifier::RegisterWindowClass()
@@ -178,6 +238,10 @@ void ScreensaverNotifier::Unload()
       regHook_ = nullptr;
       unregHook_ = nullptr;
       hookDll_ = nullptr;
+   }
+   if (hJob_ != nullptr) {
+      CloseHandle(hJob_);
+      hJob_ = nullptr;
    }
 }
 
