@@ -11,6 +11,7 @@
       h1, h2 { font-family: "Segoe UI Light", Verdana; }
       h1 { font-size: 1.8em; margin: 0 0 3px 0; }
       h2 { font-size: 1.4em; margin: 20px 0 5px 0; }
+      code { font-family:  'Consolas', sans-serif; }
       .copyright { color: #aaa; }
       p { color: #444; width: 600px; margin: 0 0 10px 5px; }
    -->
@@ -54,22 +55,23 @@
    <p>Einfach WinMute in ein Verzeichnis Ihrer Wahl kopieren und das war's!</p>
    <p>
       Wenn sie WinMute automatisch mit Windows starten m&ouml;chten,
-      kopieren sie eine Verkn&uuml;pfung zur WinMute.exe in den &quot;Autostart&quot;
+      kopieren sie eine Verkn&uuml;pfung zur <code>WinMute.exe</code> in den <code>Autostart</code>
       Ordner, den sie im Startmen&uuml; unter &quot;Programme&quot; finden (um diesen
-      Ordner zu finden drücken sie Windows+R auf ihrer Tastatur und tippen dann
-      &quot;Shell:Startup&quot; in das Textfeld ein. Bestätigen sie das Fenster mit OK).
+      Ordner zu finden drücken sie <kbd>Windows+R</kbd> auf ihrer Tastatur und tippen dann
+      <code>shell:Startup</code> in das Textfeld ein. Bestätigen sie das Fenster mit <code>OK</code>).
    </p>
 
    <h2>Deinstallation</h2>
    <p>
-      Einfach die WinMute.exe und ScreensaverNotify.dll l&ouml;schen*. Zusätzlich legt WinMute in der Registry (regedit.exe)
-      im Verzeichnis HKEY_CURRENT_USER\Software\lx-systems\WinMute ab. Sollten sie die von WinMute
-      gespeicherten Einstellungen nichtmehr benötigen, können sie diese einfach entfernen.
+      Einfach die Dateien <code>WinMute.exe</code>, <code>ScreensaverNotify.dll</code><sub>*</sub>,
+      <code>ScreensaverNotify32.dll</code><sub>*</sub> und <code>ScreensaverProxy32.exe</code> l&ouml;schen.
+      Zusätzlich legt WinMute in der Registry (<code>regedit.exe</code>) im Schlüssel <code>HKEY_CURRENT_USER\Software\lx-systems\WinMute</code>
+      ab. Sollten sie die von WinMute  Einstellungen nichtmehr benötigen, können sie diese einfach entfernen.
    </p>
    <p>
-    * Es kann sein, dass sich diese dll nicht sofort löschen lässt. Bei einem Fehler probieren sie es einfach
-      spätestens beim nächsten Neustart erneut. Diese Unannehmlichkeit ist leider eine Windows-Limitierung.
-  </p>
+    <sub>* Es kann sein, dass sich die DLL-Dateien nicht sofort löschen lassen. Bei einem Fehler probieren sie es einfach
+      spätestens nach dem nächsten Neustart erneut. Diese Unannehmlichkeit ist leider eine Windows Limitierung.</sub>
+   </p>
 
    <h2>Benutzung</h2>
    <p>Einfach starten - und fertig!</p>

@@ -11,6 +11,7 @@
       h1, h2 { font-family: "Segoe UI Light", Verdana; }
       h1 { font-size: 1.8em; margin: 0 0 3px 0; }
       h2 { font-size: 1.4em; margin: 20px 0 5px 0; }
+      code { font-family:  'Consolas', sans-serif; }
       .copyright { color: #aaa; }
       p { color: #444; width: 600px; margin: 0 0 10px 5px; }
    -->
@@ -53,22 +54,24 @@
    <p>Unzip it to your favourite directory and you are all set up ;)</p>
    <p>
       If you want WinMute to automatically start with your windows,
-      just create a shortcut to the winmute.exe file in the "Startup"
+      just create a shortcut to the <code>WinMute.exe</code> file in the <code>Startup>/
       folder located in your Windows Startmenu (to open this folder,
-      press Win+R and enter "Shell:Startup", then click "OK").
+      press <kbd>Win+R</kbd> and enter <code>Shell:Startup</code>, then click <code>OK</code>).
    </p>
 
    <h2>Uninstalling WinMute</h2>
    <p>
-      Just delete the WinMute.exe and ScreensaverNotify.dll* file from your hard drive.
+      Just delete the <code>WinMute.exe</code>, <code>ScreensaverNotify.dll</code><sub>*</sub>,
+      <code>ScreensaverNotify32.dll</code><sub>*</sub> und <code>ScreensaverProxy32.exe</code>
+      files from your hard drive.
       If you want to also remove your personal WinMute settings, then open
-      the registry (regedit.exe) and delete the Folder located in
-      HKEY_CURRENT_USER\Software\lx-systems\WinMute.
+      the registry (<code>regedit.exe</code>) and delete the key
+      <code>HKEY_CURRENT_USER\Software\lx-systems\WinMute.</code>
    </p>
    <p>
-    * It can happen, that you cannot remove this DLL file right away.
+    <sub>* It can happen, that you cannot remove these DLL-files file right away.
       If you get an error trying to remove it, just wait until your next reboot
-      and delete it afterwards. This is unfortunately a windows limitation.
+      and delete it afterwards. This is unfortunately a windows limitation.</sub>
    </p>
 
    <h2>Usage</h2>

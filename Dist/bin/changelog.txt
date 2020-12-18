@@ -1,6 +1,9 @@
-Version 1.6.0 (2020-10-27)
- * Added "Quiet Hours", a time frame where WinMute automatically
-   mutes and afterwards unmutes your workstatiob
+Version 1.6.0 (2020-12-18)
+ * Added "Quiet Hours": A time frame where WinMute automatically
+   mutes and afterwards unmutes your workstation.
+ * Added proxy process to recognize screensaver startup when
+   the current foreground application is a 32-bit application
+ * Removed 32-bit build.
 
 Version 1.5.0 (2020-06-29)
  * Added support for mute on suspend, shutdown and logout
