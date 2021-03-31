@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2020, Alexander Steinhoefer
+           Copyright (c) 2021, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,9 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <memory>
 #include <vector>
 #include <algorithm>
+#include <fstream>
+#include <filesystem>
+#include <chrono>
 
 #include <windows.h>
 #include <windowsx.h>
@@ -67,6 +70,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "ScreensaverNotifier.h"
 #include "Settings.h"
+#include "Log.h"
 #include "TrayIcon.h"
 #include "WinMute.h"
 #include "VersionHelper.h"

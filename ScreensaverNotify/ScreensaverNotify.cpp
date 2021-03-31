@@ -1,6 +1,6 @@
 /*
  ScreensaverNotify DLL
-           Copyright (c) 2020, Alexander Steinhoefer
+           Copyright (c) 2021, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without

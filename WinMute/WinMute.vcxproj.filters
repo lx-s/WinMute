@@ -24,6 +24,9 @@
     <Filter Include="Source Files\Settings">
       <UniqueIdentifier>{f9c118fc-0a72-4278-a710-841604aeb3e3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Log">
+      <UniqueIdentifier>{dc591c83-7135-4757-b9cb-54405dbc8d86}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdAfx.cpp">
@@ -62,6 +65,9 @@
     <ClCompile Include="QuietHoursDlg.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
+    <ClCompile Include="Log.cpp">
+      <Filter>Source Files\Log</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -93,6 +99,9 @@
     </ClInclude>
     <ClInclude Include="Settings.h">
       <Filter>Source Files\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Log.h">
+      <Filter>Source Files\Log</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

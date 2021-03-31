@@ -31,40 +31,53 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
+#pragma once
+
 #include "StdAfx.h"
 
-INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+static bool OpenLogFile(std::ofstream &logFile)
 {
-   switch (msg) {
-   case WM_INITDIALOG:
-      return TRUE;
-   case WM_COMMAND:
-      if (LOWORD(wParam) == IDOK) {
-         EndDialog(hDlg, 0);
-      }
-      return 0;
-   case WM_NOTIFY: {
-      PNMLINK pNmLink = (PNMLINK)lParam;
-      switch (pNmLink->hdr.code) {
-         case NM_CLICK:
-         case NM_RETURN: {
-            UINT_PTR ctrlId = pNmLink->hdr.idFrom;
-            LITEM item = pNmLink->item;
-            if ((ctrlId == IDC_LINK_HOMEPAGE || ctrlId == IDC_LINK_SUPPORT)
-                && item.iLink == 0) {
-               ShellExecute(nullptr, _T("open"), item.szUrl, nullptr, nullptr,
-                            SW_SHOW);
-            }
-            break;
-         }
-      }
-      return TRUE;
+   auto path = std::filesystem::temp_directory_path();
+   path /= "WinMute.log";
+   logFile.open(path.string(), std::ios::out|std::ios::app|std::ios::binary);
+   return logFile.is_open();
+}
+
+Log& Log::GetInstance()
+{
+   static Log log;
+   return log;
+}
+
+Log::Log():
+   initialized_(false)
+{
+   if (OpenLogFile(logFile_)) {
+      initialized_ = true;
    }
-   case WM_CLOSE:
-      EndDialog(hDlg, 0);
-      return TRUE;
-   default:
-      break;
+}
+
+Log::~Log()
+{
+   if (initialized_) {
+      logFile_.close();
    }
-   return FALSE;
+}
+
+void Log::Write(std::string msg)
+{
+   if (!initialized_) {
+      return;
+   }
+   auto now = std::chrono::system_clock::now();
+   auto in_time_t = std::chrono::system_clock::to_time_t(now);
+   struct tm tm;
+
+   std::stringstream ss;
+   localtime_s(&tm, &in_time_t);
+   ss << "[" << std::put_time(&tm, "%Y-%m-%d %X") << "] ";
+   ss << msg;
+   ss << "\n";
+
+   logFile_.write(ss.str().c_str(), ss.str().length());
 }

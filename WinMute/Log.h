@@ -31,40 +31,20 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
+#pragma once
+
 #include "StdAfx.h"
 
-INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-   switch (msg) {
-   case WM_INITDIALOG:
-      return TRUE;
-   case WM_COMMAND:
-      if (LOWORD(wParam) == IDOK) {
-         EndDialog(hDlg, 0);
-      }
-      return 0;
-   case WM_NOTIFY: {
-      PNMLINK pNmLink = (PNMLINK)lParam;
-      switch (pNmLink->hdr.code) {
-         case NM_CLICK:
-         case NM_RETURN: {
-            UINT_PTR ctrlId = pNmLink->hdr.idFrom;
-            LITEM item = pNmLink->item;
-            if ((ctrlId == IDC_LINK_HOMEPAGE || ctrlId == IDC_LINK_SUPPORT)
-                && item.iLink == 0) {
-               ShellExecute(nullptr, _T("open"), item.szUrl, nullptr, nullptr,
-                            SW_SHOW);
-            }
-            break;
-         }
-      }
-      return TRUE;
-   }
-   case WM_CLOSE:
-      EndDialog(hDlg, 0);
-      return TRUE;
-   default:
-      break;
-   }
-   return FALSE;
-}
+class Log {
+public:
+   Log& GetInstance();
+   void Write(std::string msg);
+private:
+   Log();
+   ~Log();
+   Log(const Log&) = delete;
+   Log& operator=(const Log&) = delete;
+
+   bool initialized_;
+   std::ofstream logFile_;
+};
