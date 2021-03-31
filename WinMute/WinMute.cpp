@@ -284,9 +284,11 @@ LRESULT CALLBACK WinMute::WindowProc(
          bool state = false;
          ToggleMenuCheck(ID_TRAYMENU_MUTE, &state);
          if (!state) {
+            Log::GetInstance().Write("Mute: Off | Manual per Menu");
             audio_->UnMute();
          }
          else {
+            Log::GetInstance().Write("Mute: On | Manual per Menu");
             audio_->Mute();
          }
          break;
@@ -363,6 +365,7 @@ LRESULT CALLBACK WinMute::WindowProc(
          }
          if (muteConfig_.withRestore.onLock) {
             if (muteCounter_ == 0) {
+               Log::GetInstance().Write("Mute: Off | Workstation Lock");
                audio_->Mute();
             }
             muteCounter_ += 1;
@@ -372,6 +375,7 @@ LRESULT CALLBACK WinMute::WindowProc(
          if (muteConfig_.restoreAudio &&
              muteConfig_.withRestore.onLock) {
             if (--muteCounter_ == 0) {
+               Log::GetInstance().Write("Mute: Off | Workstation Unlock");
                audio_->UnMute();
             }
          }
@@ -381,6 +385,7 @@ LRESULT CALLBACK WinMute::WindowProc(
    case WM_POWERBROADCAST:
       if (wParam == PBT_APMSUSPEND) {
          if (muteConfig_.noRestore.onSuspend) {
+            Log::GetInstance().Write("Mute: On | Suspend/Hibernate");
             audio_->Mute();
          }
       }
@@ -388,17 +393,20 @@ LRESULT CALLBACK WinMute::WindowProc(
    case WM_QUERYENDSESSION:
       if (lParam == 0) { // Shutdown
          if (muteConfig_.noRestore.onShutdown) {
+            Log::GetInstance().Write("Mute: On | Shutdown");
             audio_->Mute();
          }
       }
       else if ((lParam & ENDSESSION_LOGOFF)) {
          if (muteConfig_.noRestore.onLogoff) {
+            Log::GetInstance().Write("Mute: On | Logoff");
             audio_->Mute();
          }
       }
       break;
    case WM_WINMUTE_QUIETHOURS_START:
       muteCounter_ = !!audio_->IsMuted();
+      Log::GetInstance().Write("Mute: On | Quiet Hours started");
       audio_->Mute();
       muteCounter_ += 1;
       if (muteConfig_.quietHours.notifications) {
@@ -412,6 +420,7 @@ LRESULT CALLBACK WinMute::WindowProc(
       muteCounter_ -= 1;
       if (muteCounter_ > 0 && muteConfig_.quietHours.forceUnmute ||
           muteCounter_ == 0) {
+         Log::GetInstance().Write("Mute: Off | Quiet Hours ended");
          audio_->UnMute();
          if (muteConfig_.quietHours.notifications) {
             trayIcon_.ShowPopup(
@@ -431,8 +440,10 @@ LRESULT CALLBACK WinMute::WindowProc(
    case WM_WINMUTE_MUTE: {
       bool mute = !!static_cast<int>(wParam);
       if (mute) {
+         Log::GetInstance().Write("Mute: On | Per Windows-Message");
          audio_->Mute();
       } else {
+         Log::GetInstance().Write("Mute: Off | Per Windows-Message");
          audio_->UnMute();
       }
       return 0;
@@ -469,6 +480,7 @@ LRESULT CALLBACK WinMute::WindowProc(
          muteCounter_ = !!audio_->IsMuted();
          if (muteConfig_.withRestore.onScreensaver) {
             if (muteCounter_ == 0) {
+               Log::GetInstance().Write("Mute: On | Screensaver start");
                audio_->Mute();
             }
             muteCounter_ += 1;
@@ -477,6 +489,7 @@ LRESULT CALLBACK WinMute::WindowProc(
          if (muteConfig_.restoreAudio &&
              muteConfig_.withRestore.onScreensaver) {
             if (--muteCounter_ == 0) {
+               Log::GetInstance().Write("Mute: Off | Screensaver start");
                audio_->UnMute();
             }
          }
@@ -581,6 +594,7 @@ void WinMute::ResetQuietHours()
 
       if (QuietHoursShouldAlreadyHaveStarted(&now, &start, &end)) {
          int timerQhEnd = GetDiffMillseconds(&end, &now);
+         Log::GetInstance().Write("Mute: On | Quiet hours have already started");
          audio_->Mute();
          if (SetTimer(hWnd_, QUIETHOURS_TIMER_END_ID, timerQhEnd, QuietHoursTimer) == 0) {
             MessageBox(hWnd_, _T("Failed to create Timer"), PROGRAM_NAME, MB_OK);

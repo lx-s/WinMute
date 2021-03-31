@@ -80,4 +80,5 @@ void Log::Write(std::string msg)
    ss << "\n";
 
    logFile_.write(ss.str().c_str(), ss.str().length());
+   logFile_.flush();
 }

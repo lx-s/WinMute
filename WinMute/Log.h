@@ -37,7 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 class Log {
 public:
-   Log& GetInstance();
+   static Log& GetInstance();
    void Write(std::string msg);
 private:
    Log();
