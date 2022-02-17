@@ -49,6 +49,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #define _WIN32_WINNT 0x0601
 #include <sdkddkver.h>
 
+#include <array>
 #include <cassert>
 #include <string>
 #include <memory>
@@ -57,6 +58,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <fstream>
 #include <filesystem>
 #include <chrono>
+#include <unordered_map>
 
 #include <windows.h>
 #include <windowsx.h>

@@ -83,7 +83,11 @@ WinMute::WinMute() :
    hTrayIcon_(nullptr),
    wasAlreadyMuted_(false),
    muteCounter_(0)
-{ }
+{
+   muteCfg_["locked"] = { false, false };
+   muteCfg_["screensaver"] = { false, false };
+   muteCfg_["remote_session"] = { false, false };
+}
 
 WinMute::~WinMute()
 {

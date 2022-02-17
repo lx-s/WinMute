@@ -55,6 +55,13 @@ public:
   // for internal use
    LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 private:
+   struct MuteConfigItem {
+      bool shouldMute;
+      bool isActive;
+   };
+
+   std::unordered_map<std::string, MuteConfigItem> muteCfg_;
+
    HWND hWnd_;
    HMENU hTrayMenu_;
    HICON hAppIcon_;
