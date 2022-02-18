@@ -1,3 +1,7 @@
+Version 1.7.0-beta (2022-*-*)
+ * Added Hi-DPI Awareness to manifest
+ * Added Tray-Icon for bright system theme
+
 Version 1.6.0 (2020-12-18)
  * Added "Quiet Hours": A time frame where WinMute automatically
    mutes and afterwards unmutes your workstation.

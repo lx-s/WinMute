@@ -7,7 +7,9 @@
 #define IDI_APP                         106
 #define IDI_ICON1                       107
 #define IDI_TRAY                        107
+#define IDI_TRAY_DARK                   107
 #define IDD_QUIETHOURS                  108
+#define IDI_TRAY_BRIGHT                 110
 #define IDC_LINK_HOMEPAGE               1001
 #define IDC_LINK_HOMEPAGE2              1002
 #define IDC_LINK_SUPPORT                1002
@@ -50,7 +52,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        110
+#define _APS_NEXT_RESOURCE_VALUE        112
 #define _APS_NEXT_COMMAND_VALUE         40029
 #define _APS_NEXT_CONTROL_VALUE         1004
 #define _APS_NEXT_SYMED_VALUE           101

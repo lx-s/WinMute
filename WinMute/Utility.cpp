@@ -33,7 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "StdAfx.h"
 
-void PrintWindowsError(LPTSTR lpszFunction, DWORD lastError)
+void PrintWindowsError(LPCWSTR lpszFunction, DWORD lastError)
 {
    // Retrieve the system error message for the last-error code
    if (lastError == -1) {

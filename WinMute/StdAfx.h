@@ -93,6 +93,6 @@ inline void SafeRelease(Interface** ppInterfaceToRelease)
 #endif
 
 // Utility
-void PrintWindowsError(LPTSTR lpszFunction, DWORD lastError = -1);
+void PrintWindowsError(LPCWSTR lpszFunction, DWORD lastError = -1);
 
 static const LPCTSTR PROGRAM_NAME = _T("WinMute");

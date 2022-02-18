@@ -59,6 +59,40 @@ static LRESULT CALLBACK WinMuteWndProc(HWND hWnd, UINT msg, WPARAM wParam,
                  : DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
+static int IsDarkMode(bool& isDarkMode)
+{
+   HKEY hKey;
+   int rc = 1;
+   //RegOpenCurrentUser
+   LSTATUS error = RegOpenKey(
+      HKEY_CURRENT_USER,
+      _T("Software\\Microsoft\\Windows\\CurrentVersion\\")
+      _T("Themes\\Personalize"),
+      &hKey);
+   if (error != ERROR_SUCCESS) {
+      PrintWindowsError(_T("RegOpenKey"), error);
+   } else {
+      DWORD isLightTheme = 0;
+      DWORD bufSize = sizeof(isLightTheme);
+      DWORD valType = 0;
+      error = RegQueryValueEx(
+         hKey,
+         _T("SystemUsesLightTheme"),
+         NULL,
+         &valType,
+         reinterpret_cast<LPBYTE>(&isLightTheme),
+         &bufSize);
+      if (error != ERROR_SUCCESS) {
+         PrintWindowsError(_T("RegQueryValueEx"), error);
+      } else {
+         isDarkMode = !isLightTheme;
+         rc = 0;
+      }
+      RegCloseKey(hKey);
+   }
+   return rc;
+}
+
 WinMute::MuteConfig::MuteConfig()
 {
    this->withRestore.onLock = true;
@@ -198,7 +232,12 @@ bool WinMute::Init()
       return false;
    }
 
-   hTrayIcon_ = LoadIcon(hglobInstance, MAKEINTRESOURCE(IDI_TRAY));
+   bool isDarkMode = true;
+   IsDarkMode(isDarkMode);
+   hTrayIcon_ = LoadIcon(
+      hglobInstance,
+      isDarkMode ? MAKEINTRESOURCE(IDI_TRAY_DARK)
+                 : MAKEINTRESOURCE(IDI_TRAY_BRIGHT));
    if (hTrayIcon_ == NULL) {
       PrintWindowsError(_T("LoadIcon"));
       return false;
@@ -496,6 +535,22 @@ LRESULT CALLBACK WinMute::WindowProc(
                Log::GetInstance().Write("Mute: Off | Screensaver start");
                audio_->UnMute();
             }
+         }
+      }
+      return 0;
+   }
+   case WM_SETTINGCHANGE: {
+      if (lstrcmp(LPCTSTR(lParam), L"ImmersiveColorSet") == 0) {
+         bool isDarkMode = true;
+         IsDarkMode(isDarkMode);
+         hTrayIcon_ = LoadIcon(
+            hglobInstance,
+            isDarkMode ? MAKEINTRESOURCE(IDI_TRAY_DARK)
+                       : MAKEINTRESOURCE(IDI_TRAY_BRIGHT));
+         if (hTrayIcon_ == NULL) {
+            PrintWindowsError(_T("LoadIcon"));
+         } else {
+            trayIcon_.ChangeIcon(hTrayIcon_);
          }
       }
       return 0;
