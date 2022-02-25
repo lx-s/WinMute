@@ -7,10 +7,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ScreensaverProxy.cpp">
+    <ClCompile Include="ScreensaverNotifierProxy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ScreensaverNotifierProxy.cpp">
+    <ClCompile Include="ScreensaverProxy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

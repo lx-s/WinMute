@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2021, Alexander Steinhoefer
+           Copyright (c) 2022, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "StdAfx.h"
+#include "common.h"
 
 class WinAudio;
 
@@ -52,7 +52,7 @@ public:
    bool Init();
    void Close();
 
-  // for internal use
+   // for internal use
    LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 private:
    struct MuteConfigItem {

@@ -1,0 +1,302 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// German (Germany) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUT DIALOGEX 0, 0, 236, 56
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION
+CAPTION "About WinMute"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14
+    LTEXT           "WinMute v1.6.0",IDC_STATIC,35,7,82,10
+    LTEXT           "Copyright (c) 2020, Alexander Steinhöfer",IDC_STATIC,35,20,135,8
+    ICON            IDI_APP,IDC_STATIC,7,7,20,20,SS_CENTERIMAGE
+    CONTROL         "<a href=""https://lx-s.de"">lx-systems - lx-s.de</a>",IDC_LINK_HOMEPAGE,
+                    "SysLink",WS_TABSTOP,34,33,82,14
+    CONTROL         "<a href=""https://github.com/lx-s/WinMute/issues/"">Support</a>",IDC_LINK_SUPPORT,
+                    "SysLink",WS_TABSTOP,106,33,60,14
+END
+
+IDD_QUIETHOURS DIALOGEX 0, 0, 212, 197
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Configure Quiet Hours"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Save",IDOK,101,176,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,155,176,50,14
+    LTEXT           "During Quiet Hours WinMute automatically mutes your PC volumes and unmutes it afterwards.",IDC_STATIC,11,10,182,22
+    CONTROL         "Enable Quiet Hours",IDC_ENABLEQUIETHOURS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,11,34,120,15
+    CONTROL         "",IDC_QUIETHOURS_START,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,77,51,65,18
+    CONTROL         "",IDC_QUIETHOURS_END,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,76,74,67,19
+    CONTROL         "Force unmute",IDC_FORCEUNMUTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,27,97,86,16
+    CONTROL         "Show notifications",IDC_SHOWNOTIFICATIONS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,27,150,81,21
+    LTEXT           "If force unmute is enabled, WinMute will unmute your workstation when quiet hours end and not take into account if your workstation was already muted before quiet hours started.",IDC_STATIC,27,115,161,37
+    LTEXT           "Start time:",IDC_STATIC,27,54,43,13
+    LTEXT           "End time:",IDC_STATIC,28,76,32,16
+END
+
+IDD_SETTINGS DIALOGEX 0, 0, 403, 238
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Settings"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,294,217,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,346,217,50,14
+    CONTROL         "",IDC_TREE1,"SysTreeView32",WS_BORDER | WS_HSCROLL | WS_TABSTOP,7,7,99,167
+    CONTROL         "",IDC_TAB1,"SysTabControl32",0x0,111,7,285,167
+END
+
+IDD_SETTINGS_GENERAL DIALOGEX 0, 0, 297, 171
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "Start WinMute on system startup",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,15,132,26
+END
+
+IDD_SETTINGS_QUIETHOURS DIALOGEX 0, 0, 310, 177
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "QUIET HOURS",IDC_STATIC,14,26,110,33
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 229
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 49
+    END
+
+    IDD_QUIETHOURS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 205
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 190
+    END
+
+    IDD_SETTINGS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 396
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 231
+    END
+
+    IDD_SETTINGS_GENERAL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 290
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 164
+    END
+
+    IDD_SETTINGS_QUIETHOURS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 303
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 170
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_ABOUT AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_QUIETHOURS AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_SETTINGS AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_SETTINGS_GENERAL AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_SETTINGS_QUIETHOURS AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_APP                 ICON                    "icons\\app.ico"
+
+IDI_TRAY_BRIGHT         ICON                    "icons\\tray_bright.ico"
+
+IDI_TRAY_DARK           ICON                    "icons\\tray_dark.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_TRAYMENU MENU
+BEGIN
+    POPUP "TrayMenu"
+    BEGIN
+        MENUITEM "Info",                        ID_TRAYMENU_INFO
+        MENUITEM SEPARATOR
+        MENUITEM "Mute when...",                40003, INACTIVE
+        MENUITEM "... Workstation is locked",   ID_TRAYMENU_MUTEONLOCK, CHECKED
+        MENUITEM "... Screensaver starts",      ID_TRAYMENU_MUTEONSCREENSAVER, CHECKED
+        MENUITEM SEPARATOR
+        MENUITEM "Restore volume when returning", ID_TRAYMENU_RESTOREAUDIO, CHECKED
+        MENUITEM SEPARATOR
+        MENUITEM "Configure Quiet Hours...",    ID_TRAYMENU_CONFIGUREQUIETHOURS
+        MENUITEM SEPARATOR
+        MENUITEM "Mute on (no volume restore)", ID_TRAYMENU_AFTERWARDS, INACTIVE
+        MENUITEM "... Shutdown",                ID_TRAYMENU_MUTEONSHUTDOWN
+        MENUITEM "... Sleep",                   ID_TRAYMENU_MUTEONSUSPEND
+        MENUITEM "... Logout",                  ID_TRAYMENU_MUTEONLOGOUT
+        MENUITEM SEPARATOR
+        MENUITEM "Mute now",                    ID_TRAYMENU_MUTE
+        MENUITEM SEPARATOR
+        MENUITEM "Exit",                        ID_TRAYMENU_EXIT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,7,0,0
+ PRODUCTVERSION 1,7,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040004b0"
+        BEGIN
+            VALUE "CompanyName", "LX-Systems"
+            VALUE "FileDescription", "WinMute"
+            VALUE "FileVersion", "1.7.0.0"
+            VALUE "InternalName", "WinMute.exe"
+            VALUE "LegalCopyright", "Copyright (C) 2022, Alexander Steinhöfer"
+            VALUE "OriginalFilename", "WinMute.exe"
+            VALUE "ProductName", "WinMute"
+            VALUE "ProductVersion", "1.7.0.0"
+        END
+        BLOCK "040704b0"
+        BEGIN
+            VALUE "CompanyName", "LX-Systems"
+            VALUE "FileDescription", "WinMute"
+            VALUE "FileVersion", "1.7.0.0"
+            VALUE "InternalName", "WinMute.exe"
+            VALUE "LegalCopyright", "Copyright (C) 2022, Alexander Steinhöfer"
+            VALUE "OriginalFilename", "WinMute.exe"
+            VALUE "ProductName", "WinMute"
+            VALUE "ProductVersion", "1.7.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x400, 1200, 0x407, 1200
+    END
+END
+
+#endif    // German (Germany) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

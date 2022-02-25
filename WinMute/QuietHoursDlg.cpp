@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2021, Alexander Steinhoefer
+           Copyright (c) 2022, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#include "StdAfx.h"
+#include "common.h"
 
 static bool IsValidTimeRange(
    const LPSYSTEMTIME start,
@@ -39,15 +39,15 @@ static bool IsValidTimeRange(
 {
    bool isValid = true;
    if (start->wHour == end->wHour &&
-       start->wMinute == end->wMinute &&
-       start->wSecond == end->wSecond) {
+      start->wMinute == end->wMinute &&
+      start->wSecond == end->wSecond) {
       isValid = false;
    }
    return isValid;
 }
 
 static bool SaveQuietHours(
-   Settings *settings,
+   Settings* settings,
    const int enabled,
    const int forceUnmute,
    const int showNotifications,
@@ -71,13 +71,13 @@ static bool SaveQuietHours(
    }
 
    int setStart = start->wHour * 3600 + start->wMinute * 60 + start->wSecond;
-   int setEnd   = end->wHour * 3600 + end->wMinute * 60 + end->wSecond;
+   int setEnd = end->wHour * 3600 + end->wMinute * 60 + end->wSecond;
 
    if (!settings->SetValue(SettingsKey::QUIETHOURS_ENABLE, enabled) ||
-       !settings->SetValue(SettingsKey::QUIETHOURS_FORCEUNMUTE, forceUnmute) ||
-       !settings->SetValue(SettingsKey::QUIETHOURS_NOTIFICATIONS, showNotifications) ||
-       !settings->SetValue(SettingsKey::QUIETHOURS_START, setStart) ||
-       !settings->SetValue(SettingsKey::QUIETHOURS_END, setEnd)) {
+      !settings->SetValue(SettingsKey::QUIETHOURS_FORCEUNMUTE, forceUnmute) ||
+      !settings->SetValue(SettingsKey::QUIETHOURS_NOTIFICATIONS, showNotifications) ||
+      !settings->SetValue(SettingsKey::QUIETHOURS_START, setStart) ||
+      !settings->SetValue(SettingsKey::QUIETHOURS_END, setEnd)) {
       TaskDialog(
          nullptr,
          nullptr,
@@ -97,13 +97,14 @@ INT_PTR CALLBACK QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 {
    UNREFERENCED_PARAMETER(lParam);
    switch (msg) {
-   case WM_INITDIALOG: {
+   case WM_INITDIALOG:
+   {
       HWND hEnable = GetDlgItem(hDlg, IDC_ENABLEQUIETHOURS);
       HWND hForce = GetDlgItem(hDlg, IDC_FORCEUNMUTE);
       HWND hNotify = GetDlgItem(hDlg, IDC_SHOWNOTIFICATIONS);
       HWND hStart = GetDlgItem(hDlg, IDC_QUIETHOURS_START);
       HWND hEnd = GetDlgItem(hDlg, IDC_QUIETHOURS_END);
-      Settings *settings = reinterpret_cast<Settings*>(lParam);
+      Settings* settings = reinterpret_cast<Settings*>(lParam);
       assert(settings != NULL);
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(settings));
 
@@ -144,7 +145,8 @@ INT_PTR CALLBACK QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 
       return TRUE;
    }
-   case WM_COMMAND: {
+   case WM_COMMAND:
+   {
       HWND hEnable = GetDlgItem(hDlg, IDC_ENABLEQUIETHOURS);
       HWND hForce = GetDlgItem(hDlg, IDC_FORCEUNMUTE);
       HWND hNotify = GetDlgItem(hDlg, IDC_SHOWNOTIFICATIONS);
@@ -153,7 +155,7 @@ INT_PTR CALLBACK QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
       if (LOWORD(wParam) == IDOK) {
          SYSTEMTIME start;
          SYSTEMTIME end;
-         Settings *settings = reinterpret_cast<Settings*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+         Settings* settings = reinterpret_cast<Settings*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
          int qhEnabled = Button_GetCheck(hEnable) == BST_CHECKED;
          int qhForceUnmute = Button_GetCheck(hForce) == BST_CHECKED;
          int qhNotifications = Button_GetCheck(hNotify) == BST_CHECKED;

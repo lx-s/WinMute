@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2021, Alexander Steinhoefer
+           Copyright (c) 2022, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -31,23 +31,22 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#include "StdAfx.h"
+#include "common.h"
 
 TrayIcon::TrayIcon() :
    iconVisible_(false), trayID_(0), hIcon_(0), hWnd_(0)
 {
-
 }
 
 TrayIcon::TrayIcon(HWND hWnd, UINT trayID, HICON hIcon,
-                   const std::wstring& tooltip, bool show) :
+   const std::wstring& tooltip, bool show) :
    iconVisible_(false)
 {
    Init(hWnd, trayID, hIcon, tooltip, show);
 }
 
 void TrayIcon::Init(HWND hWnd, UINT trayID, HICON hIcon,
-                    const std::wstring& tooltip, bool show)
+   const std::wstring& tooltip, bool show)
 {
    if (!hIcon) {
       hIcon_ = LoadIcon(0, IDI_APPLICATION);
@@ -82,7 +81,7 @@ void TrayIcon::Hide()
 void TrayIcon::Show()
 {
    if (!iconVisible_) {
-      if(AddNotifyIcon()) {
+      if (AddNotifyIcon()) {
          iconVisible_ = true;
       }
    }
@@ -125,8 +124,8 @@ void TrayIcon::ChangeText(const std::wstring& tooltip)
 }
 
 void TrayIcon::ShowPopup(
-   const std::wstring &title,
-   const std::wstring &text)
+   const std::wstring& title,
+   const std::wstring& text)
 {
    NOTIFYICONDATA tnid;
    tnid.cbSize = sizeof(NOTIFYICONDATA);
@@ -134,10 +133,10 @@ void TrayIcon::ShowPopup(
    tnid.uID = trayID_;
    tnid.uFlags = NIF_INFO;
    tnid.dwInfoFlags = NIIF_INFO | NIIF_NOSOUND | NIIF_LARGE_ICON
-                     | NIIF_RESPECT_QUIET_TIME;
+      | NIIF_RESPECT_QUIET_TIME;
    tnid.uTimeout = 10 * 1000;
-   wcscpy_s(tnid.szInfoTitle, sizeof(tnid.szInfoTitle)/sizeof(TCHAR), title.c_str());
-   wcscpy_s(tnid.szInfo, sizeof(tnid.szInfo)/sizeof(TCHAR), text.c_str());
+   wcscpy_s(tnid.szInfoTitle, sizeof(tnid.szInfoTitle) / sizeof(TCHAR), title.c_str());
+   wcscpy_s(tnid.szInfo, sizeof(tnid.szInfo) / sizeof(TCHAR), text.c_str());
 
    Shell_NotifyIcon(NIM_MODIFY, &tnid);
 }
@@ -157,13 +156,13 @@ bool TrayIcon::AddNotifyIcon()
    tnid.cbSize = sizeof(NOTIFYICONDATA);
    tnid.hWnd = hWnd_;
    tnid.uID = trayID_;
-   tnid.uFlags = NIF_ICON|NIF_TIP|NIF_MESSAGE;
+   tnid.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;
    tnid.hIcon = hIcon_;
    tnid.uCallbackMessage = WM_TRAYICON;
 
    if (SUCCEEDED(StringCchCopy(tnid.szTip,
-                               sizeof(tnid.szTip) / sizeof(TCHAR),
-                               tooltip_.c_str()))) {
+      sizeof(tnid.szTip) / sizeof(TCHAR),
+      tooltip_.c_str()))) {
       return Shell_NotifyIcon(NIM_ADD, &tnid) != 0;
    }
    return false;
@@ -190,8 +189,8 @@ bool TrayIcon::ChangeText()
    tnid.uFlags = NIF_TIP;
 
    if (SUCCEEDED(StringCchCopy(tnid.szTip,
-                               sizeof(tnid.szTip) / sizeof(TCHAR),
-                               tooltip_.c_str()))) {
+      sizeof(tnid.szTip) / sizeof(TCHAR),
+      tooltip_.c_str()))) {
       return Shell_NotifyIcon(NIM_MODIFY, &tnid) != 0;
    }
    return false;

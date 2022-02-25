@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2021, Alexander Steinhoefer
+           Copyright (c) 2022, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#include "StdAfx.h"
+#include "common.h"
 
 INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -43,20 +43,22 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
          EndDialog(hDlg, 0);
       }
       return 0;
-   case WM_NOTIFY: {
+   case WM_NOTIFY:
+   {
       PNMLINK pNmLink = (PNMLINK)lParam;
       switch (pNmLink->hdr.code) {
-         case NM_CLICK:
-         case NM_RETURN: {
-            UINT_PTR ctrlId = pNmLink->hdr.idFrom;
-            LITEM item = pNmLink->item;
-            if ((ctrlId == IDC_LINK_HOMEPAGE || ctrlId == IDC_LINK_SUPPORT)
-                && item.iLink == 0) {
-               ShellExecute(nullptr, _T("open"), item.szUrl, nullptr, nullptr,
-                            SW_SHOW);
-            }
-            break;
+      case NM_CLICK:
+      case NM_RETURN:
+      {
+         UINT_PTR ctrlId = pNmLink->hdr.idFrom;
+         LITEM item = pNmLink->item;
+         if ((ctrlId == IDC_LINK_HOMEPAGE || ctrlId == IDC_LINK_SUPPORT)
+            && item.iLink == 0) {
+            ShellExecute(nullptr, _T("open"), item.szUrl, nullptr, nullptr,
+               SW_SHOW);
          }
+         break;
+      }
       }
       return TRUE;
    }

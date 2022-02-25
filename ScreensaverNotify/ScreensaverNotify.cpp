@@ -1,6 +1,6 @@
 /*
  ScreensaverNotify DLL
-           Copyright (c) 2021, Alexander Steinhoefer
+           Copyright (c) 2022, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ static HINSTANCE hglobInstance_ = nullptr;
 
 static LRESULT CALLBACK MsgHookProc(UINT code, WPARAM wParam, LPARAM lParam)
 {
-   MSG const * const msg = reinterpret_cast<LPMSG>(lParam);
+   MSG const* const msg = reinterpret_cast<LPMSG>(lParam);
    if (msg->message == WM_SYSCOMMAND) {
       if (msg->wParam == SC_SCREENSAVE) {
          PostMessage(hNotifyWnd_, notifyWndMsgId_, wParam, lParam);
@@ -85,7 +85,7 @@ extern "C" {
          0);
       if (hook_ == nullptr) {
          MessageBoxW(NULL, _T("Failed to install hook"), _T("WinMute"),
-                     MB_ICONERROR);
+            MB_ICONERROR);
       }
       return hook_ != nullptr;
    }

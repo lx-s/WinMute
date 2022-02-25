@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2021, Alexander Steinhoefer
+           Copyright (c) 2022, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -75,7 +75,7 @@ void PrintWindowsError(const char* lpszFunction, DWORD lastError)
             lastError,
             reinterpret_cast<TCHAR*>(lpMsgBuf));
          MessageBox(nullptr, static_cast<LPCTSTR>(lpDisplayBuf),
-                   "WinMute - ScreensaverProxy", MB_OK | MB_ICONERROR);
+            "WinMute - ScreensaverProxy", MB_OK | MB_ICONERROR);
          LocalFree(lpDisplayBuf);
       }
       LocalFree(lpMsgBuf);

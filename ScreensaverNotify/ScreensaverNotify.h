@@ -1,6 +1,6 @@
 /*
  ScreensaverNotify DLL
-           Copyright (c) 2017, Alexander Steinhoefer
+           Copyright (c) 2022, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -33,12 +33,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
+#define WIN32_LEAND_AND_MEAN
 #include <Windows.h>
 
 #ifdef WINMUTEDLL_EXPORTS
-   #define WINMUTEDLL_API __declspec(dllexport)
+#  define WINMUTEDLL_API __declspec(dllexport)
 #else
-   #define WINMUTEDLL_API __declspec(dllimport)
+#  define WINMUTEDLL_API __declspec(dllimport)
 #endif
 
 extern "C" {

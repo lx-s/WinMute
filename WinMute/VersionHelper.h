@@ -33,7 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "StdAfx.h"
+#include "common.h"
 
 #ifndef _versionhelpers_H_INCLUDED_ // avoid conflict with MS versionhelpers
 
@@ -44,9 +44,9 @@ inline bool IsWindowsVersionOrGreater(WORD wMajorVersion,
    OSVERSIONINFOEXW osvi = { sizeof(osvi), 0, 0, 0, 0, { 0 }, 0, 0 };
    DWORDLONG        const dwlConditionMask = VerSetConditionMask(
       VerSetConditionMask(
-      VerSetConditionMask(
-      0, VER_MAJORVERSION, VER_GREATER_EQUAL),
-      VER_MINORVERSION, VER_GREATER_EQUAL),
+         VerSetConditionMask(
+            0, VER_MAJORVERSION, VER_GREATER_EQUAL),
+         VER_MINORVERSION, VER_GREATER_EQUAL),
       VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
 
    osvi.dwMajorVersion = wMajorVersion;

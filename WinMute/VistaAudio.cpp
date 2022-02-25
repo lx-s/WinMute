@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2021, Alexander Steinhoefer
+           Copyright (c) 2022, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#include "StdAfx.h"
+#include "common.h"
 #include <mmdeviceapi.h>
 
 #pragma warning(disable : 4201)
@@ -69,56 +69,56 @@ bool VistaAudio::Init(HWND hParent)
    hParent_ = hParent;
    reInit_ = false;
 
-   if(FAILED(CoCreateInstance(__uuidof(MMDeviceEnumerator),
-         nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&deviceEnumerator_)))) {
-     return false;
+   if (FAILED(CoCreateInstance(__uuidof(MMDeviceEnumerator),
+      nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&deviceEnumerator_)))) {
+      return false;
    }
 
-   IMMDevice *defaultDevice = nullptr;
+   IMMDevice* defaultDevice = nullptr;
    HRESULT hr = deviceEnumerator_->GetDefaultAudioEndpoint(eRender, eConsole,
       &defaultDevice);
 
-   if(FAILED(hr)) {
+   if (FAILED(hr)) {
       if (hr != E_NOTFOUND) {
          TaskDialog(nullptr,
-                    nullptr,
-                    PROGRAM_NAME,
-                    _T("Failed to get default audio endpoint device"),
-                    _T("WinMute is not able to recover from that condition.\n")
-                    _T("Please try restarting the program"),
-                    TDCBF_OK_BUTTON,
-                    TD_ERROR_ICON,
-                    nullptr);
+            nullptr,
+            PROGRAM_NAME,
+            _T("Failed to get default audio endpoint device"),
+            _T("WinMute is not able to recover from that condition.\n")
+            _T("Please try restarting the program"),
+            TDCBF_OK_BUTTON,
+            TD_ERROR_ICON,
+            nullptr);
       }
       return false;
    }
 
    IAudioSessionManager2* sessionManager2 = nullptr;
    if (FAILED(defaultDevice->Activate(__uuidof(IAudioSessionManager2),
-                                CLSCTX_INPROC_SERVER, nullptr,
-                                reinterpret_cast<LPVOID*>(&sessionManager2)))) {
+      CLSCTX_INPROC_SERVER, nullptr,
+      reinterpret_cast<LPVOID*>(&sessionManager2)))) {
       TaskDialog(nullptr,
-                 nullptr,
-                 PROGRAM_NAME,
-                 _T("Failed to retrieve audio session manager."),
-                 _T("Please try restarting the program"),
-                 TDCBF_OK_BUTTON,
-                 TD_ERROR_ICON,
-                 nullptr);
+         nullptr,
+         PROGRAM_NAME,
+         _T("Failed to retrieve audio session manager."),
+         _T("Please try restarting the program"),
+         TDCBF_OK_BUTTON,
+         TD_ERROR_ICON,
+         nullptr);
       SafeRelease(&defaultDevice);
       return false;
    }
 
    if (FAILED(sessionManager2->GetAudioSessionControl(nullptr, 0,
-                                                      &sessionControl_))) {
+      &sessionControl_))) {
       TaskDialog(nullptr,
-                 nullptr,
-                 PROGRAM_NAME,
-                 _T("Failed to retrieve session control."),
-                 _T("Please try restarting the program"),
-                 TDCBF_OK_BUTTON,
-                 TD_ERROR_ICON,
-                 nullptr);
+         nullptr,
+         PROGRAM_NAME,
+         _T("Failed to retrieve session control."),
+         _T("Please try restarting the program"),
+         TDCBF_OK_BUTTON,
+         TD_ERROR_ICON,
+         nullptr);
       SafeRelease(&sessionManager2);
       return false;
    }
@@ -134,16 +134,16 @@ bool VistaAudio::Init(HWND hParent)
    }
 
    if (FAILED(defaultDevice->Activate(__uuidof(IAudioEndpointVolume),
-                                CLSCTX_INPROC_SERVER, nullptr,
-                                reinterpret_cast<LPVOID*>(&endpointVolume_)))) {
+      CLSCTX_INPROC_SERVER, nullptr,
+      reinterpret_cast<LPVOID*>(&endpointVolume_)))) {
       TaskDialog(nullptr,
-                 nullptr,
-                 PROGRAM_NAME,
-                 _T("Failed to activate default audio device."),
-                 _T("Please try restarting the program"),
-                 TDCBF_OK_BUTTON,
-                 TD_ERROR_ICON,
-                 nullptr);
+         nullptr,
+         PROGRAM_NAME,
+         _T("Failed to activate default audio device."),
+         _T("Please try restarting the program"),
+         TDCBF_OK_BUTTON,
+         TD_ERROR_ICON,
+         nullptr);
       SafeRelease(&defaultDevice);
       return false;
    }

@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2021, Alexander Steinhoefer
+           Copyright (c) 2022, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -31,15 +31,13 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#pragma once
+#include "common.h"
 
-#include "StdAfx.h"
-
-static bool OpenLogFile(std::ofstream &logFile)
+static bool OpenLogFile(std::ofstream& logFile)
 {
    auto path = std::filesystem::temp_directory_path();
    path /= "WinMute.log";
-   logFile.open(path.string(), std::ios::out|std::ios::app|std::ios::binary);
+   logFile.open(path.string(), std::ios::out | std::ios::app | std::ios::binary);
    return logFile.is_open();
 }
 
@@ -49,7 +47,7 @@ Log& Log::GetInstance()
    return log;
 }
 
-Log::Log():
+Log::Log() :
    initialized_(false)
 {
    if (OpenLogFile(logFile_)) {

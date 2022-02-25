@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2021, Alexander Steinhoefer
+           Copyright (c) 2022, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#include "StdAfx.h"
+#include "Common.h"
 
 void PrintWindowsError(LPCWSTR lpszFunction, DWORD lastError)
 {
@@ -42,33 +42,33 @@ void PrintWindowsError(LPCWSTR lpszFunction, DWORD lastError)
 
    LPVOID lpMsgBuf;
    if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                     FORMAT_MESSAGE_FROM_SYSTEM |
-                     FORMAT_MESSAGE_IGNORE_INSERTS,
-                     nullptr, lastError,
-                     MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                     reinterpret_cast<LPTSTR>(&lpMsgBuf), 0, nullptr) != 0) {
-      size_t displayBufSize = 
-          ((size_t)lstrlen(static_cast<LPCTSTR>(lpMsgBuf)) +
-           (size_t)lstrlen(static_cast<LPCTSTR>(lpszFunction))
+      FORMAT_MESSAGE_FROM_SYSTEM |
+      FORMAT_MESSAGE_IGNORE_INSERTS,
+      nullptr, lastError,
+      MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+      reinterpret_cast<LPTSTR>(&lpMsgBuf), 0, nullptr) != 0) {
+      size_t displayBufSize =
+         ((size_t)lstrlen(static_cast<LPCTSTR>(lpMsgBuf)) +
+            (size_t)lstrlen(static_cast<LPCTSTR>(lpszFunction))
             + 40) * sizeof(TCHAR);
       // Display the error message and exit the process
       LPVOID lpDisplayBuf = reinterpret_cast<LPVOID>(
-                                     LocalAlloc(LMEM_ZEROINIT, displayBufSize));
+         LocalAlloc(LMEM_ZEROINIT, displayBufSize));
       if (lpDisplayBuf) {
          StringCchPrintf((LPTSTR)lpDisplayBuf,
-                         LocalSize(lpDisplayBuf),
-                         _T("%s failed with error %u: %s"),
-                         lpszFunction,
-                         lastError,
-                         reinterpret_cast<TCHAR*>(lpMsgBuf));
+            LocalSize(lpDisplayBuf),
+            _T("%s failed with error %u: %s"),
+            lpszFunction,
+            lastError,
+            reinterpret_cast<TCHAR*>(lpMsgBuf));
          TaskDialog(nullptr,
-                    nullptr,
-                    PROGRAM_NAME,
-                    static_cast<LPCTSTR>(lpDisplayBuf),
-                    nullptr,
-                    TDCBF_OK_BUTTON,
-                    TD_ERROR_ICON,
-                    nullptr);
+            nullptr,
+            PROGRAM_NAME,
+            static_cast<LPCTSTR>(lpDisplayBuf),
+            nullptr,
+            TDCBF_OK_BUTTON,
+            TD_ERROR_ICON,
+            nullptr);
          LocalFree(lpDisplayBuf);
       }
       LocalFree(lpMsgBuf);

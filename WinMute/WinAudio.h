@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2021, Alexander Steinhoefer
+           Copyright (c) 2022, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "StdAfx.h"
+#include "common.h"
 
 class WinAudio {
 public:
@@ -42,7 +42,7 @@ public:
    virtual bool IsMuted() = 0;
    virtual void Mute() = 0;
    virtual void UnMute() = 0;
-   virtual ~WinAudio() noexcept { };
+   virtual ~WinAudio() noexcept {};
 };
 
 // Forwards
@@ -68,9 +68,9 @@ private:
 
    IAudioEndpointVolume* endpointVolume_;
    IAudioSessionControl* sessionControl_;
-   IMMDeviceEnumerator *deviceEnumerator_;
+   IMMDeviceEnumerator* deviceEnumerator_;
    VistaAudioSessionEvents* wasapiAudioEvents_;
-   MMNotificationClient*    mmnAudioEvents_;
+   MMNotificationClient* mmnAudioEvents_;
 
    bool reInit_;
    float oldVolume_;

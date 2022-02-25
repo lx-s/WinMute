@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2021, Alexander Steinhoefer
+           Copyright (c) 2022, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#include "StdAfx.h"
+#include "common.h"
 #include "WinMute.h"
 #include "WinAudio.h"
 
@@ -42,21 +42,21 @@ extern INT_PTR CALLBACK QuietHoursDlgProc(HWND, UINT, WPARAM, LPARAM);
 static LPCTSTR WINMUTE_CLASS_NAME = _T("WinMute");
 
 static LRESULT CALLBACK WinMuteWndProc(HWND hWnd, UINT msg, WPARAM wParam,
-                                                            LPARAM lParam)
+   LPARAM lParam)
 {
    auto wm = reinterpret_cast<WinMute*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
    switch (msg) {
    case WM_NCCREATE: {
       LPCREATESTRUCTW cs = reinterpret_cast<LPCREATESTRUCTW>(lParam);
       SetWindowLongPtr(hWnd, GWLP_USERDATA,
-                       reinterpret_cast<LONG_PTR>(cs->lpCreateParams));
+         reinterpret_cast<LONG_PTR>(cs->lpCreateParams));
       return TRUE;
    }
    default:
       break;
    }
    return (wm) ? wm->WindowProc(hWnd, msg, wParam, lParam)
-                 : DefWindowProc(hWnd, msg, wParam, lParam);
+      : DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
 static int IsDarkMode(bool& isDarkMode)
@@ -130,7 +130,7 @@ WinMute::~WinMute()
 
 bool WinMute::RegisterWindowClass()
 {
-   WNDCLASS wc={0};
+   WNDCLASS wc = { 0 };
    wc.hIcon = LoadIcon(hglobInstance, MAKEINTRESOURCE(IDI_APP));
    wc.hbrBackground = CreateSolidBrush(GetSysColor(COLOR_BTNFACE));
    wc.hInstance = hglobInstance;
@@ -160,11 +160,11 @@ bool WinMute::InitAudio()
    if (IsWindowsVistaOrGreater()) {
       audio_ = std::unique_ptr<WinAudio>(new VistaAudio);
    } else if (IsWindowsXPOrGreater()) {
-         TaskDialog(nullptr, nullptr, PROGRAM_NAME,
-           _T("Only Windows Vista and newer is supported"),
-           _T("For Windows XP support, please download WinMute ")
-           _T(" version 1.4.2 or older"),
-           TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
+      TaskDialog(nullptr, nullptr, PROGRAM_NAME,
+         _T("Only Windows Vista and newer is supported"),
+         _T("For Windows XP support, please download WinMute ")
+         _T(" version 1.4.2 or older"),
+         TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
       return false;
    }
 
@@ -203,13 +203,13 @@ bool WinMute::Init()
    hAppIcon_ = LoadIcon(hglobInstance, MAKEINTRESOURCE(IDI_APP));
 
    if (!settings_.Init() ||
-       !LoadDefaults()) {
+      !LoadDefaults()) {
       return false;
    }
 
    if (!RegisterWindowClass() ||
-       !InitWindow() ||
-       !InitTrayMenu()) {
+      !InitWindow() ||
+      !InitTrayMenu()) {
       return false;
    }
 
@@ -237,7 +237,7 @@ bool WinMute::Init()
    hTrayIcon_ = LoadIcon(
       hglobInstance,
       isDarkMode ? MAKEINTRESOURCE(IDI_TRAY_DARK)
-                 : MAKEINTRESOURCE(IDI_TRAY_BRIGHT));
+      : MAKEINTRESOURCE(IDI_TRAY_BRIGHT));
    if (hTrayIcon_ == NULL) {
       PrintWindowsError(_T("LoadIcon"));
       return false;
@@ -329,8 +329,7 @@ LRESULT CALLBACK WinMute::WindowProc(
          if (!state) {
             Log::GetInstance().Write("Mute: Off | Manual per Menu");
             audio_->UnMute();
-         }
-         else {
+         } else {
             Log::GetInstance().Write("Mute: On | Manual per Menu");
             audio_->Mute();
          }
@@ -354,8 +353,7 @@ LRESULT CALLBACK WinMute::WindowProc(
             muteConfig_.withRestore.onScreensaver);
          if (muteConfig_.withRestore.onScreensaver) {
             scrnSaverNoti_.ActivateNotifications(hWnd_);
-         }
-         else {
+         } else {
             scrnSaverNoti_.ClearNotifications();
          }
          break;
@@ -380,7 +378,8 @@ LRESULT CALLBACK WinMute::WindowProc(
       }
       return 0;
    }
-   case WM_TRAYICON: {
+   case WM_TRAYICON:
+   {
       switch (lParam) {
       case WM_LBUTTONUP:
       case WM_RBUTTONUP: {
@@ -413,10 +412,9 @@ LRESULT CALLBACK WinMute::WindowProc(
             }
             muteCounter_ += 1;
          }
-      }
-      else if (wParam == WTS_SESSION_UNLOCK) {
+      } else if (wParam == WTS_SESSION_UNLOCK) {
          if (muteConfig_.restoreAudio &&
-             muteConfig_.withRestore.onLock) {
+            muteConfig_.withRestore.onLock) {
             if (--muteCounter_ == 0) {
                Log::GetInstance().Write("Mute: Off | Workstation Unlock");
                audio_->UnMute();
@@ -439,8 +437,7 @@ LRESULT CALLBACK WinMute::WindowProc(
             Log::GetInstance().Write("Mute: On | Shutdown");
             audio_->Mute();
          }
-      }
-      else if ((lParam & ENDSESSION_LOGOFF)) {
+      } else if ((lParam & ENDSESSION_LOGOFF)) {
          if (muteConfig_.noRestore.onLogoff) {
             Log::GetInstance().Write("Mute: On | Logoff");
             audio_->Mute();
@@ -462,7 +459,7 @@ LRESULT CALLBACK WinMute::WindowProc(
    case WM_WINMUTE_QUIETHOURS_END:
       muteCounter_ -= 1;
       if (muteCounter_ > 0 && muteConfig_.quietHours.forceUnmute ||
-          muteCounter_ == 0) {
+         muteCounter_ == 0) {
          Log::GetInstance().Write("Mute: Off | Quiet Hours ended");
          audio_->UnMute();
          if (muteConfig_.quietHours.notifications) {
@@ -530,7 +527,7 @@ LRESULT CALLBACK WinMute::WindowProc(
          }
       } else if (wParam == SCRNSAVE_STOP) {
          if (muteConfig_.restoreAudio &&
-             muteConfig_.withRestore.onScreensaver) {
+            muteConfig_.withRestore.onScreensaver) {
             if (--muteCounter_ == 0) {
                Log::GetInstance().Write("Mute: Off | Screensaver start");
                audio_->UnMute();
@@ -546,7 +543,7 @@ LRESULT CALLBACK WinMute::WindowProc(
          hTrayIcon_ = LoadIcon(
             hglobInstance,
             isDarkMode ? MAKEINTRESOURCE(IDI_TRAY_DARK)
-                       : MAKEINTRESOURCE(IDI_TRAY_BRIGHT));
+            : MAKEINTRESOURCE(IDI_TRAY_BRIGHT));
          if (hTrayIcon_ == NULL) {
             PrintWindowsError(_T("LoadIcon"));
          } else {
@@ -619,8 +616,8 @@ static int GetDiffMillseconds(const LPSYSTEMTIME t1, const LPSYSTEMTIME t2)
 
 VOID CALLBACK QuietHoursTimer(HWND hWnd, UINT msg, UINT_PTR id, DWORD msSinceSysStart)
 {
-   UNREFERENCED_PARAMETER( msg );
-   UNREFERENCED_PARAMETER( msSinceSysStart );
+   UNREFERENCED_PARAMETER(msg);
+   UNREFERENCED_PARAMETER(msSinceSysStart);
    if (id == QUIETHOURS_TIMER_START_ID) {
       KillTimer(hWnd, id);
       SendMessage(hWnd, WM_WINMUTE_QUIETHOURS_START, 0, 0);

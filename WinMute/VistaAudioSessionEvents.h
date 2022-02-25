@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2021, Alexander Steinhoefer
+           Copyright (c) 2022, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#include "StdAfx.h"
+#include "common.h"
 #include <audiopolicy.h>
 
 class WinAudio;
@@ -45,36 +45,36 @@ public:
    ULONG STDMETHODCALLTYPE AddRef();
    ULONG STDMETHODCALLTYPE Release();
 
-   HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, VOID **ppvInterface);
+   HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, VOID** ppvInterface);
 
    // Notification methods for audio session events
    HRESULT STDMETHODCALLTYPE OnDisplayNameChanged(
-                              LPCWSTR newDisplayName,
-                              LPCGUID eventContext);
+      LPCWSTR newDisplayName,
+      LPCGUID eventContext);
 
    HRESULT STDMETHODCALLTYPE OnIconPathChanged(
-                              LPCWSTR newIconPath,
-                              LPCGUID eventContext);
+      LPCWSTR newIconPath,
+      LPCGUID eventContext);
 
    HRESULT STDMETHODCALLTYPE OnSimpleVolumeChanged(
-                              float newVolume,
-                              BOOL newMute,
-                              LPCGUID eventContext);
+      float newVolume,
+      BOOL newMute,
+      LPCGUID eventContext);
 
    HRESULT STDMETHODCALLTYPE OnChannelVolumeChanged(
-                              DWORD channelCount,
-                              float newChannelVolumeArray[],
-                              DWORD changedChannel,
-                              LPCGUID eventContext);
+      DWORD channelCount,
+      float newChannelVolumeArray[],
+      DWORD changedChannel,
+      LPCGUID eventContext);
 
    HRESULT STDMETHODCALLTYPE OnGroupingParamChanged(
-                              LPCGUID newGroupingParam,
-                              LPCGUID eventContext);
+      LPCGUID newGroupingParam,
+      LPCGUID eventContext);
 
    HRESULT STDMETHODCALLTYPE OnStateChanged(AudioSessionState newState);
 
    HRESULT STDMETHODCALLTYPE OnSessionDisconnected(
-            AudioSessionDisconnectReason disconnectReason);
+      AudioSessionDisconnectReason disconnectReason);
 
 private:
    LONG ref_;

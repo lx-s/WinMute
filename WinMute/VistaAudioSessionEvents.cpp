@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2021, Alexander Steinhoefer
+           Copyright (c) 2022, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -31,10 +31,9 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#include "StdAfx.h"
+#include "common.h"
 #include "WinAudio.h"
 #include "VistaAudioSessionEvents.h"
-
 
 VistaAudioSessionEvents::VistaAudioSessionEvents(WinAudio* notifyParent) :
    ref_(1)
@@ -61,7 +60,7 @@ ULONG STDMETHODCALLTYPE VistaAudioSessionEvents::Release()
 }
 
 HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::QueryInterface(
-   REFIID riid, VOID **ppvInterface)
+   REFIID riid, VOID** ppvInterface)
 {
    if (riid == IID_IUnknown) {
       AddRef();
@@ -120,7 +119,7 @@ HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnSessionDisconnected(
    AudioSessionDisconnectReason disconnectReason)
 {
 
-   switch (disconnectReason)  {
+   switch (disconnectReason) {
    case DisconnectReasonDeviceRemoval:
    case DisconnectReasonFormatChanged:
    case DisconnectReasonSessionDisconnected:
@@ -128,14 +127,14 @@ HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnSessionDisconnected(
       break;
    case DisconnectReasonServerShutdown:
       TaskDialog(nullptr,
-                 nullptr,
-                 PROGRAM_NAME,
-                 _T("The audio service has been shut down. "),
-                 _T("WinMute is not able to recover from that condition.\n")
-                 _T("Please try restarting the program"),
-                 TDCBF_OK_BUTTON,
-                 TD_WARNING_ICON,
-                 nullptr);
+         nullptr,
+         PROGRAM_NAME,
+         _T("The audio service has been shut down. "),
+         _T("WinMute is not able to recover from that condition.\n")
+         _T("Please try restarting the program"),
+         TDCBF_OK_BUTTON,
+         TD_WARNING_ICON,
+         nullptr);
       break;
    case DisconnectReasonSessionLogoff:
       break;

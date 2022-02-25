@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2021, Alexander Steinhoefer
+           Copyright (c) 2022, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#include "StdAfx.h"
+#include "common.h"
 #include "ScreensaverNotifier.h"
 
 /* ========================================================================== */
@@ -50,22 +50,23 @@ static LPCTSTR SCRSVER_NOTIFY_WND_CLASS = _T("LXS_WinMuteScreensaverNotifyClass"
 
 
 static LRESULT CALLBACK ScrsvrWndProc(HWND hWnd, UINT msg, WPARAM wParam,
-                                     LPARAM lParam)
+   LPARAM lParam)
 {
    auto sn = reinterpret_cast<ScreensaverNotifier*>(
-                                         GetWindowLongPtr(hWnd, GWLP_USERDATA));
+      GetWindowLongPtr(hWnd, GWLP_USERDATA));
    switch (msg) {
-   case WM_NCCREATE: {
+   case WM_NCCREATE:
+   {
       LPCREATESTRUCTW cs = reinterpret_cast<LPCREATESTRUCTW>(lParam);
       SetWindowLongPtr(hWnd, GWLP_USERDATA,
-                       reinterpret_cast<LONG_PTR>(cs->lpCreateParams));
+         reinterpret_cast<LONG_PTR>(cs->lpCreateParams));
       return TRUE;
    }
    default:
       break;
    }
    return (sn) ? sn->WindowProc(hWnd, msg, wParam, lParam)
-               : DefWindowProc(hWnd, msg, wParam, lParam);
+      : DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
 /* ========================================================================== */
@@ -82,7 +83,8 @@ ScreensaverNotifier::ScreensaverNotifier() :
    hookWndMsg_(0),
    regHook_(nullptr),
    unregHook_(nullptr)
-{ }
+{
+}
 
 ScreensaverNotifier::~ScreensaverNotifier()
 {
@@ -159,23 +161,23 @@ bool ScreensaverNotifier::InitHook32()
    if (hJob_ == nullptr) {
       PrintWindowsError(_T("CreateJobObject"), GetLastError());
    } else if (SetInformationJobObject(
-         hJob_,
-         JobObjectExtendedLimitInformation,
-         &jobInfo,
-         sizeof(jobInfo)) == FALSE) {
+      hJob_,
+      JobObjectExtendedLimitInformation,
+      &jobInfo,
+      sizeof(jobInfo)) == FALSE) {
       PrintWindowsError(_T("SetInformationJobObject"), GetLastError());
       CloseHandle(hJob_);
    } else if (CreateProcess(
-         _T(".\\ScreensaverProxy32.exe"),
-         commandLine,
-         NULL,
-         NULL,
-         FALSE,
-         NORMAL_PRIORITY_CLASS,
-         NULL,
-         NULL,
-         &startupInfo,
-         &procInfo) == FALSE) {
+      _T(".\\ScreensaverProxy32.exe"),
+      commandLine,
+      NULL,
+      NULL,
+      FALSE,
+      NORMAL_PRIORITY_CLASS,
+      NULL,
+      NULL,
+      &startupInfo,
+      &procInfo) == FALSE) {
       PrintWindowsError(_T("CreateProcess"));
       CloseHandle(hJob_);
       hJob_ = nullptr;
@@ -288,10 +290,10 @@ bool ScreensaverNotifier::IsScreensaverRunning()
 {
    BOOL isRunning = FALSE;
    if (SystemParametersInfo(
-         SPI_GETSCREENSAVERRUNNING,
-         0,
-         &isRunning,
-         FALSE) == FALSE) {
+      SPI_GETSCREENSAVERRUNNING,
+      0,
+      &isRunning,
+      FALSE) == FALSE) {
       PrintWindowsError(_T("SystemParametersInfo"));
       return false;
    }
@@ -310,10 +312,12 @@ LRESULT CALLBACK ScreensaverNotifier::WindowProc(
 {
    static UINT uTaskbarRestart = 0;
    switch (msg) {
-   case WM_CREATE: {
+   case WM_CREATE:
+   {
       return TRUE;
    }
-   case WM_TIMER: {
+   case WM_TIMER:
+   {
       if (wParam == SCRSV_TIMER_ID) {
          if (!IsScreensaverRunning()) {
             StartScreensaverPollTimer(false);

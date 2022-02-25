@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2021, Alexander Steinhoefer
+           Copyright (c) 2022, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -32,18 +32,19 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
-#include "StdAfx.h"
+
+#include "common.h"
 
 #define WM_TRAYICON (WM_APP + 700)
 
-class TrayIcon{
+class TrayIcon {
 public:
    TrayIcon();
    TrayIcon(HWND hWnd, UINT trayID, HICON hIcon, const std::wstring& tooltip,
-            bool show);
+      bool show);
    ~TrayIcon();
    void Init(HWND hWnd, UINT trayID, HICON hIcon, const std::wstring& tooltip,
-             bool show);
+      bool show);
    void Hide();
    void Show();
    bool IsShown() const { return iconVisible_; }

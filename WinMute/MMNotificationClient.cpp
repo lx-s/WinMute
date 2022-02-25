@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2021, Alexander Steinhoefer
+           Copyright (c) 2022, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#include "StdAfx.h"
+#include "common.h"
 #include "WinAudio.h"
 #include "MMNotificationClient.h"
 
@@ -62,7 +62,7 @@ ULONG STDMETHODCALLTYPE MMNotificationClient::Release()
 }
 
 HRESULT STDMETHODCALLTYPE MMNotificationClient::QueryInterface(
-   REFIID riid, VOID **ppvInterface)
+   REFIID riid, VOID** ppvInterface)
 {
    if (IID_IUnknown == riid) {
       AddRef();
