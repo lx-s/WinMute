@@ -33,47 +33,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "common.h"
+#include <string>
+#include <string_view>
 
-class Log {
-public:
-   static Log& GetInstance();
+#include <tchar.h>
 
-   void Write(const tstring& wmsg);
+using tstring = std::basic_string<TCHAR, std::char_traits<TCHAR>, std::allocator<TCHAR>>;
+using tstring_view = std::basic_string_view<TCHAR>;
 
-   template<typename... Args>
-   void Write(
-      [[maybe_unused]] const tstring_view& fmt,
-      [[maybe_unused]] Args&&... args)
-   {
-      if (!initialized_ || !enabled_) {
-         return;
-      }
-#ifdef UNICODE
-      const std::wstring str = std::vformat(
-         fmt, std::make_wformat_args(args...));
-#else
-      const std::wstring str = std::vformat(
-         fmt, std::make_format_args(args...));
-#endif
-      WriteMessage(str);
-   }
-
-   void SetEnabled(bool enable);
-
-private:
-   Log();
-   ~Log();
-   Log(const Log&) = delete;
-   Log& operator=(const Log&) = delete;
-
-   void WriteMessage(const tstring& msg);
-
-   bool initialized_;
-   bool enabled_;
-#ifdef UNICODE
-   std::wofstream logFile_;
-#else
-   std::ofstream logFile_;
-#endif
-};

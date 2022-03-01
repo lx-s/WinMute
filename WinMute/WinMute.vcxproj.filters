@@ -9,58 +9,88 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\Audio">
-      <UniqueIdentifier>{6fe7a132-28a9-4b7b-aa69-1380069e7ee3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Audio\VistaAudio">
-      <UniqueIdentifier>{50123732-775b-41e8-9f2b-fc5925475924}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Helper">
-      <UniqueIdentifier>{5f81f4a6-31a5-4c91-8563-6b63f79478fc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Log">
-      <UniqueIdentifier>{b90f43eb-497c-4b84-b7d9-df7a809e9cab}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\UI">
       <UniqueIdentifier>{8054b676-f98f-4a0b-bf41-266bac229306}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Settings">
+    <Filter Include="Source Files\Controllers">
+      <UniqueIdentifier>{8ace85b5-3ff6-415f-91e0-f14665e8392d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controllers\QuietHours">
+      <UniqueIdentifier>{006ee102-2667-484e-91ac-7ace0b94711a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controllers\Muting">
+      <UniqueIdentifier>{10644ce7-c96f-4c74-9d5b-a2d66957235b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Base">
+      <UniqueIdentifier>{8d380999-372a-406c-b3d1-602d609c150c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Base\Settings">
       <UniqueIdentifier>{0cfb448e-c954-4181-96c8-c89e8d1728aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Base\Log">
+      <UniqueIdentifier>{b90f43eb-497c-4b84-b7d9-df7a809e9cab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Base\Helper">
+      <UniqueIdentifier>{5f81f4a6-31a5-4c91-8563-6b63f79478fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controllers\Muting\Audio">
+      <UniqueIdentifier>{6fe7a132-28a9-4b7b-aa69-1380069e7ee3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controllers\Muting\Audio\VistaAudio">
+      <UniqueIdentifier>{50123732-775b-41e8-9f2b-fc5925475924}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Main">
+      <UniqueIdentifier>{a30e53a3-8e2a-4955-b138-f2cbc8e92f9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI\Dialogs">
+      <UniqueIdentifier>{4879e951-6a56-461d-adcb-b4fca14928a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI\TrayIcon">
+      <UniqueIdentifier>{21b7f94e-74d0-4737-bd72-da855556df2d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinAudio.h">
-      <Filter>Source Files\Audio</Filter>
+      <Filter>Source Files\Controllers\Muting\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="MMNotificationClient.h">
+      <Filter>Source Files\Controllers\Muting\Audio\VistaAudio</Filter>
+    </ClInclude>
+    <ClInclude Include="VistaAudioSessionEvents.h">
+      <Filter>Source Files\Controllers\Muting\Audio\VistaAudio</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreensaverNotifier.h">
+      <Filter>Source Files\Base\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Log.h">
+      <Filter>Source Files\Base\Log</Filter>
+    </ClInclude>
+    <ClInclude Include="settings.h">
+      <Filter>Source Files\Base\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="VersionHelper.h">
+      <Filter>Source Files\Base\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="WinMute.h">
+      <Filter>Source Files\Main</Filter>
     </ClInclude>
     <ClInclude Include="common.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MMNotificationClient.h">
-      <Filter>Source Files\Audio\VistaAudio</Filter>
-    </ClInclude>
-    <ClInclude Include="VistaAudioSessionEvents.h">
-      <Filter>Source Files\Audio\VistaAudio</Filter>
-    </ClInclude>
-    <ClInclude Include="ScreensaverNotifier.h">
-      <Filter>Source Files\Helper</Filter>
-    </ClInclude>
-    <ClInclude Include="Log.h">
-      <Filter>Source Files\Log</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="TrayIcon.h">
-      <Filter>Source Files\UI</Filter>
+      <Filter>Source Files\UI\TrayIcon</Filter>
     </ClInclude>
-    <ClInclude Include="WinMute.h">
+    <ClInclude Include="QuietHours.h">
+      <Filter>Source Files\Controllers\QuietHours</Filter>
+    </ClInclude>
+    <ClInclude Include="MuteControl.h">
+      <Filter>Source Files\Controllers\Muting</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseTypes.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="settings.h">
-      <Filter>Source Files\Settings</Filter>
-    </ClInclude>
-    <ClInclude Include="VersionHelper.h">
-      <Filter>Source Files\Helper</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -80,44 +110,50 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="VistaAudio.cpp">
+      <Filter>Source Files\Controllers\Muting\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="MMNotificationClient.cpp">
+      <Filter>Source Files\Controllers\Muting\Audio\VistaAudio</Filter>
+    </ClCompile>
+    <ClCompile Include="VistaAudioSessionEvents.cpp">
+      <Filter>Source Files\Controllers\Muting\Audio\VistaAudio</Filter>
+    </ClCompile>
+    <ClCompile Include="ScreensaverNotifier.cpp">
+      <Filter>Source Files\Base\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility.cpp">
+      <Filter>Source Files\Base\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="Log.cpp">
+      <Filter>Source Files\Base\Log</Filter>
+    </ClCompile>
+    <ClCompile Include="Settings.cpp">
+      <Filter>Source Files\Base\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="WinMain.cpp">
+      <Filter>Source Files\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="WinMute.cpp">
+      <Filter>Source Files\Main</Filter>
+    </ClCompile>
     <ClCompile Include="common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VistaAudio.cpp">
-      <Filter>Source Files\Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="MMNotificationClient.cpp">
-      <Filter>Source Files\Audio\VistaAudio</Filter>
-    </ClCompile>
-    <ClCompile Include="VistaAudioSessionEvents.cpp">
-      <Filter>Source Files\Audio\VistaAudio</Filter>
-    </ClCompile>
-    <ClCompile Include="ScreensaverNotifier.cpp">
-      <Filter>Source Files\Helper</Filter>
-    </ClCompile>
-    <ClCompile Include="Utility.cpp">
-      <Filter>Source Files\Helper</Filter>
-    </ClCompile>
-    <ClCompile Include="Log.cpp">
-      <Filter>Source Files\Log</Filter>
-    </ClCompile>
     <ClCompile Include="AboutDlg.cpp">
-      <Filter>Source Files\UI</Filter>
+      <Filter>Source Files\UI\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="QuietHoursDlg.cpp">
-      <Filter>Source Files\UI</Filter>
+      <Filter>Source Files\UI\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="TrayIcon.cpp">
-      <Filter>Source Files\UI</Filter>
+      <Filter>Source Files\UI\TrayIcon</Filter>
     </ClCompile>
-    <ClCompile Include="WinMain.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="QuietHours.cpp">
+      <Filter>Source Files\Controllers\QuietHours</Filter>
     </ClCompile>
-    <ClCompile Include="WinMute.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Settings.cpp">
-      <Filter>Source Files\Settings</Filter>
+    <ClCompile Include="MuteControl.cpp">
+      <Filter>Source Files\Controllers\Muting</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

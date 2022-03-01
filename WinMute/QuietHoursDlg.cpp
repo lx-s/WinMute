@@ -74,10 +74,10 @@ static bool SaveQuietHours(
    int setEnd = end->wHour * 3600 + end->wMinute * 60 + end->wSecond;
 
    if (!settings->SetValue(SettingsKey::QUIETHOURS_ENABLE, enabled) ||
-      !settings->SetValue(SettingsKey::QUIETHOURS_FORCEUNMUTE, forceUnmute) ||
-      !settings->SetValue(SettingsKey::QUIETHOURS_NOTIFICATIONS, showNotifications) ||
-      !settings->SetValue(SettingsKey::QUIETHOURS_START, setStart) ||
-      !settings->SetValue(SettingsKey::QUIETHOURS_END, setEnd)) {
+       !settings->SetValue(SettingsKey::QUIETHOURS_FORCEUNMUTE, forceUnmute) ||
+       !settings->SetValue(SettingsKey::QUIETHOURS_NOTIFICATIONS, showNotifications) ||
+       !settings->SetValue(SettingsKey::QUIETHOURS_START, setStart) ||
+       !settings->SetValue(SettingsKey::QUIETHOURS_END, setEnd)) {
       TaskDialog(
          nullptr,
          nullptr,

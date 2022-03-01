@@ -47,6 +47,9 @@ static LPCWSTR KeyToStr(SettingsKey key)
    case SettingsKey::MUTE_ON_SCREENSAVER:
       keyStr = _T("MuteOnScreensaver");
       break;
+   case SettingsKey::MUTE_ON_DISPLAYSTANDBY:
+      keyStr = _T("MuteOnDisplayStandby");
+      break;
    case SettingsKey::RESTORE_AUDIO:
       keyStr = _T("RestoreAudio");
       break;

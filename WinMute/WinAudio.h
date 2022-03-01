@@ -40,8 +40,7 @@ public:
    virtual bool Init(HWND hParent) = 0;
    virtual void ShouldReInit() = 0;
    virtual bool IsMuted() = 0;
-   virtual void Mute() = 0;
-   virtual void UnMute() = 0;
+   virtual void SetMute(bool mute) = 0;
    virtual ~WinAudio() noexcept {};
 };
 
@@ -60,8 +59,7 @@ public:
    bool Init(HWND hParent) override;
    void ShouldReInit() override;
    bool IsMuted() override;
-   void Mute() override;
-   void UnMute() override;
+   void SetMute(bool mute) override;
 private:
    void Uninit();
    bool CheckForReInit();

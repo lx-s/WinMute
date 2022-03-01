@@ -49,16 +49,18 @@ POSSIBILITY OF SUCH DAMAGE.
 #define _WIN32_WINNT 0x0601
 #include <sdkddkver.h>
 
+#include <algorithm>
 #include <array>
 #include <cassert>
-#include <string>
-#include <memory>
-#include <vector>
-#include <algorithm>
-#include <fstream>
-#include <filesystem>
 #include <chrono>
+#include <filesystem>
+#include <format>
+#include <fstream>
+#include <memory>
+#include <string_view>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
 #include <windows.h>
 #include <windowsx.h>
@@ -70,12 +72,20 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "resource.h"
 
+#include "BaseTypes.h"
 #include "ScreensaverNotifier.h"
 #include "Settings.h"
 #include "Log.h"
 #include "TrayIcon.h"
+#include "WinAudio.h"
+#include "MuteControl.h"
 #include "WinMute.h"
 #include "VersionHelper.h"
+
+// Utility
+void PrintWindowsError(LPCWSTR lpszFunction, DWORD lastError = -1);
+
+static const LPCTSTR PROGRAM_NAME = _T("WinMute");
 
 template<class Interface>
 inline void SafeRelease(Interface** ppInterfaceToRelease)
@@ -85,14 +95,3 @@ inline void SafeRelease(Interface** ppInterfaceToRelease)
       (*ppInterfaceToRelease) = nullptr;
    }
 }
-
-#ifdef UNICODE
-typedef std::basic_string<wchar_t> tstring;
-#else
-typedef std::basic_string<char> tstring;
-#endif
-
-// Utility
-void PrintWindowsError(LPCWSTR lpszFunction, DWORD lastError = -1);
-
-static const LPCTSTR PROGRAM_NAME = _T("WinMute");

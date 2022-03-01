@@ -193,24 +193,13 @@ bool VistaAudio::IsMuted()
    return false;
 }
 
-void VistaAudio::Mute()
+void VistaAudio::SetMute(bool mute)
 {
    if (CheckForReInit() && endpointVolume_ != nullptr) {
-      BOOL isMuted = FALSE;
+      BOOL isMuted = !mute;
       endpointVolume_->GetMute(&isMuted);
-      if (!isMuted) {
-         endpointVolume_->SetMute(TRUE, nullptr);
-      }
-   }
-}
-
-void VistaAudio::UnMute()
-{
-   if (CheckForReInit() && endpointVolume_ != nullptr) {
-      BOOL isMuted = TRUE;
-      endpointVolume_->GetMute(&isMuted);
-      if (isMuted) {
-         endpointVolume_->SetMute(FALSE, nullptr);
+      if (!!isMuted != mute) {
+         endpointVolume_->SetMute(mute, nullptr);
       }
    }
 }

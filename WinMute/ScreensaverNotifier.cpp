@@ -101,10 +101,10 @@ bool ScreensaverNotifier::Init()
       return true;
    }
    return RegisterWindowClass() &&
-      InitWindow() &&
-      InitWindowMessage() &&
-      InitHookDll() &&
-      InitHook32();
+          InitWindow() &&
+          InitWindowMessage() &&
+          InitHookDll() &&
+          InitHook32();
 }
 
 bool ScreensaverNotifier::InitWindow()
@@ -168,16 +168,16 @@ bool ScreensaverNotifier::InitHook32()
       PrintWindowsError(_T("SetInformationJobObject"), GetLastError());
       CloseHandle(hJob_);
    } else if (CreateProcess(
-      _T(".\\ScreensaverProxy32.exe"),
-      commandLine,
-      NULL,
-      NULL,
-      FALSE,
-      NORMAL_PRIORITY_CLASS,
-      NULL,
-      NULL,
-      &startupInfo,
-      &procInfo) == FALSE) {
+         _T(".\\ScreensaverProxy32.exe"),
+         commandLine,
+         NULL,
+         NULL,
+         FALSE,
+         NORMAL_PRIORITY_CLASS,
+         NULL,
+         NULL,
+         &startupInfo,
+         &procInfo) == FALSE) {
       PrintWindowsError(_T("CreateProcess"));
       CloseHandle(hJob_);
       hJob_ = nullptr;

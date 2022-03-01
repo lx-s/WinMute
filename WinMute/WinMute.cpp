@@ -95,14 +95,6 @@ static int IsDarkMode(bool& isDarkMode)
 
 WinMute::MuteConfig::MuteConfig()
 {
-   this->withRestore.onLock = true;
-   this->withRestore.onScreensaver = true;
-   this->restoreAudio = true;
-
-   this->noRestore.onLogoff = false;
-   this->noRestore.onSuspend = false;
-   this->noRestore.onShutdown = false;
-
    this->quietHours.enabled = false;
    this->quietHours.forceUnmute = false;
    this->quietHours.notifications = false;
@@ -114,13 +106,8 @@ WinMute::WinMute() :
    hWnd_(nullptr),
    hTrayMenu_(nullptr),
    hAppIcon_(nullptr),
-   hTrayIcon_(nullptr),
-   wasAlreadyMuted_(false),
-   muteCounter_(0)
+   hTrayIcon_(nullptr)
 {
-   muteCfg_["locked"] = { false, false };
-   muteCfg_["screensaver"] = { false, false };
-   muteCfg_["remote_session"] = { false, false };
 }
 
 WinMute::~WinMute()
@@ -158,7 +145,7 @@ bool WinMute::InitWindow()
 bool WinMute::InitAudio()
 {
    if (IsWindowsVistaOrGreater()) {
-      audio_ = std::unique_ptr<WinAudio>(new VistaAudio);
+      // Nothing to do
    } else if (IsWindowsXPOrGreater()) {
       TaskDialog(nullptr, nullptr, PROGRAM_NAME,
          _T("Only Windows Vista and newer is supported"),
@@ -168,9 +155,10 @@ bool WinMute::InitAudio()
       return false;
    }
 
-   if (!audio_->Init(hWnd_)) {
+   if (!muteCtrl_.Init(hWnd_)) {
       return false;
    }
+   Log::GetInstance().SetEnabled(true);
 
    return true;
 }
@@ -185,12 +173,12 @@ bool WinMute::InitTrayMenu()
       PrintWindowsError(_T("LoadMenu"));
       return false;
    } else if (
-      !CHECK_MENU_ITEM(MUTEONLOCK, muteConfig_.withRestore.onLock) ||
-      !CHECK_MENU_ITEM(MUTEONSCREENSAVER, muteConfig_.withRestore.onScreensaver) ||
-      !CHECK_MENU_ITEM(RESTOREAUDIO, muteConfig_.restoreAudio) ||
-      !CHECK_MENU_ITEM(MUTEONSUSPEND, muteConfig_.noRestore.onSuspend) ||
-      !CHECK_MENU_ITEM(MUTEONSHUTDOWN, muteConfig_.noRestore.onShutdown) ||
-      !CHECK_MENU_ITEM(MUTEONLOGOUT, muteConfig_.noRestore.onLogoff) ||
+      !CHECK_MENU_ITEM(MUTEONLOCK, muteCtrl_.GetMuteOnWorkstationLock()) ||
+      !CHECK_MENU_ITEM(MUTEONSCREENSAVER, muteCtrl_.GetMuteOnScreensaverActivation()) ||
+      !CHECK_MENU_ITEM(RESTOREAUDIO, muteCtrl_.GetRestoreVolume()) ||
+      !CHECK_MENU_ITEM(MUTEONSUSPEND, muteCtrl_.GetMuteOnSuspend()) ||
+      !CHECK_MENU_ITEM(MUTEONSHUTDOWN, muteCtrl_.GetMuteOnShutdown()) ||
+      !CHECK_MENU_ITEM(MUTEONLOGOUT, muteCtrl_.GetMuteOnLogout()) ||
       !CHECK_MENU_ITEM(CONFIGUREQUIETHOURS, muteConfig_.quietHours.enabled)) {
       return false;
    }
@@ -203,13 +191,17 @@ bool WinMute::Init()
    hAppIcon_ = LoadIcon(hglobInstance, MAKEINTRESOURCE(IDI_APP));
 
    if (!settings_.Init() ||
-      !LoadDefaults()) {
+       !LoadDefaults()) {
       return false;
    }
 
    if (!RegisterWindowClass() ||
-      !InitWindow() ||
-      !InitTrayMenu()) {
+       !InitWindow() ||
+       !InitTrayMenu()) {
+      return false;
+   }
+
+   if (!InitAudio()) {
       return false;
    }
 
@@ -217,7 +209,7 @@ bool WinMute::Init()
       return false;
    }
 
-   if (muteConfig_.withRestore.onScreensaver) {
+   if (muteCtrl_.GetMuteOnScreensaverActivation()) {
       if (!scrnSaverNoti_.ActivateNotifications(hWnd_)) {
          return false;
       }
@@ -228,16 +220,12 @@ bool WinMute::Init()
       return false;
    }
 
-   if (!InitAudio()) {
-      return false;
-   }
-
    bool isDarkMode = true;
    IsDarkMode(isDarkMode);
    hTrayIcon_ = LoadIcon(
       hglobInstance,
       isDarkMode ? MAKEINTRESOURCE(IDI_TRAY_DARK)
-      : MAKEINTRESOURCE(IDI_TRAY_BRIGHT));
+                 : MAKEINTRESOURCE(IDI_TRAY_BRIGHT));
    if (hTrayIcon_ == NULL) {
       PrintWindowsError(_T("LoadIcon"));
       return false;
@@ -251,19 +239,13 @@ bool WinMute::Init()
 
 bool WinMute::LoadDefaults()
 {
-   muteConfig_.withRestore.onLock =
-      settings_.QueryValue(SettingsKey::MUTE_ON_LOCK, 1) != 0;
-   muteConfig_.withRestore.onScreensaver =
-      settings_.QueryValue(SettingsKey::MUTE_ON_SCREENSAVER, 1) != 0;
-   muteConfig_.restoreAudio =
-      settings_.QueryValue(SettingsKey::RESTORE_AUDIO, 1) != 0;
-
-   muteConfig_.noRestore.onLogoff =
-      settings_.QueryValue(SettingsKey::MUTE_ON_LOGOUT, 0) != 0;
-   muteConfig_.noRestore.onSuspend =
-      settings_.QueryValue(SettingsKey::MUTE_ON_SUSPEND, 0) != 0;
-   muteConfig_.noRestore.onShutdown =
-      settings_.QueryValue(SettingsKey::MUTE_ON_SHUTDOWN, 0) != 0;
+   muteCtrl_.SetRestoreVolume(!!settings_.QueryValue(SettingsKey::RESTORE_AUDIO, 1));
+   muteCtrl_.SetMuteOnWorkstationLock(!!settings_.QueryValue(SettingsKey::MUTE_ON_LOCK, 1));
+   muteCtrl_.SetMuteOnScreensaverActivation(!!settings_.QueryValue(SettingsKey::MUTE_ON_SCREENSAVER, 1));
+   muteCtrl_.SetMuteOnDisplayStandby(!!settings_.QueryValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY, 1));
+   muteCtrl_.SetMuteOnLogout(!!settings_.QueryValue(SettingsKey::MUTE_ON_LOGOUT, 0));
+   muteCtrl_.SetMuteOnSuspend(!!settings_.QueryValue(SettingsKey::MUTE_ON_SUSPEND, 0));
+   muteCtrl_.SetMuteOnShutdown(!!settings_.QueryValue(SettingsKey::MUTE_ON_SHUTDOWN, 0));
 
    muteConfig_.quietHours.enabled =
       settings_.QueryValue(SettingsKey::QUIETHOURS_ENABLE, 0) != 0;
@@ -326,54 +308,57 @@ LRESULT CALLBACK WinMute::WindowProc(
       case ID_TRAYMENU_MUTE: {
          bool state = false;
          ToggleMenuCheck(ID_TRAYMENU_MUTE, &state);
-         if (!state) {
-            Log::GetInstance().Write("Mute: Off | Manual per Menu");
-            audio_->UnMute();
-         } else {
-            Log::GetInstance().Write("Mute: On | Manual per Menu");
-            audio_->Mute();
-         }
+         muteCtrl_.SetMute(state);
          break;
       }
-      case ID_TRAYMENU_MUTEONLOCK:
-         ToggleMenuCheck(ID_TRAYMENU_MUTEONLOCK,
-            &muteConfig_.withRestore.onLock);
-         settings_.SetValue(SettingsKey::MUTE_ON_LOCK,
-            muteConfig_.withRestore.onLock);
+      case ID_TRAYMENU_MUTEONLOCK: {
+         bool checked = false;
+         ToggleMenuCheck(ID_TRAYMENU_MUTEONLOCK, &checked);
+         muteCtrl_.SetMuteOnWorkstationLock(checked);
+         settings_.SetValue(SettingsKey::MUTE_ON_LOCK, checked);
          break;
-      case ID_TRAYMENU_RESTOREAUDIO:
-         ToggleMenuCheck(ID_TRAYMENU_RESTOREAUDIO, &muteConfig_.restoreAudio);
-         settings_.SetValue(SettingsKey::RESTORE_AUDIO,
-            muteConfig_.restoreAudio);
+      }
+      case ID_TRAYMENU_RESTOREAUDIO:{
+         bool checked = false;
+         ToggleMenuCheck(ID_TRAYMENU_RESTOREAUDIO, &checked);
+         muteCtrl_.SetRestoreVolume(checked);
+         settings_.SetValue(SettingsKey::RESTORE_AUDIO, checked);
          break;
-      case ID_TRAYMENU_MUTEONSCREENSAVER:
-         ToggleMenuCheck(ID_TRAYMENU_MUTEONSCREENSAVER,
-            &muteConfig_.withRestore.onScreensaver);
-         settings_.SetValue(SettingsKey::MUTE_ON_SCREENSAVER,
-            muteConfig_.withRestore.onScreensaver);
-         if (muteConfig_.withRestore.onScreensaver) {
+      }
+      case ID_TRAYMENU_MUTEONSCREENSAVER: {
+         bool checked = false;
+         ToggleMenuCheck(ID_TRAYMENU_MUTEONSCREENSAVER, &checked);
+         muteCtrl_.SetMuteOnScreensaverActivation(checked);
+         settings_.SetValue(SettingsKey::MUTE_ON_SCREENSAVER, checked);
+         if (checked) {
             scrnSaverNoti_.ActivateNotifications(hWnd_);
          } else {
             scrnSaverNoti_.ClearNotifications();
          }
          break;
-      case ID_TRAYMENU_MUTEONSHUTDOWN:
-         ToggleMenuCheck(ID_TRAYMENU_MUTEONSHUTDOWN,
-            &muteConfig_.noRestore.onShutdown);
-         settings_.SetValue(SettingsKey::MUTE_ON_SHUTDOWN,
-            muteConfig_.noRestore.onShutdown);
+      }
+      case ID_TRAYMENU_MUTEONSHUTDOWN: {
+         bool checked = false;
+         ToggleMenuCheck(ID_TRAYMENU_MUTEONSHUTDOWN, &checked);
+         muteCtrl_.SetMuteOnShutdown(checked);
+         settings_.SetValue(SettingsKey::MUTE_ON_SHUTDOWN, checked);
          break;
-      case ID_TRAYMENU_MUTEONSUSPEND:
-         ToggleMenuCheck(ID_TRAYMENU_MUTEONSUSPEND,
-            &muteConfig_.noRestore.onSuspend);
-         settings_.SetValue(SettingsKey::MUTE_ON_SUSPEND,
-            muteConfig_.noRestore.onSuspend);
+      }
+      case ID_TRAYMENU_MUTEONSUSPEND: {
+         bool checked = false;
+         ToggleMenuCheck(ID_TRAYMENU_MUTEONSUSPEND, &checked);
+         muteCtrl_.SetMuteOnSuspend(checked);
+         settings_.SetValue(SettingsKey::MUTE_ON_SUSPEND, checked);
          break;
-      case ID_TRAYMENU_MUTEONLOGOUT:
-         ToggleMenuCheck(ID_TRAYMENU_MUTEONLOGOUT,
-            &muteConfig_.noRestore.onLogoff);
-         settings_.SetValue(SettingsKey::MUTE_ON_LOGOUT,
-            muteConfig_.noRestore.onLogoff);
+      }
+      case ID_TRAYMENU_MUTEONLOGOUT: {
+         bool checked = false;
+         ToggleMenuCheck(ID_TRAYMENU_MUTEONLOGOUT, &checked);
+         muteCtrl_.SetMuteOnLogout(checked);
+         settings_.SetValue(SettingsKey::MUTE_ON_LOGOUT, checked);
+         break;
+      }
+      default:
          break;
       }
       return 0;
@@ -402,92 +387,55 @@ LRESULT CALLBACK WinMute::WindowProc(
    }
    case WM_WTSSESSION_CHANGE: {
       if (wParam == WTS_SESSION_LOCK) {
-         if (muteCounter_ == 0 && audio_->IsMuted()) {
-            muteCounter_ = 1;
-         }
-         if (muteConfig_.withRestore.onLock) {
-            if (muteCounter_ == 0) {
-               Log::GetInstance().Write("Mute: Off | Workstation Lock");
-               audio_->Mute();
-            }
-            muteCounter_ += 1;
-         }
+         muteCtrl_.NotifyWorkstationLock(true);
       } else if (wParam == WTS_SESSION_UNLOCK) {
-         if (muteConfig_.restoreAudio &&
-            muteConfig_.withRestore.onLock) {
-            if (--muteCounter_ == 0) {
-               Log::GetInstance().Write("Mute: Off | Workstation Unlock");
-               audio_->UnMute();
-            }
-         }
+         muteCtrl_.NotifyWorkstationLock(false);
       }
       return 0;
    }
    case WM_POWERBROADCAST:
       if (wParam == PBT_APMSUSPEND) {
-         if (muteConfig_.noRestore.onSuspend) {
-            Log::GetInstance().Write("Mute: On | Suspend/Hibernate");
-            audio_->Mute();
+         muteCtrl_.NotifySuspend(true);
+      } else if (wParam == PBT_POWERSETTINGCHANGE) {
+         const PPOWERBROADCAST_SETTING bs =
+            reinterpret_cast<PPOWERBROADCAST_SETTING>(lParam);
+         if (IsEqualGUID(bs->PowerSetting, GUID_CONSOLE_DISPLAY_STATE)) {
+            const DWORD state = reinterpret_cast<DWORD>(bs->Data);
+            if (state == 0x0) { // Display off
+               muteCtrl_.NotifyDisplayStandby(true);
+            } else if (state == 0x1) { // Display on
+               muteCtrl_.NotifyDisplayStandby(false);
+            } else if (state == 0x2) { // Display dimmed
+            }
          }
       }
       break;
    case WM_QUERYENDSESSION:
       if (lParam == 0) { // Shutdown
-         if (muteConfig_.noRestore.onShutdown) {
-            Log::GetInstance().Write("Mute: On | Shutdown");
-            audio_->Mute();
-         }
+         muteCtrl_.NotifyShutdown();
       } else if ((lParam & ENDSESSION_LOGOFF)) {
-         if (muteConfig_.noRestore.onLogoff) {
-            Log::GetInstance().Write("Mute: On | Logoff");
-            audio_->Mute();
-         }
+         muteCtrl_.NotifyLogout();
       }
       break;
    case WM_WINMUTE_QUIETHOURS_START:
-      muteCounter_ = !!audio_->IsMuted();
-      Log::GetInstance().Write("Mute: On | Quiet Hours started");
-      audio_->Mute();
-      muteCounter_ += 1;
+      muteCtrl_.NotifyQuietHours(true);
       if (muteConfig_.quietHours.notifications) {
          trayIcon_.ShowPopup(
             _T("WinMute: Quiet hours started"),
-            _T("Your workstation audio is now muted"));
+            _T("Your workstation audio will now be muted."));
       }
       SetQuietHoursEnd();
       return 0;
    case WM_WINMUTE_QUIETHOURS_END:
-      muteCounter_ -= 1;
-      if (muteCounter_ > 0 && muteConfig_.quietHours.forceUnmute ||
-         muteCounter_ == 0) {
-         Log::GetInstance().Write("Mute: Off | Quiet Hours ended");
-         audio_->UnMute();
-         if (muteConfig_.quietHours.notifications) {
-            trayIcon_.ShowPopup(
-               _T("WinMute: Quiet Hours ended"),
-               _T("Your workstation audio has been restored."));
-         }
-      } else {
-         if (muteConfig_.quietHours.notifications) {
-            trayIcon_.ShowPopup(
-               _T("WinMute: Quiet Hours ended"),
-               _T("Quiet hours ended, since your your audio was already muted ")
-               _T("and force unmute is off, your workstation will remain muted."));
-         }
+      muteCtrl_.NotifyQuietHours(false);
+      trayIcon_.ShowPopup(
+         _T("WinMute: Quiet Hours ended"),
+         _T("Your workstation audio has been restored."));
+      if (muteConfig_.quietHours.forceUnmute) {
+         muteCtrl_.SetMute(false);
       }
       SetQuietHoursStart();
       return 0;
-   case WM_WINMUTE_MUTE: {
-      bool mute = !!static_cast<int>(wParam);
-      if (mute) {
-         Log::GetInstance().Write("Mute: On | Per Windows-Message");
-         audio_->Mute();
-      } else {
-         Log::GetInstance().Write("Mute: Off | Per Windows-Message");
-         audio_->UnMute();
-      }
-      return 0;
-   }
    case WM_WINMUTE_QUIETHOURS_CHANGE: {
       muteConfig_.quietHours.enabled = settings_.QueryValue(
          SettingsKey::QUIETHOURS_ENABLE,
@@ -517,27 +465,14 @@ LRESULT CALLBACK WinMute::WindowProc(
    }
    case WM_SCRNSAVE_CHANGE: {
       if (wParam == SCRNSAVE_START) {
-         muteCounter_ = !!audio_->IsMuted();
-         if (muteConfig_.withRestore.onScreensaver) {
-            if (muteCounter_ == 0) {
-               Log::GetInstance().Write("Mute: On | Screensaver start");
-               audio_->Mute();
-            }
-            muteCounter_ += 1;
-         }
+         muteCtrl_.NotifyScreensaver(true);
       } else if (wParam == SCRNSAVE_STOP) {
-         if (muteConfig_.restoreAudio &&
-            muteConfig_.withRestore.onScreensaver) {
-            if (--muteCounter_ == 0) {
-               Log::GetInstance().Write("Mute: Off | Screensaver start");
-               audio_->UnMute();
-            }
-         }
+         muteCtrl_.NotifyScreensaver(false);
       }
       return 0;
    }
    case WM_SETTINGCHANGE: {
-      if (lstrcmp(LPCTSTR(lParam), L"ImmersiveColorSet") == 0) {
+      if (lstrcmp(LPCTSTR(lParam), _T("ImmersiveColorSet")) == 0) {
          bool isDarkMode = true;
          IsDarkMode(isDarkMode);
          hTrayIcon_ = LoadIcon(
@@ -650,15 +585,15 @@ void WinMute::ResetQuietHours()
 
       if (QuietHoursShouldAlreadyHaveStarted(&now, &start, &end)) {
          int timerQhEnd = GetDiffMillseconds(&end, &now);
-         Log::GetInstance().Write("Mute: On | Quiet hours have already started");
-         audio_->Mute();
+         Log::GetInstance().Write(L"Mute: On | Quiet hours have already started");
+         muteCtrl_.NotifyQuietHours(true);
          if (SetTimer(hWnd_, QUIETHOURS_TIMER_END_ID, timerQhEnd, QuietHoursTimer) == 0) {
-            MessageBox(hWnd_, _T("Failed to create Timer"), PROGRAM_NAME, MB_OK);
+            MessageBox(hWnd_, L"Failed to create Timer", PROGRAM_NAME, MB_OK);
          }
       } else {
          int timerQhStart = GetDiffMillseconds(&start, &now);
          if (SetTimer(hWnd_, QUIETHOURS_TIMER_START_ID, timerQhStart, QuietHoursTimer) == 0) {
-            MessageBox(hWnd_, _T("Failed to create Timer"), PROGRAM_NAME, MB_OK);
+            MessageBox(hWnd_, L"Failed to create Timer", PROGRAM_NAME, MB_OK);
          }
       }
    }
@@ -678,7 +613,7 @@ void WinMute::SetQuietHoursStart()
 
    int timerQhStart = GetDiffMillseconds(&start, &now);
    if (SetTimer(hWnd_, QUIETHOURS_TIMER_START_ID, timerQhStart, QuietHoursTimer) == 0) {
-      MessageBox(hWnd_, _T("Failed to create Timer"), PROGRAM_NAME, MB_OK);
+      MessageBox(hWnd_, L"Failed to create Timer", PROGRAM_NAME, MB_OK);
    }
 }
 
@@ -698,7 +633,7 @@ void WinMute::SetQuietHoursEnd()
    if (timerQhEnd <= 0) {
       SendMessage(hWnd_, WM_WINMUTE_QUIETHOURS_END, 0, 0);
    } else if (SetTimer(hWnd_, QUIETHOURS_TIMER_END_ID, timerQhEnd, QuietHoursTimer) == 0) {
-      MessageBox(hWnd_, _T("Failed to create Timer"), PROGRAM_NAME, MB_OK);
+      MessageBox(hWnd_, L"Failed to create Timer", PROGRAM_NAME, MB_OK);
    }
 }
 

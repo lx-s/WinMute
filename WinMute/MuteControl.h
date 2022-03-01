@@ -35,45 +35,59 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
-class Log {
+class MuteControl {
+   struct MuteConfig {
+      bool shouldMute;
+      bool active;
+   };
+   std::vector<MuteConfig> muteConfig_;
+   bool wasAlreadyMuted_;
+   bool restoreVolume_;
+   std::unique_ptr<WinAudio> winAudio_;
+
+   void NotifyRestoreCondition(int type, bool active);
+   void ConfigureWasAlreadyMuted();
+   void RestoreVolume();
 public:
-   static Log& GetInstance();
+   MuteControl();
+   ~MuteControl();
+   MuteControl(const MuteControl&) = delete;
+   MuteControl& operator=(const MuteControl&) = delete;
 
-   void Write(const tstring& wmsg);
+   bool Init(HWND hParent);
 
-   template<typename... Args>
-   void Write(
-      [[maybe_unused]] const tstring_view& fmt,
-      [[maybe_unused]] Args&&... args)
-   {
-      if (!initialized_ || !enabled_) {
-         return;
-      }
-#ifdef UNICODE
-      const std::wstring str = std::vformat(
-         fmt, std::make_wformat_args(args...));
-#else
-      const std::wstring str = std::vformat(
-         fmt, std::make_format_args(args...));
-#endif
-      WriteMessage(str);
-   }
+   void SetMute(bool mute);
 
-   void SetEnabled(bool enable);
+   void SetRestoreVolume(bool enable);
 
-private:
-   Log();
-   ~Log();
-   Log(const Log&) = delete;
-   Log& operator=(const Log&) = delete;
+   void SetMuteOnWorkstationLock(bool enable);
+   void SetMuteOnScreensaverActivation(bool enable);
+   void SetMuteOnRemoteSession(bool enable);
+   void SetMuteOnDisplayStandby(bool enable);
+   
+   void SetMuteOnLogout(bool enable);
+   void SetMuteOnSuspend(bool enable);
+   void SetMuteOnShutdown(bool enable);
 
-   void WriteMessage(const tstring& msg);
+   bool GetRestoreVolume();
 
-   bool initialized_;
-   bool enabled_;
-#ifdef UNICODE
-   std::wofstream logFile_;
-#else
-   std::ofstream logFile_;
-#endif
+   bool GetMuteOnWorkstationLock();
+   bool GetMuteOnScreensaverActivation();
+   bool GetMuteOnRemoteSession();
+   bool GetMuteOnDisplayStandby();
+
+   bool GetMuteOnLogout();
+   bool GetMuteOnSuspend();
+   bool GetMuteOnShutdown();
+
+   void NotifyScreensaver(bool active);
+   void NotifyWorkstationLock(bool active);
+   void NotifyRemoteSession(bool active);
+   void NotifyDisplayStandby(bool enable);
+
+   void NotifyLogout();
+   void NotifySuspend(bool active);
+   void NotifyShutdown();
+
+   void NotifyQuietHours(bool active);
 };

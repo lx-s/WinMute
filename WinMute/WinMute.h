@@ -38,7 +38,6 @@ POSSIBILITY OF SUCH DAMAGE.
 class WinAudio;
 
 static const int WM_WINMUTE_QUIETHOURS_CHANGE = WM_APP + 200;
-static const int WM_WINMUTE_MUTE = WM_APP + 201;
 static const int WM_WINMUTE_QUIETHOURS_START = WM_APP + 202;
 static const int WM_WINMUTE_QUIETHOURS_END = WM_APP + 203;
 static const int QUIETHOURS_TIMER_START_ID = 271020;
@@ -55,13 +54,6 @@ public:
    // for internal use
    LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 private:
-   struct MuteConfigItem {
-      bool shouldMute;
-      bool isActive;
-   };
-
-   std::unordered_map<std::string, MuteConfigItem> muteCfg_;
-
    HWND hWnd_;
    HMENU hTrayMenu_;
    HICON hAppIcon_;
@@ -69,7 +61,7 @@ private:
 
    struct MuteConfig {
       MuteConfig();
-      struct {
+      /*struct {
          bool onLock;
          bool onScreensaver;
       } withRestore;
@@ -78,7 +70,7 @@ private:
          bool onLogoff;
          bool onShutdown;
          bool onSuspend;
-      } noRestore;
+      } noRestore;*/
       struct {
          bool enabled;
          bool forceUnmute;
@@ -88,18 +80,16 @@ private:
       } quietHours;
    } muteConfig_;
 
-   bool wasAlreadyMuted_;
-   int muteCounter_;
-
    TrayIcon trayIcon_;
-   std::unique_ptr<WinAudio> audio_;
    ScreensaverNotifier scrnSaverNoti_;
    Settings settings_;
+   MuteControl muteCtrl_;
 
    bool RegisterWindowClass();
    bool InitWindow();
    bool InitAudio();
    bool InitTrayMenu();
+   void InitMuteSettings();
    bool LoadDefaults();
 
    void ResetQuietHours();

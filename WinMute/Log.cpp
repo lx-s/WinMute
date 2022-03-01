@@ -33,10 +33,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
+#ifdef UNICODE
+static bool OpenLogFile(std::wofstream& logFile)
+#else
 static bool OpenLogFile(std::ofstream& logFile)
+#endif
 {
    auto path = std::filesystem::temp_directory_path();
-   path /= "WinMute.log";
+   path /= L"WinMute.log";
    logFile.open(path.string(), std::ios::out | std::ios::app | std::ios::binary);
    return logFile.is_open();
 }
@@ -62,21 +66,34 @@ Log::~Log()
    }
 }
 
-void Log::Write(std::string msg)
+void Log::SetEnabled(bool enable)
 {
-   if (!initialized_) {
-      return;
-   }
+   enabled_ = enable;
+}
+
+void Log::WriteMessage(const tstring& msg)
+{
+   struct tm tm;
    auto now = std::chrono::system_clock::now();
    auto in_time_t = std::chrono::system_clock::to_time_t(now);
-   struct tm tm;
 
+#ifdef UNICODE
+   std::wstringstream ss;
+#else
    std::stringstream ss;
+#endif
    localtime_s(&tm, &in_time_t);
-   ss << "[" << std::put_time(&tm, "%Y-%m-%d %X") << "] ";
-   ss << msg;
-   ss << "\n";
-
-   logFile_.write(ss.str().c_str(), ss.str().length());
+   ss << _T("[") << std::put_time(&tm, _T("%Y-%m-%d %X")) << _T("] ")
+      << msg << _T("\n");
+   const auto& logStr = ss.str();
+   logFile_.write(logStr.c_str(), logStr.length());
    logFile_.flush();
+}
+
+void Log::Write(const tstring& msg)
+{
+   if (!initialized_ || !enabled_) {
+      return;
+   }
+   WriteMessage(msg);
 }
