@@ -82,7 +82,7 @@ private:
 
    TrayIcon trayIcon_;
    ScreensaverNotifier scrnSaverNoti_;
-   Settings settings_;
+   WMSettings settings_;
    MuteControl muteCtrl_;
 
    bool RegisterWindowClass();

@@ -74,9 +74,9 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "resource.h"
 
 #include "BaseTypes.h"
+#include "WMSettings.h"
 #include "ScreensaverNotifier.h"
-#include "Settings.h"
-#include "Log.h"
+#include "WMLog.h"
 #include "TrayIcon.h"
 #include "WinAudio.h"
 #include "MuteControl.h"

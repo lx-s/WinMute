@@ -31,69 +31,40 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
+#pragma once
+
 #include "common.h"
 
-#ifdef UNICODE
-static bool OpenLogFile(std::wofstream& logFile)
-#else
-static bool OpenLogFile(std::ofstream& logFile)
-#endif
-{
-   auto path = std::filesystem::temp_directory_path();
-   path /= L"WinMute.log";
-   logFile.open(path.string(), std::ios::out | std::ios::app | std::ios::binary);
-   return logFile.is_open();
-}
+enum class SettingsKey {
+     MUTE_ON_LOCK
+   , MUTE_ON_SCREENSAVER
+   , MUTE_ON_DISPLAYSTANDBY
+   , RESTORE_AUDIO
+   , MUTE_ON_SUSPEND
+   , MUTE_ON_SHUTDOWN
+   , MUTE_ON_LOGOUT
+   , QUIETHOURS_ENABLE
+   , QUIETHOURS_FORCEUNMUTE
+   , QUIETHOURS_NOTIFICATIONS
+   , QUIETHOURS_START
+   , QUIETHOURS_END
+   , LOGGING_ENABLED
+};
 
-Log& Log::GetInstance()
-{
-   static Log log;
-   return log;
-}
+class WMSettings {
+public:
+   WMSettings();
+   ~WMSettings();
 
-Log::Log() :
-   initialized_(false)
-{
-   if (OpenLogFile(logFile_)) {
-      initialized_ = true;
-   }
-}
+   WMSettings(const WMSettings&) = delete;
+   WMSettings& operator=(const WMSettings&) = delete;
 
-Log::~Log()
-{
-   if (initialized_) {
-      logFile_.close();
-   }
-}
+   bool Init();
+   void Unload();
 
-void Log::SetEnabled(bool enable)
-{
-   enabled_ = enable;
-}
+   DWORD QueryValue(SettingsKey key, DWORD defValue);
+   bool SetValue(SettingsKey key, DWORD value);
 
-void Log::WriteMessage(const tstring& msg)
-{
-   struct tm tm;
-   auto now = std::chrono::system_clock::now();
-   auto in_time_t = std::chrono::system_clock::to_time_t(now);
-
-#ifdef UNICODE
-   std::wstringstream ss;
-#else
-   std::stringstream ss;
-#endif
-   localtime_s(&tm, &in_time_t);
-   ss << _T("[") << std::put_time(&tm, _T("%Y-%m-%d %X")) << _T("] ")
-      << msg << _T("\n");
-   const auto& logStr = ss.str();
-   logFile_.write(logStr.c_str(), logStr.length());
-   logFile_.flush();
-}
-
-void Log::Write(const tstring& msg)
-{
-   if (!initialized_ || !enabled_) {
-      return;
-   }
-   WriteMessage(msg);
-}
+private:
+   HKEY hRegSettingsKey_;
+};

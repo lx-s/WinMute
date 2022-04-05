@@ -31,49 +31,69 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#pragma once
-
 #include "common.h"
 
-class Log {
-public:
-   static Log& GetInstance();
-
-   void Write(const tstring& wmsg);
-
-   template<typename... Args>
-   void Write(
-      [[maybe_unused]] const tstring_view& fmt,
-      [[maybe_unused]] Args&&... args)
-   {
-      if (!initialized_ || !enabled_) {
-         return;
-      }
 #ifdef UNICODE
-      const std::wstring str = std::vformat(
-         fmt, std::make_wformat_args(args...));
+static bool OpenLogFile(std::wofstream& logFile)
 #else
-      const std::wstring str = std::vformat(
-         fmt, std::make_format_args(args...));
+static bool OpenLogFile(std::ofstream& logFile)
 #endif
-      WriteMessage(str);
+{
+   auto path = std::filesystem::temp_directory_path();
+   path /= L"WinMute.log";
+   logFile.open(path.string(), std::ios::out | std::ios::app | std::ios::binary);
+   return logFile.is_open();
+}
+
+WMLog& WMLog::GetInstance()
+{
+   static WMLog log;
+   return log;
+}
+
+WMLog::WMLog() :
+   initialized_(false)
+{
+   if (OpenLogFile(logFile_)) {
+      initialized_ = true;
    }
+}
 
-   void SetEnabled(bool enable);
+WMLog::~WMLog()
+{
+   if (initialized_) {
+      logFile_.close();
+   }
+}
 
-private:
-   Log();
-   ~Log();
-   Log(const Log&) = delete;
-   Log& operator=(const Log&) = delete;
+void WMLog::SetEnabled(bool enable)
+{
+   enabled_ = enable;
+}
 
-   void WriteMessage(const tstring& msg);
+void WMLog::WriteMessage(const tstring& msg)
+{
+   struct tm tm;
+   auto now = std::chrono::system_clock::now();
+   auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
-   bool initialized_;
-   bool enabled_;
 #ifdef UNICODE
-   std::wofstream logFile_;
+   std::wstringstream ss;
 #else
-   std::ofstream logFile_;
+   std::stringstream ss;
 #endif
-};
+   localtime_s(&tm, &in_time_t);
+   ss << _T("[") << std::put_time(&tm, _T("%Y-%m-%d %X")) << _T("] ")
+      << msg << _T("\n");
+   const auto& logStr = ss.str();
+   logFile_.write(logStr.c_str(), logStr.length());
+   logFile_.flush();
+}
+
+void WMLog::Write(const tstring& msg)
+{
+   if (!initialized_ || !enabled_) {
+      return;
+   }
+   WriteMessage(msg);
+}

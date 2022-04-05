@@ -50,19 +50,15 @@ END
 // Dialog
 //
 
-IDD_ABOUT DIALOGEX 0, 0, 236, 56
+IDD_ABOUT DIALOGEX 0, 0, 313, 269
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION
 CAPTION "About WinMute"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14
-    LTEXT           "WinMute v1.6.0",IDC_STATIC,35,7,82,10
-    LTEXT           "Copyright (c) 2020, Alexander Steinhöfer",IDC_STATIC,35,20,135,8
-    ICON            IDI_APP,IDC_STATIC,7,7,20,20,SS_CENTERIMAGE
-    CONTROL         "<a href=""https://lx-s.de"">lx-systems - lx-s.de</a>",IDC_LINK_HOMEPAGE,
-                    "SysLink",WS_TABSTOP,34,33,82,14
-    CONTROL         "<a href=""https://github.com/lx-s/WinMute/issues/"">Support</a>",IDC_LINK_SUPPORT,
-                    "SysLink",WS_TABSTOP,106,33,60,14
+    CONTROL         "",IDC_ABOUT_TAB,"SysTabControl32",0x0,7,34,299,202
+    PUSHBUTTON      "OK",IDOK,242,246,64,16
+    LTEXT           "WinMute 2.0",IDC_ABOUT_TITLE,41,7,193,23
+    ICON            IDI_APP,IDC_STATIC,13,7,21,20,SS_CENTERIMAGE
 END
 
 IDD_SETTINGS DIALOGEX 0, 0, 269, 253
@@ -100,6 +96,26 @@ BEGIN
     LTEXT           "End time:",IDC_STATIC,24,73,32,16
 END
 
+IDD_ABOUT_LICENSE DIALOGEX 0, 0, 300, 181
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_LICENSETEXT,7,7,286,167,ES_CENTER | ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER | WS_VSCROLL
+END
+
+IDD_ABOUT_WINMUTE DIALOGEX 0, 0, 298, 176
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "<a href=""https://lx-s.de"">Author Site: www.lx-s.de</a>",IDC_LINK_HOMEPAGE,
+                    "SysLink",WS_TABSTOP,197,14,94,14
+    CONTROL         "<a href=""https://github.com/lx-s/WinMute/"">Project Site && Code</a>",IDC_LINK_PROJECT,
+                    "SysLink",WS_TABSTOP,197,32,94,14
+    EDITTEXT        IDC_ABOUTTEXT,7,14,182,155,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    CONTROL         "<a href=""https://github.com/lx-s/WinMute/issues/"">Support</a>",IDC_LINK_TICKETS,
+                    "SysLink",WS_TABSTOP,197,49,94,14
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -112,9 +128,9 @@ BEGIN
     IDD_ABOUT, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 229
+        RIGHTMARGIN, 306
         TOPMARGIN, 7
-        BOTTOMMARGIN, 49
+        BOTTOMMARGIN, 262
     END
 
     IDD_SETTINGS, DIALOG
@@ -139,6 +155,22 @@ BEGIN
         RIGHTMARGIN, 195
         TOPMARGIN, 7
         BOTTOMMARGIN, 170
+    END
+
+    IDD_ABOUT_LICENSE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 293
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 174
+    END
+
+    IDD_ABOUT_WINMUTE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 291
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 169
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -165,6 +197,17 @@ BEGIN
 END
 
 IDD_SETTINGS_QUIETHOURS AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_ABOUT_LICENSE AFX_DIALOG_LAYOUT
+BEGIN
+    0,
+    100, 100, 100, 100
+END
+
+IDD_ABOUT_WINMUTE AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
@@ -201,14 +244,13 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Restore volume when returning", ID_TRAYMENU_RESTOREAUDIO, CHECKED
         MENUITEM SEPARATOR
-        MENUITEM "Configure Quiet Hours...",    ID_TRAYMENU_CONFIGUREQUIETHOURS
+        MENUITEM "Settings...",                 ID_TRAYMENU_SETTINGS
         MENUITEM SEPARATOR
         MENUITEM "Mute on (no volume restore)", ID_TRAYMENU_AFTERWARDS, INACTIVE
         MENUITEM "... Shutdown",                ID_TRAYMENU_MUTEONSHUTDOWN
         MENUITEM "... Sleep",                   ID_TRAYMENU_MUTEONSUSPEND
         MENUITEM "... Logout",                  ID_TRAYMENU_MUTEONLOGOUT
         MENUITEM SEPARATOR
-        MENUITEM "Settings...",                 ID_TRAYMENU_SETTINGS
         MENUITEM "Mute now",                    ID_TRAYMENU_MUTE
         MENUITEM SEPARATOR
         MENUITEM "Exit",                        ID_TRAYMENU_EXIT

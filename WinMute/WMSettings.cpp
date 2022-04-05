@@ -32,10 +32,8 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "common.h"
-#include "Settings.h"
 
 static const LPCWSTR LX_SYSTEMS_SUBKEY = _T("SOFTWARE\\lx-systems\\WinMute");
-
 
 static LPCWSTR KeyToStr(SettingsKey key)
 {
@@ -77,22 +75,25 @@ static LPCWSTR KeyToStr(SettingsKey key)
    case SettingsKey::QUIETHOURS_END:
       keyStr = _T("QuietHoursEnd");
       break;
+   case SettingsKey::LOGGING_ENABLED:
+      keyStr = _T("Logging");
+      break;
    }
    return keyStr;
 }
 
 
-Settings::Settings() :
+WMSettings::WMSettings() :
    hRegSettingsKey_(nullptr)
 {
 }
 
-Settings::~Settings()
+WMSettings::~WMSettings()
 {
    Unload();
 }
 
-bool Settings::Init()
+bool WMSettings::Init()
 {
    if (hRegSettingsKey_ == nullptr) {
       DWORD regError = RegCreateKeyEx(
@@ -114,13 +115,13 @@ bool Settings::Init()
    return true;
 }
 
-void Settings::Unload()
+void WMSettings::Unload()
 {
    RegCloseKey(hRegSettingsKey_);
    hRegSettingsKey_ = nullptr;
 }
 
-DWORD Settings::QueryValue(SettingsKey key, DWORD defValue)
+DWORD WMSettings::QueryValue(SettingsKey key, DWORD defValue)
 {
    auto keyStr = KeyToStr(key);
    assert(keyStr != nullptr);
@@ -144,7 +145,7 @@ DWORD Settings::QueryValue(SettingsKey key, DWORD defValue)
    return value;
 }
 
-bool Settings::SetValue(SettingsKey key, DWORD value)
+bool WMSettings::SetValue(SettingsKey key, DWORD value)
 {
    auto keyStr = KeyToStr(key);
    assert(keyStr != nullptr);

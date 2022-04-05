@@ -10,9 +10,13 @@
 #define IDD_SETTINGS                    109
 #define IDD_SETTINGS_GENERAL            114
 #define IDD_SETTINGS_QUIETHOURS         116
+#define IDD_ABOUT_LICENSE               118
+#define IDD_ABOUT_WINMUTE               120
 #define IDC_LINK_HOMEPAGE               1001
 #define IDC_LINK_SUPPORT                1002
+#define IDC_LINK_PROJECT                1002
 #define IDC_ENABLEQUIETHOURS            1003
+#define IDC_LINK_TICKETS                1003
 #define IDC_QUIETHOURS_START            1004
 #define IDC_QUIETHOURS_END              1005
 #define IDC_FORCEUNMUTE                 1006
@@ -23,8 +27,12 @@
 #define IDC_CHECK1                      1011
 #define IDC_ENABLELOGGING               1012
 #define IDC_CHECK3                      1013
-#define IDC_BUTTON1                     1014
 #define IDC_OPENLOG                     1014
+#define IDC_LICENSETEXT                 1015
+#define IDC_ABOUT_TAB                   1016
+#define IDC_ABOUTTEXT                   1019
+#define IDC_TITLE                       1020
+#define IDC_ABOUT_TITLE                 1020
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_                    40002
 #define ID_TRAYMENU_MUTEON              40003
@@ -55,9 +63,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        118
+#define _APS_NEXT_RESOURCE_VALUE        122
 #define _APS_NEXT_COMMAND_VALUE         40026
-#define _APS_NEXT_CONTROL_VALUE         1015
+#define _APS_NEXT_CONTROL_VALUE         1021
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

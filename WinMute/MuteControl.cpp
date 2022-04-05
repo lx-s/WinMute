@@ -73,7 +73,7 @@ bool MuteControl::Init(HWND hParent)
 
 void MuteControl::SetMute(bool mute)
 {
-   Log::GetInstance().Write(_T("Manual muting: {}"), mute ? _T("on") : _T("off"));
+   WMLog::GetInstance().Write(_T("Manual muting: {}"), mute ? _T("on") : _T("off"));
    winAudio_->SetMute(mute);
 }
 
@@ -94,14 +94,14 @@ void MuteControl::ConfigureWasAlreadyMuted()
 void MuteControl::RestoreVolume()
 {
    if (!restoreVolume_) {
-      Log::GetInstance().Write(_T("Restore is FALSE"));
+      WMLog::GetInstance().Write(_T("Restore is FALSE"));
       return;
    }
    bool restore = true;
    int i = 0;
    for (const auto& conf : muteConfig_) {
       if (conf.shouldMute && conf.active) {
-         Log::GetInstance().Write(_T("Entry {} found with ShouldMute: Yes and Active: Yes"), i);
+         WMLog::GetInstance().Write(_T("Entry {} found with ShouldMute: Yes and Active: Yes"), i);
          restore = false;
          //break;
       }
@@ -109,10 +109,10 @@ void MuteControl::RestoreVolume()
    }
    if (restore) {
       if (winAudio_->IsMuted() && !wasAlreadyMuted_) {
-         Log::GetInstance().Write(_T("Mute: Off"));
+         WMLog::GetInstance().Write(_T("Mute: Off"));
          winAudio_->SetMute(false);
       } else {
-         Log::GetInstance().Write(
+         WMLog::GetInstance().Write(
             _T("Skipping unmute since workstation was already muted."));
       }
    }
@@ -204,14 +204,14 @@ void MuteControl::NotifyRestoreCondition(int type, bool active)
    if (active) {
       ConfigureWasAlreadyMuted();
       muteConfig_[type].active = active;
-      Log::GetInstance().Write(_T("Condition {}: ACTIVE"), type);
+      WMLog::GetInstance().Write(_T("Condition {}: ACTIVE"), type);
       if (muteConfig_[type].shouldMute &&
          !winAudio_->IsMuted()) {
-         Log::GetInstance().Write(_T("Mute: On"));
+         WMLog::GetInstance().Write(_T("Mute: On"));
          winAudio_->SetMute(true);
       }
    } else {
-      Log::GetInstance().Write(_T("Condition {}: INACTIVE"), type);
+      WMLog::GetInstance().Write(_T("Condition {}: INACTIVE"), type);
       muteConfig_[type].active = active;
       RestoreVolume();
    }
@@ -246,7 +246,7 @@ void MuteControl::NotifyLogout()
 
 void MuteControl::NotifySuspend(bool /*active*/)
 {
-   Log::GetInstance().Write(_T("Suspend: START"));
+   WMLog::GetInstance().Write(_T("Suspend: START"));
    if (muteConfig_[MuteTypeSuspend].shouldMute) {
       winAudio_->SetMute(true);
    }
@@ -263,12 +263,12 @@ void MuteControl::NotifyQuietHours(bool active)
 {
    if (active) {
       ConfigureWasAlreadyMuted();
-      Log::GetInstance().Write(L"Quiet Hours startet");
+      WMLog::GetInstance().Write(L"Quiet Hours startet");
       if (!winAudio_->IsMuted()) {
          winAudio_->SetMute(true);
       }
    } else {
-      Log::GetInstance().Write(L"Quiet Hours ended");
+      WMLog::GetInstance().Write(L"Quiet Hours ended");
       RestoreVolume();
    }
 }

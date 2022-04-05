@@ -65,10 +65,10 @@
     <ClInclude Include="ScreensaverNotifier.h">
       <Filter>Source Files\Base\Helper</Filter>
     </ClInclude>
-    <ClInclude Include="Log.h">
+    <ClInclude Include="WMLog.h">
       <Filter>Source Files\Base\Log</Filter>
     </ClInclude>
-    <ClInclude Include="settings.h">
+    <ClInclude Include="WMSettings.h">
       <Filter>Source Files\Base\Settings</Filter>
     </ClInclude>
     <ClInclude Include="VersionHelper.h">
@@ -128,10 +128,10 @@
     <ClCompile Include="Utility.cpp">
       <Filter>Source Files\Base\Helper</Filter>
     </ClCompile>
-    <ClCompile Include="Log.cpp">
+    <ClCompile Include="WMLog.cpp">
       <Filter>Source Files\Base\Log</Filter>
     </ClCompile>
-    <ClCompile Include="Settings.cpp">
+    <ClCompile Include="WMSettings.cpp">
       <Filter>Source Files\Base\Settings</Filter>
     </ClCompile>
     <ClCompile Include="WinMain.cpp">
@@ -144,9 +144,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AboutDlg.cpp">
-      <Filter>Source Files\UI\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="QuietHoursDlg.cpp">
       <Filter>Source Files\UI\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="TrayIcon.cpp">

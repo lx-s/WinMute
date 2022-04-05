@@ -44,9 +44,9 @@ struct SettingsDlgData {
    HWND hTabs[SETTINGS_TAB_COUNT];
 
    HWND hActiveTab;
-   Settings* settings;
+   WMSettings* settings;
 
-   SettingsDlgData(Settings* settings)
+   SettingsDlgData(WMSettings* settings)
       : settings(settings), hTabCtrl(NULL), hActiveTab(NULL)
    {
       ZeroMemory(hTabs, sizeof(hTabs));
@@ -94,7 +94,7 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
    switch (msg) {
    case WM_INITDIALOG: {
       assert(dlgData == nullptr);
-      Settings* settings = reinterpret_cast<Settings*>(lParam);
+      WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
       dlgData = new SettingsDlgData(settings);
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(dlgData));
       

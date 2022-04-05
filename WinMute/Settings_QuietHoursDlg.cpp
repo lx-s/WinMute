@@ -47,7 +47,7 @@ static bool IsValidTimeRange(
 }
 
 static bool SaveQuietHours(
-   Settings* settings,
+   WMSettings* settings,
    const int enabled,
    const int forceUnmute,
    const int showNotifications,
@@ -105,7 +105,7 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
       HWND hStart = GetDlgItem(hDlg, IDC_QUIETHOURS_START);
       HWND hEnd = GetDlgItem(hDlg, IDC_QUIETHOURS_END);
 
-      Settings* settings = reinterpret_cast<Settings*>(lParam);
+      WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
       assert(settings != NULL);
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(settings));
 
@@ -159,7 +159,7 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
       HWND hNotify = GetDlgItem(hDlg, IDC_SHOWNOTIFICATIONS);
       HWND hStart = GetDlgItem(hDlg, IDC_QUIETHOURS_START);
       HWND hEnd = GetDlgItem(hDlg, IDC_QUIETHOURS_END);
-      Settings* settings = reinterpret_cast<Settings*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+      WMSettings* settings = reinterpret_cast<WMSettings*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
       int qhEnabled = Button_GetCheck(hEnable) == BST_CHECKED;
       int qhForceUnmute = Button_GetCheck(hForce) == BST_CHECKED;
       int qhNotifications = Button_GetCheck(hNotify) == BST_CHECKED;

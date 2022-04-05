@@ -159,7 +159,7 @@ bool WinMute::InitAudio()
    if (!muteCtrl_.Init(hWnd_)) {
       return false;
    }
-   Log::GetInstance().SetEnabled(true);
+   WMLog::GetInstance().SetEnabled(true);
 
    return true;
 }
@@ -179,8 +179,7 @@ bool WinMute::InitTrayMenu()
       !CHECK_MENU_ITEM(RESTOREAUDIO, muteCtrl_.GetRestoreVolume()) ||
       !CHECK_MENU_ITEM(MUTEONSUSPEND, muteCtrl_.GetMuteOnSuspend()) ||
       !CHECK_MENU_ITEM(MUTEONSHUTDOWN, muteCtrl_.GetMuteOnShutdown()) ||
-      !CHECK_MENU_ITEM(MUTEONLOGOUT, muteCtrl_.GetMuteOnLogout()) ||
-      !CHECK_MENU_ITEM(CONFIGUREQUIETHOURS, muteConfig_.quietHours.enabled)) {
+      !CHECK_MENU_ITEM(MUTEONLOGOUT, muteCtrl_.GetMuteOnLogout())) {
       return false;
    }
    return true;
@@ -294,14 +293,6 @@ LRESULT CALLBACK WinMute::WindowProc(
             MAKEINTRESOURCE(IDD_ABOUT),
             hWnd_,
             AboutDlgProc);
-         break;
-      case ID_TRAYMENU_CONFIGUREQUIETHOURS:
-         DialogBoxParam(
-            hglobInstance,
-            MAKEINTRESOURCE(IDD_QUIETHOURS),
-            hWnd_,
-            QuietHoursDlgProc,
-            reinterpret_cast<LPARAM>(&settings_));
          break;
       case ID_TRAYMENU_EXIT:
          SendMessage(hWnd, WM_CLOSE, 0, 0);
@@ -594,7 +585,7 @@ void WinMute::ResetQuietHours()
 
       if (QuietHoursShouldAlreadyHaveStarted(&now, &start, &end)) {
          int timerQhEnd = GetDiffMillseconds(&end, &now);
-         Log::GetInstance().Write(L"Mute: On | Quiet hours have already started");
+         WMLog::GetInstance().Write(L"Mute: On | Quiet hours have already started");
          muteCtrl_.NotifyQuietHours(true);
          if (SetTimer(hWnd_, QUIETHOURS_TIMER_END_ID, timerQhEnd, QuietHoursTimer) == 0) {
             MessageBox(hWnd_, L"Failed to create Timer", PROGRAM_NAME, MB_OK);

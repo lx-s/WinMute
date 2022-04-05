@@ -35,35 +35,45 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
-enum class SettingsKey {
-     MUTE_ON_LOCK
-   , MUTE_ON_SCREENSAVER
-   , MUTE_ON_DISPLAYSTANDBY
-   , RESTORE_AUDIO
-   , MUTE_ON_SUSPEND
-   , MUTE_ON_SHUTDOWN
-   , MUTE_ON_LOGOUT
-   , QUIETHOURS_ENABLE
-   , QUIETHOURS_FORCEUNMUTE
-   , QUIETHOURS_NOTIFICATIONS
-   , QUIETHOURS_START
-   , QUIETHOURS_END
-};
-
-class Settings {
+class WMLog {
 public:
-   Settings();
-   ~Settings();
+   static WMLog& GetInstance();
 
-   Settings(const Settings&) = delete;
-   Settings& operator=(const Settings&) = delete;
+   void Write(const tstring& wmsg);
 
-   bool Init();
-   void Unload();
+   template<typename... Args>
+   void Write(
+      [[maybe_unused]] const tstring_view& fmt,
+      [[maybe_unused]] Args&&... args)
+   {
+      if (!initialized_ || !enabled_) {
+         return;
+      }
+#ifdef UNICODE
+      const std::wstring str = std::vformat(
+         fmt, std::make_wformat_args(args...));
+#else
+      const std::wstring str = std::vformat(
+         fmt, std::make_format_args(args...));
+#endif
+      WriteMessage(str);
+   }
 
-   DWORD QueryValue(SettingsKey key, DWORD defValue);
-   bool SetValue(SettingsKey key, DWORD value);
+   void SetEnabled(bool enable);
 
 private:
-   HKEY hRegSettingsKey_;
+   WMLog();
+   ~WMLog();
+   WMLog(const WMLog&) = delete;
+   WMLog& operator=(const WMLog&) = delete;
+
+   void WriteMessage(const tstring& msg);
+
+   bool initialized_;
+   bool enabled_;
+#ifdef UNICODE
+   std::wofstream logFile_;
+#else
+   std::ofstream logFile_;
+#endif
 };
