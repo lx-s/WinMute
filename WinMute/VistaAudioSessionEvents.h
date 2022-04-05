@@ -31,6 +31,8 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
+#pragma once
+
 #include "common.h"
 #include <audiopolicy.h>
 

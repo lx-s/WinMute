@@ -33,15 +33,37 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 #include <mmdeviceapi.h>
+#include <comip.h>
+#include <comdef.h>
+#include <Functiondiscoverykeys_devpkey.h>
 
 #pragma warning(disable : 4201)
 #  include <endpointvolume.h>
 #pragma warning(default : 4201)
 
 #include "WinAudio.h"
-#include "VistaAudioSessionEvents.h"
-#include "MMNotificationClient.h"
 
+#define IF_FAILED_JUMP(hResult, ExitLabel) if (FAILED(hr)) { goto ExitLabel; }
+
+_COM_SMARTPTR_TYPEDEF(IPropertyStore, __uuidof(IPropertyStore));
+_COM_SMARTPTR_TYPEDEF(IMMDevice,      __uuidof(IMMDevice));
+_COM_SMARTPTR_TYPEDEF(IMMDeviceCollection,   __uuidof(IMMDeviceCollection));
+_COM_SMARTPTR_TYPEDEF(IMMDeviceEnumerator,   __uuidof(IMMDeviceEnumerator));
+_COM_SMARTPTR_TYPEDEF(IAudioSessionManager2, __uuidof(IAudioSessionManager2));
+_COM_SMARTPTR_TYPEDEF(IAudioSessionControl, __uuidof(IAudioSessionControl));
+
+Endpoint::Endpoint()
+   : endpointVolume(nullptr), wasapiAudioEvents(nullptr), wasMuted(false)
+{
+   deviceName[0] = _T('\0');
+}
+
+Endpoint::~Endpoint()
+{
+   if (endpointVolume != nullptr) {
+      SafeRelease(&endpointVolume);
+   }
+}
 
 VistaAudio::VistaAudio() :
    endpointVolume_(nullptr),
@@ -64,6 +86,94 @@ VistaAudio::~VistaAudio()
    CoUninitialize();
 }
 
+bool VistaAudio::LoadAllEndpoints()
+{
+   WMLog& log = WMLog::GetInstance();
+   IMMDeviceEnumeratorPtr deviceEnumerator;
+   if (FAILED(CoCreateInstance(__uuidof(MMDeviceEnumerator),
+              nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&deviceEnumerator)))) {
+      log.Write(_T("Failed to create instance of MMDeviceEnumerator"));
+      return false;
+   }
+
+   IMMDeviceCollectionPtr audioEndpoints;
+   HRESULT hr = deviceEnumerator->EnumAudioEndpoints(
+      eRender,
+      DEVICE_STATE_ACTIVE,
+      &audioEndpoints);
+   IF_FAILED_JUMP(hr, exit_error);
+
+   UINT epCount;
+   hr = audioEndpoints->GetCount(&epCount);
+   IF_FAILED_JUMP(hr, exit_error);
+
+   for (UINT i = 0; i < epCount; ++i) {
+      std::unique_ptr<Endpoint> ep = std::make_unique<Endpoint>();
+      IMMDevicePtr device = nullptr;
+      IPropertyStorePtr propStore;
+
+
+      hr = audioEndpoints->Item(i, &device);
+      if (FAILED(hr)) {
+         log.Write(_T("Failed to get audio endpoint #{}"), i);
+         continue;
+      }
+
+      hr = device->OpenPropertyStore(STGM_READ, &propStore);
+      if (FAILED(hr)) {
+         log.Write(_T("Failed to open property store for audio endpoint #{}"), i);
+         continue;
+      }
+
+      PROPVARIANT value;
+      PropVariantInit(&value);
+      hr = propStore->GetValue(PKEY_Device_FriendlyName, &value);
+      if (FAILED(hr)) {
+         log.Write(_T("Failed to get device name for audio endpoint #{}"), i);
+         continue;
+      }
+      log.Write(_T("Found audio endpoint {}"), value.pwszVal);
+      StringCchCopy(ep->deviceName, sizeof(ep->deviceName), value.pwszVal);
+      PropVariantClear(&value);
+
+
+      IAudioSessionManager2Ptr sessionManager2;
+      if (FAILED(device->Activate(
+            __uuidof(IAudioSessionManager2), CLSCTX_INPROC_SERVER, nullptr,
+            reinterpret_cast<LPVOID*>(&sessionManager2)))) {
+         log.Write(_T("Failed to retrieve audio session manager for {}"),
+                   ep->deviceName);
+         continue;
+      }
+
+      IAudioSessionControlPtr sessionControl;
+      hr = sessionManager2->GetAudioSessionControl(nullptr, 0, &sessionControl);
+      if (FAILED(hr)) {
+         log.Write(_T("Failed to retrieve audio session manager for {}"),
+            ep->deviceName);
+         continue;
+      }
+
+      ep->wasapiAudioEvents = std::make_unique<VistaAudioSessionEvents>(this);
+      if (wasapiAudioEvents_) {
+         sessionControl->RegisterAudioSessionNotification(wasapiAudioEvents_);
+      }
+
+      hr = device->Activate(__uuidof(IAudioEndpointVolume), CLSCTX_INPROC_SERVER,
+                            nullptr, reinterpret_cast<LPVOID*>(&ep->endpointVolume));
+      if (FAILED(hr)) {
+         log.Write(_T("Failed to active endpoint volume for device {}"),
+                   ep->deviceName);
+         continue;
+      }
+      endpoints_.push_back(std::move(ep));
+   }
+
+exit_error:
+
+   return true;
+}
+
 bool VistaAudio::Init(HWND hParent)
 {
    hParent_ = hParent;
@@ -73,6 +183,8 @@ bool VistaAudio::Init(HWND hParent)
       nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&deviceEnumerator_)))) {
       return false;
    }
+
+   LoadAllEndpoints();
 
    IMMDevice* defaultDevice = nullptr;
    HRESULT hr = deviceEnumerator_->GetDefaultAudioEndpoint(eRender, eConsole,
@@ -166,6 +278,8 @@ void VistaAudio::Uninit()
    SafeRelease(&sessionControl_);
    SafeRelease(&endpointVolume_);
    SafeRelease(&deviceEnumerator_);
+
+   endpoints_.clear();
 }
 
 void VistaAudio::ShouldReInit()

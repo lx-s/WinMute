@@ -35,6 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
+#include "VistaAudioSessionEvents.h"
+#include "MMNotificationClient.h"
+
 class WinAudio {
 public:
    virtual bool Init(HWND hParent) = 0;
@@ -48,8 +51,19 @@ public:
 struct IAudioEndpointVolume;
 struct IAudioSessionControl;
 struct IMMDeviceEnumerator;
-class VistaAudioSessionEvents;
-class MMNotificationClient;
+
+struct Endpoint {
+   TCHAR deviceName[100];
+   IAudioEndpointVolume* endpointVolume;
+   std::unique_ptr<VistaAudioSessionEvents> wasapiAudioEvents;
+
+   bool wasMuted;
+
+   Endpoint();
+   ~Endpoint();
+   Endpoint(const Endpoint&) = delete;
+   Endpoint& operator=(const Endpoint&) = delete;
+};
 
 class VistaAudio : public WinAudio {
 public:
@@ -64,6 +78,9 @@ private:
    void Uninit();
    bool CheckForReInit();
 
+   bool LoadAllEndpoints();
+
+   std::vector<std::unique_ptr<Endpoint>> endpoints_;
    IAudioEndpointVolume* endpointVolume_;
    IAudioSessionControl* sessionControl_;
    IMMDeviceEnumerator* deviceEnumerator_;
