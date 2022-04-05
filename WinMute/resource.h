@@ -7,7 +7,6 @@
 #define IDI_TRAY_BRIGHT                 104
 #define IDI_TRAY_DARK                   105
 #define IDR_TRAYMENU                    106
-#define IDD_QUIETHOURS                  107
 #define IDD_SETTINGS                    109
 #define IDD_SETTINGS_GENERAL            114
 #define IDD_SETTINGS_QUIETHOURS         116
@@ -20,9 +19,12 @@
 #define IDC_SHOWNOTIFICATIONS           1007
 #define IDC_TREE1                       1008
 #define IDC_TAB1                        1010
+#define IDC_SETTINGS_TAB                1010
 #define IDC_CHECK1                      1011
 #define IDC_ENABLELOGGING               1012
 #define IDC_CHECK3                      1013
+#define IDC_BUTTON1                     1014
+#define IDC_OPENLOG                     1014
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_                    40002
 #define ID_TRAYMENU_MUTEON              40003
@@ -47,14 +49,15 @@
 #define ID_TRAYMENU_EXIT                40022
 #define ID_TRAYMENU_MUTE                40023
 #define ID_TRAYMENU_MUTEONLOCK          40024
+#define ID_TRAYMENU_SETTINGS            40025
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        118
-#define _APS_NEXT_COMMAND_VALUE         40025
-#define _APS_NEXT_CONTROL_VALUE         1014
+#define _APS_NEXT_COMMAND_VALUE         40026
+#define _APS_NEXT_CONTROL_VALUE         1015
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

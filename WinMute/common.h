@@ -69,6 +69,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <tchar.h>
 #include <strsafe.h>
 #include <time.h>
+#include <uxtheme.h>
 
 #include "resource.h"
 
@@ -86,6 +87,7 @@ POSSIBILITY OF SUCH DAMAGE.
 void PrintWindowsError(LPCWSTR lpszFunction, DWORD lastError = -1);
 
 static const LPCTSTR PROGRAM_NAME = _T("WinMute");
+constexpr int WM_SAVESETTINGS = WM_USER + 300;
 
 template<class Interface>
 inline void SafeRelease(Interface** ppInterfaceToRelease)

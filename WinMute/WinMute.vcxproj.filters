@@ -48,6 +48,9 @@
     <Filter Include="Source Files\UI\TrayIcon">
       <UniqueIdentifier>{21b7f94e-74d0-4737-bd72-da855556df2d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\UI\Dialogs\Settings">
+      <UniqueIdentifier>{c4de9bea-a833-43ac-8021-6e5cf7d048e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinAudio.h">
@@ -154,6 +157,15 @@
     </ClCompile>
     <ClCompile Include="MuteControl.cpp">
       <Filter>Source Files\Controllers\Muting</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingsDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Settings_QuietHoursDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Settings_GeneralDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\Settings</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

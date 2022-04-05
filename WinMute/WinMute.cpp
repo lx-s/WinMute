@@ -38,6 +38,7 @@ POSSIBILITY OF SUCH DAMAGE.
 extern HINSTANCE hglobInstance;
 extern INT_PTR CALLBACK AboutDlgProc(HWND, UINT, WPARAM, LPARAM);
 extern INT_PTR CALLBACK QuietHoursDlgProc(HWND, UINT, WPARAM, LPARAM);
+extern INT_PTR CALLBACK SettingsDlgProc(HWND, UINT, WPARAM, LPARAM);
 
 static LPCTSTR WINMUTE_CLASS_NAME = _T("WinMute");
 
@@ -305,6 +306,14 @@ LRESULT CALLBACK WinMute::WindowProc(
       case ID_TRAYMENU_EXIT:
          SendMessage(hWnd, WM_CLOSE, 0, 0);
          break;
+      case ID_TRAYMENU_SETTINGS:
+         DialogBoxParam(
+            hglobInstance,
+            MAKEINTRESOURCE(IDD_SETTINGS),
+            hWnd_,
+            SettingsDlgProc,
+            reinterpret_cast<LPARAM>(&settings_));
+         break;
       case ID_TRAYMENU_MUTE: {
          bool state = false;
          ToggleMenuCheck(ID_TRAYMENU_MUTE, &state);
@@ -400,7 +409,7 @@ LRESULT CALLBACK WinMute::WindowProc(
          const PPOWERBROADCAST_SETTING bs =
             reinterpret_cast<PPOWERBROADCAST_SETTING>(lParam);
          if (IsEqualGUID(bs->PowerSetting, GUID_CONSOLE_DISPLAY_STATE)) {
-            const DWORD state = reinterpret_cast<DWORD>(bs->Data);
+            const DWORD state = bs->Data[0];
             if (state == 0x0) { // Display off
                muteCtrl_.NotifyDisplayStandby(true);
             } else if (state == 0x1) { // Display on

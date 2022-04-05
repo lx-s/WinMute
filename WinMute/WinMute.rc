@@ -65,48 +65,39 @@ BEGIN
                     "SysLink",WS_TABSTOP,106,33,60,14
 END
 
-IDD_QUIETHOURS DIALOGEX 0, 0, 212, 197
+IDD_SETTINGS DIALOGEX 0, 0, 269, 253
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Configure Quiet Hours"
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    DEFPUSHBUTTON   "Save",IDOK,101,176,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,155,176,50,14
-    LTEXT           "During Quiet Hours WinMute automatically mutes your PC volumes and unmutes it afterwards.",IDC_STATIC,11,10,182,22
-    CONTROL         "Enable Quiet Hours",IDC_ENABLEQUIETHOURS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,11,34,120,15
-    CONTROL         "",IDC_QUIETHOURS_START,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,77,51,65,18
-    CONTROL         "",IDC_QUIETHOURS_END,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,76,74,67,19
-    CONTROL         "Force unmute",IDC_FORCEUNMUTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,27,97,86,16
-    CONTROL         "Show notifications",IDC_SHOWNOTIFICATIONS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,27,150,81,21
-    LTEXT           "If force unmute is enabled, WinMute will unmute your workstation when quiet hours end and not take into account if your workstation was already muted before quiet hours started.",IDC_STATIC,27,115,161,37
-    LTEXT           "Start time:",IDC_STATIC,27,54,43,13
-    LTEXT           "End time:",IDC_STATIC,28,76,32,16
-END
-
-IDD_SETTINGS DIALOGEX 0, 0, 272, 199
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Settings"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,158,178,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,213,178,50,14
-    CONTROL         "",IDC_TAB1,"SysTabControl32",0x0,7,7,258,167
+    DEFPUSHBUTTON   "OK",IDOK,158,232,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,212,232,50,14
+    CONTROL         "",IDC_SETTINGS_TAB,"SysTabControl32",0x0,7,7,255,223
 END
 
-IDD_SETTINGS_GENERAL DIALOGEX 0, 0, 297, 171
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_SYSMENU
+IDD_SETTINGS_GENERAL DIALOGEX 0, 0, 201, 179
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "Start WinMute on system startup",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,15,132,26
     CONTROL         "Enable Logging",IDC_ENABLELOGGING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,61,101,21
     CONTROL         "Show notifications",IDC_SHOWNOTIFICATIONS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,40,86,21
+    PUSHBUTTON      "Open Log...",IDC_OPENLOG,17,81,58,17
 END
 
-IDD_SETTINGS_QUIETHOURS DIALOGEX 0, 0, 310, 177
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_SYSMENU
+IDD_SETTINGS_QUIETHOURS DIALOGEX 0, 0, 202, 177
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "QUIET HOURS",IDC_STATIC,14,26,110,33
+    LTEXT           "During Quiet Hours WinMute automatically mutes your PC volumes and unmutes it afterwards.",IDC_STATIC,7,7,182,22
+    CONTROL         "Enable Quiet Hours",IDC_ENABLEQUIETHOURS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,31,120,15
+    CONTROL         "",IDC_QUIETHOURS_START,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,73,47,65,18
+    CONTROL         "",IDC_QUIETHOURS_END,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,72,71,67,19
+    CONTROL         "Force unmute",IDC_FORCEUNMUTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,94,86,16
+    CONTROL         "Show notifications",IDC_SHOWNOTIFICATIONS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,146,81,21
+    LTEXT           "If force unmute is enabled, WinMute will unmute your workstation when quiet hours end and not take into account if your workstation was already muted before quiet hours started.",IDC_STATIC,23,111,161,37
+    LTEXT           "Start time:",IDC_STATIC,23,50,43,13
+    LTEXT           "End time:",IDC_STATIC,24,73,32,16
 END
 
 
@@ -126,34 +117,26 @@ BEGIN
         BOTTOMMARGIN, 49
     END
 
-    IDD_QUIETHOURS, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 205
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 190
-    END
-
     IDD_SETTINGS, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 265
+        RIGHTMARGIN, 262
         TOPMARGIN, 7
-        BOTTOMMARGIN, 192
+        BOTTOMMARGIN, 246
     END
 
     IDD_SETTINGS_GENERAL, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 290
+        RIGHTMARGIN, 194
         TOPMARGIN, 7
-        BOTTOMMARGIN, 164
+        BOTTOMMARGIN, 172
     END
 
     IDD_SETTINGS_QUIETHOURS, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 303
+        RIGHTMARGIN, 195
         TOPMARGIN, 7
         BOTTOMMARGIN, 170
     END
@@ -167,11 +150,6 @@ END
 //
 
 IDD_ABOUT AFX_DIALOG_LAYOUT
-BEGIN
-    0
-END
-
-IDD_QUIETHOURS AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
@@ -230,6 +208,7 @@ BEGIN
         MENUITEM "... Sleep",                   ID_TRAYMENU_MUTEONSUSPEND
         MENUITEM "... Logout",                  ID_TRAYMENU_MUTEONLOGOUT
         MENUITEM SEPARATOR
+        MENUITEM "Settings...",                 ID_TRAYMENU_SETTINGS
         MENUITEM "Mute now",                    ID_TRAYMENU_MUTE
         MENUITEM SEPARATOR
         MENUITEM "Exit",                        ID_TRAYMENU_EXIT
