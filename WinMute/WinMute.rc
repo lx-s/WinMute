@@ -78,20 +78,20 @@ BEGIN
     CONTROL         "Start WinMute on system startup",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,15,132,26
     CONTROL         "Enable Logging",IDC_ENABLELOGGING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,61,101,21
     CONTROL         "Show notifications",IDC_SHOWNOTIFICATIONS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,40,86,21
-    PUSHBUTTON      "Open Log...",IDC_OPENLOG,17,81,58,17
+    PUSHBUTTON      "Open Log File...",IDC_OPENLOG,22,82,58,15
 END
 
-IDD_SETTINGS_QUIETHOURS DIALOGEX 0, 0, 202, 177
+IDD_SETTINGS_QUIETHOURS DIALOGEX 0, 0, 234, 177
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "During Quiet Hours WinMute automatically mutes your PC volumes and unmutes it afterwards.",IDC_STATIC,7,7,182,22
+    LTEXT           "During Quiet Hours WinMute automatically mutes your PC volumes and unmutes it afterwards.",IDC_STATIC,7,7,220,22
     CONTROL         "Enable Quiet Hours",IDC_ENABLEQUIETHOURS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,31,120,15
     CONTROL         "",IDC_QUIETHOURS_START,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,73,47,65,18
     CONTROL         "",IDC_QUIETHOURS_END,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,72,71,67,19
     CONTROL         "Force unmute",IDC_FORCEUNMUTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,94,86,16
     CONTROL         "Show notifications",IDC_SHOWNOTIFICATIONS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,146,81,21
-    LTEXT           "If force unmute is enabled, WinMute will unmute your workstation when quiet hours end and not take into account if your workstation was already muted before quiet hours started.",IDC_STATIC,23,111,161,37
+    LTEXT           "If force unmute is enabled, WinMute will unmute your workstation when quiet hours end and not take into account if your workstation was already muted before quiet hours started.",IDC_STATIC,23,111,204,37
     LTEXT           "Start time:",IDC_STATIC,23,50,43,13
     LTEXT           "End time:",IDC_STATIC,24,73,32,16
 END
@@ -152,7 +152,7 @@ BEGIN
     IDD_SETTINGS_QUIETHOURS, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 195
+        RIGHTMARGIN, 227
         TOPMARGIN, 7
         BOTTOMMARGIN, 170
     END
@@ -226,6 +226,8 @@ IDI_TRAY_BRIGHT         ICON                    "icons\\tray_bright.ico"
 
 IDI_TRAY_DARK           ICON                    "icons\\tray_dark.ico"
 
+IDI_SETTINGS            ICON                    "icons\\settings.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -236,22 +238,22 @@ IDR_TRAYMENU MENU
 BEGIN
     POPUP "TrayMenu"
     BEGIN
-        MENUITEM "Info",                        ID_TRAYMENU_INFO
+        MENUITEM "About",                       ID_TRAYMENU_INFO
         MENUITEM SEPARATOR
         MENUITEM "Mute when...",                40003, INACTIVE
         MENUITEM "... Workstation is locked",   ID_TRAYMENU_MUTEONLOCK, CHECKED
         MENUITEM "... Screensaver starts",      ID_TRAYMENU_MUTEONSCREENSAVER, CHECKED
         MENUITEM SEPARATOR
-        MENUITEM "Restore volume when returning", ID_TRAYMENU_RESTOREAUDIO, CHECKED
-        MENUITEM SEPARATOR
-        MENUITEM "Settings...",                 ID_TRAYMENU_SETTINGS
+        MENUITEM "Restore previous volume afterwards", ID_TRAYMENU_RESTOREAUDIO, CHECKED
         MENUITEM SEPARATOR
         MENUITEM "Mute on (no volume restore)", ID_TRAYMENU_AFTERWARDS, INACTIVE
         MENUITEM "... Shutdown",                ID_TRAYMENU_MUTEONSHUTDOWN
         MENUITEM "... Sleep",                   ID_TRAYMENU_MUTEONSUSPEND
         MENUITEM "... Logout",                  ID_TRAYMENU_MUTEONLOGOUT
         MENUITEM SEPARATOR
-        MENUITEM "Mute now",                    ID_TRAYMENU_MUTE
+        MENUITEM "Mute all devices",            ID_TRAYMENU_MUTE
+        MENUITEM SEPARATOR
+        MENUITEM "Settings...",                 ID_TRAYMENU_SETTINGS
         MENUITEM SEPARATOR
         MENUITEM "Exit",                        ID_TRAYMENU_EXIT
     END

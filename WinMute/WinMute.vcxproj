@@ -210,6 +210,8 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="icons\app.ico" />
+    <Image Include="icons\icon1.ico" />
+    <Image Include="icons\settings.ico" />
     <Image Include="icons\tray_bright.ico" />
     <Image Include="icons\tray_dark.ico" />
   </ItemGroup>

@@ -200,7 +200,7 @@ bool WinMute::Init()
 #ifdef _DEBUG
    WMLog::GetInstance().SetEnabled(true);
 #else
-   WMLog::GetInstance().SetEnabled(settings_.QueryValue(LOGGING_ENABLED, 0));
+   WMLog::GetInstance().SetEnabled(settings_.QueryValue(SettingsKey::LOGGING_ENABLED, 0));
 #endif
    log.Write(_T("Starting new session..."));
 

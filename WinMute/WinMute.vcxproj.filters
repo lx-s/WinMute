@@ -111,6 +111,12 @@
     <Image Include="icons\tray_dark.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="icons\icon1.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="icons\settings.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VistaAudio.cpp">
