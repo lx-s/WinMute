@@ -90,7 +90,6 @@ private:
    IMMDeviceEnumeratorPtr deviceEnumerator_;
 
    bool reInit_;
-   float oldVolume_;
    HWND hParent_;
 
    // non copy-able

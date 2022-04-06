@@ -61,7 +61,6 @@ VistaAudio::VistaAudio() :
    deviceEnumerator_(nullptr),
    mmnAudioEvents_(nullptr),
    reInit_(false),
-   oldVolume_(0),
    hParent_(nullptr)
 {
    if (FAILED(CoInitialize(nullptr))) {
@@ -133,8 +132,7 @@ bool VistaAudio::LoadAllEndpoints()
          continue;
       }
 
-      IAudioSessionControlPtr sessionCtrl;
-      hr = sessionManager2->GetAudioSessionControl(nullptr, 0, &sessionCtrl);
+      hr = sessionManager2->GetAudioSessionControl(nullptr, 0, &ep->sessionCtrl);
       if (FAILED(hr)) {
          log.Write(_T("Failed to retrieve audio session manager for {}"),
             ep->deviceName);
@@ -143,11 +141,13 @@ bool VistaAudio::LoadAllEndpoints()
 
       ep->wasapiAudioEvents = std::make_unique<VistaAudioSessionEvents>(this);
       if (ep->wasapiAudioEvents) {
-         sessionCtrl->RegisterAudioSessionNotification(ep->wasapiAudioEvents.get());
+         ep->sessionCtrl->RegisterAudioSessionNotification(
+            ep->wasapiAudioEvents.get());
       }
 
-      hr = device->Activate(__uuidof(IAudioEndpointVolume), CLSCTX_INPROC_SERVER,
-                            nullptr, reinterpret_cast<LPVOID*>(&ep->endpointVolume));
+      hr = device->Activate(
+         __uuidof(IAudioEndpointVolume), CLSCTX_INPROC_SERVER,
+         nullptr, reinterpret_cast<LPVOID*>(&ep->endpointVolume));
       if (FAILED(hr)) {
          log.Write(_T("Failed to active endpoint volume for device {}"),
                    ep->deviceName);
@@ -168,11 +168,10 @@ bool VistaAudio::Init(HWND hParent)
    hParent_ = hParent;
    reInit_ = false;
 
-   if (FAILED(CoCreateInstance(
+   if (FAILED(deviceEnumerator_.CreateInstance(
          __uuidof(MMDeviceEnumerator),
          nullptr,
-         CLSCTX_INPROC_SERVER,
-         IID_PPV_ARGS(&deviceEnumerator_)))) {
+         CLSCTX_INPROC_SERVER))) {
       log.Write(_T("Failed to create instance of MMDeviceEnumerator"));
       return false;
    }
@@ -192,10 +191,8 @@ void VistaAudio::Uninit()
    if (deviceEnumerator_ && mmnAudioEvents_) {
       deviceEnumerator_->UnregisterEndpointNotificationCallback(mmnAudioEvents_);
    }
-   deviceEnumerator_->Release();
-
+   deviceEnumerator_.Release();
    SafeRelease(&mmnAudioEvents_);
-   SafeRelease(&deviceEnumerator_);
 
    endpoints_.clear();
 }
@@ -263,7 +260,7 @@ bool VistaAudio::RestoreMuteStatus()
    WMLog& log = WMLog::GetInstance();
 
    for (auto& e : endpoints_) {
-      log.Write(_T("Restoring: Mute {} for device \"{}\""),
+      log.Write(_T("Restoring: Mute {} for \"{}\""),
                 e->wasMuted, e->deviceName);
       if (e->wasMuted != true) {
          if (FAILED(e->endpointVolume->SetMute(false, nullptr))) {

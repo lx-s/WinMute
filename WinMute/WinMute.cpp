@@ -145,13 +145,6 @@ bool WinMute::InitWindow()
 
 bool WinMute::InitAudio()
 {
-#ifdef _DEBUG
-   WMLog::GetInstance().SetEnabled(true);
-#else
-   WMLog::GetInstance().SetEnabled(settings_.QueryValue(LOGGING_ENABLED, 0));
-#endif
-   
-
    if (IsWindowsVistaOrGreater()) {
       // Nothing to do
    } else if (IsWindowsXPOrGreater()) {
@@ -195,12 +188,21 @@ bool WinMute::InitTrayMenu()
 
 bool WinMute::Init()
 {
+   WMLog& log = WMLog::GetInstance();
+
    hAppIcon_ = LoadIcon(hglobInstance, MAKEINTRESOURCE(IDI_APP));
 
    if (!settings_.Init() ||
        !LoadDefaults()) {
       return false;
    }
+
+#ifdef _DEBUG
+   WMLog::GetInstance().SetEnabled(true);
+#else
+   WMLog::GetInstance().SetEnabled(settings_.QueryValue(LOGGING_ENABLED, 0));
+#endif
+   log.Write(_T("Starting new session..."));
 
    if (!RegisterWindowClass() ||
        !InitWindow() ||
@@ -240,6 +242,8 @@ bool WinMute::Init()
    trayIcon_.Init(hWnd_, 0, hTrayIcon_, _T("WinMute"), true);
 
    ResetQuietHours();
+
+   log.Write(_T("WinMute initialized"));
 
    return true;
 }

@@ -36,18 +36,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "common.h"
 
 class MuteControl {
-   struct MuteConfig {
-      bool shouldMute;
-      bool active;
-   };
-   std::vector<MuteConfig> muteConfig_;
-   bool wasAlreadyMuted_;
-   bool restoreVolume_;
-   std::unique_ptr<WinAudio> winAudio_;
-
-   void NotifyRestoreCondition(int type, bool active);
-   void ConfigureWasAlreadyMuted();
-   void RestoreVolume();
 public:
    MuteControl();
    ~MuteControl();
@@ -90,4 +78,17 @@ public:
    void NotifyShutdown();
 
    void NotifyQuietHours(bool active);
+private:
+   struct MuteConfig {
+      bool shouldMute;
+      bool active;
+   };
+   std::vector<MuteConfig> muteConfig_;
+   bool restoreVolume_;
+   std::unique_ptr<WinAudio> winAudio_;
+
+   void NotifyRestoreCondition(int type, bool active);
+   void SaveMuteStatus();
+   void RestoreVolume();
+
 };
