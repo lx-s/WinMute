@@ -81,14 +81,14 @@ HRESULT STDMETHODCALLTYPE MMNotificationClient::QueryInterface(
 HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDefaultDeviceChanged(
    EDataFlow, ERole, LPCWSTR)
 {
-   if (notifyParent_) {
-      notifyParent_->ShouldReInit();
-   }
    return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceAdded(LPCWSTR)
 {
+   if (notifyParent_) {
+      notifyParent_->ShouldReInit();
+   }
    return S_OK;
 }
 
