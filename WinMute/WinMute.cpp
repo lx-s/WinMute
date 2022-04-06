@@ -145,6 +145,13 @@ bool WinMute::InitWindow()
 
 bool WinMute::InitAudio()
 {
+#ifdef _DEBUG
+   WMLog::GetInstance().SetEnabled(true);
+#else
+   WMLog::GetInstance().SetEnabled(settings_.QueryValue(LOGGING_ENABLED, 0));
+#endif
+   
+
    if (IsWindowsVistaOrGreater()) {
       // Nothing to do
    } else if (IsWindowsXPOrGreater()) {
@@ -159,7 +166,7 @@ bool WinMute::InitAudio()
    if (!muteCtrl_.Init(hWnd_)) {
       return false;
    }
-   WMLog::GetInstance().SetEnabled(true);
+   
 
    return true;
 }

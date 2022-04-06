@@ -86,35 +86,29 @@ void MuteControl::ConfigureWasAlreadyMuted()
          break;
       }
    }
-   if (!muteAlreadyActive && winAudio_->IsMuted()) {
+   /*if (!muteAlreadyActive && winAudio_->AllEndpointsMuted()) {
       wasAlreadyMuted_ = true;
-   }
+   }*/
 }
 
 void MuteControl::RestoreVolume()
 {
+   WMLog& log = WMLog::GetInstance();
    if (!restoreVolume_) {
-      WMLog::GetInstance().Write(_T("Restore is FALSE"));
+      log.Write(_T("Restore is FALSE"));
       return;
    }
    bool restore = true;
-   int i = 0;
    for (const auto& conf : muteConfig_) {
       if (conf.shouldMute && conf.active) {
-         WMLog::GetInstance().Write(_T("Entry {} found with ShouldMute: Yes and Active: Yes"), i);
+         log.Write(_T("Entry found with ShouldMute: Yes and Active: Yes"));
          restore = false;
-         //break;
+         break;
       }
-      ++i;
    }
    if (restore) {
-      if (winAudio_->IsMuted() && !wasAlreadyMuted_) {
-         WMLog::GetInstance().Write(_T("Mute: Off"));
-         winAudio_->SetMute(false);
-      } else {
-         WMLog::GetInstance().Write(
-            _T("Skipping unmute since workstation was already muted."));
-      }
+      log.Write(_T("Restoring previous mute state"));
+      winAudio_->RestoreMuteStatus();
    }
 }
 
@@ -205,9 +199,9 @@ void MuteControl::NotifyRestoreCondition(int type, bool active)
       ConfigureWasAlreadyMuted();
       muteConfig_[type].active = active;
       WMLog::GetInstance().Write(_T("Condition {}: ACTIVE"), type);
-      if (muteConfig_[type].shouldMute &&
-         !winAudio_->IsMuted()) {
+      if (muteConfig_[type].shouldMute) {
          WMLog::GetInstance().Write(_T("Mute: On"));
+         winAudio_->SaveMuteStatus();
          winAudio_->SetMute(true);
       }
    } else {
@@ -264,9 +258,8 @@ void MuteControl::NotifyQuietHours(bool active)
    if (active) {
       ConfigureWasAlreadyMuted();
       WMLog::GetInstance().Write(L"Quiet Hours startet");
-      if (!winAudio_->IsMuted()) {
-         winAudio_->SetMute(true);
-      }
+      winAudio_->SaveMuteStatus();
+      winAudio_->SetMute(true);
    } else {
       WMLog::GetInstance().Write(L"Quiet Hours ended");
       RestoreVolume();

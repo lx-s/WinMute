@@ -70,6 +70,12 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <strsafe.h>
 #include <time.h>
 #include <uxtheme.h>
+#include <comip.h>
+#include <comdef.h>
+#include <Mmdeviceapi.h>
+#pragma warning(disable : 4201)
+#  include <endpointvolume.h>
+#pragma warning(default : 4201)
 
 #include "resource.h"
 
@@ -90,7 +96,7 @@ static const LPCTSTR PROGRAM_NAME = _T("WinMute");
 constexpr int WM_SAVESETTINGS = WM_USER + 300;
 
 template<class Interface>
-inline void SafeRelease(Interface** ppInterfaceToRelease)
+inline void SafeRelease(Interface * *ppInterfaceToRelease)
 {
    if (*ppInterfaceToRelease) {
       (*ppInterfaceToRelease)->Release();

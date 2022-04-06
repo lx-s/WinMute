@@ -38,23 +38,25 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "VistaAudioSessionEvents.h"
 #include "MMNotificationClient.h"
 
+_COM_SMARTPTR_TYPEDEF(IAudioEndpointVolume, __uuidof(IAudioEndpointVolume));
+_COM_SMARTPTR_TYPEDEF(IMMDeviceEnumerator, __uuidof(IMMDeviceEnumerator));
+_COM_SMARTPTR_TYPEDEF(IAudioSessionControl, __uuidof(IAudioSessionControl));
+
 class WinAudio {
 public:
    virtual bool Init(HWND hParent) = 0;
    virtual void ShouldReInit() = 0;
-   virtual bool IsMuted() = 0;
+   virtual bool AllEndpointsMuted() = 0;
+   virtual bool SaveMuteStatus() = 0;
+   virtual bool RestoreMuteStatus() = 0;
    virtual void SetMute(bool mute) = 0;
    virtual ~WinAudio() noexcept {};
 };
 
-// Forwards
-struct IAudioEndpointVolume;
-struct IAudioSessionControl;
-struct IMMDeviceEnumerator;
-
 struct Endpoint {
    TCHAR deviceName[100];
-   IAudioEndpointVolume* endpointVolume;
+   IAudioEndpointVolumePtr endpointVolume;
+   IAudioSessionControlPtr sessionCtrl;
    std::unique_ptr<VistaAudioSessionEvents> wasapiAudioEvents;
 
    bool wasMuted;
@@ -72,8 +74,11 @@ public:
 
    bool Init(HWND hParent) override;
    void ShouldReInit() override;
-   bool IsMuted() override;
+   bool AllEndpointsMuted() override;
+   bool SaveMuteStatus() override;
+   bool RestoreMuteStatus() override;
    void SetMute(bool mute) override;
+
 private:
    void Uninit();
    bool CheckForReInit();
@@ -81,11 +86,8 @@ private:
    bool LoadAllEndpoints();
 
    std::vector<std::unique_ptr<Endpoint>> endpoints_;
-   IAudioEndpointVolume* endpointVolume_;
-   IAudioSessionControl* sessionControl_;
-   IMMDeviceEnumerator* deviceEnumerator_;
-   VistaAudioSessionEvents* wasapiAudioEvents_;
    MMNotificationClient* mmnAudioEvents_;
+   IMMDeviceEnumeratorPtr deviceEnumerator_;
 
    bool reInit_;
    float oldVolume_;

@@ -31,8 +31,9 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
+#pragma once
+
 #include "Common.h"
-#include <Mmdeviceapi.h>
 
 class WinAudio;
 
@@ -59,4 +60,4 @@ private:
    IMMDeviceEnumerator* pEnumerator_;
    WinAudio* notifyParent_;
 };
-#pragma once
+
