@@ -34,14 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "common.h"
 
 #ifdef UNICODE
-static bool OpenLogFile(std::wofstream& logFile)
+static bool OpenLogFile(const std::string& filePath, std::wofstream& logFile)
 #else
-static bool OpenLogFile(std::ofstream& logFile)
+static bool OpenLogFile(const std::string& filePath, std::ofstream& logFile)
 #endif
 {
-   auto path = std::filesystem::temp_directory_path();
-   path /= L"WinMute.log";
-   logFile.open(path.string(), std::ios::out | std::ios::app | std::ios::binary);
+   logFile.open(filePath, std::ios::out | std::ios::app | std::ios::binary);
    return logFile.is_open();
 }
 
@@ -54,7 +52,7 @@ WMLog& WMLog::GetInstance()
 WMLog::WMLog() :
    initialized_(false)
 {
-   if (OpenLogFile(logFile_)) {
+   if (OpenLogFile(GetLogFilePath(), logFile_)) {
       initialized_ = true;
    }
 }
@@ -64,6 +62,13 @@ WMLog::~WMLog()
    if (initialized_) {
       logFile_.close();
    }
+}
+
+std::string WMLog::GetLogFilePath()
+{
+   auto path = std::filesystem::temp_directory_path();
+   path /= _T("WinMute.log");
+   return path.string();
 }
 
 void WMLog::SetEnabled(bool enable)

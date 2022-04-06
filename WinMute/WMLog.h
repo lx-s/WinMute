@@ -60,6 +60,7 @@ public:
    }
 
    void SetEnabled(bool enable);
+   std::string GetLogFilePath();
 
 private:
    WMLog();
