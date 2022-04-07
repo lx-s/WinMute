@@ -32,7 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
-#define _CRT_SECURE_NO_WARNINGS
+
 #include <SDKDDKVer.h>
 #include <tchar.h>
 #include "ScreensaverNotify.h"
