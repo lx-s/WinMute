@@ -173,6 +173,41 @@ static INT_PTR CALLBACK About_LicenseDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM
    return FALSE;
 }
 
+static bool GetWinMuteVersion(tstring& versNumber)
+{
+   bool success = false;
+   DWORD dummy;
+   TCHAR szFileName[MAX_PATH];
+   GetModuleFileName(NULL, szFileName, sizeof(szFileName)/sizeof(szFileName[0]));
+   DWORD versSize = GetFileVersionInfoSizeEx(FILE_VER_GET_NEUTRAL, szFileName, &dummy);
+   LPVOID versData = malloc(versSize);
+   if (versData != nullptr) {
+      if (GetFileVersionInfoEx(
+            FILE_VER_GET_NEUTRAL,
+            szFileName,
+            NULL,
+            versSize,
+            versData)) {
+         VS_FIXEDFILEINFO *pvi;
+         UINT pviLen = sizeof(*pvi);
+         if (VerQueryValue(
+               versData,
+               _T("\\"),
+               reinterpret_cast<LPVOID*>(&pvi),
+               &pviLen)) {
+            versNumber = std::format(_T("{}.{}.{}.{}"),
+               pvi->dwProductVersionMS >> 16,
+               pvi->dwFileVersionMS & 0xFFFF,
+               pvi->dwFileVersionLS >> 16,
+               pvi->dwFileVersionLS & 0xFFFF);
+            success = true;
+         }
+      }
+      free(versData);
+   }
+   return success;
+}
+
 INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    AboutDlgData* dlgData =
@@ -207,6 +242,14 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
       SwitchTab(dlgData, dlgData->hTabs[ABOUT_TAB_GENERAL]);
 
+      HWND hTitle = GetDlgItem(hDlg, IDC_ABOUT_TITLE);
+      tstring progName = _T("WinMute");
+      tstring progVers = _T("WinMute");
+      if (GetWinMuteVersion(progVers)) {
+         progName = std::format(_T("WinMute {}"), progVers);
+         Static_SetText(hTitle, progName.c_str());
+      }
+
       // Set title font
       LOGFONT font;
       font.lfHeight = 32;
@@ -227,10 +270,11 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
       dlgData->hTitleFont = CreateFontIndirect(&font);
       SendMessage(
-         GetDlgItem(hDlg, IDC_ABOUT_TITLE),
+         hTitle,
          WM_SETFONT,
          reinterpret_cast<WPARAM>(dlgData->hTitleFont),
          TRUE);
+
       return TRUE;
    }
    case WM_NOTIFY: {
