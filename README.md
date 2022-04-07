@@ -1,12 +1,13 @@
 # WinMute #
 
 ### About ###
-WinMute can automatically mute your PC volume when
+WinMute can automatically mute all sound devices on your PC when
 
 * you lock your PC.
 * the screensaver turns on.
-* your PC shuts down
+* the display turns off
 * you log off
+* your PC shuts down
 * your PC goes to sleep
 
 This is very helpful e.g. if you leave your desk and don't want to annoy your co-workers with random sounds or music from your computer or don't want music blasting out of your speakers, the next time you power on your pc during a presentation.
@@ -16,12 +17,10 @@ This is very helpful e.g. if you leave your desk and don't want to annoy your co
 
 ### Requirements ###
 * Windows Vista or any newer version of Windows.
-* [Visual Studio 2019 Redistributable](https://support.microsoft.com/help/2977003/the-latest-supported-visual-c-downloads)
+* [Visual Studio 2022 Redistributable](https://support.microsoft.com/help/2977003/the-latest-supported-visual-c-downloads)
 
 ### Installation ###
 Unzip it to your favourite directory and you are all set up!
-
-To start WinMute automatically after your logon to windows, you have to create a shortcut to the `WinMute.exe` file within the `Startup` folder located in your Windows start menu (to open this special folder, press `Win`+`R`, enter `Shell:Startup` and click `OK`).
 
 ### Uninstalling WinMute ###
 Just delete the `WinMute.exe` and `ScreensaverNotify.dll` file from your hard drive.
@@ -35,4 +34,3 @@ Just start it and you are good to go!
 
 Whenever you lock your screen from now on or the screensaver starts, WinMute will automatically mute your windows volume, and unmute it right away when you come back to your pc.
 If you want to disable this behaviour temporary, right-click on the taskbar notification icon and uncheck the menu item `Mute on Workstationlock` / `Mute on Screensaver start`.
-
