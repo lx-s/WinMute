@@ -290,10 +290,10 @@ bool ScreensaverNotifier::IsScreensaverRunning()
 {
    BOOL isRunning = FALSE;
    if (SystemParametersInfo(
-      SPI_GETSCREENSAVERRUNNING,
-      0,
-      &isRunning,
-      FALSE) == FALSE) {
+         SPI_GETSCREENSAVERRUNNING,
+         0,
+         &isRunning,
+         FALSE) == FALSE) {
       PrintWindowsError(_T("SystemParametersInfo"));
       return false;
    }

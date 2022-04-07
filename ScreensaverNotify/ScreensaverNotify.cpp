@@ -32,10 +32,11 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
-
+#define _CRT_SECURE_NO_WARNINGS
 #include <SDKDDKVer.h>
 #include <tchar.h>
 #include "ScreensaverNotify.h"
+#include <stdio.h>
 
 /* =============================================================================
       DLL Globals
@@ -107,10 +108,11 @@ extern "C" {
       switch (reason) {
       case DLL_PROCESS_ATTACH:
          hglobInstance_ = hInstance;
-         DisableThreadLibraryCalls(hInstance);
+         if (!DisableThreadLibraryCalls(hInstance)) {
+            return FALSE;
+         }
          break;
       case DLL_PROCESS_DETACH:
-         UnregisterScreensaverHook();
          break;
       default:
          break;
