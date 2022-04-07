@@ -48,6 +48,7 @@ enum class SettingsKey {
    , QUIETHOURS_NOTIFICATIONS
    , QUIETHOURS_START
    , QUIETHOURS_END
+   , NOTIFICATIONS_ENABLED
    , LOGGING_ENABLED
 };
 
@@ -62,9 +63,14 @@ public:
    bool Init();
    void Unload();
 
+   bool IsAutostartEnabled();
+   void EnableAutostart(bool enable);
+
    DWORD QueryValue(SettingsKey key, DWORD defValue);
    bool SetValue(SettingsKey key, DWORD value);
 
 private:
    HKEY hRegSettingsKey_;
+
+   HKEY OpenAutostartKey(REGSAM samDesired);
 };

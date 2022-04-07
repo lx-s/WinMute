@@ -27,6 +27,7 @@
 #define IDC_TAB1                        1010
 #define IDC_SETTINGS_TAB                1010
 #define IDC_CHECK1                      1011
+#define IDC_RUNONSTARTUP                1011
 #define IDC_ENABLELOGGING               1012
 #define IDC_CHECK3                      1013
 #define IDC_OPENLOG                     1014

@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "common.h"
 
 static const LPCWSTR LX_SYSTEMS_SUBKEY = _T("SOFTWARE\\lx-systems\\WinMute");
+static const LPCWSTR LX_SYSTEMS_AUTOSTART_KEY = _T("LX-Systems WinMute");
 
 static LPCWSTR KeyToStr(SettingsKey key)
 {
@@ -78,10 +79,39 @@ static LPCWSTR KeyToStr(SettingsKey key)
    case SettingsKey::LOGGING_ENABLED:
       keyStr = _T("Logging");
       break;
+   case SettingsKey::NOTIFICATIONS_ENABLED:
+      keyStr = _T("ShowNotifications");
+      break;
    }
    return keyStr;
 }
 
+static bool ReadStringFromRegistry(HKEY hKey, const TCHAR* subKey, tstring& val)
+{
+   bool success = false;
+   DWORD regError = 0;
+   DWORD bufSize = 0;
+   regError = RegQueryValueEx(hKey, subKey, nullptr, nullptr, nullptr, &bufSize);
+   if (regError != ERROR_SUCCESS) {
+      if (regError != ERROR_FILE_NOT_FOUND) {
+         PrintWindowsError(_T("RegQueryValueEx"), regError);
+      }
+   } else {
+      bufSize += 1; // Trailing '\0'
+      TCHAR *buf = new TCHAR[bufSize];
+      regError = RegQueryValueEx(hKey, subKey, nullptr, nullptr,
+                                 reinterpret_cast<LPBYTE>(buf), &bufSize);
+      if (regError != ERROR_SUCCESS) {
+         PrintWindowsError(_T("RegQueryValueEx"), regError);
+      } else {
+         success = true;
+         val = buf;
+      }
+      delete [] buf;
+   }
+
+   return success;
+}
 
 WMSettings::WMSettings() :
    hRegSettingsKey_(nullptr)
@@ -119,6 +149,76 @@ void WMSettings::Unload()
 {
    RegCloseKey(hRegSettingsKey_);
    hRegSettingsKey_ = nullptr;
+}
+
+HKEY WMSettings::OpenAutostartKey(REGSAM samDesired)
+{
+   HKEY hRunKey = NULL;
+   DWORD regError = RegOpenKeyEx(
+      HKEY_CURRENT_USER,
+      _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"),
+      0,
+      samDesired,
+      &hRunKey);
+   if (regError != ERROR_SUCCESS) {
+      PrintWindowsError(_T("RegOpenKeyEx"), regError);
+   }
+   return hRunKey;
+}
+
+bool WMSettings::IsAutostartEnabled()
+{
+   bool isEnabled = false;
+   WMLog& log = WMLog::GetInstance();
+   TCHAR wmPath[MAX_PATH + 1];
+   if (GetModuleFileName(NULL, wmPath, sizeof(wmPath) / sizeof(wmPath[0])) == 0) {
+      log.Write(_T("Failed to get path of win mute"));
+   } else {
+      HKEY hRunKey = OpenAutostartKey(KEY_READ);
+      if (hRunKey != NULL) {
+         tstring path;
+         if (ReadStringFromRegistry(hRunKey, LX_SYSTEMS_AUTOSTART_KEY, path)) {
+            if (path != wmPath) {
+               log.Write(_T("Autostart entry has wrong path"));
+            } else {
+               isEnabled = true;
+            }
+         }
+         RegCloseKey(hRunKey);
+      }
+   }
+   return isEnabled;
+}
+
+void WMSettings::EnableAutostart(bool enable)
+{
+   WMLog& log = WMLog::GetInstance();
+   HKEY hRunKey = OpenAutostartKey(KEY_WRITE);
+   if (hRunKey != NULL) {
+      if (enable) {
+         TCHAR wmPath[MAX_PATH + 1];
+         if (GetModuleFileName(NULL, wmPath, sizeof(wmPath) / sizeof(wmPath[0])) == 0) {
+            log.Write(_T("Failed to get path of win mute"));
+         } else {
+            DWORD regError = RegSetKeyValue(
+               hRunKey,
+               NULL,
+               LX_SYSTEMS_AUTOSTART_KEY,
+               REG_SZ,
+               wmPath,
+               (lstrlen(wmPath) + 1) * sizeof(TCHAR));
+            if (regError != ERROR_SUCCESS) {
+               PrintWindowsError(_T("RegOpenKeyEx"), regError);
+            }
+         }
+      } else {
+         DWORD regError = RegDeleteKeyValue(hRunKey, NULL, LX_SYSTEMS_AUTOSTART_KEY);
+         if (regError != ERROR_SUCCESS) {
+            PrintWindowsError(_T("RegOpenKeyEx"), regError);
+         }
+      }
+      RegCloseKey(hRunKey);
+   }
 }
 
 DWORD WMSettings::QueryValue(SettingsKey key, DWORD defValue)
@@ -161,5 +261,6 @@ bool WMSettings::SetValue(SettingsKey key, DWORD value)
       PrintWindowsError(_T("RegCreateKeyEx"), regError);
       return false;
    }
+
    return true;
 }
