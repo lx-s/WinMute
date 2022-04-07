@@ -76,9 +76,10 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "Start WinMute on system startup",IDC_RUNONSTARTUP,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,15,132,26
-    CONTROL         "Enable Logging",IDC_ENABLELOGGING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,61,101,21
-    CONTROL         "Show notifications",IDC_SHOWNOTIFICATIONS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,39,86,21
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,15,187,26
+    CONTROL         "Enable Logging",IDC_ENABLELOGGING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,61,187,21
+    CONTROL         "Show mute event notifications",IDC_SHOWNOTIFICATIONS,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,39,187,21
     PUSHBUTTON      "Open Log File...",IDC_OPENLOG,22,82,58,15
 END
 
@@ -244,6 +245,7 @@ BEGIN
         MENUITEM "Mute when...",                40003, INACTIVE
         MENUITEM "... Workstation is locked",   ID_TRAYMENU_MUTEONLOCK, CHECKED
         MENUITEM "... Screensaver starts",      ID_TRAYMENU_MUTEONSCREENSAVER, CHECKED
+        MENUITEM "... Screen turns off",        ID_TRAYMENU_SCREENSUSPEND, CHECKED
         MENUITEM SEPARATOR
         MENUITEM "Restore previous volume afterwards", ID_TRAYMENU_RESTOREAUDIO, CHECKED
         MENUITEM SEPARATOR
@@ -267,8 +269,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,7,0,0
- PRODUCTVERSION 1,7,0,0
+ FILEVERSION 1,9,9,9
+ PRODUCTVERSION 1,9,9,9
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -285,23 +287,23 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "LX-Systems"
             VALUE "FileDescription", "WinMute"
-            VALUE "FileVersion", "1.7.0.0"
+            VALUE "FileVersion", "1.9.9.9"
             VALUE "InternalName", "WinMute.exe"
             VALUE "LegalCopyright", "Copyright (C) 2022, Alexander Steinhöfer"
             VALUE "OriginalFilename", "WinMute.exe"
             VALUE "ProductName", "WinMute"
-            VALUE "ProductVersion", "1.7.0.0"
+            VALUE "ProductVersion", "1.9.9.9"
         END
         BLOCK "040704b0"
         BEGIN
             VALUE "CompanyName", "LX-Systems"
             VALUE "FileDescription", "WinMute"
-            VALUE "FileVersion", "1.7.0.0"
+            VALUE "FileVersion", "1.9.9.9"
             VALUE "InternalName", "WinMute.exe"
             VALUE "LegalCopyright", "Copyright (C) 2022, Alexander Steinhöfer"
             VALUE "OriginalFilename", "WinMute.exe"
             VALUE "ProductName", "WinMute"
-            VALUE "ProductVersion", "1.7.0.0"
+            VALUE "ProductVersion", "1.9.9.9"
         END
     END
     BLOCK "VarFileInfo"

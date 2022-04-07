@@ -39,14 +39,14 @@ TrayIcon::TrayIcon() :
 }
 
 TrayIcon::TrayIcon(HWND hWnd, UINT trayID, HICON hIcon,
-   const std::wstring& tooltip, bool show) :
+                   const tstring& tooltip, bool show) :
    iconVisible_(false)
 {
    Init(hWnd, trayID, hIcon, tooltip, show);
 }
 
 void TrayIcon::Init(HWND hWnd, UINT trayID, HICON hIcon,
-   const std::wstring& tooltip, bool show)
+                    const tstring& tooltip, bool show)
 {
    if (!hIcon) {
       hIcon_ = LoadIcon(0, IDI_APPLICATION);
@@ -115,7 +115,7 @@ void TrayIcon::ChangeIcon(HICON hNewIcon)
    return;
 }
 
-void TrayIcon::ChangeText(const std::wstring& tooltip)
+void TrayIcon::ChangeText(const tstring& tooltip)
 {
    tooltip_ = tooltip;
 
@@ -123,9 +123,7 @@ void TrayIcon::ChangeText(const std::wstring& tooltip)
       ChangeText();
 }
 
-void TrayIcon::ShowPopup(
-   const std::wstring& title,
-   const std::wstring& text)
+void TrayIcon::ShowPopup(const tstring& title, const tstring& text) const
 {
    NOTIFYICONDATA tnid;
    tnid.cbSize = sizeof(NOTIFYICONDATA);
@@ -135,8 +133,8 @@ void TrayIcon::ShowPopup(
    tnid.dwInfoFlags = NIIF_INFO | NIIF_NOSOUND | NIIF_LARGE_ICON
       | NIIF_RESPECT_QUIET_TIME;
    tnid.uTimeout = 10 * 1000;
-   wcscpy_s(tnid.szInfoTitle, sizeof(tnid.szInfoTitle) / sizeof(TCHAR), title.c_str());
-   wcscpy_s(tnid.szInfo, sizeof(tnid.szInfo) / sizeof(TCHAR), text.c_str());
+   StringCchCopy(tnid.szInfoTitle, ARRAY_SIZE(tnid.szInfoTitle), title.c_str());
+   StringCchCopy(tnid.szInfo, ARRAY_SIZE(tnid.szInfo), text.c_str());
 
    Shell_NotifyIcon(NIM_MODIFY, &tnid);
 }
@@ -160,9 +158,7 @@ bool TrayIcon::AddNotifyIcon()
    tnid.hIcon = hIcon_;
    tnid.uCallbackMessage = WM_TRAYICON;
 
-   if (SUCCEEDED(StringCchCopy(tnid.szTip,
-      sizeof(tnid.szTip) / sizeof(TCHAR),
-      tooltip_.c_str()))) {
+   if (SUCCEEDED(StringCchCopy(tnid.szTip, ARRAY_SIZE(tnid.szTip), tooltip_.c_str()))) {
       return Shell_NotifyIcon(NIM_ADD, &tnid) != 0;
    }
    return false;
@@ -188,9 +184,7 @@ bool TrayIcon::ChangeText()
    tnid.uID = trayID_;
    tnid.uFlags = NIF_TIP;
 
-   if (SUCCEEDED(StringCchCopy(tnid.szTip,
-      sizeof(tnid.szTip) / sizeof(TCHAR),
-      tooltip_.c_str()))) {
+   if (SUCCEEDED(StringCchCopy(tnid.szTip, ARRAY_SIZE(tnid.szTip), tooltip_.c_str()))) {
       return Shell_NotifyIcon(NIM_MODIFY, &tnid) != 0;
    }
    return false;

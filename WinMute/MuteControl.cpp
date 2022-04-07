@@ -48,6 +48,7 @@ enum MuteType {
 };
 
 MuteControl::MuteControl()
+   : trayIcon_(nullptr), notificationsEnabled_(false), displayWasOffOnce_(false)
 {
    MuteConfig initMuteConf;
    initMuteConf.active = false;
@@ -61,12 +62,13 @@ MuteControl::~MuteControl()
 {
 }
 
-bool MuteControl::Init(HWND hParent)
+bool MuteControl::Init(HWND hParent, const TrayIcon *trayIcon)
 {
    winAudio_ = std::make_unique<VistaAudio>();
    if (!winAudio_->Init(hParent)) {
       return false;
    }
+   trayIcon_ = trayIcon;
    return true;
 }
 
@@ -92,6 +94,18 @@ void MuteControl::SaveMuteStatus()
    }
 }
 
+void MuteControl::ShowNotification(const tstring& title, const tstring& text)
+{
+   if (notificationsEnabled_ && trayIcon_ != nullptr) {
+      trayIcon_->ShowPopup(title, text);
+   }
+}
+
+void MuteControl::SetNotifications(bool enable)
+{
+   notificationsEnabled_ = enable;
+}
+
 void MuteControl::RestoreVolume()
 {
    WMLog& log = WMLog::GetInstance();
@@ -109,6 +123,9 @@ void MuteControl::RestoreVolume()
    }
    if (restore) {
       log.Write(_T("Restoring previous mute state"));
+      ShowNotification(
+         _T("Volume restored"),
+         _T("All endpoints have been restored to their previous configuration"));
       winAudio_->RestoreMuteStatus();
    }
 }
@@ -200,6 +217,9 @@ void MuteControl::NotifyRestoreCondition(int type, bool active)
       muteConfig_[type].active = active;
       if (muteConfig_[type].shouldMute) {
          WMLog::GetInstance().Write(_T("Muting workstation"));
+         ShowNotification(
+            _T("Muting workstation"),
+            _T("All endpoints have been muted"));
          winAudio_->SetMute(true);
       }
    } else {
@@ -231,9 +251,12 @@ void MuteControl::NotifyRemoteSession(bool active)
 
 void MuteControl::NotifyDisplayStandby(bool active)
 {
-   WMLog::GetInstance().Write(_T("Mute Event: Display Standby {}"),
-                              active ? _T("start") : _T("stop"));
-   NotifyRestoreCondition(MuteTypeDisplayStandby, active);
+   if (displayWasOffOnce_ || active) {
+      WMLog::GetInstance().Write(_T("Mute Event: Display Standby {}"),
+                                 active ? _T("start") : _T("stop"));
+      NotifyRestoreCondition(MuteTypeDisplayStandby, active);
+      displayWasOffOnce_ = true;
+   }
 }
 
 void MuteControl::NotifyLogout()

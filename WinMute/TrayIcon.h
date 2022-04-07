@@ -40,17 +40,17 @@ POSSIBILITY OF SUCH DAMAGE.
 class TrayIcon {
 public:
    TrayIcon();
-   TrayIcon(HWND hWnd, UINT trayID, HICON hIcon, const std::wstring& tooltip,
+   TrayIcon(HWND hWnd, UINT trayID, HICON hIcon, const tstring& tooltip,
       bool show);
    ~TrayIcon();
-   void Init(HWND hWnd, UINT trayID, HICON hIcon, const std::wstring& tooltip,
+   void Init(HWND hWnd, UINT trayID, HICON hIcon, const tstring& tooltip,
       bool show);
    void Hide();
    void Show();
    bool IsShown() const { return iconVisible_; }
    void ChangeIcon(HICON hNewIcon);
-   void ChangeText(const std::wstring& tooltip);
-   void ShowPopup(const std::wstring& title, const std::wstring& text);
+   void ChangeText(const tstring& tooltip);
+   void ShowPopup(const tstring& title, const tstring& text) const;
 
 private:
    void DestroyTrayIcon();
@@ -62,5 +62,5 @@ private:
    UINT trayID_;
    HICON hIcon_;
    HWND hWnd_;
-   std::wstring tooltip_;
+   tstring tooltip_;
 };

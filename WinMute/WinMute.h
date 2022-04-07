@@ -61,16 +61,7 @@ private:
 
    struct MuteConfig {
       MuteConfig();
-      /*struct {
-         bool onLock;
-         bool onScreensaver;
-      } withRestore;
-      bool restoreAudio;
-      struct {
-         bool onLogoff;
-         bool onShutdown;
-         bool onSuspend;
-      } noRestore;*/
+      bool showNotifications;
       struct {
          bool enabled;
          bool forceUnmute;

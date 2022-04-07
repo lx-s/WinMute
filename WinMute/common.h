@@ -103,3 +103,5 @@ inline void SafeRelease(Interface * *ppInterfaceToRelease)
       (*ppInterfaceToRelease) = nullptr;
    }
 }
+
+#define ARRAY_SIZE(arr) ((sizeof(arr)) / (sizeof(arr[0])))

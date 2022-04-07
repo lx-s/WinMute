@@ -156,10 +156,9 @@ bool WinMute::InitAudio()
       return false;
    }
 
-   if (!muteCtrl_.Init(hWnd_)) {
+   if (!muteCtrl_.Init(hWnd_, &trayIcon_)) {
       return false;
    }
-   
 
    return true;
 }
@@ -192,8 +191,11 @@ bool WinMute::Init()
 
    hAppIcon_ = LoadIcon(hglobInstance, MAKEINTRESOURCE(IDI_APP));
 
-   if (!settings_.Init() ||
-       !LoadDefaults()) {
+   if (!InitAudio()) {
+      return false;
+   }
+
+   if (!settings_.Init() || !LoadDefaults()) {
       return false;
    }
 
@@ -210,10 +212,6 @@ bool WinMute::Init()
       return false;
    }
 
-   if (!InitAudio()) {
-      return false;
-   }
-
    if (!scrnSaverNoti_.Init()) {
       return false;
    }
@@ -226,6 +224,11 @@ bool WinMute::Init()
 
    if (!WTSRegisterSessionNotification(hWnd_, NOTIFY_FOR_THIS_SESSION)) {
       PrintWindowsError(_T("WTSRegisterSessionNotification"));
+      return false;
+   }
+
+   if (!RegisterPowerSettingNotification(hWnd_, &GUID_CONSOLE_DISPLAY_STATE, 0)) {
+      PrintWindowsError(_T("RegisterPowerSettingNotification"));
       return false;
    }
 
@@ -258,6 +261,10 @@ bool WinMute::LoadDefaults()
    muteCtrl_.SetMuteOnSuspend(!!settings_.QueryValue(SettingsKey::MUTE_ON_SUSPEND, 0));
    muteCtrl_.SetMuteOnShutdown(!!settings_.QueryValue(SettingsKey::MUTE_ON_SHUTDOWN, 0));
 
+   muteCtrl_.SetNotifications(settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED, 0) != 0);
+
+   muteConfig_.showNotifications =
+      settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED, 0) != 0;
    muteConfig_.quietHours.enabled =
       settings_.QueryValue(SettingsKey::QUIETHOURS_ENABLE, 0) != 0;
    muteConfig_.quietHours.forceUnmute =
@@ -308,14 +315,18 @@ LRESULT CALLBACK WinMute::WindowProc(
       case ID_TRAYMENU_EXIT:
          SendMessage(hWnd, WM_CLOSE, 0, 0);
          break;
-      case ID_TRAYMENU_SETTINGS:
+      case ID_TRAYMENU_SETTINGS: {
          DialogBoxParam(
             hglobInstance,
             MAKEINTRESOURCE(IDD_SETTINGS),
             hWnd_,
             SettingsDlgProc,
             reinterpret_cast<LPARAM>(&settings_));
+         bool notifications = settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED, 0) != 0;
+         muteConfig_.showNotifications = notifications;
+         muteCtrl_.SetNotifications(notifications);
          break;
+      }
       case ID_TRAYMENU_MUTE: {
          bool state = false;
          ToggleMenuCheck(ID_TRAYMENU_MUTE, &state);
@@ -346,6 +357,13 @@ LRESULT CALLBACK WinMute::WindowProc(
          } else {
             scrnSaverNoti_.ClearNotifications();
          }
+         break;
+      }
+      case ID_TRAYMENU_SCREENSUSPEND: {
+         bool checked = false;
+         ToggleMenuCheck(ID_TRAYMENU_SCREENSUSPEND, &checked);
+         muteCtrl_.SetMuteOnDisplayStandby(checked);
+         settings_.SetValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY, checked);
          break;
       }
       case ID_TRAYMENU_MUTEONSHUTDOWN: {
@@ -420,7 +438,7 @@ LRESULT CALLBACK WinMute::WindowProc(
             }
          }
       }
-      break;
+      return TRUE;
    case WM_QUERYENDSESSION:
       if (lParam == 0) { // Shutdown
          muteCtrl_.NotifyShutdown();

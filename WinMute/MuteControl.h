@@ -42,7 +42,10 @@ public:
    MuteControl(const MuteControl&) = delete;
    MuteControl& operator=(const MuteControl&) = delete;
 
-   bool Init(HWND hParent);
+   bool Init(HWND hParent, const TrayIcon* trayIcon);
+
+
+   void SetNotifications(bool enable);
 
    void SetMute(bool mute);
 
@@ -85,10 +88,16 @@ private:
    };
    std::vector<MuteConfig> muteConfig_;
    bool restoreVolume_;
+   bool notificationsEnabled_;
    std::unique_ptr<WinAudio> winAudio_;
+
+   bool displayWasOffOnce_; // Since a power message is sent right after registering
+                            // We skip the first "was on" message
+
+   const TrayIcon* trayIcon_;
 
    void NotifyRestoreCondition(int type, bool active);
    void SaveMuteStatus();
    void RestoreVolume();
-
+   void ShowNotification(const tstring& title, const tstring& text);
 };
