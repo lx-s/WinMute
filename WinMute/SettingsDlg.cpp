@@ -123,10 +123,10 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
          ResizeTab(dlgData->hTabCtrl, hCurTab);
       }
 
-      /*HICON hIcon = LoadIcon(
+      HICON hIcon = LoadIcon(
          GetModuleHandle(NULL),
          MAKEINTRESOURCE(IDI_SETTINGS));
-      SendMessageW(hDlg, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(hIcon));*/
+      SendMessageW(hDlg, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(hIcon));
 
       SwitchTab(dlgData, dlgData->hTabs[SETTINGS_TAB_GENERAL]);
       return TRUE;

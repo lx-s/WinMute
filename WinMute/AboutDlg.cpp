@@ -285,6 +285,11 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
          reinterpret_cast<WPARAM>(dlgData->hTitleFont),
          TRUE);
 
+      HICON hIcon = LoadIcon(
+         GetModuleHandle(NULL),
+         MAKEINTRESOURCE(IDI_TRAY_DARK));
+      SendMessageW(hDlg, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(hIcon));
+
       return TRUE;
    }
    case WM_NOTIFY: {

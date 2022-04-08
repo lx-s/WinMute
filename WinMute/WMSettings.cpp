@@ -208,13 +208,13 @@ void WMSettings::EnableAutostart(bool enable)
                wmPath,
                (lstrlen(wmPath) + 1) * sizeof(TCHAR));
             if (regError != ERROR_SUCCESS) {
-               PrintWindowsError(_T("RegOpenKeyEx"), regError);
+               PrintWindowsError(_T("RegSetKeyValue"), regError);
             }
          }
       } else {
          DWORD regError = RegDeleteKeyValue(hRunKey, NULL, LX_SYSTEMS_AUTOSTART_KEY);
-         if (regError != ERROR_SUCCESS) {
-            PrintWindowsError(_T("RegOpenKeyEx"), regError);
+         if (regError != ERROR_SUCCESS && regError != ERROR_FILE_NOT_FOUND) {
+            PrintWindowsError(_T("RegDeleteKeyValue"), regError);
          }
       }
       RegCloseKey(hRunKey);
