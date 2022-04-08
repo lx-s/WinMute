@@ -39,25 +39,7 @@ class WMLog {
 public:
    static WMLog& GetInstance();
 
-   void Write(const tstring& wmsg);
-
-   template<typename... Args>
-   void Write(
-      [[maybe_unused]] const tstring_view& fmt,
-      [[maybe_unused]] Args&&... args)
-   {
-      if (!initialized_ || !enabled_) {
-         return;
-      }
-#ifdef UNICODE
-      const std::wstring str = std::vformat(
-         fmt, std::make_wformat_args(args...));
-#else
-      const std::wstring str = std::vformat(
-         fmt, std::make_format_args(args...));
-#endif
-      WriteMessage(str);
-   }
+   void Write(const TCHAR* fmt, ...);
 
    void SetEnabled(bool enable);
    std::string GetLogFilePath();
@@ -68,7 +50,7 @@ private:
    WMLog(const WMLog&) = delete;
    WMLog& operator=(const WMLog&) = delete;
 
-   void WriteMessage(const tstring& msg);
+   void WriteMessage(const TCHAR* msg);
 
    bool initialized_;
    bool enabled_;

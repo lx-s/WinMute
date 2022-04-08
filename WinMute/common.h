@@ -54,13 +54,13 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <cassert>
 #include <chrono>
 #include <filesystem>
-#include <format>
 #include <fstream>
 #include <memory>
 #include <string_view>
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <cstdarg>
 
 #include <windows.h>
 #include <windowsx.h>

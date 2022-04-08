@@ -76,7 +76,7 @@ void WMLog::SetEnabled(bool enable)
    enabled_ = enable;
 }
 
-void WMLog::WriteMessage(const tstring& msg)
+void WMLog::WriteMessage(const TCHAR* msg)
 {
    struct tm tm;
    auto now = std::chrono::system_clock::now();
@@ -95,10 +95,22 @@ void WMLog::WriteMessage(const tstring& msg)
    logFile_.flush();
 }
 
-void WMLog::Write(const tstring& msg)
+void WMLog::Write(const TCHAR *fmt, ...)
 {
    if (!initialized_ || !enabled_) {
       return;
    }
-   WriteMessage(msg);
+
+   TCHAR buf[200];
+   va_list ap;
+   va_start(ap, fmt);
+
+#ifdef _UNICODE
+   vswprintf_s(buf, fmt, ap);
+#else
+   snprintf(buf, ARRAY_SIZE(buf), fmt, ap);
+#endif
+   WriteMessage(buf);
+
+   va_end(ap);
 }

@@ -195,11 +195,21 @@ static bool GetWinMuteVersion(tstring& versNumber)
                _T("\\"),
                reinterpret_cast<LPVOID*>(&pvi),
                &pviLen)) {
-            versNumber = std::format(_T("{}.{}.{}.{}"),
+            TCHAR buf[30];
+
+#ifdef _UNICODE
+            swprintf_s(
+#else
+            sprintf_s(
+#endif
+               buf,
+               ARRAY_SIZE(buf),
+               _T("%d.%d.%d.%d"),
                pvi->dwProductVersionMS >> 16,
                pvi->dwFileVersionMS & 0xFFFF,
                pvi->dwFileVersionLS >> 16,
                pvi->dwFileVersionLS & 0xFFFF);
+            versNumber = buf;
             success = true;
          }
       }
@@ -246,7 +256,7 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
       tstring progName = _T("WinMute");
       tstring progVers = _T("WinMute");
       if (GetWinMuteVersion(progVers)) {
-         progName = std::format(_T("WinMute {}"), progVers);
+         progName = tstring(_T("WinMute")) + progVers;
          Static_SetText(hTitle, progName.c_str());
       }
 

@@ -191,11 +191,7 @@ bool WinMute::Init()
 
    hAppIcon_ = LoadIcon(hglobInstance, MAKEINTRESOURCE(IDI_APP));
 
-   if (!InitAudio()) {
-      return false;
-   }
-
-   if (!settings_.Init() || !LoadDefaults()) {
+   if (!settings_.Init()) {
       return false;
    }
 
@@ -205,6 +201,14 @@ bool WinMute::Init()
    WMLog::GetInstance().SetEnabled(settings_.QueryValue(SettingsKey::LOGGING_ENABLED, 0));
 #endif
    log.Write(_T("Starting new session..."));
+
+   if (!InitAudio()) {
+      return false;
+   }
+
+   if (!LoadDefaults()) {
+      return false;
+   }
 
    if (!RegisterWindowClass() ||
        !InitWindow() ||

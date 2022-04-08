@@ -74,7 +74,7 @@ bool MuteControl::Init(HWND hParent, const TrayIcon *trayIcon)
 
 void MuteControl::SetMute(bool mute)
 {
-   WMLog::GetInstance().Write(_T("Manual muting: {}"), mute ? _T("on") : _T("off"));
+   WMLog::GetInstance().Write(_T("Manual muting: %s"), mute ? _T("on") : _T("off"));
    winAudio_->SetMute(mute);
 }
 
@@ -230,21 +230,21 @@ void MuteControl::NotifyRestoreCondition(int type, bool active)
 
 void MuteControl::NotifyWorkstationLock(bool active)
 {
-   WMLog::GetInstance().Write(_T("Mute Event: Workstation Lock {}"),
+   WMLog::GetInstance().Write(_T("Mute Event: Workstation Lock %s"),
                               active ? _T("start") : _T("stop"));
    NotifyRestoreCondition(MuteTypeWorkstationLock, active);
 }
 
 void MuteControl::NotifyScreensaver(bool active)
 {
-   WMLog::GetInstance().Write(_T("Mute Event: Screensaver {}"),
+   WMLog::GetInstance().Write(_T("Mute Event: Screensaver %s"),
                               active ? _T("start") : _T("stop"));
    NotifyRestoreCondition(MuteTypeScreensaverActive, active);
 }
 
 void MuteControl::NotifyRemoteSession(bool active)
 {
-   WMLog::GetInstance().Write(_T("Mute Event: Remote Session {}"),
+   WMLog::GetInstance().Write(_T("Mute Event: Remote Session %s"),
                               active ? _T("start") : _T("stop"));
    NotifyRestoreCondition(MuteTypeRemoteSession, active);
 }
@@ -252,7 +252,7 @@ void MuteControl::NotifyRemoteSession(bool active)
 void MuteControl::NotifyDisplayStandby(bool active)
 {
    if (displayWasOffOnce_ || active) {
-      WMLog::GetInstance().Write(_T("Mute Event: Display Standby {}"),
+      WMLog::GetInstance().Write(_T("Mute Event: Display Standby %s"),
                                  active ? _T("start") : _T("stop"));
       NotifyRestoreCondition(MuteTypeDisplayStandby, active);
       displayWasOffOnce_ = true;
