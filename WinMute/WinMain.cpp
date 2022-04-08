@@ -35,6 +35,20 @@ POSSIBILITY OF SUCH DAMAGE.
 
 HINSTANCE hglobInstance;
 
+static bool SetWorkingDirectory()
+{
+   char wmFileName[MAX_PATH + 1];
+   if (GetModuleFileNameA(NULL, wmFileName, ARRAY_SIZE(wmFileName)) > 0) {
+      char* p = strrchr(wmFileName, '\\');
+      if (p != NULL) {
+         *(p+1) = '\0';
+         SetCurrentDirectoryA(wmFileName);
+         return true;
+      }
+   }
+   return false;
+}
+
 int WINAPI wWinMain(_In_ HINSTANCE hInstance,
    _In_opt_ HINSTANCE,
    _In_ PWSTR,
@@ -57,6 +71,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
          nullptr);
       return FALSE;
    }
+
+   SetWorkingDirectory();
 
    hglobInstance = hInstance;
 
