@@ -51,8 +51,8 @@ private:
    WMLog& operator=(const WMLog&) = delete;
 
    void WriteMessage(const TCHAR* msg);
+   void DeleteLogFile();
 
-   bool initialized_;
    bool enabled_;
 #ifdef UNICODE
    std::wofstream logFile_;

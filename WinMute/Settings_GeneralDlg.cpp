@@ -81,9 +81,11 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       HWND hLogging = GetDlgItem(hDlg, IDC_ENABLELOGGING);
 
       int showNotifications = Button_GetCheck(hNotify) == BST_CHECKED;
-      int enableLog = Button_GetCheck(hLogging) == BST_CHECKED;
       settings->SetValue(SettingsKey::NOTIFICATIONS_ENABLED, showNotifications);
+
+      int enableLog = Button_GetCheck(hLogging) == BST_CHECKED;
       settings->SetValue(SettingsKey::LOGGING_ENABLED, enableLog);
+      WMLog::GetInstance().SetEnabled(enableLog);
 
       if (Button_GetCheck(hAutostart) == BST_CHECKED) {
          settings->EnableAutostart(true);

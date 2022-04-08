@@ -49,17 +49,14 @@ WMLog& WMLog::GetInstance()
    return log;
 }
 
-WMLog::WMLog() :
-   initialized_(false)
+WMLog::WMLog():
+   enabled_(false)
 {
-   if (OpenLogFile(GetLogFilePath(), logFile_)) {
-      initialized_ = true;
-   }
 }
 
 WMLog::~WMLog()
 {
-   if (initialized_) {
+   if (logFile_.is_open()) {
       logFile_.close();
    }
 }
@@ -71,9 +68,32 @@ std::string WMLog::GetLogFilePath()
    return path.string();
 }
 
+void WMLog::DeleteLogFile()
+{
+   auto p = GetLogFilePath();
+   logFile_.close();
+   DeleteFileA(p.c_str());
+}
+
 void WMLog::SetEnabled(bool enable)
 {
-   enabled_ = enable;
+   if (enable == enabled_) {
+      if (!enable) {
+         DeleteLogFile();
+      }
+      return;
+   }
+   if (enable) {
+      if (OpenLogFile(GetLogFilePath(), logFile_)) {
+         enabled_ = true;
+      }
+   } else {
+      if (logFile_.is_open()) {
+         logFile_.close();
+      }
+      DeleteLogFile();
+      enabled_ = false;
+   }
 }
 
 void WMLog::WriteMessage(const TCHAR* msg)
@@ -97,7 +117,7 @@ void WMLog::WriteMessage(const TCHAR* msg)
 
 void WMLog::Write(const TCHAR *fmt, ...)
 {
-   if (!initialized_ || !enabled_) {
+   if (!enabled_) {
       return;
    }
 
