@@ -111,9 +111,6 @@
     <Image Include="icons\tray_dark.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="icons\icon1.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="icons\settings.ico">
       <Filter>Resource Files</Filter>
     </Image>
@@ -149,9 +146,6 @@
     <ClCompile Include="common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AboutDlg.cpp">
-      <Filter>Source Files\UI\Dialogs</Filter>
-    </ClCompile>
     <ClCompile Include="TrayIcon.cpp">
       <Filter>Source Files\UI\TrayIcon</Filter>
     </ClCompile>
@@ -169,6 +163,9 @@
     </ClCompile>
     <ClCompile Include="Settings_GeneralDlg.cpp">
       <Filter>Source Files\UI\Dialogs\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="AboutDlg.cpp">
+      <Filter>Source Files\UI\Dialogs</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
