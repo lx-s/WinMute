@@ -274,8 +274,13 @@ void ScreensaverNotifier::ClearNotifications()
 void ScreensaverNotifier::StartScreensaverPollTimer(bool start)
 {
    if (start) {
-      if (SetTimer(hWnd_, SCRSV_TIMER_ID, 1000, nullptr) == 0) {
-         PrintWindowsError(_T("SetTimer"));
+      if (SetCoalescableTimer(
+            hWnd_,
+            SCRSV_TIMER_ID,
+            1000,
+            nullptr,
+            TIMERV_DEFAULT_COALESCING) == 0) {
+         PrintWindowsError(_T("SetCoalescableTimer"));
       }
    } else {
       KillTimer(hWnd_, SCRSV_TIMER_ID);
