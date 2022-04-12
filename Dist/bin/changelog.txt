@@ -1,18 +1,17 @@
 Version 2.0.0-beta (2022-*-*)
- * Added Hi-DPI Awareness to manifest
- * Added Tray-Icon for bright system theme
- * Added detection for display standby
- * UI Rework
- * Added autostart option (no more fiddling with the Autostart-Folder)
- * Reworked mute detection logic.
-   This should fix timing errors, e.g. when
+ * WinMute now mutes all audio endpoints and not just the default endpoint.
+   It also stores all Endpoint states and restores them if the appropriate
+   option is set.
+ * Reworked mute detection logic. This should fix timing errors, e.g. when
    screensaver with screenlock is active.
- * WinMute now mutes all audio endpoints and
-   not just the default endpoint. It also
-   stores all Endpoint states and restores
-   them if the appropriate option is set.
+ * Added detection for display standby
+ * Added detection for RDP sessions
+ * Added autostart option (no more fiddling with the Autostart-Folder)
+ * Added Hi-DPI awareness
+ * Added tray icon for bright system theme
+ * UI Rework (New settings and about dialogue)
+ * Various fixes and improvenents
  * Updated project to VS 2022
-
 
 Version 1.6.0 (2020-12-18)
  * Added "Quiet Hours": A time frame where WinMute automatically
