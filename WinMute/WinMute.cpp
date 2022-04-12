@@ -310,20 +310,20 @@ bool WinMute::Init()
 
 bool WinMute::LoadSettings()
 {
-   muteCtrl_.SetRestoreVolume(!!settings_.QueryValue(SettingsKey::RESTORE_AUDIO));
-   muteCtrl_.SetMuteOnWorkstationLock(!!settings_.QueryValue(SettingsKey::MUTE_ON_LOCK));
-   muteCtrl_.SetMuteOnScreensaverActivation(!!settings_.QueryValue(SettingsKey::MUTE_ON_SCREENSAVER));
-   muteCtrl_.SetMuteOnDisplayStandby(!!settings_.QueryValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY));
-   muteCtrl_.SetMuteOnLogout(!!settings_.QueryValue(SettingsKey::MUTE_ON_LOGOUT));
-   muteCtrl_.SetMuteOnSuspend(!!settings_.QueryValue(SettingsKey::MUTE_ON_SUSPEND));
-   muteCtrl_.SetMuteOnShutdown(!!settings_.QueryValue(SettingsKey::MUTE_ON_SHUTDOWN));
+   muteCtrl_.SetRestoreVolume(settings_.QueryValue(SettingsKey::RESTORE_AUDIO));
+   muteCtrl_.SetMuteOnWorkstationLock(settings_.QueryValue(SettingsKey::MUTE_ON_LOCK));
+   muteCtrl_.SetMuteOnScreensaverActivation(settings_.QueryValue(SettingsKey::MUTE_ON_SCREENSAVER));
+   muteCtrl_.SetMuteOnDisplayStandby(settings_.QueryValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY));
+   muteCtrl_.SetMuteOnLogout(settings_.QueryValue(SettingsKey::MUTE_ON_LOGOUT));
+   muteCtrl_.SetMuteOnSuspend(settings_.QueryValue(SettingsKey::MUTE_ON_SUSPEND));
+   muteCtrl_.SetMuteOnShutdown(settings_.QueryValue(SettingsKey::MUTE_ON_SHUTDOWN));
 
-   muteCtrl_.SetNotifications(!!settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED));
+   muteCtrl_.SetNotifications(settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED));
 
-   muteConfig_.showNotifications = !!settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED);
-   muteConfig_.quietHours.enabled = !!settings_.QueryValue(SettingsKey::QUIETHOURS_ENABLE);
-   muteConfig_.quietHours.forceUnmute = !!settings_.QueryValue(SettingsKey::QUIETHOURS_FORCEUNMUTE);
-   muteConfig_.quietHours.notifications = !!settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS);
+   muteConfig_.showNotifications = settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED);
+   muteConfig_.quietHours.enabled = settings_.QueryValue(SettingsKey::QUIETHOURS_ENABLE);
+   muteConfig_.quietHours.forceUnmute = settings_.QueryValue(SettingsKey::QUIETHOURS_FORCEUNMUTE);
+   muteConfig_.quietHours.notifications = settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS);
    muteConfig_.quietHours.start = settings_.QueryValue(SettingsKey::QUIETHOURS_START);
    muteConfig_.quietHours.end = settings_.QueryValue(SettingsKey::QUIETHOURS_END);
 

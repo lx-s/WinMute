@@ -226,8 +226,12 @@ void MuteControl::NotifyRestoreCondition(int type, bool active)
          winAudio_->SetMute(true);
       }
    } else {
-      muteConfig_[type].active = active;
-      RestoreVolume();
+      if (muteConfig_[type].active) {
+         muteConfig_[type].active = false;
+         if (muteConfig_[type].shouldMute) {
+            RestoreVolume();
+         }
+      }
    }
 }
 

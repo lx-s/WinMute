@@ -56,6 +56,8 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
          EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
       }
 
+      HWND hNotify = GetDlgItem(hDlg, IDC_SHOWNOTIFICATIONS);
+
       HWND hMuteOnLock = GetDlgItem(hDlg, IDC_MUTE_WHEN_WS_LOCKED);
       HWND hMuteOnScreensaver = GetDlgItem(hDlg, IDC_MUTE_WHEN_SCREENSAVER_STARTS);
       HWND hMuteOnScreenOff = GetDlgItem(hDlg, IDC_MUTE_WHEN_SCREEN_OFF);
@@ -69,6 +71,9 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
       assert(settings != NULL);
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(settings));
+
+      // General
+      SetCheckButton(hNotify, *settings, SettingsKey::NOTIFICATIONS_ENABLED);
 
       // With restore
       SetCheckButton(hMuteOnLock, *settings, SettingsKey::MUTE_ON_LOCK);
@@ -88,6 +93,8 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
    {
       WMSettings* settings = reinterpret_cast<WMSettings*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
 
+      HWND hNotify = GetDlgItem(hDlg, IDC_SHOWNOTIFICATIONS);
+
       HWND hMuteOnLock = GetDlgItem(hDlg, IDC_MUTE_WHEN_WS_LOCKED);
       HWND hMuteOnScreensaver = GetDlgItem(hDlg, IDC_MUTE_WHEN_SCREENSAVER_STARTS);
       HWND hMuteOnScreenOff = GetDlgItem(hDlg, IDC_MUTE_WHEN_SCREEN_OFF);
@@ -97,6 +104,9 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       HWND hMuteOnShutdown = GetDlgItem(hDlg, IDC_MUTE_WHEN_SHUTDOWN);
       HWND hMuteOnSleep = GetDlgItem(hDlg, IDC_MUTE_WHEN_SLEEP);
       HWND hMuteOnLogout = GetDlgItem(hDlg, IDC_MUTE_WHEN_LOGOUT);
+
+      // General
+      SetOption(hNotify, *settings, SettingsKey::NOTIFICATIONS_ENABLED);
 
       // With restore
       SetOption(hMuteOnLock, *settings, SettingsKey::MUTE_ON_LOCK);

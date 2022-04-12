@@ -38,7 +38,6 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
    switch (msg) {
    case WM_INITDIALOG: {
       HWND hAutostart = GetDlgItem(hDlg, IDC_RUNONSTARTUP);
-      HWND hNotify = GetDlgItem(hDlg, IDC_SHOWNOTIFICATIONS);
       HWND hLogging = GetDlgItem(hDlg, IDC_ENABLELOGGING);
       HWND hOpenLog = GetDlgItem(hDlg, IDC_OPENLOG);
 
@@ -52,9 +51,6 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
 
       DWORD enabled = settings->IsAutostartEnabled();
       Button_SetCheck(hAutostart, enabled ? BST_CHECKED : BST_UNCHECKED);
-
-      enabled = !!settings->QueryValue(SettingsKey::NOTIFICATIONS_ENABLED);
-      Button_SetCheck(hNotify, enabled ? BST_CHECKED : BST_UNCHECKED);
 
       enabled = !!settings->QueryValue(SettingsKey::LOGGING_ENABLED);
       Button_SetCheck(hLogging, enabled ? BST_CHECKED : BST_UNCHECKED);
@@ -77,11 +73,7 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       WMSettings* settings = reinterpret_cast<WMSettings*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
 
       HWND hAutostart = GetDlgItem(hDlg, IDC_RUNONSTARTUP);
-      HWND hNotify = GetDlgItem(hDlg, IDC_SHOWNOTIFICATIONS);
       HWND hLogging = GetDlgItem(hDlg, IDC_ENABLELOGGING);
-
-      int showNotifications = Button_GetCheck(hNotify) == BST_CHECKED;
-      settings->SetValue(SettingsKey::NOTIFICATIONS_ENABLED, showNotifications);
 
       int enableLog = Button_GetCheck(hLogging) == BST_CHECKED;
       settings->SetValue(SettingsKey::LOGGING_ENABLED, enableLog);

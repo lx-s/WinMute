@@ -76,11 +76,9 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "Start WinMute on system startup",IDC_RUNONSTARTUP,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,3,219,26
-    CONTROL         "Enable Logging",IDC_ENABLELOGGING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,48,219,21
-    CONTROL         "Show mute event notifications",IDC_SHOWNOTIFICATIONS,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,27,219,21
-    PUSHBUTTON      "Open Log File...",IDC_OPENLOG,22,69,58,15
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,9,219,17
+    CONTROL         "Enable logging",IDC_ENABLELOGGING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,31,219,15
+    PUSHBUTTON      "Open log file...",IDC_OPENLOG,22,50,58,15
 END
 
 IDD_SETTINGS_QUIETHOURS DIALOGEX 0, 0, 246, 198
@@ -92,7 +90,8 @@ BEGIN
     CONTROL         "",IDC_QUIETHOURS_START,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,73,47,65,18
     CONTROL         "",IDC_QUIETHOURS_END,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,72,71,67,19
     CONTROL         "Force unmute",IDC_FORCEUNMUTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,94,86,16
-    CONTROL         "Show notifications",IDC_SHOWNOTIFICATIONS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,146,81,21
+    CONTROL         "Show quiet hours notifications",IDC_SHOWNOTIFICATIONS,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,146,180,21
     LTEXT           "If force unmute is enabled, WinMute will unmute your workstation when quiet hours end and not take into account if your workstation was already muted before quiet hours started.",IDC_STATIC,33,111,204,37
     LTEXT           "Start time:",IDC_STATIC,23,50,43,13
     LTEXT           "End time:",IDC_STATIC,24,73,32,16
@@ -122,23 +121,25 @@ IDD_SETTINGS_MUTE DIALOGEX 0, 0, 242, 205
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    GROUPBOX        "Mute with volume restore, when...",IDC_STATIC,7,33,228,75
+    GROUPBOX        "Mute with volume restore, when...",IDC_STATIC,7,42,228,75
     CONTROL         "... the workstation is locked.",IDC_MUTE_WHEN_WS_LOCKED,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,48,107,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,57,107,10
     CONTROL         "... the screensaver starts.",IDC_MUTE_WHEN_SCREENSAVER_STARTS,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,62,101,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,71,101,10
     CONTROL         "... the screen turns off.",IDC_MUTE_WHEN_SCREEN_OFF,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,76,93,10
-    CONTROL         "Restore volume afterwards.",IDC_RESTOREVOLUME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,92,106,10
-    GROUPBOX        "Mute without volume restore, when...",IDC_STATIC,7,112,228,73
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,85,93,10
+    CONTROL         "Restore volume afterwards.",IDC_RESTOREVOLUME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,101,106,10
+    GROUPBOX        "Mute without volume restore, when...",IDC_STATIC,7,121,228,73
     CONTROL         "... the computer shuts down.",IDC_MUTE_WHEN_SHUTDOWN,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,126,110,10
-    CONTROL         "... you log out.",IDC_MUTE_WHEN_LOGOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,154,65,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,135,110,10
+    CONTROL         "... you log out.",IDC_MUTE_WHEN_LOGOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,163,65,10
     CONTROL         "... the computer goes into sleep/hibernate.",IDC_MUTE_WHEN_SLEEP,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,140,155,10
-    LTEXT           "Here you can configure the various mute conditions and variations that WinMute supports.",IDC_STATIC,7,8,228,17
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,149,155,10
     CONTROL         "... when WinMute is started within a RDP session.",IDC_MUTE_WHEN_RDP_SESSION,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,167,175,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,177,175,10
+    GROUPBOX        "General",IDC_STATIC,7,7,228,31
+    CONTROL         "Show mute event notifications",IDC_SHOWNOTIFICATIONS,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,17,219,18
 END
 
 
