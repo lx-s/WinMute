@@ -15,5 +15,9 @@
     <ClInclude Include="ScreensaverNotify.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ScreensaverNotify.rc" />
   </ItemGroup>
 </Project>

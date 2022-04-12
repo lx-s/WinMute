@@ -18,5 +18,9 @@
     <ClInclude Include="ScreensaverNotifierProxy.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ScreensaverProxy32.rc" />
   </ItemGroup>
 </Project>

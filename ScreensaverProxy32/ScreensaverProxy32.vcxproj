@@ -167,7 +167,11 @@
     <ClCompile Include="ScreensaverProxy.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="ScreensaverNotifierProxy.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ScreensaverProxy32.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

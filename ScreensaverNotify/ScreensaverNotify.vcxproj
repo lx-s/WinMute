@@ -184,7 +184,11 @@
     <ClCompile Include="ScreensaverNotify.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="ScreensaverNotify.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ScreensaverNotify.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

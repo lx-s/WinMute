@@ -306,8 +306,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,9,9,1
- PRODUCTVERSION 1,9,9,1
+ FILEVERSION 1,9,9,2
+ PRODUCTVERSION 1,9,9,2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -324,23 +324,23 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "LX-Systems"
             VALUE "FileDescription", "WinMute"
-            VALUE "FileVersion", "1.9.9.1"
+            VALUE "FileVersion", "1.9.9.2"
             VALUE "InternalName", "WinMute.exe"
             VALUE "LegalCopyright", "Copyright (C) 2022, Alexander Steinhöfer"
             VALUE "OriginalFilename", "WinMute.exe"
             VALUE "ProductName", "WinMute"
-            VALUE "ProductVersion", "1.9.9.1"
+            VALUE "ProductVersion", "1.9.9.2"
         END
         BLOCK "040704b0"
         BEGIN
             VALUE "CompanyName", "LX-Systems"
             VALUE "FileDescription", "WinMute"
-            VALUE "FileVersion", "1.9.9.1"
+            VALUE "FileVersion", "1.9.9.2"
             VALUE "InternalName", "WinMute.exe"
             VALUE "LegalCopyright", "Copyright (C) 2022, Alexander Steinhöfer"
             VALUE "OriginalFilename", "WinMute.exe"
             VALUE "ProductName", "WinMute"
-            VALUE "ProductVersion", "1.9.9.1"
+            VALUE "ProductVersion", "1.9.9.2"
         END
     END
     BLOCK "VarFileInfo"
