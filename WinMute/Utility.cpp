@@ -61,7 +61,8 @@ void PrintWindowsError(LPCWSTR lpszFunction, DWORD lastError)
             lpszFunction,
             lastError,
             reinterpret_cast<TCHAR*>(lpMsgBuf));
-         TaskDialog(nullptr,
+         TaskDialog(
+            nullptr,
             nullptr,
             PROGRAM_NAME,
             static_cast<LPCTSTR>(lpDisplayBuf),

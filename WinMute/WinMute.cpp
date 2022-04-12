@@ -95,6 +95,7 @@ static int IsDarkMode(bool& isDarkMode)
 }
 
 WinMute::MuteConfig::MuteConfig()
+   : showNotifications(false)
 {
    this->quietHours.enabled = false;
    this->quietHours.forceUnmute = false;
@@ -168,17 +169,20 @@ bool WinMute::InitAudio()
                   (cond) ? MF_CHECKED : MF_UNCHECKED) != -1)
 bool WinMute::InitTrayMenu()
 {
-   hTrayMenu_ = LoadMenu(hglobInstance, MAKEINTRESOURCE(IDR_TRAYMENU));
-   if (!hTrayMenu_) {
-      PrintWindowsError(_T("LoadMenu"));
-      return false;
-   } else if (
-      !CHECK_MENU_ITEM(MUTEONLOCK, muteCtrl_.GetMuteOnWorkstationLock()) ||
-      !CHECK_MENU_ITEM(MUTEONSCREENSAVER, muteCtrl_.GetMuteOnScreensaverActivation()) ||
-      !CHECK_MENU_ITEM(RESTOREAUDIO, muteCtrl_.GetRestoreVolume()) ||
-      !CHECK_MENU_ITEM(MUTEONSUSPEND, muteCtrl_.GetMuteOnSuspend()) ||
-      !CHECK_MENU_ITEM(MUTEONSHUTDOWN, muteCtrl_.GetMuteOnShutdown()) ||
-      !CHECK_MENU_ITEM(MUTEONLOGOUT, muteCtrl_.GetMuteOnLogout())) {
+   if (hTrayMenu_ == NULL) {
+      hTrayMenu_ = LoadMenu(hglobInstance, MAKEINTRESOURCE(IDR_TRAYMENU));
+      if (hTrayMenu_ == NULL) {
+         PrintWindowsError(_T("LoadMenu"));
+         return false;
+      }
+   }
+
+   if (!CHECK_MENU_ITEM(MUTEONLOCK, muteCtrl_.GetMuteOnWorkstationLock()) ||
+       !CHECK_MENU_ITEM(MUTEONSCREENSAVER, muteCtrl_.GetMuteOnScreensaverActivation()) ||
+       !CHECK_MENU_ITEM(RESTOREAUDIO, muteCtrl_.GetRestoreVolume()) ||
+       !CHECK_MENU_ITEM(MUTEONSUSPEND, muteCtrl_.GetMuteOnSuspend()) ||
+       !CHECK_MENU_ITEM(MUTEONSHUTDOWN, muteCtrl_.GetMuteOnShutdown()) ||
+       !CHECK_MENU_ITEM(MUTEONLOGOUT, muteCtrl_.GetMuteOnLogout())) {
       return false;
    }
    return true;
@@ -206,7 +210,7 @@ bool WinMute::Init()
       return false;
    }
 
-   if (!LoadDefaults()) {
+   if (!LoadSettings()) {
       return false;
    }
 
@@ -255,30 +259,24 @@ bool WinMute::Init()
    return true;
 }
 
-bool WinMute::LoadDefaults()
+bool WinMute::LoadSettings()
 {
-   muteCtrl_.SetRestoreVolume(!!settings_.QueryValue(SettingsKey::RESTORE_AUDIO, 1));
-   muteCtrl_.SetMuteOnWorkstationLock(!!settings_.QueryValue(SettingsKey::MUTE_ON_LOCK, 1));
-   muteCtrl_.SetMuteOnScreensaverActivation(!!settings_.QueryValue(SettingsKey::MUTE_ON_SCREENSAVER, 1));
-   muteCtrl_.SetMuteOnDisplayStandby(!!settings_.QueryValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY, 1));
-   muteCtrl_.SetMuteOnLogout(!!settings_.QueryValue(SettingsKey::MUTE_ON_LOGOUT, 0));
-   muteCtrl_.SetMuteOnSuspend(!!settings_.QueryValue(SettingsKey::MUTE_ON_SUSPEND, 0));
-   muteCtrl_.SetMuteOnShutdown(!!settings_.QueryValue(SettingsKey::MUTE_ON_SHUTDOWN, 0));
+   muteCtrl_.SetRestoreVolume(!!settings_.QueryValue(SettingsKey::RESTORE_AUDIO));
+   muteCtrl_.SetMuteOnWorkstationLock(!!settings_.QueryValue(SettingsKey::MUTE_ON_LOCK));
+   muteCtrl_.SetMuteOnScreensaverActivation(!!settings_.QueryValue(SettingsKey::MUTE_ON_SCREENSAVER));
+   muteCtrl_.SetMuteOnDisplayStandby(!!settings_.QueryValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY));
+   muteCtrl_.SetMuteOnLogout(!!settings_.QueryValue(SettingsKey::MUTE_ON_LOGOUT));
+   muteCtrl_.SetMuteOnSuspend(!!settings_.QueryValue(SettingsKey::MUTE_ON_SUSPEND));
+   muteCtrl_.SetMuteOnShutdown(!!settings_.QueryValue(SettingsKey::MUTE_ON_SHUTDOWN));
 
-   muteCtrl_.SetNotifications(settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED, 0) != 0);
+   muteCtrl_.SetNotifications(!!settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED));
 
-   muteConfig_.showNotifications =
-      settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED, 0) != 0;
-   muteConfig_.quietHours.enabled =
-      settings_.QueryValue(SettingsKey::QUIETHOURS_ENABLE, 0) != 0;
-   muteConfig_.quietHours.forceUnmute =
-      settings_.QueryValue(SettingsKey::QUIETHOURS_FORCEUNMUTE, 0) != 0;
-   muteConfig_.quietHours.notifications =
-      settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS, 0) != 0;
-   muteConfig_.quietHours.start =
-      settings_.QueryValue(SettingsKey::QUIETHOURS_START, 0);
-   muteConfig_.quietHours.end =
-      settings_.QueryValue(SettingsKey::QUIETHOURS_END, 0);
+   muteConfig_.showNotifications = !!settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED);
+   muteConfig_.quietHours.enabled = !!settings_.QueryValue(SettingsKey::QUIETHOURS_ENABLE);
+   muteConfig_.quietHours.forceUnmute = !!settings_.QueryValue(SettingsKey::QUIETHOURS_FORCEUNMUTE);
+   muteConfig_.quietHours.notifications = !!settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS);
+   muteConfig_.quietHours.start = settings_.QueryValue(SettingsKey::QUIETHOURS_START);
+   muteConfig_.quietHours.end = settings_.QueryValue(SettingsKey::QUIETHOURS_END);
 
    return true;
 }
@@ -320,15 +318,15 @@ LRESULT CALLBACK WinMute::WindowProc(
          SendMessage(hWnd, WM_CLOSE, 0, 0);
          break;
       case ID_TRAYMENU_SETTINGS: {
-         DialogBoxParam(
-            hglobInstance,
-            MAKEINTRESOURCE(IDD_SETTINGS),
-            hWnd_,
-            SettingsDlgProc,
-            reinterpret_cast<LPARAM>(&settings_));
-         bool notifications = settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED, 0) != 0;
-         muteConfig_.showNotifications = notifications;
-         muteCtrl_.SetNotifications(notifications);
+         if (DialogBoxParam(
+               hglobInstance,
+               MAKEINTRESOURCE(IDD_SETTINGS),
+               hWnd_,
+               SettingsDlgProc,
+               reinterpret_cast<LPARAM>(&settings_)) == 0) {
+            LoadSettings();
+            InitTrayMenu();
+         }
          break;
       }
       case ID_TRAYMENU_MUTE: {
@@ -471,14 +469,11 @@ LRESULT CALLBACK WinMute::WindowProc(
       return 0;
    case WM_WINMUTE_QUIETHOURS_CHANGE: {
       muteConfig_.quietHours.enabled = settings_.QueryValue(
-         SettingsKey::QUIETHOURS_ENABLE,
-         0);
+         SettingsKey::QUIETHOURS_ENABLE);
       muteConfig_.quietHours.forceUnmute = settings_.QueryValue(
-         SettingsKey::QUIETHOURS_FORCEUNMUTE,
-         0);
+         SettingsKey::QUIETHOURS_FORCEUNMUTE);
       muteConfig_.quietHours.notifications = settings_.QueryValue(
-         SettingsKey::QUIETHOURS_NOTIFICATIONS,
-         0);
+         SettingsKey::QUIETHOURS_NOTIFICATIONS);
       CheckMenuItem(
          hTrayMenu_,
          ID_TRAYMENU_CONFIGUREQUIETHOURS,
@@ -486,11 +481,9 @@ LRESULT CALLBACK WinMute::WindowProc(
 
       if (muteConfig_.quietHours.enabled) {
          muteConfig_.quietHours.start = settings_.QueryValue(
-            SettingsKey::QUIETHOURS_START,
-            0);
+            SettingsKey::QUIETHOURS_START);
          muteConfig_.quietHours.end = settings_.QueryValue(
-            SettingsKey::QUIETHOURS_END,
-            0);
+            SettingsKey::QUIETHOURS_END);
       }
       ResetQuietHours();
 
@@ -620,13 +613,39 @@ void WinMute::ResetQuietHours()
          int timerQhEnd = GetDiffMillseconds(&end, &now);
          WMLog::GetInstance().Write(L"Mute: On | Quiet hours have already started");
          muteCtrl_.NotifyQuietHours(true);
-         if (SetTimer(hWnd_, QUIETHOURS_TIMER_END_ID, timerQhEnd, QuietHoursTimer) == 0) {
-            MessageBox(hWnd_, L"Failed to create Timer", PROGRAM_NAME, MB_OK);
+         if (SetCoalescableTimer(
+               hWnd_,
+               QUIETHOURS_TIMER_END_ID,
+               timerQhEnd,
+               QuietHoursTimer,
+               TIMERV_DEFAULT_COALESCING) == 0) {
+            TaskDialog(
+               hWnd_,
+               hglobInstance,
+               PROGRAM_NAME,
+               _T("Quiet Hours Stop"),
+               _T("Failed to register end of quiet hours with windows timer system"),
+               TDCBF_OK_BUTTON,
+               TD_ERROR_ICON,
+               nullptr);
          }
       } else {
          int timerQhStart = GetDiffMillseconds(&start, &now);
-         if (SetTimer(hWnd_, QUIETHOURS_TIMER_START_ID, timerQhStart, QuietHoursTimer) == 0) {
-            MessageBox(hWnd_, L"Failed to create Timer", PROGRAM_NAME, MB_OK);
+         if (SetCoalescableTimer(
+               hWnd_,
+               QUIETHOURS_TIMER_START_ID,
+               timerQhStart,
+               QuietHoursTimer,
+               TIMERV_DEFAULT_COALESCING) == 0) {
+            TaskDialog(
+               hWnd_,
+               hglobInstance,
+               PROGRAM_NAME,
+               _T("Quiet Hours Start"),
+               _T("Failed to register quiet hours start with windows timer system"),
+               TDCBF_OK_BUTTON,
+               TD_ERROR_ICON,
+               nullptr);
          }
       }
    }
@@ -645,8 +664,21 @@ void WinMute::SetQuietHoursStart()
    start.wHour = static_cast<WORD>((muteConfig_.quietHours.start - start.wMinute - start.wSecond) / 3600);
 
    int timerQhStart = GetDiffMillseconds(&start, &now);
-   if (SetTimer(hWnd_, QUIETHOURS_TIMER_START_ID, timerQhStart, QuietHoursTimer) == 0) {
-      MessageBox(hWnd_, L"Failed to create Timer", PROGRAM_NAME, MB_OK);
+   if (SetCoalescableTimer(
+         hWnd_,
+         QUIETHOURS_TIMER_START_ID,
+         timerQhStart,
+         QuietHoursTimer,
+         TIMERV_DEFAULT_COALESCING) == 0) {
+      TaskDialog(
+         hWnd_,
+         hglobInstance,
+         PROGRAM_NAME,
+         _T("Quiet Hours Start"),
+         _T("Failed to register quiet hours start with windows timer system"),
+         TDCBF_OK_BUTTON,
+         TD_ERROR_ICON,
+         nullptr);
    }
 }
 
@@ -665,8 +697,21 @@ void WinMute::SetQuietHoursEnd()
    int timerQhEnd = GetDiffMillseconds(&end, &now);
    if (timerQhEnd <= 0) {
       SendMessage(hWnd_, WM_WINMUTE_QUIETHOURS_END, 0, 0);
-   } else if (SetTimer(hWnd_, QUIETHOURS_TIMER_END_ID, timerQhEnd, QuietHoursTimer) == 0) {
-      MessageBox(hWnd_, L"Failed to create Timer", PROGRAM_NAME, MB_OK);
+   } else if (SetCoalescableTimer(
+         hWnd_,
+         QUIETHOURS_TIMER_END_ID,
+         timerQhEnd,
+         QuietHoursTimer,
+         TIMERV_DEFAULT_COALESCING) == 0) {
+      TaskDialog(
+         hWnd_,
+         hglobInstance,
+         PROGRAM_NAME,
+         _T("Quiet Hours Stop"),
+         _T("Failed to register end of quiet hours with windows timer system"),
+         TDCBF_OK_BUTTON,
+         TD_ERROR_ICON,
+         nullptr);
    }
 }
 

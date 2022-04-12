@@ -167,5 +167,8 @@
     <ClCompile Include="AboutDlg.cpp">
       <Filter>Source Files\UI\Dialogs</Filter>
     </ClCompile>
+    <ClCompile Include="Settings_MuteDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\Settings</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

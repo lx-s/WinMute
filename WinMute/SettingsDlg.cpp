@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 enum SettingsTabsIDs {
    SETTINGS_TAB_GENERAL = 0,
+   SETTINGS_TAB_MUTE,
    SETTINGS_TAB_QUIETHOURS,
    SETTINGS_TAB_COUNT
 };
@@ -55,6 +56,7 @@ struct SettingsDlgData {
 
 extern INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND, UINT, WPARAM, LPARAM);
 extern INT_PTR CALLBACK Settings_GeneralDlgProc(HWND, UINT, WPARAM, LPARAM);
+extern INT_PTR CALLBACK Settings_MuteDlgProc(HWND, UINT, WPARAM, LPARAM);
 
 static void InsertTabItem(HWND hTabCtrl, UINT id, const TCHAR* itemName)
 {
@@ -101,6 +103,7 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
       dlgData->hTabCtrl = GetDlgItem(hDlg, IDC_SETTINGS_TAB);
 
       InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_GENERAL, _T("General"));
+      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_MUTE, _T("Mute"));
       InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_QUIETHOURS, _T("Quiet Hours"));
 
       dlgData->hTabs[SETTINGS_TAB_GENERAL] = CreateDialogParam(
@@ -108,6 +111,12 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
          MAKEINTRESOURCE(IDD_SETTINGS_GENERAL),
          dlgData->hTabCtrl,
          Settings_GeneralDlgProc,
+         reinterpret_cast<LPARAM>(settings));
+      dlgData->hTabs[SETTINGS_TAB_MUTE] = CreateDialogParam(
+         nullptr,
+         MAKEINTRESOURCE(IDD_SETTINGS_MUTE),
+         dlgData->hTabCtrl,
+         Settings_MuteDlgProc,
          reinterpret_cast<LPARAM>(settings));
       dlgData->hTabs[SETTINGS_TAB_QUIETHOURS] = CreateDialogParam(
          nullptr,
@@ -135,10 +144,14 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
       if (LOWORD(wParam) == IDOK) {
          for (int i = 0; i < SETTINGS_TAB_COUNT; ++i) {
             SendMessage(dlgData->hTabs[i], WM_SAVESETTINGS, 0, 0);
+            EndDialog(dlgData->hTabs[i], 0);
          }
          EndDialog(hDlg, 0); 
       } else if (LOWORD(wParam) == IDCANCEL) {
-         EndDialog(hDlg, 0);
+         for (int i = 0; i < SETTINGS_TAB_COUNT; ++i) {
+            EndDialog(dlgData->hTabs[i], 0);
+         }
+         EndDialog(hDlg, 1);
       }
       return 0;
    case WM_NOTIFY: {
@@ -153,7 +166,7 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
       return 0;
    }
    case WM_CLOSE:
-      EndDialog(hDlg, 0);
+      EndDialog(hDlg, 1);
       return TRUE;
    case WM_DESTROY:
       delete dlgData;

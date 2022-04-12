@@ -14,6 +14,7 @@
 #define IDD_ABOUT_WINMUTE               120
 #define IDI_ICON1                       122
 #define IDI_SETTINGS                    122
+#define IDD_SETTINGS_MUTE               123
 #define IDC_LINK_HOMEPAGE               1001
 #define IDC_LINK_SUPPORT                1002
 #define IDC_LINK_PROJECT                1002
@@ -28,14 +29,24 @@
 #define IDC_SETTINGS_TAB                1010
 #define IDC_CHECK1                      1011
 #define IDC_RUNONSTARTUP                1011
+#define IDC_MUTE_WHEN_WS_LOCKED         1011
 #define IDC_ENABLELOGGING               1012
 #define IDC_CHECK3                      1013
+#define IDC_ENABLESTOPPLAYBACK          1013
 #define IDC_OPENLOG                     1014
 #define IDC_LICENSETEXT                 1015
 #define IDC_ABOUT_TAB                   1016
 #define IDC_ABOUTTEXT                   1019
 #define IDC_TITLE                       1020
 #define IDC_ABOUT_TITLE                 1020
+#define IDC_MUTE_WHEN_SCREENSAVER_STARTS 1021
+#define IDC_MUTE_WHEN_SCREEN_OFF        1022
+#define IDC_MUTE_WHEN_RDP_SESSION       1023
+#define IDC_RESTOREVOLUME               1024
+#define IDC_MUTE_WHEN_SHUTDOWN          1025
+#define IDC_MUTE_WHEN_RDP_SESSION3      1026
+#define IDC_MUTE_WHEN_LOGOUT            1026
+#define IDC_MUTE_WHEN_SLEEP             1027
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_                    40002
 #define ID_TRAYMENU_MUTEON              40003
@@ -68,9 +79,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        123
+#define _APS_NEXT_RESOURCE_VALUE        125
 #define _APS_NEXT_COMMAND_VALUE         40028
-#define _APS_NEXT_CONTROL_VALUE         1021
+#define _APS_NEXT_CONTROL_VALUE         1022
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

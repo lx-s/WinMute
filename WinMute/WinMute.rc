@@ -71,29 +71,29 @@ BEGIN
     CONTROL         "",IDC_SETTINGS_TAB,"SysTabControl32",0x0,7,7,255,223
 END
 
-IDD_SETTINGS_GENERAL DIALOGEX 0, 0, 201, 179
+IDD_SETTINGS_GENERAL DIALOGEX 0, 0, 233, 179
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "Start WinMute on system startup",IDC_RUNONSTARTUP,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,15,187,26
-    CONTROL         "Enable Logging",IDC_ENABLELOGGING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,61,187,21
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,3,219,26
+    CONTROL         "Enable Logging",IDC_ENABLELOGGING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,48,219,21
     CONTROL         "Show mute event notifications",IDC_SHOWNOTIFICATIONS,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,39,187,21
-    PUSHBUTTON      "Open Log File...",IDC_OPENLOG,22,82,58,15
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,27,219,21
+    PUSHBUTTON      "Open Log File...",IDC_OPENLOG,22,69,58,15
 END
 
-IDD_SETTINGS_QUIETHOURS DIALOGEX 0, 0, 234, 177
+IDD_SETTINGS_QUIETHOURS DIALOGEX 0, 0, 246, 198
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "During Quiet Hours WinMute automatically mutes your PC volumes and unmutes it afterwards.",IDC_STATIC,7,7,220,22
+    LTEXT           "During Quiet Hours WinMute automatically mutes your PC volumes and unmutes it afterwards.",IDC_STATIC,7,9,232,22
     CONTROL         "Enable Quiet Hours",IDC_ENABLEQUIETHOURS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,31,120,15
     CONTROL         "",IDC_QUIETHOURS_START,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,73,47,65,18
     CONTROL         "",IDC_QUIETHOURS_END,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,72,71,67,19
     CONTROL         "Force unmute",IDC_FORCEUNMUTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,94,86,16
     CONTROL         "Show notifications",IDC_SHOWNOTIFICATIONS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,146,81,21
-    LTEXT           "If force unmute is enabled, WinMute will unmute your workstation when quiet hours end and not take into account if your workstation was already muted before quiet hours started.",IDC_STATIC,23,111,204,37
+    LTEXT           "If force unmute is enabled, WinMute will unmute your workstation when quiet hours end and not take into account if your workstation was already muted before quiet hours started.",IDC_STATIC,33,111,204,37
     LTEXT           "Start time:",IDC_STATIC,23,50,43,13
     LTEXT           "End time:",IDC_STATIC,24,73,32,16
 END
@@ -116,6 +116,29 @@ BEGIN
     EDITTEXT        IDC_ABOUTTEXT,7,14,182,155,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
     CONTROL         "<a href=""https://github.com/lx-s/WinMute/issues/"">Support</a>",IDC_LINK_TICKETS,
                     "SysLink",WS_TABSTOP,197,49,94,14
+END
+
+IDD_SETTINGS_MUTE DIALOGEX 0, 0, 242, 205
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Mute with volume restore, when...",IDC_STATIC,7,33,228,104
+    CONTROL         "... the workstation is locked",IDC_MUTE_WHEN_WS_LOCKED,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,48,105,10
+    CONTROL         "... the screensaver starts",IDC_MUTE_WHEN_SCREENSAVER_STARTS,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,62,99,10
+    CONTROL         "... the screen turns off",IDC_MUTE_WHEN_SCREEN_OFF,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,76,90,10
+    CONTROL         "... a remote session is started",IDC_MUTE_WHEN_RDP_SESSION,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,90,112,10
+    CONTROL         "Restore volume afterwards",IDC_RESTOREVOLUME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,105,103,10
+    GROUPBOX        "Mute without volume restore, when...",IDC_STATIC,7,139,228,59
+    CONTROL         "... the computer shuts down",IDC_MUTE_WHEN_SHUTDOWN,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,153,107,10
+    CONTROL         "... you log out",IDC_MUTE_WHEN_LOGOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,181,62,10
+    CONTROL         "... the computer goes into sleep/hibernate.",IDC_MUTE_WHEN_SLEEP,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,167,155,10
+    LTEXT           "Here you can configure the various mute conditions and variations that WinMute supports.",IDC_STATIC,7,8,228,17
 END
 
 
@@ -146,7 +169,7 @@ BEGIN
     IDD_SETTINGS_GENERAL, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 194
+        RIGHTMARGIN, 226
         TOPMARGIN, 7
         BOTTOMMARGIN, 172
     END
@@ -154,9 +177,9 @@ BEGIN
     IDD_SETTINGS_QUIETHOURS, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 227
+        RIGHTMARGIN, 239
         TOPMARGIN, 7
-        BOTTOMMARGIN, 170
+        BOTTOMMARGIN, 191
     END
 
     IDD_ABOUT_LICENSE, DIALOG
@@ -173,6 +196,14 @@ BEGIN
         RIGHTMARGIN, 291
         TOPMARGIN, 7
         BOTTOMMARGIN, 169
+    END
+
+    IDD_SETTINGS_MUTE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 235
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 198
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -214,6 +245,11 @@ BEGIN
     0
 END
 
+IDD_SETTINGS_MUTE AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -246,8 +282,7 @@ BEGIN
         MENUITEM "... Workstation is locked",   ID_TRAYMENU_MUTEONLOCK, CHECKED
         MENUITEM "... Screensaver starts",      ID_TRAYMENU_MUTEONSCREENSAVER, CHECKED
         MENUITEM "... Screen turns off",        ID_TRAYMENU_SCREENSUSPEND, CHECKED
-        MENUITEM SEPARATOR
-        MENUITEM "Restore previous volume afterwards", ID_TRAYMENU_RESTOREAUDIO, CHECKED
+        MENUITEM "Restore volume afterwards",   ID_TRAYMENU_RESTOREAUDIO, CHECKED
         MENUITEM SEPARATOR
         MENUITEM "Mute on (no volume restore)", ID_TRAYMENU_AFTERWARDS, INACTIVE
         MENUITEM "... Shutdown",                ID_TRAYMENU_MUTEONSHUTDOWN

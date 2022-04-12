@@ -47,8 +47,11 @@ enum MuteType {
    MuteTypeCount // Meta
 };
 
-MuteControl::MuteControl()
-   : trayIcon_(nullptr), notificationsEnabled_(false), displayWasOffOnce_(false)
+MuteControl::MuteControl() :
+   restoreVolume_(false),
+   notificationsEnabled_(false),
+   displayWasOffOnce_(false),
+   trayIcon_(nullptr)
 {
    MuteConfig initMuteConf;
    initMuteConf.active = false;

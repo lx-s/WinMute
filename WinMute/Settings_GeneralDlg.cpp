@@ -53,10 +53,10 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       DWORD enabled = settings->IsAutostartEnabled();
       Button_SetCheck(hAutostart, enabled ? BST_CHECKED : BST_UNCHECKED);
 
-      enabled = !!settings->QueryValue(SettingsKey::NOTIFICATIONS_ENABLED, FALSE);
+      enabled = !!settings->QueryValue(SettingsKey::NOTIFICATIONS_ENABLED);
       Button_SetCheck(hNotify, enabled ? BST_CHECKED : BST_UNCHECKED);
 
-      enabled = !!settings->QueryValue(SettingsKey::LOGGING_ENABLED, FALSE);
+      enabled = !!settings->QueryValue(SettingsKey::LOGGING_ENABLED);
       Button_SetCheck(hLogging, enabled ? BST_CHECKED : BST_UNCHECKED);
       Button_Enable(hOpenLog, enabled);
 

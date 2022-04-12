@@ -80,8 +80,7 @@ private:
    bool InitWindow();
    bool InitAudio();
    bool InitTrayMenu();
-   void InitMuteSettings();
-   bool LoadDefaults();
+   bool LoadSettings();
 
    void ResetQuietHours();
    void SetQuietHoursStart();

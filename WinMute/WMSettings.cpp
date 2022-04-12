@@ -49,6 +49,9 @@ static LPCWSTR KeyToStr(SettingsKey key)
    case SettingsKey::MUTE_ON_DISPLAYSTANDBY:
       keyStr = _T("MuteOnDisplayStandby");
       break;
+   case SettingsKey::MUTE_ON_RDP:
+      keyStr = _T("MuteOnRDP");
+      break;
    case SettingsKey::RESTORE_AUDIO:
       keyStr = _T("RestoreAudio");
       break;
@@ -84,6 +87,43 @@ static LPCWSTR KeyToStr(SettingsKey key)
       break;
    }
    return keyStr;
+}
+
+static DWORD GetDefaultSetting(SettingsKey key)
+{
+   switch (key) {
+   case SettingsKey::MUTE_ON_LOCK:
+      return 1;
+   case SettingsKey::MUTE_ON_SCREENSAVER:
+      return 1;
+   case SettingsKey::MUTE_ON_DISPLAYSTANDBY:
+      return 1;
+   case SettingsKey::MUTE_ON_RDP:
+      return 0;
+   case SettingsKey::RESTORE_AUDIO:
+      return 1;
+   case SettingsKey::MUTE_ON_SUSPEND:
+      return 0;
+   case SettingsKey::MUTE_ON_SHUTDOWN:
+      return 0;
+   case SettingsKey::MUTE_ON_LOGOUT:
+      return 0;
+   case SettingsKey::QUIETHOURS_ENABLE:
+      return 0;
+   case SettingsKey::QUIETHOURS_FORCEUNMUTE:
+      return 0;
+   case SettingsKey::QUIETHOURS_NOTIFICATIONS:
+      return 0;
+   case SettingsKey::QUIETHOURS_START:
+      return 0;
+   case SettingsKey::QUIETHOURS_END:
+      return 0;
+   case SettingsKey::LOGGING_ENABLED:
+      return 0;
+   case SettingsKey::NOTIFICATIONS_ENABLED:
+      return 0;
+   }
+   return 0;
 }
 
 static bool ReadStringFromRegistry(HKEY hKey, const TCHAR* subKey, tstring& val)
@@ -221,12 +261,12 @@ void WMSettings::EnableAutostart(bool enable)
    }
 }
 
-DWORD WMSettings::QueryValue(SettingsKey key, DWORD defValue)
+DWORD WMSettings::QueryValue(SettingsKey key) const
 {
    auto keyStr = KeyToStr(key);
    assert(keyStr != nullptr);
 
-   DWORD value;
+   DWORD value = 0;
    DWORD size = sizeof(DWORD);
    DWORD regError = RegQueryValueEx(
       hRegSettingsKey_,
@@ -235,11 +275,11 @@ DWORD WMSettings::QueryValue(SettingsKey key, DWORD defValue)
       nullptr,
       reinterpret_cast<LPBYTE>(&value),
       &size);
-   if (regError == ERROR_FILE_NOT_FOUND) {
-      return defValue;
-   } else if (regError != ERROR_SUCCESS) {
-      PrintWindowsError(_T("RegCreateKeyEx"), regError);
-      return defValue;
+   if (regError != ERROR_SUCCESS) {
+      if (regError != ERROR_FILE_NOT_FOUND) {
+         PrintWindowsError(_T("RegCreateKeyEx"), regError);
+      }
+      return GetDefaultSetting(key);
    }
 
    return value;

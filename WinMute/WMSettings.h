@@ -39,6 +39,7 @@ enum class SettingsKey {
      MUTE_ON_LOCK
    , MUTE_ON_SCREENSAVER
    , MUTE_ON_DISPLAYSTANDBY
+   , MUTE_ON_RDP
    , RESTORE_AUDIO
    , MUTE_ON_SUSPEND
    , MUTE_ON_SHUTDOWN
@@ -66,8 +67,8 @@ public:
    bool IsAutostartEnabled();
    void EnableAutostart(bool enable);
 
-   DWORD QueryValue(SettingsKey key, DWORD defValue);
-   bool SetValue(SettingsKey key, DWORD value);
+   DWORD QueryValue(SettingsKey key) const;
+   bool  SetValue(SettingsKey key, DWORD value);
 
 private:
    HKEY hRegSettingsKey_;
