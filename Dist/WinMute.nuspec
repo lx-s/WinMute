@@ -3,27 +3,29 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
 	<metadata>
 		<id>winmute</id>
-		<version>1.4.6.20200424</version>
+		<version>2.0.0.20220426</version>
 		<title>WinMute</title>
 		<authors>Alexander Steinhöfer</authors>
 		<owners>Alexander Steinhöfer</owners>
 		<packageSourceUrl>https://github.com/lx-s/WinMute/releases</packageSourceUrl>
 		<projectUrl>https://github.com/lx-s/WinMute/</projectUrl>
-		<iconUrl>https://cdn.rawgit.com/lx-s/WinMute/1.4.6/WinMute/app.ico</iconUrl>
+		<iconUrl>https://cdn.rawgit.com/lx-s/WinMute/2.0.0/WinMute/app.ico</iconUrl>
 		<tags>winmute windows utility audio</tags>
 		<summary>Automatic sound muter</summary>
 		<description>WinMute automatically mutes your PC volume if you lock your screen or the screensaver is running.</description>
-		<copyright>© 2020, Alexander Steinhöfer</copyright>
-		<licenseUrl>https://cdn.rawgit.com/lx-s/WinMute/1.4.6/LICENSE</licenseUrl>
+		<copyright>© 2022, Alexander Steinhöfer</copyright>
+		<licenseUrl>https://cdn.rawgit.com/lx-s/WinMute/2.0.0/LICENSE</licenseUrl>
 		<dependencies>
-			<dependency id="vcredist2017" />
+			<dependency id="vcredist2022" />
 		</dependencies>
 	</metadata>
 	<files>
 		<file src="tools\**" target="tools" />
-		<file src="bin\x86\WinMute.exe" target="bin" />
-		<file src="bin\x86\WinMute.exe.gui" target="bin" />
-		<file src="bin\x86\ScreensaverNotify.dll" target="bin" />
+		<file src="bin\WinMute.exe" target="bin" />
+		<file src="bin\WinMute.exe.gui" target="bin" />
+		<file src="bin\ScreensaverProxy32.exe" target="bin" />
+		<file src="bin\ScreensaverNotify.dll" target="bin" />
+		<file src="bin\ScreensaverNotify32.dll" target="bin" />
 		<file src="bin\changelog.txt" target="bin" />
 		<file src="bin\license.txt" target="bin" />
 		<file src="bin\liesmich.html" target="bin" />
