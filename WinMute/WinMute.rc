@@ -122,23 +122,23 @@ IDD_SETTINGS_MUTE DIALOGEX 0, 0, 242, 205
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    GROUPBOX        "Mute with volume restore, when...",IDC_STATIC,7,33,228,104
-    CONTROL         "... the workstation is locked",IDC_MUTE_WHEN_WS_LOCKED,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,48,105,10
-    CONTROL         "... the screensaver starts",IDC_MUTE_WHEN_SCREENSAVER_STARTS,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,62,99,10
-    CONTROL         "... the screen turns off",IDC_MUTE_WHEN_SCREEN_OFF,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,76,90,10
-    CONTROL         "... a remote session is started",IDC_MUTE_WHEN_RDP_SESSION,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,90,112,10
-    CONTROL         "Restore volume afterwards",IDC_RESTOREVOLUME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,105,103,10
-    GROUPBOX        "Mute without volume restore, when...",IDC_STATIC,7,139,228,59
-    CONTROL         "... the computer shuts down",IDC_MUTE_WHEN_SHUTDOWN,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,153,107,10
-    CONTROL         "... you log out",IDC_MUTE_WHEN_LOGOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,181,62,10
+    GROUPBOX        "Mute with volume restore, when...",IDC_STATIC,7,33,228,75
+    CONTROL         "... the workstation is locked.",IDC_MUTE_WHEN_WS_LOCKED,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,48,107,10
+    CONTROL         "... the screensaver starts.",IDC_MUTE_WHEN_SCREENSAVER_STARTS,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,62,101,10
+    CONTROL         "... the screen turns off.",IDC_MUTE_WHEN_SCREEN_OFF,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,76,93,10
+    CONTROL         "Restore volume afterwards.",IDC_RESTOREVOLUME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,92,106,10
+    GROUPBOX        "Mute without volume restore, when...",IDC_STATIC,7,112,228,73
+    CONTROL         "... the computer shuts down.",IDC_MUTE_WHEN_SHUTDOWN,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,126,110,10
+    CONTROL         "... you log out.",IDC_MUTE_WHEN_LOGOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,154,65,10
     CONTROL         "... the computer goes into sleep/hibernate.",IDC_MUTE_WHEN_SLEEP,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,167,155,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,140,155,10
     LTEXT           "Here you can configure the various mute conditions and variations that WinMute supports.",IDC_STATIC,7,8,228,17
+    CONTROL         "... when WinMute is started within a RDP session.",IDC_MUTE_WHEN_RDP_SESSION,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,167,175,10
 END
 
 
@@ -282,6 +282,7 @@ BEGIN
         MENUITEM "... Workstation is locked",   ID_TRAYMENU_MUTEONLOCK, CHECKED
         MENUITEM "... Screensaver starts",      ID_TRAYMENU_MUTEONSCREENSAVER, CHECKED
         MENUITEM "... Screen turns off",        ID_TRAYMENU_SCREENSUSPEND, CHECKED
+        MENUITEM SEPARATOR
         MENUITEM "Restore volume afterwards",   ID_TRAYMENU_RESTOREAUDIO, CHECKED
         MENUITEM SEPARATOR
         MENUITEM "Mute on (no volume restore)", ID_TRAYMENU_AFTERWARDS, INACTIVE

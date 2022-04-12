@@ -42,7 +42,15 @@ extern INT_PTR CALLBACK SettingsDlgProc(HWND, UINT, WPARAM, LPARAM);
 
 static LPCTSTR WINMUTE_CLASS_NAME = _T("WinMute");
 
-static LRESULT CALLBACK WinMuteWndProc(HWND hWnd, UINT msg, WPARAM wParam,
+static LPCTSTR TERMINAL_SERVER_KEY
+   = _T("SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\");
+static LPCTSTR GLASS_SESSION_ID
+   = _T("GlassSessionId");
+
+static LRESULT CALLBACK WinMuteWndProc(
+   HWND hWnd,
+   UINT msg,
+   WPARAM wParam,
    LPARAM lParam)
 {
    auto wm = reinterpret_cast<WinMute*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
@@ -92,6 +100,39 @@ static int IsDarkMode(bool& isDarkMode)
       RegCloseKey(hKey);
    }
    return rc;
+}
+
+static bool IsCurrentSessionRemoteable()
+{
+   bool isRemoteable = false;
+
+   if (GetSystemMetrics(SM_REMOTESESSION)) {
+      isRemoteable = true;
+   } else {
+      HKEY hRegKey = NULL;
+      LONG lResult;
+
+      lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, TERMINAL_SERVER_KEY, 0, KEY_READ, &hRegKey);
+      if (lResult == ERROR_SUCCESS) {
+         DWORD dwGlassSessionId;
+         DWORD cbGlassSessionId = sizeof(dwGlassSessionId);
+         DWORD dwType;
+
+         lResult = RegQueryValueEx(hRegKey, GLASS_SESSION_ID, NULL, &dwType,
+            reinterpret_cast<BYTE*>(&dwGlassSessionId),
+            &cbGlassSessionId);
+
+         if (lResult == ERROR_SUCCESS) {
+            DWORD dwCurrentSessionId;
+            if (ProcessIdToSessionId(GetCurrentProcessId(), &dwCurrentSessionId)) {
+               isRemoteable = (dwCurrentSessionId != dwGlassSessionId);
+            }
+         }
+         RegCloseKey(hRegKey);
+      }
+   }
+
+   return isRemoteable;
 }
 
 WinMute::MuteConfig::MuteConfig()
@@ -255,6 +296,14 @@ bool WinMute::Init()
    ResetQuietHours();
 
    log.Write(_T("WinMute initialized"));
+
+   if (settings_.QueryValue(SettingsKey::MUTE_ON_RDP)
+       && IsCurrentSessionRemoteable()) {
+      trayIcon_.ShowPopup(
+         _T("Remote Session detected"),
+         _T("All audio endpoints have been muted"));
+      muteCtrl_.SetMute(true);
+   }
 
    return true;
 }

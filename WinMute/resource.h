@@ -32,7 +32,6 @@
 #define IDC_MUTE_WHEN_WS_LOCKED         1011
 #define IDC_ENABLELOGGING               1012
 #define IDC_CHECK3                      1013
-#define IDC_ENABLESTOPPLAYBACK          1013
 #define IDC_OPENLOG                     1014
 #define IDC_LICENSETEXT                 1015
 #define IDC_ABOUT_TAB                   1016
@@ -44,7 +43,6 @@
 #define IDC_MUTE_WHEN_RDP_SESSION       1023
 #define IDC_RESTOREVOLUME               1024
 #define IDC_MUTE_WHEN_SHUTDOWN          1025
-#define IDC_MUTE_WHEN_RDP_SESSION3      1026
 #define IDC_MUTE_WHEN_LOGOUT            1026
 #define IDC_MUTE_WHEN_SLEEP             1027
 #define ID_TRAYMENU_INFO                40001
@@ -74,13 +72,14 @@
 #define ID_TRAYMENU_SETTINGS            40025
 #define ID_TRAYMENU_SCREENTURNSOFF      40026
 #define ID_TRAYMENU_SCREENSUSPEND       40027
+#define ID_TRAYMENU_40028               40028
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        125
-#define _APS_NEXT_COMMAND_VALUE         40028
+#define _APS_NEXT_COMMAND_VALUE         40029
 #define _APS_NEXT_CONTROL_VALUE         1022
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
