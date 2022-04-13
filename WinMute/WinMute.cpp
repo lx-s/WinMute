@@ -247,6 +247,10 @@ bool WinMute::Init()
 #endif
    log.Write(_T("Starting new session..."));
 
+   if (!RegisterWindowClass() || !InitWindow()) {
+      return false;
+   }
+
    if (!InitAudio()) {
       return false;
    }
@@ -255,9 +259,7 @@ bool WinMute::Init()
       return false;
    }
 
-   if (!RegisterWindowClass() ||
-       !InitWindow() ||
-       !InitTrayMenu()) {
+   if (!InitTrayMenu()) {
       return false;
    }
 
@@ -326,6 +328,15 @@ bool WinMute::LoadSettings()
    muteConfig_.quietHours.notifications = settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS);
    muteConfig_.quietHours.start = settings_.QueryValue(SettingsKey::QUIETHOURS_START);
    muteConfig_.quietHours.end = settings_.QueryValue(SettingsKey::QUIETHOURS_END);
+
+   muteConfig_.muteOnWlan = settings_.QueryValue(SettingsKey::MUTE_ON_WLAN);
+   if (muteConfig_.muteOnWlan) {
+      wifiDetector_.Init(hWnd_);
+      bool isMuteList = !settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST);
+      wifiDetector_.SetNetworkList(settings_.GetWifiNetworks(), isMuteList);
+   } else {
+      wifiDetector_.Unload();
+   }
 
    return true;
 }
@@ -557,6 +568,38 @@ LRESULT CALLBACK WinMute::WindowProc(
       }
       return 0;
    }
+   case WM_WIFISTATUSCHANGED:
+      if (muteConfig_.muteOnWlan) {
+         if (wParam == 1) { // Connected
+            if (settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED)) {
+               TCHAR msgBuf[260] = { 0 };
+               const TCHAR* wifiName = reinterpret_cast<TCHAR*>(lParam);
+               
+               if (settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST)) {
+                  StringCchCopy(
+                     msgBuf,
+                     ARRAY_SIZE(msgBuf),
+                     _T("Current WLAN network is not on allowed list for AutoMute"));
+               }  else {
+#ifdef _UNICODE
+                  swprintf(
+                     msgBuf, ARRAY_SIZE(msgBuf),
+                     _T("WLAN network \"%s\" is configured for AutoMute."),
+                     wifiName);
+#else
+                  sprintf_s(
+                     msgBuf,
+                     "WLAN network \"%s\" is configured for AutoMute.",
+                     wifiName);
+#endif
+               }
+               trayIcon_.ShowPopup(_T("Workstation muted"), msgBuf);
+               
+            }
+            muteCtrl_.SetMute(true);
+         }
+      }
+      return 0;
    case WM_SETTINGCHANGE: {
       if (lstrcmp(LPCTSTR(lParam), _T("ImmersiveColorSet")) == 0) {
          bool isDarkMode = true;

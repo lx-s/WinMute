@@ -146,13 +146,16 @@ IDD_SETTINGS_WIFI DIALOGEX 0, 0, 242, 204
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "WinMute can detect when you are connecting to a particular WiFi Network and mute your PC when it finishes connecting. \nHere you can manage SSIDs of networks that should trigger muting:",IDC_STATIC,7,7,228,35
-    LISTBOX         IDC_WIFI_LIST,7,40,170,134,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Add",IDC_WIFI_ADD,179,40,56,16
-    PUSHBUTTON      "Edit",IDC_WIFI_EDIT,179,59,56,16
-    PUSHBUTTON      "Remove",IDC_WIFI_REMOVE,179,78,56,16
-    PUSHBUTTON      "Remove all",IDC_WIFI_REMOVEALL,179,98,56,16
-    LTEXT           "Note: This feature is currently experimental",IDC_STATIC,7,182,171,15
+    LISTBOX         IDC_WIFI_LIST,7,66,170,115,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Add",IDC_WIFI_ADD,179,65,56,16
+    PUSHBUTTON      "Edit",IDC_WIFI_EDIT,179,84,56,16
+    PUSHBUTTON      "Remove",IDC_WIFI_REMOVE,179,103,56,16
+    PUSHBUTTON      "Remove all",IDC_WIFI_REMOVEALL,179,123,56,16
+    LTEXT           "Note: This feature is currently experimental",IDC_STATIC,7,186,171,11
+    CONTROL         "Enable ""WLAN Mute"".",IDC_ENABLE_WIFI_MUTE,"Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,26,228,14
+    CONTROL         "Mute workstation when WLAN network name is NOT in list\n(default: mute if in list).",IDC_IS_PERMITLIST,
+                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,41,228,18
+    LTEXT           """WLAN Mute"" allows you to mute your workstation based on the name of the connected wireless network.",IDC_STATIC,7,7,228,19
 END
 
 IDD_SETTINGS_WIFI_ADD DIALOGEX 0, 0, 201, 62

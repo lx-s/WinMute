@@ -134,6 +134,14 @@ INT_PTR CALLBACK Settings_GeneralWifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
       assert(settings != nullptr);
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(settings));
 
+      DWORD enabled = settings->QueryValue(SettingsKey::MUTE_ON_WLAN);
+      Button_SetCheck(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE),
+                      enabled ? BST_CHECKED : BST_UNCHECKED);
+
+      enabled = settings->QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST);
+      Button_SetCheck(GetDlgItem(hDlg, IDC_IS_PERMITLIST),
+                      enabled ? BST_CHECKED : BST_UNCHECKED);
+
       Button_Enable(GetDlgItem(hDlg, IDC_WIFI_EDIT), FALSE);
       Button_Enable(GetDlgItem(hDlg, IDC_WIFI_REMOVE), FALSE);
 
@@ -232,6 +240,13 @@ INT_PTR CALLBACK Settings_GeneralWifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
       WMSettings* settings = reinterpret_cast<WMSettings*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
       std::vector<tstring> networks = ExportSsidListItems(GetDlgItem(hDlg, IDC_WIFI_LIST));
       settings->StoreWifiNetworks(networks);
+
+      DWORD checked = Button_GetCheck(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE));
+      settings->SetValue(SettingsKey::MUTE_ON_WLAN, checked == BST_CHECKED);
+
+      checked = Button_GetCheck(GetDlgItem(hDlg, IDC_IS_PERMITLIST));
+      settings->SetValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST, checked == BST_CHECKED);
+      
       return 0;
    }
    default:

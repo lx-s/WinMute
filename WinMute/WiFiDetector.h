@@ -35,6 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
+/* wParam = Connected = 1 | Disconnected = 0. lParam = Pointer to Wifi Name */
+constexpr int WM_WIFISTATUSCHANGED = WM_USER + 400;
+
 class WifiDetector {
 public:
    WifiDetector();
@@ -43,11 +46,15 @@ public:
    WifiDetector& operator=(const WifiDetector&) = delete;
 
    bool Init(HWND hNotifyWnd);
-   void SetNetworkList(const std::vector<tstring> networks);
+   void Unload();
+   void SetNetworkList(const std::vector<tstring> networks, bool isMuteList);
+
+   void WlanNotificationCallback(PWLAN_NOTIFICATION_DATA notifyData);
 
 private:
    HWND hNotifyWnd_;
    HANDLE wlanHandle_;
+   bool isMuteList_;
    bool initialized_;
    std::vector<tstring> networks_;
 };

@@ -32,6 +32,7 @@
 #define IDC_CHECK1                      1011
 #define IDC_RUNONSTARTUP                1011
 #define IDC_MUTE_WHEN_WS_LOCKED         1011
+#define IDC_ENABLE_WIFI_MUTE            1011
 #define IDC_ENABLELOGGING               1012
 #define IDC_CHECK3                      1013
 #define IDC_OPENLOG                     1014
@@ -54,6 +55,8 @@
 #define IDC_MUTE_WHEN_SLEEP             1027
 #define IDC_WIFI_REMOVE2                1027
 #define IDC_WIFI_REMOVEALL              1027
+#define IDC_CHECK2                      1028
+#define IDC_IS_PERMITLIST               1028
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_                    40002
 #define ID_TRAYMENU_MUTEON              40003
@@ -89,7 +92,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        131
 #define _APS_NEXT_COMMAND_VALUE         40029
-#define _APS_NEXT_CONTROL_VALUE         1026
+#define _APS_NEXT_CONTROL_VALUE         1029
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

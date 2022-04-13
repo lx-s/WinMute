@@ -69,6 +69,12 @@ static LPCWSTR KeyToStr(SettingsKey key)
    case SettingsKey::MUTE_ON_LOGOUT:
       keyStr = _T("MuteOnLogout");
       break;
+   case SettingsKey::MUTE_ON_WLAN:
+      keyStr = _T("MuteOnWlan");
+      break;
+   case SettingsKey::MUTE_ON_WLAN_ALLOWLIST:
+      keyStr = _T("MuteOnWlanAllowList");
+      break;
    case SettingsKey::QUIETHOURS_ENABLE:
       keyStr = _T("QuietHoursEnabled");
       break;
@@ -112,6 +118,10 @@ static DWORD GetDefaultSetting(SettingsKey key)
    case SettingsKey::MUTE_ON_SHUTDOWN:
       return 0;
    case SettingsKey::MUTE_ON_LOGOUT:
+      return 0;
+   case SettingsKey::MUTE_ON_WLAN:
+      return 0;
+   case SettingsKey::MUTE_ON_WLAN_ALLOWLIST:
       return 0;
    case SettingsKey::QUIETHOURS_ENABLE:
       return 0;

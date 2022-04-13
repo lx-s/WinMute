@@ -69,10 +69,12 @@ private:
          time_t start;
          time_t end;
       } quietHours;
+      bool muteOnWlan;
    } muteConfig_;
 
    TrayIcon trayIcon_;
    ScreensaverNotifier scrnSaverNoti_;
+   WifiDetector wifiDetector_;
    WMSettings settings_;
    MuteControl muteCtrl_;
 

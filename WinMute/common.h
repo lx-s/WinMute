@@ -73,6 +73,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <uxtheme.h>
 #include <comip.h>
 #include <comdef.h>
+#include <wlanapi.h>
 #include <Mmdeviceapi.h>
 #pragma warning(disable : 4201)
 #  include <endpointvolume.h>
@@ -87,9 +88,10 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "TrayIcon.h"
 #include "WinAudio.h"
 #include "MuteControl.h"
+#include "WiFiDetector.h"
 #include "WinMute.h"
 #include "VersionHelper.h"
-#include "WiFiDetector.h"
+
 
 // Utility
 void PrintWindowsError(LPCWSTR lpszFunction, DWORD lastError = -1);
