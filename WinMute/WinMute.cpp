@@ -356,25 +356,36 @@ LRESULT CALLBACK WinMute::WindowProc(
    }
    case WM_COMMAND: {
       switch (LOWORD(wParam)) {
-      case ID_TRAYMENU_INFO:
-         DialogBox(
-            hglobInstance,
-            MAKEINTRESOURCE(IDD_ABOUT),
-            hWnd_,
-            AboutDlgProc);
+      case ID_TRAYMENU_INFO: {
+         static bool dialogOpen = false;
+         if (!dialogOpen) {
+            dialogOpen = true;
+            DialogBox(
+               hglobInstance,
+               MAKEINTRESOURCE(IDD_ABOUT),
+               hWnd_,
+               AboutDlgProc);
+            dialogOpen = false;
+         }
          break;
+      }
       case ID_TRAYMENU_EXIT:
          SendMessage(hWnd, WM_CLOSE, 0, 0);
          break;
       case ID_TRAYMENU_SETTINGS: {
-         if (DialogBoxParam(
-               hglobInstance,
-               MAKEINTRESOURCE(IDD_SETTINGS),
-               hWnd_,
-               SettingsDlgProc,
-               reinterpret_cast<LPARAM>(&settings_)) == 0) {
-            LoadSettings();
-            InitTrayMenu();
+         static bool dialogOpen = false;
+         if (!dialogOpen) {
+            dialogOpen = true;
+            if (DialogBoxParam(
+                  hglobInstance,
+                  MAKEINTRESOURCE(IDD_SETTINGS),
+                  hWnd_,
+                  SettingsDlgProc,
+                  reinterpret_cast<LPARAM>(&settings_)) == 0) {
+               LoadSettings();
+               InitTrayMenu();
+            }
+            dialogOpen = false;
          }
          break;
       }

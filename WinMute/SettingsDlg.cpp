@@ -37,6 +37,7 @@ enum SettingsTabsIDs {
    SETTINGS_TAB_GENERAL = 0,
    SETTINGS_TAB_MUTE,
    SETTINGS_TAB_QUIETHOURS,
+   SETTINGS_TAB_WIFI,
    SETTINGS_TAB_COUNT
 };
 
@@ -57,6 +58,7 @@ struct SettingsDlgData {
 extern INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND, UINT, WPARAM, LPARAM);
 extern INT_PTR CALLBACK Settings_GeneralDlgProc(HWND, UINT, WPARAM, LPARAM);
 extern INT_PTR CALLBACK Settings_MuteDlgProc(HWND, UINT, WPARAM, LPARAM);
+extern INT_PTR CALLBACK Settings_GeneralWifiDlgProc(HWND, UINT, WPARAM, LPARAM);
 
 static void InsertTabItem(HWND hTabCtrl, UINT id, const TCHAR* itemName)
 {
@@ -105,6 +107,7 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
       InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_GENERAL, _T("General"));
       InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_MUTE, _T("Mute"));
       InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_QUIETHOURS, _T("Quiet Hours"));
+      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_WIFI, _T("WLAN"));
 
       dlgData->hTabs[SETTINGS_TAB_GENERAL] = CreateDialogParam(
          nullptr,
@@ -123,6 +126,12 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
          MAKEINTRESOURCE(IDD_SETTINGS_QUIETHOURS),
          dlgData->hTabCtrl,
          Settings_QuietHoursDlgProc,
+         reinterpret_cast<LPARAM>(settings));
+      dlgData->hTabs[SETTINGS_TAB_WIFI] = CreateDialogParam(
+         nullptr,
+         MAKEINTRESOURCE(IDD_SETTINGS_WIFI),
+         dlgData->hTabCtrl,
+         Settings_GeneralWifiDlgProc,
          reinterpret_cast<LPARAM>(settings));
 
       // Init tab pages

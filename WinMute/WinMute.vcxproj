@@ -223,6 +223,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Settings_MuteDlg.cpp" />
+    <ClCompile Include="Settings_WifiDlg.cpp" />
     <ClCompile Include="WMLog.cpp" />
     <ClCompile Include="MMNotificationClient.cpp" />
     <ClCompile Include="MuteControl.cpp" />

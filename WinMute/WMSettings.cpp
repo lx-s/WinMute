@@ -33,8 +33,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
-static const LPCWSTR LX_SYSTEMS_SUBKEY = _T("SOFTWARE\\lx-systems\\WinMute");
-static const LPCWSTR LX_SYSTEMS_AUTOSTART_KEY = _T("LX-Systems WinMute");
+static const LPCWSTR LX_SYSTEMS_SUBKEY
+   = _T("SOFTWARE\\lx-systems\\WinMute");
+static const LPCWSTR LX_SYSTEMS_WIFI_SUBKEY
+   = _T("SOFTWARE\\lx-systems\\WinMute\\WifiNetworks");
+
+static const LPCWSTR LX_SYSTEMS_AUTOSTART_KEY
+   = _T("LX-Systems WinMute");
 
 static LPCWSTR KeyToStr(SettingsKey key)
 {
@@ -154,7 +159,8 @@ static bool ReadStringFromRegistry(HKEY hKey, const TCHAR* subKey, tstring& val)
 }
 
 WMSettings::WMSettings() :
-   hRegSettingsKey_(nullptr)
+   hSettingsKey_(nullptr),
+   hWifiKey_(nullptr)
 {
 }
 
@@ -165,7 +171,7 @@ WMSettings::~WMSettings()
 
 bool WMSettings::Init()
 {
-   if (hRegSettingsKey_ == nullptr) {
+   if (hSettingsKey_ == nullptr) {
       DWORD regError = RegCreateKeyEx(
          HKEY_CURRENT_USER,
          LX_SYSTEMS_SUBKEY,
@@ -174,10 +180,28 @@ bool WMSettings::Init()
          0,
          KEY_READ | KEY_WRITE,
          nullptr,
-         &hRegSettingsKey_,
+         &hSettingsKey_,
          nullptr);
       if (regError != ERROR_SUCCESS) {
          PrintWindowsError(_T("RegCreateKeyEx"), regError);
+         return false;
+      }
+   }
+   if (hWifiKey_ == nullptr) {
+      DWORD regError = RegCreateKeyEx(
+         HKEY_CURRENT_USER,
+         LX_SYSTEMS_WIFI_SUBKEY,
+         0,
+         nullptr,
+         0,
+         KEY_READ | KEY_WRITE,
+         nullptr,
+         &hWifiKey_,
+         nullptr);
+      if (regError != ERROR_SUCCESS) {
+         PrintWindowsError(_T("RegCreateKeyEx"), regError);
+         RegCloseKey(hSettingsKey_);
+         hSettingsKey_ = nullptr;
          return false;
       }
    }
@@ -187,8 +211,10 @@ bool WMSettings::Init()
 
 void WMSettings::Unload()
 {
-   RegCloseKey(hRegSettingsKey_);
-   hRegSettingsKey_ = nullptr;
+   RegCloseKey(hSettingsKey_);
+   hSettingsKey_ = nullptr;
+   RegCloseKey(hWifiKey_);
+   hWifiKey_ = nullptr;
 }
 
 HKEY WMSettings::OpenAutostartKey(REGSAM samDesired)
@@ -269,7 +295,7 @@ DWORD WMSettings::QueryValue(SettingsKey key) const
    DWORD value = 0;
    DWORD size = sizeof(DWORD);
    DWORD regError = RegQueryValueEx(
-      hRegSettingsKey_,
+      hSettingsKey_,
       keyStr,
       0,
       nullptr,
@@ -291,7 +317,7 @@ bool WMSettings::SetValue(SettingsKey key, DWORD value)
    assert(keyStr != nullptr);
 
    DWORD regError = RegSetValueEx(
-      hRegSettingsKey_,
+      hSettingsKey_,
       keyStr,
       0,
       REG_DWORD,
@@ -303,4 +329,92 @@ bool WMSettings::SetValue(SettingsKey key, DWORD value)
    }
 
    return true;
+}
+
+bool WMSettings::StoreWifiNetworks(std::vector<tstring>& networks)
+{
+   // Clear all stored keys
+   for (;;) {
+      TCHAR valueName[260] = { 0 };
+      DWORD valueSize = ARRAY_SIZE(valueName);
+      DWORD regError = RegEnumValue(
+         hWifiKey_,
+         0,
+         valueName,
+         &valueSize,
+         NULL,
+         NULL,
+         NULL,
+         NULL);
+      if (regError == ERROR_NO_MORE_ITEMS) {
+         break;
+      } else if (regError != ERROR_SUCCESS) {
+         PrintWindowsError(_T("RegEnumValue"), regError);
+         return false;
+      } else {
+         regError = RegDeleteValue(hWifiKey_, valueName);
+         if (regError != ERROR_SUCCESS) {
+            PrintWindowsError(_T("RegDeleteValue"), regError);
+         }
+      }
+   }
+
+   if (networks.size() > 1) {
+      std::sort(std::begin(networks), std::end(networks));
+   }
+   for (size_t i = 0; i < networks.size(); ++i) {
+      TCHAR valueName[10];
+#ifdef _UNICODE
+      swprintf(valueName, ARRAY_SIZE(valueName), _T("WiFi %03zu"), i + 1);
+#else
+      sprintf_s(valueName, "WiFi %03zu", i + 1);
+#endif
+      const tstring& v = networks[i];
+      DWORD regError = RegSetValueEx(
+         hWifiKey_,
+         valueName,
+         NULL,
+         REG_SZ,
+         reinterpret_cast<const BYTE*>(v.c_str()),
+         static_cast<DWORD>(v.length() + 1) * sizeof(TCHAR));
+      if (regError != ERROR_SUCCESS) {
+         PrintWindowsError(_T("RegSetValueEx"), regError);
+      }
+   }
+
+   return true;
+}
+
+std::vector<tstring> WMSettings::GetWifiNetworks() const
+{
+   std::vector<tstring> networks;
+   for (int valIdx = 0; ; ++valIdx) {
+      TCHAR valueName[260] = { 0 };
+      TCHAR dataBuf[260] = { 0 };
+      DWORD valueSize = ARRAY_SIZE(valueName);
+      DWORD valType = 0;
+      DWORD dataLen = ARRAY_SIZE(dataBuf);
+
+      DWORD regError = RegEnumValue(
+         hWifiKey_,
+         valIdx,
+         valueName,
+         &valueSize,
+         NULL,
+         &valType,
+         reinterpret_cast<BYTE*>(dataBuf),
+         &dataLen);
+      if (regError == ERROR_NO_MORE_ITEMS) {
+         break;
+      } else if (regError != ERROR_SUCCESS) {
+         PrintWindowsError(_T("RegEnumValue"), regError);
+         return {};
+      } else {
+         networks.push_back(dataBuf);
+      }
+   }
+   if (networks.size() > 1) {
+      std::sort(std::begin(networks), std::end(networks));
+   }
+   return networks;
 }

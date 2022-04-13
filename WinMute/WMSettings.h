@@ -67,11 +67,15 @@ public:
    bool IsAutostartEnabled();
    void EnableAutostart(bool enable);
 
+   bool StoreWifiNetworks(std::vector<tstring>& networks);
+   std::vector<tstring> GetWifiNetworks() const;
+
    DWORD QueryValue(SettingsKey key) const;
    bool  SetValue(SettingsKey key, DWORD value);
 
 private:
-   HKEY hRegSettingsKey_;
+   HKEY hSettingsKey_;
+   HKEY hWifiKey_;
 
    HKEY OpenAutostartKey(REGSAM samDesired);
 };

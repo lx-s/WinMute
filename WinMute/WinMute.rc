@@ -55,10 +55,10 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTI
 CAPTION "About WinMute"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
+    ICON            IDI_APP,IDC_STATIC,13,7,20,20,SS_CENTERIMAGE
+    LTEXT           "WinMute <VersionNumber>",IDC_ABOUT_TITLE,41,7,193,23
     CONTROL         "",IDC_ABOUT_TAB,"SysTabControl32",0x0,7,34,299,202
     PUSHBUTTON      "OK",IDOK,242,246,64,16
-    LTEXT           "WinMute <VersionNumber>",IDC_ABOUT_TITLE,41,7,193,23
-    ICON            IDI_APP,IDC_STATIC,13,7,20,20,SS_CENTERIMAGE
 END
 
 IDD_SETTINGS DIALOGEX 0, 0, 269, 253
@@ -87,14 +87,14 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LTEXT           "During Quiet Hours WinMute automatically mutes your PC volumes and unmutes it afterwards.",IDC_STATIC,7,9,232,22
     CONTROL         "Enable Quiet Hours",IDC_ENABLEQUIETHOURS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,31,120,15
+    LTEXT           "Start time:",IDC_STATIC,23,50,43,13
     CONTROL         "",IDC_QUIETHOURS_START,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,73,47,65,18
+    LTEXT           "End time:",IDC_STATIC,24,73,32,16
     CONTROL         "",IDC_QUIETHOURS_END,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,72,71,67,19
     CONTROL         "Force unmute",IDC_FORCEUNMUTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,94,86,16
+    LTEXT           "If force unmute is enabled, WinMute will unmute your workstation when quiet hours end and not take into account if your workstation was already muted before quiet hours started.",IDC_STATIC,33,111,204,37
     CONTROL         "Show quiet hours notifications",IDC_SHOWNOTIFICATIONS,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,146,180,21
-    LTEXT           "If force unmute is enabled, WinMute will unmute your workstation when quiet hours end and not take into account if your workstation was already muted before quiet hours started.",IDC_STATIC,33,111,204,37
-    LTEXT           "Start time:",IDC_STATIC,23,50,43,13
-    LTEXT           "End time:",IDC_STATIC,24,73,32,16
 END
 
 IDD_ABOUT_LICENSE DIALOGEX 0, 0, 300, 181
@@ -108,11 +108,11 @@ IDD_ABOUT_WINMUTE DIALOGEX 0, 0, 298, 176
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
+    EDITTEXT        IDC_ABOUTTEXT,7,14,182,155,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
     CONTROL         "<a href=""https://lx-s.de"">Author Site: www.lx-s.de</a>",IDC_LINK_HOMEPAGE,
                     "SysLink",WS_TABSTOP,197,14,94,14
     CONTROL         "<a href=""https://github.com/lx-s/WinMute/"">Project Site && Code</a>",IDC_LINK_PROJECT,
                     "SysLink",WS_TABSTOP,197,32,94,14
-    EDITTEXT        IDC_ABOUTTEXT,7,14,182,155,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
     CONTROL         "<a href=""https://github.com/lx-s/WinMute/issues/"">Support</a>",IDC_LINK_TICKETS,
                     "SysLink",WS_TABSTOP,197,49,94,14
 END
@@ -121,6 +121,9 @@ IDD_SETTINGS_MUTE DIALOGEX 0, 0, 242, 205
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
+    GROUPBOX        "General",IDC_STATIC,7,7,228,31
+    CONTROL         "Show mute event notifications",IDC_SHOWNOTIFICATIONS,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,17,219,18
     GROUPBOX        "Mute with volume restore, when...",IDC_STATIC,7,42,228,75
     CONTROL         "... the workstation is locked.",IDC_MUTE_WHEN_WS_LOCKED,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,57,107,10
@@ -132,14 +135,35 @@ BEGIN
     GROUPBOX        "Mute without volume restore, when...",IDC_STATIC,7,121,228,73
     CONTROL         "... the computer shuts down.",IDC_MUTE_WHEN_SHUTDOWN,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,135,110,10
-    CONTROL         "... you log out.",IDC_MUTE_WHEN_LOGOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,163,65,10
     CONTROL         "... the computer goes into sleep/hibernate.",IDC_MUTE_WHEN_SLEEP,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,149,155,10
+    CONTROL         "... you log out.",IDC_MUTE_WHEN_LOGOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,163,65,10
     CONTROL         "... when WinMute is started within a RDP session.",IDC_MUTE_WHEN_RDP_SESSION,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,177,175,10
-    GROUPBOX        "General",IDC_STATIC,7,7,228,31
-    CONTROL         "Show mute event notifications",IDC_SHOWNOTIFICATIONS,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,17,219,18
+END
+
+IDD_SETTINGS_WIFI DIALOGEX 0, 0, 242, 204
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "WinMute can detect when you are connecting to a particular WiFi Network and mute your PC when it finishes connecting. \nHere you can manage SSIDs of networks that should trigger muting:",IDC_STATIC,7,7,228,35
+    LISTBOX         IDC_WIFI_LIST,7,51,170,123,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Add",IDC_WIFI_ADD,179,51,56,16
+    PUSHBUTTON      "Edit",IDC_WIFI_EDIT,179,70,56,16
+    PUSHBUTTON      "Remove",IDC_WIFI_REMOVE,179,89,56,16
+    PUSHBUTTON      "Remove all",IDC_WIFI_REMOVEALL,179,109,56,16
+    LTEXT           "Note: This feature is currently experimental",IDC_STATIC,7,182,171,15
+END
+
+IDD_SETTINGS_WIFI_ADD DIALOGEX 0, 0, 201, 62
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Add WiFi"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Save",IDOK,91,41,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,144,41,50,14
+    LTEXT           "SSID/WiFi Name:",IDC_STATIC,7,7,62,14
+    EDITTEXT        IDC_WIFI_NAME,7,20,187,16,ES_AUTOHSCROLL
 END
 
 
@@ -206,6 +230,22 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 198
     END
+
+    IDD_SETTINGS_WIFI, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 235
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 197
+    END
+
+    IDD_SETTINGS_WIFI_ADD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 194
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -247,6 +287,16 @@ BEGIN
 END
 
 IDD_SETTINGS_MUTE AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_SETTINGS_WIFI AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_SETTINGS_WIFI_ADD AFX_DIALOG_LAYOUT
 BEGIN
     0
 END

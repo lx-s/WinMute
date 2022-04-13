@@ -15,6 +15,8 @@
 #define IDI_ICON1                       122
 #define IDI_SETTINGS                    122
 #define IDD_SETTINGS_MUTE               123
+#define IDD_SETTINGS_WIFI               127
+#define IDD_SETTINGS_WIFI_ADD           129
 #define IDC_LINK_HOMEPAGE               1001
 #define IDC_LINK_SUPPORT                1002
 #define IDC_LINK_PROJECT                1002
@@ -41,10 +43,17 @@
 #define IDC_MUTE_WHEN_SCREENSAVER_STARTS 1021
 #define IDC_MUTE_WHEN_SCREEN_OFF        1022
 #define IDC_MUTE_WHEN_RDP_SESSION       1023
+#define IDC_WIFI_LIST                   1023
 #define IDC_RESTOREVOLUME               1024
+#define IDC_WIFI_ADD                    1024
 #define IDC_MUTE_WHEN_SHUTDOWN          1025
+#define IDC_WIFI_REMOVE                 1025
+#define IDC_WIFI_NAME                   1025
 #define IDC_MUTE_WHEN_LOGOUT            1026
+#define IDC_WIFI_EDIT                   1026
 #define IDC_MUTE_WHEN_SLEEP             1027
+#define IDC_WIFI_REMOVE2                1027
+#define IDC_WIFI_REMOVEALL              1027
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_                    40002
 #define ID_TRAYMENU_MUTEON              40003
@@ -78,9 +87,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        127
+#define _APS_NEXT_RESOURCE_VALUE        131
 #define _APS_NEXT_COMMAND_VALUE         40029
-#define _APS_NEXT_CONTROL_VALUE         1023
+#define _APS_NEXT_CONTROL_VALUE         1026
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
