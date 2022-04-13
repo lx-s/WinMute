@@ -61,6 +61,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <unordered_map>
 #include <vector>
 #include <cstdarg>
+#include <iterator>
 
 #include <windows.h>
 #include <windowsx.h>
@@ -88,6 +89,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "MuteControl.h"
 #include "WinMute.h"
 #include "VersionHelper.h"
+#include "WiFiDetector.h"
 
 // Utility
 void PrintWindowsError(LPCWSTR lpszFunction, DWORD lastError = -1);

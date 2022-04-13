@@ -35,25 +35,19 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
-class QuietHours {
-   HWND hTimer;
+class WifiDetector {
 public:
-   QuietHours();
-   ~QuietHours();
-   QuietHours(const QuietHours&) = delete;
-   QuietHours& operator=(const QuietHours&) = delete;
+   WifiDetector();
+   ~WifiDetector();
+   WifiDetector(const WifiDetector&) = delete;
+   WifiDetector& operator=(const WifiDetector&) = delete;
 
-   bool IsQuietTime();
-
-   void HandleTimerProc(HWND hWnd, UINT msg, UINT_PTR id, DWORD msSinceSysStart);
-
-   bool SetStartTime();
-   bool SetEndTime();
-   bool ShowNotifications(bool show);
-   bool ForceUnmute(bool force);
-   bool Enable();
+   bool Init(HWND hNotifyWnd);
+   void SetNetworkList(const std::vector<tstring> networks);
 
 private:
-   SYSTEMTIME start;
-   SYSTEMTIME end;
+   HWND hNotifyWnd_;
+   HANDLE wlanHandle_;
+   bool initialized_;
+   std::vector<tstring> networks_;
 };

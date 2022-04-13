@@ -51,6 +51,9 @@
     <Filter Include="Source Files\UI\Dialogs\Settings">
       <UniqueIdentifier>{c4de9bea-a833-43ac-8021-6e5cf7d048e8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Controllers\WiFi">
+      <UniqueIdentifier>{a804b525-296b-455b-a1bc-d8fdbf5a9c3d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinAudio.h">
@@ -94,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="BaseTypes.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WiFiDetector.h">
+      <Filter>Source Files\Controllers\WiFi</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -172,6 +178,9 @@
     </ClCompile>
     <ClCompile Include="Settings_WifiDlg.cpp">
       <Filter>Source Files\UI\Dialogs\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="WifiDetector.cpp">
+      <Filter>Source Files\Controllers\WiFi</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

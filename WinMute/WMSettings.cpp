@@ -131,6 +131,16 @@ static DWORD GetDefaultSetting(SettingsKey key)
    return 0;
 }
 
+
+static void NormalizeNetworkList(std::vector<tstring>& networks)
+{
+   if (networks.size() > 1) {
+      std::sort(std::begin(networks), std::end(networks));
+      auto it = std::unique(std::begin(networks), std::end(networks));
+      networks.resize(std::distance(std::begin(networks), it));
+   }
+}
+
 static bool ReadStringFromRegistry(HKEY hKey, const TCHAR* subKey, tstring& val)
 {
    bool success = false;
@@ -359,9 +369,8 @@ bool WMSettings::StoreWifiNetworks(std::vector<tstring>& networks)
       }
    }
 
-   if (networks.size() > 1) {
-      std::sort(std::begin(networks), std::end(networks));
-   }
+   NormalizeNetworkList(networks);
+
    for (size_t i = 0; i < networks.size(); ++i) {
       TCHAR valueName[10];
 #ifdef _UNICODE
@@ -413,8 +422,6 @@ std::vector<tstring> WMSettings::GetWifiNetworks() const
          networks.push_back(dataBuf);
       }
    }
-   if (networks.size() > 1) {
-      std::sort(std::begin(networks), std::end(networks));
-   }
+   NormalizeNetworkList(networks);
    return networks;
 }
