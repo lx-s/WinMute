@@ -152,9 +152,9 @@ BEGIN
     PUSHBUTTON      "Remove",IDC_WIFI_REMOVE,179,103,56,16
     PUSHBUTTON      "Remove all",IDC_WIFI_REMOVEALL,179,123,56,16
     LTEXT           "Note: WLAN is not available on your device, so some options have been disabled.",IDC_STATIC_WLAN_NOT_AVAILABLE,7,179,228,18
-    CONTROL         "Enable ""WLAN Mute"".",IDC_ENABLE_WIFI_MUTE,"Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,26,228,14
-    CONTROL         "Mute workstation when WLAN network name is NOT in list\n(default: mute if in list).",IDC_IS_PERMITLIST,
-                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,41,228,18
+    CONTROL         "Enable WLAN based muting",IDC_ENABLE_WIFI_MUTE,"Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,26,228,14
+    CONTROL         "Mute workstation if the WLAN network name is NOT in the list\n(default: mute if it is in the list)",IDC_IS_PERMITLIST,
+                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,20,41,215,18
     LTEXT           """WLAN Mute"" allows you to mute your workstation based on the name of the connected wireless network.",IDC_STATIC,7,7,228,19
 END
 

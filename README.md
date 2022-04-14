@@ -14,8 +14,11 @@ WinMute can automatically mute all sound devices on your PC when
 
 This is very helpful e.g. if you leave your desk and don't want to annoy your co-workers with random sounds or music from your computer or don't want music blasting out of your speakers, the next time you power on your pc during a presentation.
 
-### Screenshot ###
-![Screenshot of WinMute](https://raw.githubusercontent.com/lx-s/WinMute/master/Dist/screenshot.png? "Screenshot of WinMute")
+### Screenshot s###
+![Screenshot of WinMute](https://raw.githubusercontent.com/lx-s/WinMute/master/Dist/screenshots/app.png? "Screenshot of WinMute")
+![Screenshot of the Settings](https://raw.githubusercontent.com/lx-s/WinMute/master/Dist/screenshots/settings_general? "Screenshot of the Settings")
+![Screenshot of the QuietHour-Settings](https://raw.githubusercontent.com/lx-s/WinMute/master/Dist/screenshots/settings_quiethours.png? "Screenshot of the QuietHour-Settings")
+![Screenshot of the WLAN-Settings](https://raw.githubusercontent.com/lx-s/WinMute/master/Dist/screenshots/settings_wlan? "Screenshot of the WLAN-Settings")
 
 ### Requirements ###
 * Windows Vista or any newer version of Windows.

@@ -148,10 +148,11 @@ INT_PTR CALLBACK Settings_GeneralWifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
       DWORD enabled = settings->QueryValue(SettingsKey::MUTE_ON_WLAN);
       Button_SetCheck(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE),
                       enabled ? BST_CHECKED : BST_UNCHECKED);
-
+      Button_Enable(GetDlgItem(hDlg, IDC_IS_PERMITLIST), enabled);
       enabled = settings->QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST);
       Button_SetCheck(GetDlgItem(hDlg, IDC_IS_PERMITLIST),
                       enabled ? BST_CHECKED : BST_UNCHECKED);
+      
 
       Button_Enable(GetDlgItem(hDlg, IDC_WIFI_EDIT), FALSE);
       Button_Enable(GetDlgItem(hDlg, IDC_WIFI_REMOVE), FALSE);
@@ -178,7 +179,10 @@ INT_PTR CALLBACK Settings_GeneralWifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
    }
    case WM_COMMAND:
    {
-      if (LOWORD(wParam) == IDC_WIFI_LIST) {
+      if (LOWORD(wParam) == IDC_ENABLE_WIFI_MUTE) {
+         DWORD checked = Button_GetCheck(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE));
+         Button_Enable(GetDlgItem(hDlg, IDC_IS_PERMITLIST), checked == BST_CHECKED);
+      } else if (LOWORD(wParam) == IDC_WIFI_LIST) {
          HWND hList = GetDlgItem(hDlg, IDC_WIFI_LIST);
          if (HIWORD(wParam) == LBN_SELCHANGE || HIWORD(wParam) == LBN_SELCANCEL) {
             bool entrySelected = (ListBox_GetCurSel(hList) != LB_ERR);
