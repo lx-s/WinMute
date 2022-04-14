@@ -346,7 +346,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Mute all devices",            ID_TRAYMENU_MUTE
         MENUITEM SEPARATOR
-        MENUITEM "Settings...",                 ID_TRAYMENU_SETTINGS
+        MENUITEM "More...",                     ID_TRAYMENU_SETTINGS
         MENUITEM SEPARATOR
         MENUITEM "Exit",                        ID_TRAYMENU_EXIT
     END
