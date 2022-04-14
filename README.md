@@ -9,6 +9,8 @@ WinMute can automatically mute all sound devices on your PC when
 * you log off
 * your PC shuts down
 * your PC goes to sleep
+* your PC is connected to a particular wireless network
+  * alternatively: your pc is not connected to particular wireless network
 
 This is very helpful e.g. if you leave your desk and don't want to annoy your co-workers with random sounds or music from your computer or don't want music blasting out of your speakers, the next time you power on your pc during a presentation.
 

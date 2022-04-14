@@ -4,6 +4,8 @@ Version 2.0.0-beta (2022-*-*)
    option is set.
  * Reworked mute detection logic. This should fix timing errors, e.g. when
    screensaver with screenlock is active.
+ * WinMute can now mute your computer when it is connected (alternatively
+   when it is not connected) to a particular wireless network.
  * Added detection for display standby
  * Added detection for RDP sessions
  * Added autostart option (no more fiddling with the Autostart-Folder)
