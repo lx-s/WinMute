@@ -49,11 +49,15 @@ public:
    void Unload();
    void SetNetworkList(const std::vector<tstring> networks, bool isMuteList);
 
+   void CheckNetwork();
    void WlanNotificationCallback(PWLAN_NOTIFICATION_DATA notifyData);
 
 private:
    HWND hNotifyWnd_;
    HANDLE wlanHandle_;
+   // If "true" then networks_ contains all networks where the workstation should
+   // be muted. If false, then networks_ contains all networks where the ws should
+   // not be muted.
    bool isMuteList_;
    bool initialized_;
    std::vector<tstring> networks_;

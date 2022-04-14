@@ -196,12 +196,7 @@ static bool GetWinMuteVersion(tstring& versNumber)
                reinterpret_cast<LPVOID*>(&pvi),
                &pviLen)) {
             TCHAR buf[30];
-
-#ifdef _UNICODE
-            swprintf_s(
-#else
-            sprintf_s(
-#endif
+            StringCchPrintf(
                buf,
                ARRAY_SIZE(buf),
                _T("%d.%d.%d.%d"),

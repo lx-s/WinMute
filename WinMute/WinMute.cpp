@@ -331,9 +331,17 @@ bool WinMute::LoadSettings()
 
    muteConfig_.muteOnWlan = settings_.QueryValue(SettingsKey::MUTE_ON_WLAN);
    if (muteConfig_.muteOnWlan) {
-      wifiDetector_.Init(hWnd_);
-      bool isMuteList = !settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST);
-      wifiDetector_.SetNetworkList(settings_.GetWifiNetworks(), isMuteList);
+      if (!wifiDetector_.Init(hWnd_)) {
+         TaskDialog(nullptr, nullptr, PROGRAM_NAME,
+            _T("WLAN Detection"),
+            _T("Failed to initialize WLAN detection. ")
+            _T("This feature will be unavailable for this session"),
+            TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
+      } else {
+         bool isMuteList = !settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST);
+         wifiDetector_.SetNetworkList(settings_.GetWifiNetworks(), isMuteList);
+         wifiDetector_.CheckNetwork();
+      }
    } else {
       wifiDetector_.Unload();
    }
@@ -573,28 +581,20 @@ LRESULT CALLBACK WinMute::WindowProc(
          if (wParam == 1) { // Connected
             if (settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED)) {
                TCHAR msgBuf[260] = { 0 };
-               const TCHAR* wifiName = reinterpret_cast<TCHAR*>(lParam);
-               
+               TCHAR* wifiName = reinterpret_cast<TCHAR*>(lParam);
                if (settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST)) {
-                  StringCchCopy(
-                     msgBuf,
-                     ARRAY_SIZE(msgBuf),
-                     _T("Current WLAN network is not on allowed list for AutoMute"));
+                  StringCchPrintfW(
+                     msgBuf, ARRAY_SIZE(msgBuf),
+                     _T("WLAN \"%s\"network is not on allowed list.\n"),
+                     wifiName);
                }  else {
-#ifdef _UNICODE
-                  swprintf(
+                  StringCchPrintfW(
                      msgBuf, ARRAY_SIZE(msgBuf),
                      _T("WLAN network \"%s\" is configured for AutoMute."),
                      wifiName);
-#else
-                  sprintf_s(
-                     msgBuf,
-                     "WLAN network \"%s\" is configured for AutoMute.",
-                     wifiName);
-#endif
                }
                trayIcon_.ShowPopup(_T("Workstation muted"), msgBuf);
-               
+               delete [] wifiName;
             }
             muteCtrl_.SetMute(true);
          }

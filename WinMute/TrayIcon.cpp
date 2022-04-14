@@ -40,6 +40,7 @@ TrayIcon::TrayIcon() :
 
 TrayIcon::TrayIcon(HWND hWnd, UINT trayID, HICON hIcon,
                    const tstring& tooltip, bool show) :
+   initialized_(false),
    iconVisible_(false)
 {
    Init(hWnd, trayID, hIcon, tooltip, show);
@@ -60,6 +61,13 @@ void TrayIcon::Init(HWND hWnd, UINT trayID, HICON hIcon,
 
    if (show) {
       Show();
+   }
+   initialized_ = true;
+   if (popupQueue_.size() > 0) {
+      for (const auto& p : popupQueue_) {
+         ShowPopup(p.title, p.text);
+      }
+      popupQueue_.clear();
    }
 }
 
@@ -125,6 +133,13 @@ void TrayIcon::ChangeText(const tstring& tooltip)
 
 void TrayIcon::ShowPopup(const tstring& title, const tstring& text) const
 {
+   if (!initialized_) {
+      TrayIconPopup popup;
+      popup.title = title;
+      popup.text = text;
+      popupQueue_.push_back(popup);
+      return;
+   } 
    NOTIFYICONDATA tnid;
    tnid.cbSize = sizeof(NOTIFYICONDATA);
    tnid.hWnd = hWnd_;

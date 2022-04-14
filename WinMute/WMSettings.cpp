@@ -383,11 +383,7 @@ bool WMSettings::StoreWifiNetworks(std::vector<tstring>& networks)
 
    for (size_t i = 0; i < networks.size(); ++i) {
       TCHAR valueName[10];
-#ifdef _UNICODE
-      swprintf(valueName, ARRAY_SIZE(valueName), _T("WiFi %03zu"), i + 1);
-#else
-      sprintf_s(valueName, "WiFi %03zu", i + 1);
-#endif
+      StringCchPrintfW(valueName, ARRAY_SIZE(valueName), _T("WiFi %03zu"), i + 1);
       const tstring& v = networks[i];
       DWORD regError = RegSetValueEx(
          hWifiKey_,
