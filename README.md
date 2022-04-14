@@ -38,4 +38,4 @@ If you want to also remove your personal WinMute settings, open the registry via
 Just start it and you are good to go!
 
 Whenever you lock your screen from now on or the screensaver starts, WinMute will automatically mute your windows volume, and unmute it right away when you come back to your pc.
-If you want to change the behaviour or explore all the oother options, right-click on the taskbar notification icon and explore!
+If you want to change the behaviour or explore all the other options, right-click on the taskbar notification icon and explore!
