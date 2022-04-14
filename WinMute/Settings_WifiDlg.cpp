@@ -122,6 +122,17 @@ static std::vector<tstring> ExportSsidListItems(HWND hList)
    return items;
 }
 
+static bool IsWlanAvailable()
+{
+   HANDLE wlanHandle;
+   DWORD vers = 2;
+   if (WlanOpenHandle(vers, NULL, &vers, &wlanHandle) != ERROR_SUCCESS) {
+      return false;
+   }
+   WlanCloseHandle(wlanHandle, NULL);
+   return true;
+}
+
 INT_PTR CALLBACK Settings_GeneralWifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    switch (msg) {
@@ -152,6 +163,17 @@ INT_PTR CALLBACK Settings_GeneralWifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
       }
       Button_Enable(GetDlgItem(hDlg, IDC_WIFI_REMOVEALL),
                     ListBox_GetCount(hList) > 0);
+
+      if (!IsWlanAvailable()) {
+         ShowWindow(GetDlgItem(hDlg, IDC_STATIC_WLAN_NOT_AVAILABLE), SW_SHOW);
+         Button_SetCheck(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE), BST_UNCHECKED);
+         Button_Enable(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE), FALSE);
+         Button_SetCheck(GetDlgItem(hDlg, IDC_IS_PERMITLIST), BST_UNCHECKED);
+         Button_Enable(GetDlgItem(hDlg, IDC_IS_PERMITLIST), FALSE);
+      }
+      else {
+         ShowWindow(GetDlgItem(hDlg, IDC_STATIC_WLAN_NOT_AVAILABLE), SW_HIDE);
+      }
       return TRUE;
    }
    case WM_COMMAND:

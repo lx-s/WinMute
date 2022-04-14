@@ -333,10 +333,12 @@ bool WinMute::LoadSettings()
    if (muteConfig_.muteOnWlan) {
       if (!wifiDetector_.Init(hWnd_)) {
          TaskDialog(nullptr, nullptr, PROGRAM_NAME,
-            _T("WLAN Detection"),
-            _T("Failed to initialize WLAN detection. ")
-            _T("This feature will be unavailable for this session"),
-            TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
+            _T("WLAN not available"),
+            _T("Either the WLAN service has not been started, ")
+            _T("or your device is not capable of using wireless networks. ")
+            _T("This feature will be disabled for this computer"),
+            TDCBF_OK_BUTTON, TD_INFORMATION_ICON, nullptr);
+         settings_.SetValue(SettingsKey::MUTE_ON_WLAN, FALSE);
       } else {
          bool isMuteList = !settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST);
          wifiDetector_.SetNetworkList(settings_.GetWifiNetworks(), isMuteList);

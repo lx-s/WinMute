@@ -146,12 +146,12 @@ IDD_SETTINGS_WIFI DIALOGEX 0, 0, 242, 204
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LISTBOX         IDC_WIFI_LIST,7,66,170,115,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_WIFI_LIST,7,66,170,110,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "Add",IDC_WIFI_ADD,179,65,56,16
     PUSHBUTTON      "Edit",IDC_WIFI_EDIT,179,84,56,16
     PUSHBUTTON      "Remove",IDC_WIFI_REMOVE,179,103,56,16
     PUSHBUTTON      "Remove all",IDC_WIFI_REMOVEALL,179,123,56,16
-    LTEXT           "Note: This feature is currently experimental",IDC_STATIC,7,186,171,11
+    LTEXT           "Note: WLAN is not available on your device, so some options have been disabled.",IDC_STATIC_WLAN_NOT_AVAILABLE,7,179,228,18
     CONTROL         "Enable ""WLAN Mute"".",IDC_ENABLE_WIFI_MUTE,"Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,26,228,14
     CONTROL         "Mute workstation when WLAN network name is NOT in list\n(default: mute if in list).",IDC_IS_PERMITLIST,
                     "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,41,228,18

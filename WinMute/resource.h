@@ -57,6 +57,7 @@
 #define IDC_WIFI_REMOVEALL              1027
 #define IDC_CHECK2                      1028
 #define IDC_IS_PERMITLIST               1028
+#define IDC_STATIC_WLAN_NOT_AVAILABLE   1029
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_                    40002
 #define ID_TRAYMENU_MUTEON              40003
@@ -92,7 +93,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        131
 #define _APS_NEXT_COMMAND_VALUE         40029
-#define _APS_NEXT_CONTROL_VALUE         1029
+#define _APS_NEXT_CONTROL_VALUE         1030
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

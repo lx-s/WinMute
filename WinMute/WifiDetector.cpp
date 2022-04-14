@@ -73,7 +73,9 @@ bool WifiDetector::Init(HWND hNotifyWnd)
       hNotifyWnd_ = hNotifyWnd;
       DWORD wlErr = WlanOpenHandle(vers, NULL, &vers, &wlanHandle_);
       if (wlErr != ERROR_SUCCESS) {
-         PrintWindowsError(_T("WlanOpenHandle"), wlErr);
+         if (wlErr != ERROR_SERVICE_NOT_ACTIVE) {
+            PrintWindowsError(_T("WlanOpenHandle"), wlErr);
+         }
       } else {
          wlErr = WlanRegisterNotification(
             wlanHandle_, WLAN_NOTIFICATION_SOURCE_ACM, TRUE,
