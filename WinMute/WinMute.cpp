@@ -136,7 +136,7 @@ static bool IsCurrentSessionRemoteable()
 }
 
 WinMute::MuteConfig::MuteConfig()
-   : showNotifications(false)
+   : muteOnWlan(false), showNotifications(false)
 {
    this->quietHours.enabled = false;
    this->quietHours.forceUnmute = false;

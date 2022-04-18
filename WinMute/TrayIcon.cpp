@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "common.h"
 
 TrayIcon::TrayIcon() :
-   iconVisible_(false), trayID_(0), hIcon_(0), hWnd_(0)
+   initialized_(false), iconVisible_(false), trayID_(0), hIcon_(0), hWnd_(0)
 {
 }
 
