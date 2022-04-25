@@ -280,7 +280,7 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
       tstring progName = _T("WinMute");
       tstring progVers = _T("WinMute");
       if (GetWinMuteVersion(progVers)) {
-         progName = tstring(_T("WinMute")) + progVers;
+         progName = tstring(_T("WinMute ")) + progVers;
          Static_SetText(hTitle, progName.c_str());
       }
 
