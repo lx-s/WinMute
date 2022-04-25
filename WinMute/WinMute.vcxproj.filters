@@ -89,7 +89,7 @@
     <ClInclude Include="TrayIcon.h">
       <Filter>Source Files\UI\TrayIcon</Filter>
     </ClInclude>
-    <ClInclude Include="QuietHours.h">
+    <ClInclude Include="QuietHoursTimer.h">
       <Filter>Source Files\Controllers\QuietHours</Filter>
     </ClInclude>
     <ClInclude Include="MuteControl.h">
@@ -155,7 +155,7 @@
     <ClCompile Include="TrayIcon.cpp">
       <Filter>Source Files\UI\TrayIcon</Filter>
     </ClCompile>
-    <ClCompile Include="QuietHours.cpp">
+    <ClCompile Include="QuietHoursTimer.cpp">
       <Filter>Source Files\Controllers\QuietHours</Filter>
     </ClCompile>
     <ClCompile Include="MuteControl.cpp">

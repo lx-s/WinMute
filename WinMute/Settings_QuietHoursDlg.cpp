@@ -167,7 +167,6 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
       DateTime_GetSystemtime(hEnd, &end);
       settings->SetValue(SettingsKey::QUIETHOURS_ENABLE, qhEnabled);
       if (SaveQuietHours(settings, qhEnabled, qhForceUnmute, qhNotifications, &start, &end)) {
-         SendMessage(GetParent(hDlg), WM_WINMUTE_QUIETHOURS_CHANGE, 0, 0);
          EndDialog(hDlg, 0);
       }
       return 0;

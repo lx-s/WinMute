@@ -196,7 +196,7 @@
     <ClInclude Include="WMLog.h" />
     <ClInclude Include="MMNotificationClient.h" />
     <ClInclude Include="MuteControl.h" />
-    <ClInclude Include="QuietHours.h" />
+    <ClInclude Include="QuietHoursTimer.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ScreensaverNotifier.h" />
     <ClInclude Include="WMSettings.h" />
@@ -229,7 +229,7 @@
     <ClCompile Include="WMLog.cpp" />
     <ClCompile Include="MMNotificationClient.cpp" />
     <ClCompile Include="MuteControl.cpp" />
-    <ClCompile Include="QuietHours.cpp" />
+    <ClCompile Include="QuietHoursTimer.cpp" />
     <ClCompile Include="ScreensaverNotifier.cpp" />
     <ClCompile Include="WMSettings.cpp" />
     <ClCompile Include="SettingsDlg.cpp" />

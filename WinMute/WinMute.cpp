@@ -37,7 +37,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 extern HINSTANCE hglobInstance;
 extern INT_PTR CALLBACK AboutDlgProc(HWND, UINT, WPARAM, LPARAM);
-extern INT_PTR CALLBACK QuietHoursDlgProc(HWND, UINT, WPARAM, LPARAM);
 extern INT_PTR CALLBACK SettingsDlgProc(HWND, UINT, WPARAM, LPARAM);
 
 static LPCTSTR WINMUTE_CLASS_NAME = _T("WinMute");
@@ -138,11 +137,6 @@ static bool IsCurrentSessionRemoteable()
 WinMute::MuteConfig::MuteConfig()
    : muteOnWlan(false), showNotifications(false)
 {
-   this->quietHours.enabled = false;
-   this->quietHours.forceUnmute = false;
-   this->quietHours.notifications = false;
-   this->quietHours.start = 0;
-   this->quietHours.end = 0;
 }
 
 WinMute::WinMute() :
@@ -295,7 +289,8 @@ bool WinMute::Init()
    }
    trayIcon_.Init(hWnd_, 0, hTrayIcon_, _T("WinMute"), true);
 
-   ResetQuietHours();
+
+   quietHours_.Init(hWnd_, settings_);
 
    log.Write(_T("WinMute initialized"));
 
@@ -323,11 +318,6 @@ bool WinMute::LoadSettings()
    muteCtrl_.SetNotifications(settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED));
 
    muteConfig_.showNotifications = settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED);
-   muteConfig_.quietHours.enabled = settings_.QueryValue(SettingsKey::QUIETHOURS_ENABLE);
-   muteConfig_.quietHours.forceUnmute = settings_.QueryValue(SettingsKey::QUIETHOURS_FORCEUNMUTE);
-   muteConfig_.quietHours.notifications = settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS);
-   muteConfig_.quietHours.start = settings_.QueryValue(SettingsKey::QUIETHOURS_START);
-   muteConfig_.quietHours.end = settings_.QueryValue(SettingsKey::QUIETHOURS_END);
 
    muteConfig_.muteOnWlan = settings_.QueryValue(SettingsKey::MUTE_ON_WLAN);
    if (muteConfig_.muteOnWlan) {
@@ -405,6 +395,7 @@ LRESULT CALLBACK WinMute::WindowProc(
                   reinterpret_cast<LPARAM>(&settings_)) == 0) {
                LoadSettings();
                InitTrayMenu();
+               quietHours_.Reset(settings_);
             }
             dialogOpen = false;
          }
@@ -531,45 +522,25 @@ LRESULT CALLBACK WinMute::WindowProc(
       break;
    case WM_WINMUTE_QUIETHOURS_START:
       muteCtrl_.NotifyQuietHours(true);
-      if (muteConfig_.quietHours.notifications) {
+      if (settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS)) {
          trayIcon_.ShowPopup(
             _T("WinMute: Quiet hours started"),
             _T("Your workstation audio will now be muted."));
       }
-      SetQuietHoursEnd();
+      quietHours_.SetEnd();
       return 0;
    case WM_WINMUTE_QUIETHOURS_END:
       muteCtrl_.NotifyQuietHours(false);
-      trayIcon_.ShowPopup(
-         _T("WinMute: Quiet Hours ended"),
-         _T("Your workstation audio has been restored."));
-      if (muteConfig_.quietHours.forceUnmute) {
+      if (settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS)) {
+         trayIcon_.ShowPopup(
+            _T("WinMute: Quiet Hours ended"),
+            _T("Your workstation audio has been restored."));
+      }
+      if (settings_.QueryValue(SettingsKey::QUIETHOURS_FORCEUNMUTE)) {
          muteCtrl_.SetMute(false);
       }
-      SetQuietHoursStart();
+      quietHours_.SetStart();
       return 0;
-   case WM_WINMUTE_QUIETHOURS_CHANGE: {
-      muteConfig_.quietHours.enabled = settings_.QueryValue(
-         SettingsKey::QUIETHOURS_ENABLE);
-      muteConfig_.quietHours.forceUnmute = settings_.QueryValue(
-         SettingsKey::QUIETHOURS_FORCEUNMUTE);
-      muteConfig_.quietHours.notifications = settings_.QueryValue(
-         SettingsKey::QUIETHOURS_NOTIFICATIONS);
-      CheckMenuItem(
-         hTrayMenu_,
-         ID_TRAYMENU_CONFIGUREQUIETHOURS,
-         (muteConfig_.quietHours.enabled) ? MF_CHECKED : MF_UNCHECKED);
-
-      if (muteConfig_.quietHours.enabled) {
-         muteConfig_.quietHours.start = settings_.QueryValue(
-            SettingsKey::QUIETHOURS_START);
-         muteConfig_.quietHours.end = settings_.QueryValue(
-            SettingsKey::QUIETHOURS_END);
-      }
-      ResetQuietHours();
-
-      return 0;
-   }
    case WM_SCRNSAVE_CHANGE: {
       if (wParam == SCRNSAVE_START) {
          muteCtrl_.NotifyScreensaver(true);
@@ -627,197 +598,6 @@ LRESULT CALLBACK WinMute::WindowProc(
    }
 
    return DefWindowProc(hWnd, msg, wParam, lParam);
-}
-
-static __int64 ConvertSystemTimeTo100NS(const LPSYSTEMTIME sysTime)
-{
-   FILETIME ft;
-   SystemTimeToFileTime(sysTime, &ft);
-   ULARGE_INTEGER ulInt;
-   ulInt.HighPart = ft.dwHighDateTime;
-   ulInt.LowPart = ft.dwLowDateTime;
-   return static_cast<__int64>(ulInt.QuadPart);
-}
-
-static bool QuietHoursShouldAlreadyHaveStarted(
-   const LPSYSTEMTIME now,
-   const LPSYSTEMTIME qhStart,
-   const LPSYSTEMTIME qhEnd)
-{
-   __int64 iStart = ConvertSystemTimeTo100NS(qhStart);
-   __int64 iEnd = ConvertSystemTimeTo100NS(qhEnd);
-   __int64 iNow = ConvertSystemTimeTo100NS(now);
-
-   if (iEnd < iStart) {
-      // Add one day
-      iEnd += 864000000000ll;
-   }
-
-   if (iEnd - iNow > 0 && iStart - iNow < 0) {
-      return true;
-   }
-
-   return false;
-}
-
-/**
- * Gets the number of milliseconds that t2 would have to add, to reach t1.
- * Takes day wrap around into consideration.
- */
-static int GetDiffMillseconds(const LPSYSTEMTIME t1, const LPSYSTEMTIME t2)
-{
-   __int64 it1 = ConvertSystemTimeTo100NS(t1);
-   __int64 it2 = ConvertSystemTimeTo100NS(t2);
-
-   // 100NS to Milliseconds;
-   it1 /= 10000;
-   it2 /= 10000;
-   if (it1 < it2) { // add one day wrap around
-      it1 += 24 * 60 * 60 * 1000;
-   }
-   __int64 res = it1 - it2;
-
-   return static_cast<int>(res);
-}
-
-VOID CALLBACK QuietHoursTimer(HWND hWnd, UINT msg, UINT_PTR id, DWORD msSinceSysStart)
-{
-   UNREFERENCED_PARAMETER(msg);
-   UNREFERENCED_PARAMETER(msSinceSysStart);
-   if (id == QUIETHOURS_TIMER_START_ID) {
-      KillTimer(hWnd, id);
-      SendMessage(hWnd, WM_WINMUTE_QUIETHOURS_START, 0, 0);
-   } else if (id == QUIETHOURS_TIMER_END_ID) {
-      KillTimer(hWnd, id);
-      SendMessage(hWnd, WM_WINMUTE_QUIETHOURS_END, 0, 0);
-   }
-}
-
-void WinMute::ResetQuietHours()
-{
-   if (!muteConfig_.quietHours.enabled) {
-      KillTimer(hWnd_, QUIETHOURS_TIMER_START_ID);
-      KillTimer(hWnd_, QUIETHOURS_TIMER_END_ID);
-   } else {
-      SYSTEMTIME now;
-      SYSTEMTIME start;
-      SYSTEMTIME end;
-      GetLocalTime(&now);
-      GetLocalTime(&start);
-      GetLocalTime(&end);
-
-      start.wSecond = static_cast<WORD>(muteConfig_.quietHours.start % 60);
-      start.wMinute = static_cast<WORD>(((muteConfig_.quietHours.start - start.wSecond) / 60) % 60);
-      start.wHour = static_cast<WORD>((muteConfig_.quietHours.start - start.wMinute - start.wSecond) / 3600);
-
-      end.wSecond = static_cast<WORD>(muteConfig_.quietHours.end % 60);
-      end.wMinute = static_cast<WORD>(((muteConfig_.quietHours.end - end.wSecond) / 60) % 60);
-      end.wHour = static_cast<WORD>((muteConfig_.quietHours.end - end.wMinute - end.wSecond) / 3600);
-
-      if (QuietHoursShouldAlreadyHaveStarted(&now, &start, &end)) {
-         int timerQhEnd = GetDiffMillseconds(&end, &now);
-         WMLog::GetInstance().Write(L"Mute: On | Quiet hours have already started");
-         muteCtrl_.NotifyQuietHours(true);
-         if (SetCoalescableTimer(
-               hWnd_,
-               QUIETHOURS_TIMER_END_ID,
-               timerQhEnd,
-               QuietHoursTimer,
-               TIMERV_DEFAULT_COALESCING) == 0) {
-            TaskDialog(
-               hWnd_,
-               hglobInstance,
-               PROGRAM_NAME,
-               _T("Quiet Hours Stop"),
-               _T("Failed to register end of quiet hours with windows timer system"),
-               TDCBF_OK_BUTTON,
-               TD_ERROR_ICON,
-               nullptr);
-         }
-      } else {
-         int timerQhStart = GetDiffMillseconds(&start, &now);
-         if (SetCoalescableTimer(
-               hWnd_,
-               QUIETHOURS_TIMER_START_ID,
-               timerQhStart,
-               QuietHoursTimer,
-               TIMERV_DEFAULT_COALESCING) == 0) {
-            TaskDialog(
-               hWnd_,
-               hglobInstance,
-               PROGRAM_NAME,
-               _T("Quiet Hours Start"),
-               _T("Failed to register quiet hours start with windows timer system"),
-               TDCBF_OK_BUTTON,
-               TD_ERROR_ICON,
-               nullptr);
-         }
-      }
-   }
-}
-
-void WinMute::SetQuietHoursStart()
-{
-   SYSTEMTIME now;
-   SYSTEMTIME start;
-
-   GetLocalTime(&now);
-   GetLocalTime(&start);
-
-   start.wSecond = static_cast<WORD>(muteConfig_.quietHours.start % 60);
-   start.wMinute = static_cast<WORD>(((muteConfig_.quietHours.start - start.wSecond) / 60) % 60);
-   start.wHour = static_cast<WORD>((muteConfig_.quietHours.start - start.wMinute - start.wSecond) / 3600);
-
-   int timerQhStart = GetDiffMillseconds(&start, &now);
-   if (SetCoalescableTimer(
-         hWnd_,
-         QUIETHOURS_TIMER_START_ID,
-         timerQhStart,
-         QuietHoursTimer,
-         TIMERV_DEFAULT_COALESCING) == 0) {
-      TaskDialog(
-         hWnd_,
-         hglobInstance,
-         PROGRAM_NAME,
-         _T("Quiet Hours Start"),
-         _T("Failed to register quiet hours start with windows timer system"),
-         TDCBF_OK_BUTTON,
-         TD_ERROR_ICON,
-         nullptr);
-   }
-}
-
-void WinMute::SetQuietHoursEnd()
-{
-   SYSTEMTIME now;
-   SYSTEMTIME end;
-
-   GetLocalTime(&now);
-   GetLocalTime(&end);
-
-   end.wSecond = static_cast<WORD>(muteConfig_.quietHours.end % 60);
-   end.wMinute = static_cast<WORD>(((muteConfig_.quietHours.end - end.wSecond) / 60) % 60);
-   end.wHour = static_cast<WORD>((muteConfig_.quietHours.end - end.wMinute - end.wSecond) / 3600);
-
-   int timerQhEnd = GetDiffMillseconds(&end, &now);
-   if (timerQhEnd <= 0) {
-      SendMessage(hWnd_, WM_WINMUTE_QUIETHOURS_END, 0, 0);
-   } else if (SetCoalescableTimer(
-         hWnd_,
-         QUIETHOURS_TIMER_END_ID,
-         timerQhEnd,
-         QuietHoursTimer,
-         TIMERV_DEFAULT_COALESCING) == 0) {
-      TaskDialog(
-         hWnd_,
-         hglobInstance,
-         PROGRAM_NAME,
-         _T("Quiet Hours Stop"),
-         _T("Failed to register end of quiet hours with windows timer system"),
-         TDCBF_OK_BUTTON,
-         TD_ERROR_ICON,
-         nullptr);
-   }
 }
 
 void WinMute::Unload()

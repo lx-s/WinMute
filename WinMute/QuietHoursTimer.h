@@ -31,4 +31,35 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
+#pragma once
+
 #include "common.h"
+
+static const int WM_WINMUTE_QUIETHOURS_START = WM_APP + 202;
+static const int WM_WINMUTE_QUIETHOURS_END = WM_APP + 203;
+
+class QuietHoursTimer {
+public:
+   QuietHoursTimer();
+   ~QuietHoursTimer();
+   QuietHoursTimer(const QuietHoursTimer&) = delete;
+   QuietHoursTimer& operator=(const QuietHoursTimer&) = delete;
+
+   bool Init(HWND hParent, const WMSettings& settings);
+
+   bool IsQuietTime();
+
+   bool SetStart();
+   bool SetEnd();
+
+   bool Reset(const WMSettings& settings);
+
+private:
+   HWND hParent_;
+   bool initialized_;
+   bool enabled_;
+   time_t qhStart_;
+   time_t qhEnd_;
+
+   bool LoadFromSettings(const WMSettings& settings);
+};

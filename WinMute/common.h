@@ -89,9 +89,9 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "WinAudio.h"
 #include "MuteControl.h"
 #include "WiFiDetector.h"
+#include "QuietHoursTimer.h"
 #include "WinMute.h"
 #include "VersionHelper.h"
-
 
 // Utility
 void PrintWindowsError(LPCWSTR lpszFunction, DWORD lastError = -1);
