@@ -60,6 +60,8 @@ extern INT_PTR CALLBACK Settings_GeneralDlgProc(HWND, UINT, WPARAM, LPARAM);
 extern INT_PTR CALLBACK Settings_MuteDlgProc(HWND, UINT, WPARAM, LPARAM);
 extern INT_PTR CALLBACK Settings_GeneralWifiDlgProc(HWND, UINT, WPARAM, LPARAM);
 
+extern HINSTANCE hglobInstance;
+
 static void InsertTabItem(HWND hTabCtrl, UINT id, const TCHAR* itemName)
 {
    constexpr int bufSize = 50;
@@ -81,14 +83,46 @@ static void SwitchTab(SettingsDlgData* dlgData, HWND hNewTab)
    }
    dlgData->hActiveTab = hNewTab;
    ShowWindow(dlgData->hActiveTab, SW_SHOW);
+   //SetFocus(dlgData->hActiveTab);
 }
 
-static void ResizeTab(HWND hTabCtrl, HWND hTabPage)
+static void ResizeTabs(HWND hTabCtrl, HWND* hTabs, int tabCount)
 {
-   RECT r = { 0 };
-   GetClientRect(hTabPage, &r);
-   TabCtrl_AdjustRect(hTabCtrl, FALSE, &r);
-   MoveWindow(hTabPage, r.left, r.top, r.right, r.bottom, TRUE);
+   RECT tabCtrlRect = { 0 };
+   GetWindowRect(hTabCtrl, &tabCtrlRect);
+   POINT tabCtrlPos = { 0 };
+   tabCtrlPos.x = tabCtrlRect.left;
+   tabCtrlPos.y = tabCtrlRect.top;
+   ScreenToClient(GetParent(hTabCtrl), &tabCtrlPos);
+
+   GetClientRect(hTabCtrl, &tabCtrlRect);
+   TabCtrl_AdjustRect(hTabCtrl, FALSE, &tabCtrlRect);
+   tabCtrlRect.left += tabCtrlPos.x;
+   tabCtrlRect.top += tabCtrlPos.y;
+
+   HDWP hdwp = BeginDeferWindowPos(tabCount);
+   if (hdwp == NULL) {
+      PrintWindowsError(_T("BeginDeferWindowPos"), GetLastError());
+   } else {
+      for (int i = 0; i < tabCount; ++i) {
+         HDWP newHdwp = DeferWindowPos(
+            hdwp,
+            hTabs[i],
+            HWND_TOP,
+            tabCtrlRect.left,
+            tabCtrlRect.top,
+            tabCtrlRect.right - tabCtrlRect.left,
+            tabCtrlRect.bottom - tabCtrlRect.top,
+            0);
+         if (hdwp == NULL) {
+            PrintWindowsError(_T("DeferWindowPos"), GetLastError());
+            break;
+         } else {
+            hdwp = newHdwp;
+         }
+      }
+      EndDeferWindowPos(hdwp);
+   }
 }
 
 INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -110,35 +144,35 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
       InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_WIFI, _T("WLAN"));
 
       dlgData->hTabs[SETTINGS_TAB_GENERAL] = CreateDialogParam(
-         nullptr,
+         hglobInstance,
          MAKEINTRESOURCE(IDD_SETTINGS_GENERAL),
-         dlgData->hTabCtrl,
+         hDlg,
          Settings_GeneralDlgProc,
          reinterpret_cast<LPARAM>(settings));
       dlgData->hTabs[SETTINGS_TAB_MUTE] = CreateDialogParam(
-         nullptr,
+         hglobInstance,
          MAKEINTRESOURCE(IDD_SETTINGS_MUTE),
-         dlgData->hTabCtrl,
+         hDlg,
          Settings_MuteDlgProc,
          reinterpret_cast<LPARAM>(settings));
       dlgData->hTabs[SETTINGS_TAB_QUIETHOURS] = CreateDialogParam(
-         nullptr,
+         hglobInstance,
          MAKEINTRESOURCE(IDD_SETTINGS_QUIETHOURS),
-         dlgData->hTabCtrl,
+         hDlg,
          Settings_QuietHoursDlgProc,
          reinterpret_cast<LPARAM>(settings));
       dlgData->hTabs[SETTINGS_TAB_WIFI] = CreateDialogParam(
-         nullptr,
+         hglobInstance,
          MAKEINTRESOURCE(IDD_SETTINGS_WIFI),
-         dlgData->hTabCtrl,
+         hDlg,
          Settings_GeneralWifiDlgProc,
          reinterpret_cast<LPARAM>(settings));
 
       // Init tab pages
+      ResizeTabs(dlgData->hTabCtrl, dlgData->hTabs, SETTINGS_TAB_COUNT);
       for (int i = 0; i < SETTINGS_TAB_COUNT; ++i) {
          HWND hCurTab = dlgData->hTabs[i];
          ShowWindow(hCurTab, SW_HIDE);
-         ResizeTab(dlgData->hTabCtrl, hCurTab);
       }
 
       HICON hIcon = LoadIcon(

@@ -52,6 +52,7 @@ END
 
 IDD_ABOUT DIALOGEX 0, 0, 313, 269
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CONTROLPARENT | WS_EX_APPWINDOW
 CAPTION "About WinMute"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -63,6 +64,7 @@ END
 
 IDD_SETTINGS DIALOGEX 0, 0, 269, 253
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CONTROLPARENT | WS_EX_APPWINDOW
 CAPTION "Settings"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -73,6 +75,7 @@ END
 
 IDD_SETTINGS_GENERAL DIALOGEX 0, 0, 233, 179
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "Start WinMute on system startup",IDC_RUNONSTARTUP,
@@ -82,7 +85,7 @@ BEGIN
 END
 
 IDD_SETTINGS_QUIETHOURS DIALOGEX 0, 0, 246, 198
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LTEXT           "During Quiet Hours WinMute automatically mutes your PC volumes and unmutes it afterwards.",IDC_STATIC,7,9,232,22
@@ -98,27 +101,27 @@ BEGIN
 END
 
 IDD_ABOUT_LICENSE DIALOGEX 0, 0, 300, 181
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     EDITTEXT        IDC_LICENSETEXT,7,7,286,167,ES_CENTER | ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER | WS_VSCROLL
 END
 
 IDD_ABOUT_WINMUTE DIALOGEX 0, 0, 298, 176
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    EDITTEXT        IDC_ABOUTTEXT,7,14,182,155,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
     CONTROL         "<a href=""https://lx-s.de"">Author Site: www.lx-s.de</a>",IDC_LINK_HOMEPAGE,
                     "SysLink",WS_TABSTOP,197,14,94,14
     CONTROL         "<a href=""https://github.com/lx-s/WinMute/"">Project Site && Code</a>",IDC_LINK_PROJECT,
                     "SysLink",WS_TABSTOP,197,32,94,14
     CONTROL         "<a href=""https://github.com/lx-s/WinMute/issues/"">Support</a>",IDC_LINK_TICKETS,
                     "SysLink",WS_TABSTOP,197,49,94,14
+    EDITTEXT        IDC_ABOUTTEXT,7,14,182,155,ES_MULTILINE | ES_AUTOHSCROLL | ES_NOHIDESEL | ES_READONLY | NOT WS_BORDER
 END
 
 IDD_SETTINGS_MUTE DIALOGEX 0, 0, 242, 205
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     GROUPBOX        "General",IDC_STATIC,7,7,228,31
@@ -143,7 +146,7 @@ BEGIN
 END
 
 IDD_SETTINGS_WIFI DIALOGEX 0, 0, 242, 204
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LISTBOX         IDC_WIFI_LIST,7,66,170,110,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
@@ -359,8 +362,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,9,9,3
- PRODUCTVERSION 1,9,9,3
+ FILEVERSION 2,0,0,0
+ PRODUCTVERSION 2,0,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -377,23 +380,23 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "LX-Systems"
             VALUE "FileDescription", "WinMute"
-            VALUE "FileVersion", "1.9.9.3"
+            VALUE "FileVersion", "2.0.0.0"
             VALUE "InternalName", "WinMute.exe"
             VALUE "LegalCopyright", "Copyright (C) 2022, Alexander Steinhöfer"
             VALUE "OriginalFilename", "WinMute.exe"
             VALUE "ProductName", "WinMute"
-            VALUE "ProductVersion", "1.9.9.3"
+            VALUE "ProductVersion", "2.0.0.0"
         END
         BLOCK "040704b0"
         BEGIN
             VALUE "CompanyName", "LX-Systems"
             VALUE "FileDescription", "WinMute"
-            VALUE "FileVersion", "1.9.9.3"
+            VALUE "FileVersion", "2.0.0.0"
             VALUE "InternalName", "WinMute.exe"
             VALUE "LegalCopyright", "Copyright (C) 2022, Alexander Steinhöfer"
             VALUE "OriginalFilename", "WinMute.exe"
             VALUE "ProductName", "WinMute"
-            VALUE "ProductVersion", "1.9.9.3"
+            VALUE "ProductVersion", "2.0.0.0"
         END
     END
     BLOCK "VarFileInfo"

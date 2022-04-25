@@ -120,12 +120,43 @@ static void SwitchTab(AboutDlgData* dlgData, HWND hNewTab)
    ShowWindow(dlgData->hActiveTab, SW_SHOW);
 }
 
-static void ResizeTab(HWND hTabCtrl, HWND hTabPage)
+static void ResizeTabs(HWND hTabCtrl, HWND* hTabs, int tabCount)
 {
-   RECT r = { 0 };
-   GetClientRect(hTabPage, &r);
-   TabCtrl_AdjustRect(hTabCtrl, FALSE, &r);
-   MoveWindow(hTabPage, r.left, r.top, r.right, r.bottom, TRUE);
+   RECT tabCtrlRect = { 0 };
+   GetWindowRect(hTabCtrl, &tabCtrlRect);
+   POINT tabCtrlPos = { 0 };
+   tabCtrlPos.x = tabCtrlRect.left;
+   tabCtrlPos.y = tabCtrlRect.top;
+   ScreenToClient(GetParent(hTabCtrl), &tabCtrlPos);
+
+   GetClientRect(hTabCtrl, &tabCtrlRect);
+   TabCtrl_AdjustRect(hTabCtrl, FALSE, &tabCtrlRect);
+   tabCtrlRect.left += tabCtrlPos.x;
+   tabCtrlRect.top += tabCtrlPos.y;
+
+   HDWP hdwp = BeginDeferWindowPos(tabCount);
+   if (hdwp == NULL) {
+      PrintWindowsError(_T("BeginDeferWindowPos"), GetLastError());
+   } else {
+      for (int i = 0; i < tabCount; ++i) {
+         HDWP newHdwp = DeferWindowPos(
+            hdwp,
+            hTabs[i],
+            HWND_TOP,
+            tabCtrlRect.left,
+            tabCtrlRect.top,
+            tabCtrlRect.right - tabCtrlRect.left,
+            tabCtrlRect.bottom - tabCtrlRect.top,
+            0);
+         if (hdwp == NULL) {
+            PrintWindowsError(_T("DeferWindowPos"), GetLastError());
+            break;
+         } else {
+            hdwp = newHdwp;
+         }
+      }
+      EndDeferWindowPos(hdwp);
+   }
 }
 
 static INT_PTR CALLBACK About_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM lParam)
@@ -230,21 +261,19 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
       dlgData->hTabs[ABOUT_TAB_GENERAL] = CreateDialog(
          nullptr,
          MAKEINTRESOURCE(IDD_ABOUT_WINMUTE),
-         dlgData->hTabCtrl,
+         hDlg,
          About_GeneralDlgProc);
       dlgData->hTabs[ABOUT_TAB_LICENSE] = CreateDialog(
          nullptr,
          MAKEINTRESOURCE(IDD_ABOUT_LICENSE),
-         dlgData->hTabCtrl,
+         hDlg,
          About_LicenseDlgProc);
 
       // Init tab pages
+      ResizeTabs(dlgData->hTabCtrl, dlgData->hTabs, ABOUT_TAB_COUNT);
       for (int i = 0; i < ABOUT_TAB_COUNT; ++i) {
-         HWND hCurTab = dlgData->hTabs[i];
-         ShowWindow(hCurTab, SW_HIDE);
-         ResizeTab(dlgData->hTabCtrl, hCurTab);
+         ShowWindow(dlgData->hTabs[i], SW_HIDE);
       }
-
       SwitchTab(dlgData, dlgData->hTabs[ABOUT_TAB_GENERAL]);
 
       HWND hTitle = GetDlgItem(hDlg, IDC_ABOUT_TITLE);
