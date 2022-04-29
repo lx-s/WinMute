@@ -476,7 +476,6 @@ LRESULT CALLBACK WinMute::WindowProc(
          SetForegroundWindow(hWnd);
          TrackPopupMenuEx(GetSubMenu(hTrayMenu_, 0), TPM_NONOTIFY | TPM_TOPALIGN
             | TPM_LEFTALIGN, p.x, p.y, hWnd_, nullptr);
-         PostMessage(hWnd, WM_NULL, 0, 0);
          break;
       }
       default:

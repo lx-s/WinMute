@@ -318,11 +318,8 @@ LRESULT CALLBACK ScreensaverNotifier::WindowProc(
    static UINT uTaskbarRestart = 0;
    switch (msg) {
    case WM_CREATE:
-   {
       return TRUE;
-   }
    case WM_TIMER:
-   {
       if (wParam == SCRSV_TIMER_ID) {
          if (!IsScreensaverRunning()) {
             StartScreensaverPollTimer(false);
@@ -331,9 +328,8 @@ LRESULT CALLBACK ScreensaverNotifier::WindowProc(
          }
       }
       return 0;
-   }
    default:
-      if (hookWndMsg_ != 0 && msg == hookWndMsg_) {
+      if (hookWndMsg_ != 0 && msg == hookWndMsg_ && !alreadyNotified_) {
          /* Windows sends SC_SCREENSAVE when it tries to start a screensaver.
             If screensaver is set to "none" or if another application cancels
             this event, we would falsely mute windows.
@@ -344,11 +340,9 @@ LRESULT CALLBACK ScreensaverNotifier::WindowProc(
          Sleep(500);
          if (IsScreensaverRunning()) {
             /* SC_SCREENSAVE might be fired multiple times */
-            if (!alreadyNotified_) {
-               alreadyNotified_ = true;
-               SendMessage(hNotifyWnd_, WM_SCRNSAVE_CHANGE, SCRNSAVE_START, 0);
-               StartScreensaverPollTimer();
-            }
+            alreadyNotified_ = true;
+            SendMessage(hNotifyWnd_, WM_SCRNSAVE_CHANGE, SCRNSAVE_START, 0);
+            StartScreensaverPollTimer(true);
          }
       }
       break;

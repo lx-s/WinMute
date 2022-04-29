@@ -71,7 +71,7 @@ private:
    RegisterHook regHook_;
    UnregisterHook unregHook_;
 
-   void StartScreensaverPollTimer(bool start = true);
+   void StartScreensaverPollTimer(bool start);
 
    bool IsScreensaverRunning();
 

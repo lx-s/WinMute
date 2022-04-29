@@ -55,15 +55,17 @@ static HINSTANCE hglobInstance_ = nullptr;
       Hook Function
    ========================================================================== */
 
-static LRESULT CALLBACK MsgHookProc(UINT code, WPARAM wParam, LPARAM lParam)
+static LRESULT CALLBACK MsgHookProc(UINT nCode, WPARAM wParam, LPARAM lParam)
 {
-   MSG const* const msg = reinterpret_cast<LPMSG>(lParam);
-   if (msg->message == WM_SYSCOMMAND) {
-      if (msg->wParam == SC_SCREENSAVE) {
-         PostMessage(hNotifyWnd_, notifyWndMsgId_, wParam, lParam);
+   const LPMSG msg = reinterpret_cast<LPMSG>(lParam);
+   if (nCode == HC_ACTION) {
+      if (msg->message == WM_SYSCOMMAND) {
+         if (msg->wParam == SC_SCREENSAVE) {
+            PostMessage(hNotifyWnd_, notifyWndMsgId_, wParam, lParam);
+         }
       }
    }
-   return CallNextHookEx(hook_, code, wParam, lParam);
+   return CallNextHookEx(hook_, nCode, wParam, lParam);
 }
 
 /* =============================================================================
