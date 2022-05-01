@@ -1,18 +1,18 @@
-Version 2.0.0-beta (2022-*-*)
+Version 2.0.0 (2022-05-01)
  * WinMute now mutes all audio endpoints and not just the default endpoint.
-   It also stores all Endpoint states and restores them if the appropriate
+   It also stores all endpoint states and restores them if the appropriate
    option is set.
  * Reworked mute detection logic. This should fix timing errors, e.g. when
    screensaver with screenlock is active.
  * WinMute can now mute your computer when it is connected (alternatively
-   when it is not connected) to a particular wireless network.
+   when it is _not_ connected) to a particular wireless network.
  * Added detection for display standby
  * Added detection for RDP sessions
- * Added autostart option (no more fiddling with the Autostart-Folder)
+ * Added autostart option (no more fiddling with the Startup-folder)
  * Added Hi-DPI awareness
  * Added tray icon for bright system theme
  * UI Rework (New settings and about dialogue)
- * Various fixes and improvenents
+ * Various fixes and improvements
  * Updated project to VS 2022
 
 Version 1.6.0 (2020-12-18)
