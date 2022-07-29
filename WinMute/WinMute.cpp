@@ -277,6 +277,17 @@ bool WinMute::Init()
       return false;
    }
 
+   if (!btDetector_.Init(hWnd_)) {
+      log.Write(_T("Error loading bluetooth detector"));
+      TaskDialog(nullptr, nullptr,
+         PROGRAM_NAME,
+         _T("Bluetooth not available"),
+         _T("Either the Bluetooth service has not been started, ")
+         _T("or your device is not capable of using bluetooth devices. ")
+         _T("This feature will be disabled for this computer"),
+         TDCBF_OK_BUTTON, TD_INFORMATION_ICON, nullptr);
+   }
+
    bool isDarkMode = true;
    IsDarkMode(isDarkMode);
    hTrayIcon_ = LoadIcon(
@@ -461,6 +472,12 @@ LRESULT CALLBACK WinMute::WindowProc(
          settings_.SetValue(SettingsKey::MUTE_ON_LOGOUT, checked);
          break;
       }
+      case ID_TRAYMENU_BLUETOOTH: {
+         bool checked = false;
+         ToggleMenuCheck(ID_TRAYMENU_MUTEONLOGOUT, &checked);
+         
+         break;
+      }
       default:
          break;
       }
@@ -547,6 +564,15 @@ LRESULT CALLBACK WinMute::WindowProc(
          muteCtrl_.NotifyScreensaver(false);
       }
       return 0;
+   }
+   case WM_DEVICECHANGE: {
+      const auto btStatus = btDetector_.GetBluetoothStatus(msg, wParam, lParam);
+      if (btStatus == BluetoothDetector::BluetoothStatus::Connected) {
+         MessageBox(hWnd, L"CONNECTED!", NULL, 0);
+      } else if (btStatus == BluetoothDetector::BluetoothStatus::Disconnected) {
+         MessageBox(hWnd, L"DIS-CONNECTED!", NULL, 0);
+      }
+      return TRUE;
    }
    case WM_WIFISTATUSCHANGED:
       if (muteConfig_.muteOnWlan) {

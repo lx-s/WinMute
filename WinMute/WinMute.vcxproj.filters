@@ -54,6 +54,9 @@
     <Filter Include="Source Files\Controllers\WiFi">
       <UniqueIdentifier>{a804b525-296b-455b-a1bc-d8fdbf5a9c3d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Controllers\Bluetooth">
+      <UniqueIdentifier>{63e91d90-aeee-461f-9783-6e1e42eee65b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinAudio.h">
@@ -100,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="WiFiDetector.h">
       <Filter>Source Files\Controllers\WiFi</Filter>
+    </ClInclude>
+    <ClInclude Include="BluetoothDetector.h">
+      <Filter>Source Files\Controllers\Bluetooth</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +187,9 @@
     </ClCompile>
     <ClCompile Include="WifiDetector.cpp">
       <Filter>Source Files\Controllers\WiFi</Filter>
+    </ClCompile>
+    <ClCompile Include="BluetoothDetector.cpp">
+      <Filter>Source Files\Controllers\Bluetooth</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

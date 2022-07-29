@@ -35,49 +35,31 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
-class WinAudio;
+/* wParam = Connected = 1 | Disconnected = 0. lParam = Pointer to Device Name */
+constexpr int WM_BTSTATUSCHANGED = WM_USER + 500;
 
-class WinMute {
+class BluetoothDetector {
 public:
-   WinMute();
-   ~WinMute();
+   enum class BluetoothStatus { Unknown, Connected, Disconnected };
+   BluetoothDetector();
+   ~BluetoothDetector();
+   BluetoothDetector(const WifiDetector&) = delete;
+   BluetoothDetector& operator=(const WifiDetector&) = delete;
 
-   bool Init();
-   void Close();
-
-   // for internal use
-   LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-private:
-   HWND hWnd_;
-   HMENU hTrayMenu_;
-   HICON hAppIcon_;
-   HICON hTrayIcon_;
-
-   struct MuteConfig {
-      MuteConfig();
-      bool showNotifications;
-      bool muteOnWlan;
-   } muteConfig_;
-
-   TrayIcon trayIcon_;
-   ScreensaverNotifier scrnSaverNoti_;
-   WifiDetector wifiDetector_;
-   WMSettings settings_;
-   MuteControl muteCtrl_;
-   QuietHoursTimer quietHours_;
-   BluetoothDetector btDetector_;
-
-   bool RegisterWindowClass();
-   bool InitWindow();
-   bool InitAudio();
-   bool InitTrayMenu();
-   bool LoadSettings();
-
+   bool Init(HWND hNotifyWnd);
    void Unload();
 
-   void ToggleMenuCheck(UINT item, bool* setting);
+   BluetoothStatus GetBluetoothStatus(
+      const UINT message, const WPARAM wParam, const LPARAM lParam);
 
-   // Disable copying
-   WinMute(const WinMute&) = delete;
-   WinMute& operator=(const WinMute&) = delete;
+private:
+   HWND hNotifyWnd_;
+   HDEVNOTIFY hBluetoothNotify_;
+
+   std::vector<HDEVNOTIFY> notificationHandles_;
+
+   bool LoadRadioNotifications();
+   void UnloadRadioNotifications();
+
+   bool initialized_;
 };

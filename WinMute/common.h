@@ -67,6 +67,10 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <windowsx.h>
 #include <commctrl.h>
 #include <WtsApi32.h>
+#include <dbt.h>
+#include <Bthdef.h>
+#include <Bthsdpdef.h>
+#include <BluetoothAPIs.h>
 #include <tchar.h>
 #include <strsafe.h>
 #include <time.h>
@@ -89,6 +93,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "WinAudio.h"
 #include "MuteControl.h"
 #include "WiFiDetector.h"
+#include "BluetoothDetector.h"
 #include "QuietHoursTimer.h"
 #include "WinMute.h"
 #include "VersionHelper.h"
