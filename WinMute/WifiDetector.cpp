@@ -31,8 +31,6 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#pragma once
-
 #include "common.h"
 
 static void WlanNotificationCallback(
