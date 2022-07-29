@@ -69,6 +69,9 @@ static LPCWSTR KeyToStr(SettingsKey key)
    case SettingsKey::MUTE_ON_LOGOUT:
       keyStr = _T("MuteOnLogout");
       break;
+   case SettingsKey::MUTE_ON_BLUETOOTH:
+      keyStr = _T("MuteOnBluetooth");
+      break;
    case SettingsKey::MUTE_ON_WLAN:
       keyStr = _T("MuteOnWlan");
       break;

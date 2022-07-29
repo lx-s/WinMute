@@ -135,7 +135,7 @@ static bool IsCurrentSessionRemoteable()
 }
 
 WinMute::MuteConfig::MuteConfig()
-   : muteOnWlan(false), showNotifications(false)
+   : muteOnWlan(false), muteOnBluetooth(false), showNotifications(false)
 {
 }
 
@@ -330,8 +330,23 @@ bool WinMute::LoadSettings()
 
    muteConfig_.showNotifications = settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED);
 
+   muteConfig_.muteOnBluetooth = settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH);
+   if (!muteConfig_.muteOnBluetooth) {
+      btDetector_.Unload();
+   } else if (!btDetector_.Init(hWnd_)) {
+      TaskDialog(nullptr, nullptr, PROGRAM_NAME,
+         _T("Bluetooth not available"),
+         _T("Either the Bluetooth service has not been started, ")
+         _T("or your device is not capable of using bluetooth connections. ")
+         _T("This feature will be disabled for this computer."),
+         TDCBF_OK_BUTTON, TD_INFORMATION_ICON, nullptr);
+      settings_.SetValue(SettingsKey::MUTE_ON_BLUETOOTH, FALSE);
+   }
+
    muteConfig_.muteOnWlan = settings_.QueryValue(SettingsKey::MUTE_ON_WLAN);
-   if (muteConfig_.muteOnWlan) {
+   if (!muteConfig_.muteOnWlan) {
+      wifiDetector_.Unload();
+   } else {
       if (!wifiDetector_.Init(hWnd_)) {
          TaskDialog(nullptr, nullptr, PROGRAM_NAME,
             _T("WLAN not available"),
@@ -345,8 +360,6 @@ bool WinMute::LoadSettings()
          wifiDetector_.SetNetworkList(settings_.GetWifiNetworks(), isMuteList);
          wifiDetector_.CheckNetwork();
       }
-   } else {
-      wifiDetector_.Unload();
    }
 
    return true;
@@ -444,7 +457,7 @@ LRESULT CALLBACK WinMute::WindowProc(
          }
          break;
       }
-      case ID_TRAYMENU_SCREENSUSPEND: {
+      case ID_TRAYMENU_MUTEONSCREENSUSPEND: {
          bool checked = false;
          ToggleMenuCheck(ID_TRAYMENU_SCREENSUSPEND, &checked);
          muteCtrl_.SetMuteOnDisplayStandby(checked);
@@ -467,15 +480,16 @@ LRESULT CALLBACK WinMute::WindowProc(
       }
       case ID_TRAYMENU_MUTEONLOGOUT: {
          bool checked = false;
-         ToggleMenuCheck(ID_TRAYMENU_MUTEONLOGOUT, &checked);
+         ToggleMenuCheck(ID_TRAYMENU_MUTEONBLUETOOTH, &checked);
          muteCtrl_.SetMuteOnLogout(checked);
          settings_.SetValue(SettingsKey::MUTE_ON_LOGOUT, checked);
          break;
       }
       case ID_TRAYMENU_BLUETOOTH: {
          bool checked = false;
-         ToggleMenuCheck(ID_TRAYMENU_MUTEONLOGOUT, &checked);
-         
+         ToggleMenuCheck(ID_TRAYMENU_MUTEON, &checked);
+         settings_.SetValue(SettingsKey::MUTE_ON_BLUETOOTH, checked);
+
          break;
       }
       default:
@@ -566,11 +580,13 @@ LRESULT CALLBACK WinMute::WindowProc(
       return 0;
    }
    case WM_DEVICECHANGE: {
-      const auto btStatus = btDetector_.GetBluetoothStatus(msg, wParam, lParam);
-      if (btStatus == BluetoothDetector::BluetoothStatus::Connected) {
-         MessageBox(hWnd, L"CONNECTED!", NULL, 0);
-      } else if (btStatus == BluetoothDetector::BluetoothStatus::Disconnected) {
-         MessageBox(hWnd, L"DIS-CONNECTED!", NULL, 0);
+      if (muteConfig_.muteOnBluetooth) {
+         const auto btStatus = btDetector_.GetBluetoothStatus(msg, wParam, lParam);
+         if (btStatus == BluetoothDetector::BluetoothStatus::Connected) {
+            muteCtrl_.SetMute(false);
+         } else if (btStatus == BluetoothDetector::BluetoothStatus::Disconnected) {
+            muteCtrl_.SetMute(true);
+         }
       }
       return TRUE;
    }

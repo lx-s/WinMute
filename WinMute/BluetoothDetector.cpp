@@ -109,6 +109,13 @@ bool BluetoothDetector::Init(HWND hNotifyWnd)
    return initialized_;
 }
 
+void BluetoothDetector::Unload()
+{
+   UnloadRadioNotifications();
+   hNotifyWnd_ = NULL;
+   initialized_ = false;
+}
+
 BluetoothDetector::BluetoothStatus BluetoothDetector::GetBluetoothStatus(
    const UINT message, const WPARAM wParam, const LPARAM lParam)
 {

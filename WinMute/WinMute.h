@@ -57,6 +57,7 @@ private:
       MuteConfig();
       bool showNotifications;
       bool muteOnWlan;
+      bool muteOnBluetooth;
    } muteConfig_;
 
    TrayIcon trayIcon_;
