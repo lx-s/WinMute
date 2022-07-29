@@ -44,7 +44,6 @@ public:
 
    bool Init(HWND hParent, const TrayIcon* trayIcon);
 
-
    void SetNotifications(bool enable);
 
    void SetMute(bool mute);

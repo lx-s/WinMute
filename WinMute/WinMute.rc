@@ -339,6 +339,7 @@ BEGIN
         MENUITEM "... Workstation is locked",   ID_TRAYMENU_MUTEONLOCK, CHECKED
         MENUITEM "... Screensaver starts",      ID_TRAYMENU_MUTEONSCREENSAVER, CHECKED
         MENUITEM "... Screen turns off",        ID_TRAYMENU_SCREENSUSPEND, CHECKED
+        MENUITEM "...Bluetooth Device disconnects", ID_TRAYMENU_BLUETOOTH
         MENUITEM SEPARATOR
         MENUITEM "Restore volume afterwards",   ID_TRAYMENU_RESTOREAUDIO, CHECKED
         MENUITEM SEPARATOR
