@@ -322,12 +322,17 @@ bool WinMute::LoadSettings()
    muteConfig_.muteOnBluetooth = settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH);
    if (!muteConfig_.muteOnBluetooth) {
       btDetector_.Unload();
-   } else if (!btDetector_.Init(hWnd_)) {
-      trayIcon_.ShowPopup(
-         _T("Bluetooth muting disabled"),
-         _T("Bluetooth is not available or disabled. ")
-         _T("Bluetooth muting will be disabled on this computer"));
-      settings_.SetValue(SettingsKey::MUTE_ON_BLUETOOTH, FALSE);
+   } else {
+      if (!btDetector_.Init(hWnd_)) {
+         trayIcon_.ShowPopup(
+            _T("Bluetooth muting disabled"),
+            _T("Bluetooth is not available or disabled. ")
+            _T("Bluetooth muting will be disabled on this computer"));
+         settings_.SetValue(SettingsKey::MUTE_ON_BLUETOOTH, FALSE);
+      } else {
+         bool muteOnWithDeviceList = settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH_DEVICELIST);
+         btDetector_.SetDeviceList(settings_.GetBluetoothDevicesA(), muteOnWithDeviceList);
+      }
    }
 
    muteConfig_.muteOnWlan = settings_.QueryValue(SettingsKey::MUTE_ON_WLAN);
@@ -568,8 +573,18 @@ LRESULT CALLBACK WinMute::WindowProc(
       if (muteConfig_.muteOnBluetooth) {
          const auto btStatus = btDetector_.GetBluetoothStatus(msg, wParam, lParam);
          if (btStatus == BluetoothDetector::BluetoothStatus::Connected) {
+            if (settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED)) {
+               trayIcon_.ShowPopup(
+                  _T("Bluetooth muting"),
+                  _T("Bluetooth device connected: Restoring audio"));
+            }
             muteCtrl_.SetMute(false);
          } else if (btStatus == BluetoothDetector::BluetoothStatus::Disconnected) {
+            if (settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED)) {
+               trayIcon_.ShowPopup(
+                  _T("Bluetooth muting"),
+                  _T("Bluetooth device disconnected: Muting"));
+            }
             muteCtrl_.SetMute(true);
          }
       }

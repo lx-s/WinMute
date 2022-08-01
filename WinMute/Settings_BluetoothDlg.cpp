@@ -117,16 +117,14 @@ static INT_PTR CALLBACK Settings_BluetoothAddDlgProc(HWND hDlg, UINT msg, WPARAM
             ebt.pszTitle = _T("Bluetooth Device Name");
             ebt.ttiIcon = TTI_INFO;
             Edit_ShowBalloonTip(hDevName, &ebt);
-         }
-         else {
+         } else {
             TCHAR devNameBuf[BT_DEV_NAME_MAX_LEN + 1];
             BtDeviceName* btDevName = reinterpret_cast<BtDeviceName*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
             if (btDevName != nullptr) {
                Edit_GetText(hDevName, devNameBuf, ARRAY_SIZE(devNameBuf));
                btDevName->devName = devNameBuf;
                EndDialog(hDlg, 0);
-            }
-            else {
+            } else { 
                EndDialog(hDlg, 1);
             }
          }
@@ -223,8 +221,7 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
       if (LOWORD(wParam) == IDC_ENABLE_BLUETOOTH_MUTE) {
          DWORD checked = Button_GetCheck(GetDlgItem(hDlg, IDC_ENABLE_BLUETOOTH_MUTE));
          Button_Enable(GetDlgItem(hDlg, IDC_ENABLE_BLUETOOTH_MUTE_DEVICE_LIST), checked == BST_CHECKED);
-      }
-      else if (LOWORD(wParam) == IDC_BLUETOOTH_LIST) {
+      } else if (LOWORD(wParam) == IDC_BLUETOOTH_LIST) {
          HWND hList = GetDlgItem(hDlg, IDC_BLUETOOTH_LIST);
          if (HIWORD(wParam) == LBN_SELCHANGE || HIWORD(wParam) == LBN_SELCANCEL) {
             bool entrySelected = (ListBox_GetCurSel(hList) != LB_ERR);
@@ -236,8 +233,7 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
             Button_Enable(GetDlgItem(hDlg, IDC_BLUETOOTH_EDIT), entrySelected);
             Button_Enable(GetDlgItem(hDlg, IDC_BLUETOOTH_REMOVE), entrySelected);
          }
-      }
-      else if (LOWORD(wParam) == IDC_BLUETOOTH_ADD) {
+      } else if (LOWORD(wParam) == IDC_BLUETOOTH_ADD) {
          BtDeviceName btDeviceName;
          if (DialogBoxParam(
                NULL,
@@ -256,8 +252,7 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
                }
             }
          }
-      }
-      else if (LOWORD(wParam) == IDC_BLUETOOTH_EDIT) {
+      } else if (LOWORD(wParam) == IDC_BLUETOOTH_EDIT) {
          HWND hList = GetDlgItem(hDlg, IDC_BLUETOOTH_LIST);
          WPARAM sel = ListBox_GetCurSel(hList);
          if (sel != LB_ERR) {
@@ -289,9 +284,8 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
                }
             }
          }
-      }
-      else if (LOWORD(wParam) == IDC_WIFI_REMOVE) {
-         HWND hList = GetDlgItem(hDlg, IDC_WIFI_LIST);
+      } else if (LOWORD(wParam) == IDC_BLUETOOTH_REMOVE) {
+         HWND hList = GetDlgItem(hDlg, IDC_BLUETOOTH_LIST);
          WPARAM sel = ListBox_GetCurSel(hList);
          if (sel != LB_ERR) {
             ListBox_DeleteString(hList, sel);
@@ -301,8 +295,7 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
                Button_Enable(GetDlgItem(hDlg, IDC_BLUETOOTH_REMOVEALL), FALSE);
             }
          }
-      }
-      else if (LOWORD(wParam) == IDC_BLUETOOTH_REMOVEALL) {
+      } else if (LOWORD(wParam) == IDC_BLUETOOTH_REMOVEALL) {
          ListBox_ResetContent(GetDlgItem(hDlg, IDC_BLUETOOTH_LIST));
          Button_Enable(GetDlgItem(hDlg, IDC_BLUETOOTH_EDIT), FALSE);
          Button_Enable(GetDlgItem(hDlg, IDC_BLUETOOTH_REMOVE), FALSE);
