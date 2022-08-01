@@ -58,6 +58,8 @@ struct SettingsDlgData {
 extern INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND, UINT, WPARAM, LPARAM);
 extern INT_PTR CALLBACK Settings_GeneralDlgProc(HWND, UINT, WPARAM, LPARAM);
 extern INT_PTR CALLBACK Settings_MuteDlgProc(HWND, UINT, WPARAM, LPARAM);
+extern INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND, UINT, WPARAM, LPARAM);
+extern INT_PTR CALLBACK Settings_WifiDlgProc(HWND, UINT, WPARAM, LPARAM);
 extern INT_PTR CALLBACK Settings_GeneralWifiDlgProc(HWND, UINT, WPARAM, LPARAM);
 
 extern HINSTANCE hglobInstance;

@@ -55,7 +55,7 @@
       <UniqueIdentifier>{a804b525-296b-455b-a1bc-d8fdbf5a9c3d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Controllers\Bluetooth">
-      <UniqueIdentifier>{63e91d90-aeee-461f-9783-6e1e42eee65b}</UniqueIdentifier>
+      <UniqueIdentifier>{5cab523c-1a5a-4429-b495-b630124865d6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -187,6 +187,9 @@
     </ClCompile>
     <ClCompile Include="WifiDetector.cpp">
       <Filter>Source Files\Controllers\WiFi</Filter>
+    </ClCompile>
+    <ClCompile Include="Settings_BluetoothDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\Settings</Filter>
     </ClCompile>
     <ClCompile Include="BluetoothDetector.cpp">
       <Filter>Source Files\Controllers\Bluetooth</Filter>

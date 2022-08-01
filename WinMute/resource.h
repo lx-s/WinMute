@@ -18,6 +18,8 @@
 #define IDD_SETTINGS_WIFI               127
 #define IDD_SETTINGS_WIFI_ADD           129
 #define IDD_SETTINGS_BLUETOOTH          131
+#define IDD_DIALOG1                     133
+#define IDD_SETTINGS_BLUETOOTH_ADD      133
 #define IDC_LINK_HOMEPAGE               1001
 #define IDC_LINK_SUPPORT                1002
 #define IDC_LINK_PROJECT                1002
@@ -102,7 +104,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        133
+#define _APS_NEXT_RESOURCE_VALUE        135
 #define _APS_NEXT_COMMAND_VALUE         40033
 #define _APS_NEXT_CONTROL_VALUE         1036
 #define _APS_NEXT_SYMED_VALUE           101

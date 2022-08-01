@@ -190,6 +190,17 @@ BEGIN
     LTEXT           """Bluetooth Muting"" enables muting based on the presence of a bluetooth audio-class device.\nWinMute mutes your workstation if an audio-class bluetooth device is disconnected from your PC.",IDC_STATIC,7,0,228,31
 END
 
+IDD_SETTINGS_BLUETOOTH_ADD DIALOGEX 0, 0, 201, 62
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Save",IDOK,91,41,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,144,41,50,14
+    LTEXT           "Bluetooth device name:",IDC_STATIC,7,7,187,14
+    EDITTEXT        IDC_WIFI_NAME,7,20,187,16,ES_AUTOHSCROLL
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -278,6 +289,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 194
     END
+
+    IDD_SETTINGS_BLUETOOTH_ADD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 194
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -334,6 +353,11 @@ BEGIN
 END
 
 IDD_SETTINGS_BLUETOOTH AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_SETTINGS_BLUETOOTH_ADD AFX_DIALOG_LAYOUT
 BEGIN
     0
 END

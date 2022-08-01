@@ -39,7 +39,7 @@ struct WiFiData {
    tstring ssidName;
 };
 
-INT_PTR CALLBACK Settings_WifiAddDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK Settings_BluetoothAddDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    switch (msg) {
    case WM_INITDIALOG: {
@@ -55,7 +55,8 @@ INT_PTR CALLBACK Settings_WifiAddDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
             PrintWindowsError(_T("SetWindowText"), GetLastError());
             return FALSE;
          }
-      } else {
+      }
+      else {
          if (!SetWindowText(hDlg, _T("Edit WiFi network"))
             || !SetWindowText(
                GetDlgItem(hDlg, IDC_WIFI_NAME),
@@ -83,18 +84,21 @@ INT_PTR CALLBACK Settings_WifiAddDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
             ebt.pszTitle = _T("SSID Name");
             ebt.ttiIcon = TTI_INFO;
             Edit_ShowBalloonTip(hSsid, &ebt);
-         } else {
+         }
+         else {
             TCHAR ssidBuf[SSID_MAX_LEN + 1];
             WiFiData* wifiData = reinterpret_cast<WiFiData*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
             if (wifiData != nullptr) {
                Edit_GetText(hSsid, ssidBuf, ARRAY_SIZE(ssidBuf));
                wifiData->ssidName = ssidBuf;
                EndDialog(hDlg, 0);
-            } else {
+            }
+            else {
                EndDialog(hDlg, 1);
-            }  
+            }
          }
-      } else if (LOWORD(wParam) == IDCANCEL) {
+      }
+      else if (LOWORD(wParam) == IDCANCEL) {
          EndDialog(hDlg, 1);
       }
       return FALSE;
@@ -122,7 +126,7 @@ static std::vector<tstring> ExportSsidListItems(HWND hList)
    return items;
 }
 
-static bool IsWlanAvailable()
+static bool IsBluetoothAvailable()
 {
    HANDLE wlanHandle;
    DWORD vers = 2;
@@ -133,7 +137,7 @@ static bool IsWlanAvailable()
    return true;
 }
 
-INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    switch (msg) {
    case WM_INITDIALOG:
@@ -147,12 +151,12 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 
       DWORD enabled = settings->QueryValue(SettingsKey::MUTE_ON_WLAN);
       Button_SetCheck(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE),
-                      enabled ? BST_CHECKED : BST_UNCHECKED);
+         enabled ? BST_CHECKED : BST_UNCHECKED);
       Button_Enable(GetDlgItem(hDlg, IDC_IS_PERMITLIST), enabled);
       enabled = settings->QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST);
       Button_SetCheck(GetDlgItem(hDlg, IDC_IS_PERMITLIST),
-                      enabled ? BST_CHECKED : BST_UNCHECKED);
-      
+         enabled ? BST_CHECKED : BST_UNCHECKED);
+
 
       Button_Enable(GetDlgItem(hDlg, IDC_WIFI_EDIT), FALSE);
       Button_Enable(GetDlgItem(hDlg, IDC_WIFI_REMOVE), FALSE);
@@ -163,9 +167,9 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
          ListBox_AddString(hList, n.c_str());
       }
       Button_Enable(GetDlgItem(hDlg, IDC_WIFI_REMOVEALL),
-                    ListBox_GetCount(hList) > 0);
+         ListBox_GetCount(hList) > 0);
 
-      if (!IsWlanAvailable()) {
+      if (!IsBluetoothAvailable()) {
          ShowWindow(GetDlgItem(hDlg, IDC_STATIC_WLAN_NOT_AVAILABLE), SW_SHOW);
          Button_SetCheck(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE), BST_UNCHECKED);
          Button_Enable(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE), FALSE);
@@ -182,29 +186,32 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       if (LOWORD(wParam) == IDC_ENABLE_WIFI_MUTE) {
          DWORD checked = Button_GetCheck(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE));
          Button_Enable(GetDlgItem(hDlg, IDC_IS_PERMITLIST), checked == BST_CHECKED);
-      } else if (LOWORD(wParam) == IDC_WIFI_LIST) {
-         HWND hList = GetDlgItem(hDlg, IDC_WIFI_LIST);
+      }
+      else if (LOWORD(wParam) == IDC_BLUETOOTH_LIST) {
+         HWND hList = GetDlgItem(hDlg, IDC_BLUETOOTH_LIST);
          if (HIWORD(wParam) == LBN_SELCHANGE || HIWORD(wParam) == LBN_SELCANCEL) {
             bool entrySelected = (ListBox_GetCurSel(hList) != LB_ERR);
             Button_Enable(GetDlgItem(hDlg, IDC_WIFI_EDIT), entrySelected);
             Button_Enable(GetDlgItem(hDlg, IDC_WIFI_REMOVE), entrySelected);
-         } else if (HIWORD(wParam) == LBN_KILLFOCUS) {
+         }
+         else if (HIWORD(wParam) == LBN_KILLFOCUS) {
             bool entrySelected = (ListBox_GetCurSel(hList) != LB_ERR);
             Button_Enable(GetDlgItem(hDlg, IDC_WIFI_EDIT), entrySelected);
             Button_Enable(GetDlgItem(hDlg, IDC_WIFI_REMOVE), entrySelected);
          }
-      } else if (LOWORD(wParam) == IDC_WIFI_ADD) {
+      }
+      else if (LOWORD(wParam) == IDC_BLUETOOTH_ADD) {
          WiFiData wifiData;
          if (DialogBoxParam(
                NULL,
-               MAKEINTRESOURCE(IDD_SETTINGS_WIFI_ADD),
+               MAKEINTRESOURCE(IDD_SETTINGS_BLUETOOTH_ADD),
                hDlg,
-               Settings_WifiAddDlgProc,
+               Settings_BluetoothAddDlgProc,
                reinterpret_cast<LPARAM>(&wifiData)) == 0) {
-            std::vector<tstring> networks = ExportSsidListItems(GetDlgItem(hDlg, IDC_WIFI_LIST));
+            std::vector<tstring> networks = ExportSsidListItems(GetDlgItem(hDlg, IDC_BLUETOOTH_LIST));
             if (std::find(begin(networks), end(networks), wifiData.ssidName) == end(networks)) {
                ListBox_AddString(
-                  GetDlgItem(hDlg, IDC_WIFI_LIST),
+                  GetDlgItem(hDlg, IDC_BLUETOOTH_LIST),
                   wifiData.ssidName.c_str());
                HWND hRemoveAll = GetDlgItem(hDlg, IDC_WIFI_REMOVEALL);
                if (!IsWindowEnabled(hRemoveAll)) {
@@ -212,12 +219,13 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
                }
             }
          }
-      } else if (LOWORD(wParam) == IDC_WIFI_EDIT) {
+      }
+      else if (LOWORD(wParam) == IDC_BLUETOOTH_EDIT) {
          HWND hList = GetDlgItem(hDlg, IDC_WIFI_LIST);
          WPARAM sel = ListBox_GetCurSel(hList);
          if (sel != LB_ERR) {
             int len = ListBox_GetTextLen(hList, sel);
-            TCHAR * textBuf = NULL;
+            TCHAR* textBuf = NULL;
             if (len != LB_ERR) {
                if ((textBuf = new TCHAR[static_cast<size_t>(len) + 1]) != NULL) {
                   ListBox_GetText(hList, sel, textBuf);
@@ -228,42 +236,45 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 
                   if (DialogBoxParam(
                         NULL,
-                        MAKEINTRESOURCE(IDD_SETTINGS_WIFI_ADD),
+                        MAKEINTRESOURCE(IDD_SETTINGS_BLUETOOTH_ADD),
                         hDlg,
-                        Settings_WifiAddDlgProc,
+                        Settings_BluetoothAddDlgProc,
                         reinterpret_cast<LPARAM>(&wifiData)) == 0) {
                      std::vector<tstring> networks = ExportSsidListItems(GetDlgItem(hDlg, IDC_WIFI_LIST));
                      if (std::find(begin(networks), end(networks), wifiData.ssidName) == end(networks)) {
                         ListBox_InsertString(hList, sel, wifiData.ssidName.c_str());
                         ListBox_DeleteString(hList, sel + 1);
-                     } else {
+                     }
+                     else {
                         ListBox_DeleteString(hList, sel);
                      }
                   }
                }
             }
          }
-      } else if (LOWORD(wParam) == IDC_WIFI_REMOVE) {
+      }
+      else if (LOWORD(wParam) == IDC_WIFI_REMOVE) {
          HWND hList = GetDlgItem(hDlg, IDC_WIFI_LIST);
          WPARAM sel = ListBox_GetCurSel(hList);
          if (sel != LB_ERR) {
             ListBox_DeleteString(hList, sel);
             if (ListBox_GetCount(hList) == 0) {
-               Button_Enable(GetDlgItem(hDlg, IDC_WIFI_EDIT), FALSE);
-               Button_Enable(GetDlgItem(hDlg, IDC_WIFI_REMOVE), FALSE);
-               Button_Enable(GetDlgItem(hDlg, IDC_WIFI_REMOVEALL), FALSE);
+               Button_Enable(GetDlgItem(hDlg, IDC_BLUETOOTH_EDIT), FALSE);
+               Button_Enable(GetDlgItem(hDlg, IDC_BLUETOOTH_REMOVE), FALSE);
+               Button_Enable(GetDlgItem(hDlg, IDC_BLUETOOTH_REMOVEALL), FALSE);
             }
          }
-      } else if (LOWORD(wParam) == IDC_WIFI_REMOVEALL) {
-         ListBox_ResetContent(GetDlgItem(hDlg, IDC_WIFI_LIST));
-         Button_Enable(GetDlgItem(hDlg, IDC_WIFI_EDIT), FALSE);
-         Button_Enable(GetDlgItem(hDlg, IDC_WIFI_REMOVE), FALSE);
-         Button_Enable(GetDlgItem(hDlg, IDC_WIFI_REMOVEALL), FALSE);
+      }
+      else if (LOWORD(wParam) == IDC_BLUETOOTH_REMOVEALL) {
+         ListBox_ResetContent(GetDlgItem(hDlg, IDC_BLUETOOTH_LIST));
+         Button_Enable(GetDlgItem(hDlg, IDC_BLUETOOTH_EDIT), FALSE);
+         Button_Enable(GetDlgItem(hDlg, IDC_BLUETOOTH_REMOVE), FALSE);
+         Button_Enable(GetDlgItem(hDlg, IDC_BLUETOOTH_REMOVEALL), FALSE);
       }
       return 0;
    }
    case WM_SAVESETTINGS: {
-      WMSettings* settings = reinterpret_cast<WMSettings*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+      /*WMSettings* settings = reinterpret_cast<WMSettings*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
       std::vector<tstring> networks = ExportSsidListItems(GetDlgItem(hDlg, IDC_WIFI_LIST));
       settings->StoreWifiNetworks(networks);
 
@@ -271,8 +282,8 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       settings->SetValue(SettingsKey::MUTE_ON_WLAN, checked == BST_CHECKED);
 
       checked = Button_GetCheck(GetDlgItem(hDlg, IDC_IS_PERMITLIST));
-      settings->SetValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST, checked == BST_CHECKED);
-      
+      settings->SetValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST, checked == BST_CHECKED);*/
+
       return 0;
    }
    default:
