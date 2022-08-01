@@ -9,6 +9,7 @@ WinMute can automatically mute all sound devices on your PC when
 * you log off
 * your PC shuts down
 * your PC goes to sleep
+* your Bluetooth headset disconnects
 * your PC is connected to a particular wireless network
   * alternatively: your pc is not connected to particular wireless network
 
