@@ -150,7 +150,8 @@ static DWORD GetDefaultSetting(SettingsKey key)
 }
 
 
-static void NormalizeStringList(std::vector<tstring>& items)
+template<typename T>
+static void NormalizeStringList(std::vector<std::basic_string<T>> &items)
 {
    if (items.size() > 1) {
       std::sort(std::begin(items), std::end(items));
@@ -289,7 +290,7 @@ bool WMSettings::IsAutostartEnabled()
    WMLog& log = WMLog::GetInstance();
    TCHAR wmPath[MAX_PATH + 1];
    if (GetModuleFileName(NULL, wmPath, sizeof(wmPath) / sizeof(wmPath[0])) == 0) {
-      log.Write(_T("Failed to get path of win mute"));
+      log.Write(_T("Failed to get path of winmute"));
    } else {
       HKEY hRunKey = OpenAutostartKey(KEY_READ);
       if (hRunKey != NULL) {
@@ -315,7 +316,7 @@ void WMSettings::EnableAutostart(bool enable)
       if (enable) {
          TCHAR wmPath[MAX_PATH + 1];
          if (GetModuleFileName(NULL, wmPath, sizeof(wmPath) / sizeof(wmPath[0])) == 0) {
-            log.Write(_T("Failed to get path of win mute"));
+            log.Write(_T("Failed to get path of winmute"));
          } else {
             DWORD regError = RegSetKeyValue(
                hRunKey,
@@ -414,8 +415,8 @@ bool WMSettings::StoreWifiNetworks(std::vector<tstring>& networks)
    NormalizeStringList(networks);
 
    for (size_t i = 0; i < networks.size(); ++i) {
-      TCHAR valueName[10];
-      StringCchPrintfW(valueName, ARRAY_SIZE(valueName), _T("WiFi %03zu"), i + 1);
+      TCHAR valueName[25];
+      StringCchPrintfW(valueName, ARRAY_SIZE(valueName), _T("WiFi %03d"), i + 1);
       const tstring& v = networks[i];
       DWORD regError = RegSetValueEx(
          hWifiKey_,
@@ -482,12 +483,10 @@ bool WMSettings::StoreBluetoothDevices(std::vector<tstring>& devices)
          NULL);
       if (regError == ERROR_NO_MORE_ITEMS) {
          break;
-      }
-      else if (regError != ERROR_SUCCESS) {
+      } else if (regError != ERROR_SUCCESS) {
          PrintWindowsError(_T("RegEnumValue"), regError);
          return false;
-      }
-      else {
+      } else {
          regError = RegDeleteValue(hBluetoothKey_, valueName);
          if (regError != ERROR_SUCCESS) {
             PrintWindowsError(_T("RegDeleteValue"), regError);
@@ -499,14 +498,14 @@ bool WMSettings::StoreBluetoothDevices(std::vector<tstring>& devices)
    NormalizeStringList(devices);
 
    for (size_t i = 0; i < devices.size(); ++i) {
-      TCHAR valueName[10];
+      TCHAR valueName[25];
       StringCchPrintfW(
          valueName,
          ARRAY_SIZE(valueName),
-         _T("Bluetooth %03zu"), i + 1);
+         _T("Bluetooth %03d"), i + 1);
       const tstring& v = devices[i];
       DWORD regError = RegSetValueEx(
-         hWifiKey_,
+         hBluetoothKey_,
          valueName,
          NULL,
          REG_SZ,
@@ -521,17 +520,17 @@ bool WMSettings::StoreBluetoothDevices(std::vector<tstring>& devices)
    return true;
 }
 
-std::vector<tstring> WMSettings::GetBluetoothDevices() const
+std::vector<std::string> WMSettings::GetBluetoothDevicesA() const
 {
-   std::vector<tstring> devices;
+   std::vector<std::string> devices;
    for (int valIdx = 0; ; ++valIdx) {
-      TCHAR valueName[260] = { 0 };
-      TCHAR dataBuf[260] = { 0 };
+      char valueName[260] = { 0 };
+      char dataBuf[260] = { 0 };
       DWORD valueSize = ARRAY_SIZE(valueName);
       DWORD valType = 0;
       DWORD dataLen = ARRAY_SIZE(dataBuf);
 
-      DWORD regError = RegEnumValue(
+      DWORD regError = RegEnumValueA(
          hBluetoothKey_,
          valIdx,
          valueName,
@@ -542,12 +541,42 @@ std::vector<tstring> WMSettings::GetBluetoothDevices() const
          &dataLen);
       if (regError == ERROR_NO_MORE_ITEMS) {
          break;
-      }
-      else if (regError != ERROR_SUCCESS) {
+      } else if (regError != ERROR_SUCCESS) {
          PrintWindowsError(_T("RegEnumValue"), regError);
          return {};
+      } else {
+         devices.push_back(dataBuf);
       }
-      else {
+   }
+   NormalizeStringList(devices);
+   return devices;
+}
+
+std::vector<std::wstring> WMSettings::GetBluetoothDevicesW() const
+{
+   std::vector<std::wstring> devices;
+   for (int valIdx = 0; ; ++valIdx) {
+      wchar_t valueName[260] = { 0 };
+      wchar_t dataBuf[260] = { 0 };
+      DWORD valueSize = ARRAY_SIZE(valueName);
+      DWORD valType = 0;
+      DWORD dataLen = ARRAY_SIZE(dataBuf);
+
+      DWORD regError = RegEnumValueW(
+         hBluetoothKey_,
+         valIdx,
+         valueName,
+         &valueSize,
+         NULL,
+         &valType,
+         reinterpret_cast<BYTE*>(dataBuf),
+         &dataLen);
+      if (regError == ERROR_NO_MORE_ITEMS) {
+         break;
+      } else if (regError != ERROR_SUCCESS) {
+         PrintWindowsError(_T("RegEnumValue"), regError);
+         return {};
+      } else {
          devices.push_back(dataBuf);
       }
    }

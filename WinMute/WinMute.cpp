@@ -277,17 +277,6 @@ bool WinMute::Init()
       return false;
    }
 
-   if (!btDetector_.Init(hWnd_)) {
-      log.Write(_T("Error loading bluetooth detector"));
-      TaskDialog(nullptr, nullptr,
-         PROGRAM_NAME,
-         _T("Bluetooth not available"),
-         _T("Either the Bluetooth service has not been started, ")
-         _T("or your device is not capable of using bluetooth devices. ")
-         _T("This feature will be disabled for this computer"),
-         TDCBF_OK_BUTTON, TD_INFORMATION_ICON, nullptr);
-   }
-
    bool isDarkMode = true;
    IsDarkMode(isDarkMode);
    hTrayIcon_ = LoadIcon(
@@ -334,12 +323,10 @@ bool WinMute::LoadSettings()
    if (!muteConfig_.muteOnBluetooth) {
       btDetector_.Unload();
    } else if (!btDetector_.Init(hWnd_)) {
-      TaskDialog(nullptr, nullptr, PROGRAM_NAME,
-         _T("Bluetooth not available"),
-         _T("Either the Bluetooth service has not been started, ")
-         _T("or your device is not capable of using bluetooth connections. ")
-         _T("This feature will be disabled for this computer."),
-         TDCBF_OK_BUTTON, TD_INFORMATION_ICON, nullptr);
+      trayIcon_.ShowPopup(
+         _T("Bluetooth muting disabled"),
+         _T("Bluetooth is not available or disabled. ")
+         _T("Bluetooth muting will be disabled on this computer"));
       settings_.SetValue(SettingsKey::MUTE_ON_BLUETOOTH, FALSE);
    }
 
@@ -348,12 +335,10 @@ bool WinMute::LoadSettings()
       wifiDetector_.Unload();
    } else {
       if (!wifiDetector_.Init(hWnd_)) {
-         TaskDialog(nullptr, nullptr, PROGRAM_NAME,
-            _T("WLAN not available"),
-            _T("Either the WLAN service has not been started, ")
-            _T("or your device is not capable of using wireless networks. ")
-            _T("This feature will be disabled for this computer"),
-            TDCBF_OK_BUTTON, TD_INFORMATION_ICON, nullptr);
+         trayIcon_.ShowPopup(
+            _T("WLAN muting disabled"),
+            _T("WLAN is not available or disabled. ")
+            _T("WLAN muting will be disabled on this computer"));
          settings_.SetValue(SettingsKey::MUTE_ON_WLAN, FALSE);
       } else {
          bool isMuteList = !settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST);

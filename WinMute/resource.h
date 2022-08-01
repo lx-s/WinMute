@@ -67,6 +67,9 @@
 #define IDC_BLUETOOTH_REMOVE            1033
 #define IDC_BLUETOOTH_REMOVEALL         1034
 #define IDC_BLUETOOTH_LIST              1035
+#define IDC_ENABLE_BLUETOOTH_MUTE       1036
+#define IDC_ENABLE_BLUETOOTH_MUTE_DEVICE_LIST 1037
+#define IDC_BT_DEVICE_NAME              1038
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_                    40002
 #define ID_TRAYMENU_MUTEON              40003
@@ -99,14 +102,18 @@
 #define ID_TRAYMENU_BLUETOOTH           40030
 #define ID_TRAYMENU_MUTEONBLUETOOTH     40031
 #define ID_TRAYMENU_MUTEONSCREENSUSPEND 40032
+#define ID_TRAYMENU_SPECIAL             40033
+#define ID_TRAYMENU_40034               40034
+#define ID_TRAYMENU_WIFIMUTING          40035
+#define ID_TRAYMENU_MUTEONWIFI          40036
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        135
-#define _APS_NEXT_COMMAND_VALUE         40033
-#define _APS_NEXT_CONTROL_VALUE         1036
+#define _APS_NEXT_COMMAND_VALUE         40037
+#define _APS_NEXT_CONTROL_VALUE         1040
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

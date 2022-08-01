@@ -1,3 +1,9 @@
+Version 2.1.0 (2022-09-xx)
+ * Added new feature to mute workstation when an audio bluetooth device
+   disconnects (and re-enable audio if it reconnects)
+ * Fixed storage of SSID-lists
+ * Fixed some spelling errors
+
 Version 2.0.0 (2022-05-01)
  * WinMute now mutes all audio endpoints and not just the default endpoint.
    It also stores all endpoint states and restores them if the appropriate
@@ -50,44 +56,34 @@ Version 1.4.3 (2016-08-11)
  * Use more modern UI elements
 
 Version 1.4.1/1.4.2 (2014-07-17)
-
  * Fixed screensaver muting: It sometimes happened that WinMute
    muted Windows Audio for no apparent reason and "forgot" to
    unmute. This is now fixed.
 
 Version 1.4 (2014-07-10)
-
  * WinMute can now also mute if the screensaver starts
    Due to windows restrictions, unmuting the audio can take up to one second
    after the screensaver resumes.
-
  * Added a toggle switch to configure if WinMute should unmute at all after
    a workstation lock or a screensaver run
 
 Version 1.3 (2012-02-23)
-
  * Right-click menu is now correctly dismissed if the user clicks somewhere
    outside of the menu.
-
  * Embedded Visual C++ 2010 DLLs. This increases file size by about 100kb, but
    enables the usage of this tool in workplaces that do not have deployed the
    Visual C++ 2010 Runtime Environment yet.
-
  * Vista/7/8: Correctly mute the new device, if the default audio endpoint
    changes.
-
  * XP: Greatly improved hardware detection code. WinMute now mutes all devices,
    instead of just setting the volume of the first device it finds to zero.
    If the Mute-Button is locked via Group Policies, WinMute will try to
    use the Volume Slider to "emulate" sound muting.
-
  * XP: Actively tries to prevent other programs from unmuting the system.
 
 Version 1.2 (2011-05-30)
-
  * Fixed a bug where WinMute could malfunction if the audio
    device was changed or disconnected during a windows session.
 
 Version 0.0 - 1.1
-
  * These documents have been lost forever...

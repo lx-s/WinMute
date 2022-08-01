@@ -75,7 +75,8 @@ public:
    std::vector<tstring> GetWifiNetworks() const;
 
    bool StoreBluetoothDevices(std::vector<tstring>& networks);
-   std::vector<tstring> GetBluetoothDevices() const;
+   std::vector<std::wstring> GetBluetoothDevicesW() const;
+   std::vector<std::string> GetBluetoothDevicesA() const;
 
    DWORD QueryValue(SettingsKey key) const;
    bool  SetValue(SettingsKey key, DWORD value);

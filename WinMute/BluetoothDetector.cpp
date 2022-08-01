@@ -34,7 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "common.h"
 
 BluetoothDetector::BluetoothDetector() :
-   hNotifyWnd_(NULL),  hBluetoothNotify_(NULL), initialized_(false)
+   hNotifyWnd_(NULL),  hBluetoothNotify_(NULL),
+   initialized_(false), useDeviceList_(false)
 {
 
 }
@@ -60,8 +61,8 @@ bool BluetoothDetector::LoadRadioNotifications()
    auto& log = WMLog::GetInstance();
    notificationHandles_.clear();
 
-   BLUETOOTH_FIND_RADIO_PARAMS bfrp = { sizeof(BLUETOOTH_FIND_RADIO_PARAMS) };
    HANDLE btHandle;
+   BLUETOOTH_FIND_RADIO_PARAMS bfrp = { sizeof(BLUETOOTH_FIND_RADIO_PARAMS) };
    HBLUETOOTH_RADIO_FIND hRadiosFind = BluetoothFindFirstRadio(&bfrp, &btHandle);
    if (hRadiosFind == nullptr) {
       log.WriteWindowsError(L"BluetoothFindFirstRadio", GetLastError());
@@ -117,6 +118,14 @@ void BluetoothDetector::Unload()
    initialized_ = false;
 }
 
+void BluetoothDetector::SetDeviceList(
+   const std::vector<std::string>& devices,
+   bool useDeviceList)
+{
+   deviceNames_ = devices;
+   useDeviceList_ = useDeviceList;
+}
+
 BluetoothDetector::BluetoothStatus BluetoothDetector::GetBluetoothStatus(
    const UINT message, const WPARAM wParam, const LPARAM lParam)
 {
@@ -141,12 +150,18 @@ BluetoothDetector::BluetoothStatus BluetoothDetector::GetBluetoothStatus(
 
    // only react to audio devices and not (e. g.) game controllers
    if ((inRangeInfo->deviceInfo.flags & BDIF_COD) &&
-       GET_COD_MAJOR(inRangeInfo->deviceInfo.classOfDevice) != COD_MAJOR_AUDIO &&
-       GET_COD_MAJOR(inRangeInfo->deviceInfo.classOfDevice) != COD_MAJOR_PHONE) {
+       GET_COD_MAJOR(inRangeInfo->deviceInfo.classOfDevice) != COD_MAJOR_AUDIO) {
       return BluetoothStatus::Unknown;
    }
 
    auto& log = WMLog::GetInstance();
+   if (useDeviceList_) {
+      auto pos = std::find(begin(deviceNames_), end(deviceNames_), inRangeInfo->deviceInfo.name);
+      if (pos == end(deviceNames_)) {
+         log.Write(L"Bluetooth device \"S\" not in list.", inRangeInfo->deviceInfo.name);
+         return BluetoothStatus::Unknown;
+      }
+   }
    if (inRangeInfo->deviceInfo.flags & BDIF_CONNECTED) {
       log.Write(L"Bluetooth Audio device \"%S\" connected.", inRangeInfo->deviceInfo.name);
       return BluetoothStatus::Connected;

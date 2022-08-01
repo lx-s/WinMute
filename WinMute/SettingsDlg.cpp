@@ -38,6 +38,7 @@ enum SettingsTabsIDs {
    SETTINGS_TAB_MUTE,
    SETTINGS_TAB_QUIETHOURS,
    SETTINGS_TAB_WIFI,
+   SETTINGS_TAB_BLUETOOTH,
    SETTINGS_TAB_COUNT
 };
 
@@ -60,7 +61,6 @@ extern INT_PTR CALLBACK Settings_GeneralDlgProc(HWND, UINT, WPARAM, LPARAM);
 extern INT_PTR CALLBACK Settings_MuteDlgProc(HWND, UINT, WPARAM, LPARAM);
 extern INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND, UINT, WPARAM, LPARAM);
 extern INT_PTR CALLBACK Settings_WifiDlgProc(HWND, UINT, WPARAM, LPARAM);
-extern INT_PTR CALLBACK Settings_GeneralWifiDlgProc(HWND, UINT, WPARAM, LPARAM);
 
 extern HINSTANCE hglobInstance;
 
@@ -116,7 +116,7 @@ static void ResizeTabs(HWND hTabCtrl, HWND* hTabs, int tabCount)
             tabCtrlRect.right - tabCtrlRect.left,
             tabCtrlRect.bottom - tabCtrlRect.top,
             0);
-         if (hdwp == NULL) {
+         if (newHdwp == NULL) {
             PrintWindowsError(_T("DeferWindowPos"), GetLastError());
             break;
          } else {
@@ -144,6 +144,7 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
       InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_MUTE, _T("Mute"));
       InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_QUIETHOURS, _T("Quiet Hours"));
       InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_WIFI, _T("WLAN"));
+      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_BLUETOOTH, _T("Bluetooth"));
 
       dlgData->hTabs[SETTINGS_TAB_GENERAL] = CreateDialogParam(
          hglobInstance,
@@ -167,7 +168,13 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
          hglobInstance,
          MAKEINTRESOURCE(IDD_SETTINGS_WIFI),
          hDlg,
-         Settings_GeneralWifiDlgProc,
+         Settings_WifiDlgProc,
+         reinterpret_cast<LPARAM>(settings));
+      dlgData->hTabs[SETTINGS_TAB_BLUETOOTH] = CreateDialogParam(
+         hglobInstance,
+         MAKEINTRESOURCE(IDD_SETTINGS_BLUETOOTH),
+         hDlg,
+         Settings_BluetoothDlgProc,
          reinterpret_cast<LPARAM>(settings));
 
       // Init tab pages
