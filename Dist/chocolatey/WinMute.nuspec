@@ -14,7 +14,7 @@
 		<summary>Automatic sound muter</summary>
 		<description>WinMute automatically mutes your PC volume if you lock your screen or the screensaver is running.</description>
 		<copyright>© 2022, Alexander Steinhöfer</copyright>
-		<licenseUrl>https://github.com/lx-s/WinMute/blob/dev/LICENSE</licenseUrl>
+		<licenseUrl>https://raw.githubusercontent.com/lx-s/WinMute/main/LICENSE</licenseUrl>
 		<dependencies>
 			<dependency id="vcredist140" />
 		</dependencies>
