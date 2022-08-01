@@ -8,15 +8,17 @@
 		<authors>Alexander Steinhöfer</authors>
 		<owners>Alexander Steinhöfer</owners>
 		<packageSourceUrl>https://github.com/lx-s/WinMute/releases</packageSourceUrl>
+		<bugTrackerUrl>https://github.com/lx-s/WinMute/issues</bugTrackerUrl>
+		<projectSourceUrl>https://github.com/lx-s/WinMute</projectSourceUrl>
 		<projectUrl>https://github.com/lx-s/WinMute/</projectUrl>
-		<iconUrl>https://cdn.statically.io/gh/lx-s/WinMute/main/WinMute/icons/app.ico</iconUrl>
+		<iconUrl>https://cdn.statically.io/gh/lx-s/WinMute/main/WinMute/icons/app.png</iconUrl>
 		<tags>winmute windows utility audio</tags>
 		<summary>Automatic sound muter</summary>
 		<description>WinMute automatically mutes your PC volume if you lock your screen or the screensaver is running.</description>
 		<copyright>© 2022, Alexander Steinhöfer</copyright>
 		<licenseUrl>https://raw.githubusercontent.com/lx-s/WinMute/main/LICENSE</licenseUrl>
 		<dependencies>
-			<dependency id="vcredist140" />
+			<dependency id="vcredist140" version="14.30"/>
 		</dependencies>
 	</metadata>
 	<files>
