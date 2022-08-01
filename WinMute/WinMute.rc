@@ -172,6 +172,24 @@ BEGIN
     EDITTEXT        IDC_WIFI_NAME,7,20,187,16,ES_AUTOHSCROLL
 END
 
+IDD_SETTINGS_BLUETOOTH DIALOGEX 0, 0, 244, 201
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LISTBOX         IDC_BLUETOOTH_LIST,7,79,170,90,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Add",IDC_BLUETOOTH_ADD,179,78,56,16
+    PUSHBUTTON      "Edit",IDC_BLUETOOTH_EDIT,179,98,56,16
+    PUSHBUTTON      "Remove",IDC_BLUETOOTH_REMOVE,179,116,56,16
+    PUSHBUTTON      "Remove all",IDC_BLUETOOTH_REMOVEALL,179,136,56,16
+    LTEXT           "Note: Bluetooth is not available on your device, so some options have been disabled.",IDC_STATIC_BLUETOOTH_NOT_AVAILABLE,7,172,228,18
+    CONTROL         "Enable Bluetooth based muting",IDC_ENABLE_WIFI_MUTE,
+                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,37,228,14
+    CONTROL         "Only mute when one of the following devices connect to or disconnect from your PC.",IDC_IS_PERMITLIST,
+                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,20,52,215,18
+    LTEXT           """Bluetooth Muting"" enables muting based on the presence of a bluetooth audio-class device.\nWinMute mutes your workstation if an audio-class bluetooth device is disconnected from your PC.",IDC_STATIC,7,0,228,31
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -252,6 +270,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 55
     END
+
+    IDD_SETTINGS_BLUETOOTH, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 237
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 194
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -303,6 +329,11 @@ BEGIN
 END
 
 IDD_SETTINGS_WIFI_ADD AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_SETTINGS_BLUETOOTH AFX_DIALOG_LAYOUT
 BEGIN
     0
 END

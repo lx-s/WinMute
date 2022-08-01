@@ -17,6 +17,7 @@
 #define IDD_SETTINGS_MUTE               123
 #define IDD_SETTINGS_WIFI               127
 #define IDD_SETTINGS_WIFI_ADD           129
+#define IDD_SETTINGS_BLUETOOTH          131
 #define IDC_LINK_HOMEPAGE               1001
 #define IDC_LINK_SUPPORT                1002
 #define IDC_LINK_PROJECT                1002
@@ -58,6 +59,12 @@
 #define IDC_CHECK2                      1028
 #define IDC_IS_PERMITLIST               1028
 #define IDC_STATIC_WLAN_NOT_AVAILABLE   1029
+#define IDC_STATIC_BLUETOOTH_NOT_AVAILABLE 1030
+#define IDC_BLUETOOTH_ADD               1031
+#define IDC_BLUETOOTH_EDIT              1032
+#define IDC_BLUETOOTH_REMOVE            1033
+#define IDC_BLUETOOTH_REMOVEALL         1034
+#define IDC_BLUETOOTH_LIST              1035
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_                    40002
 #define ID_TRAYMENU_MUTEON              40003
@@ -95,9 +102,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        131
+#define _APS_NEXT_RESOURCE_VALUE        133
 #define _APS_NEXT_COMMAND_VALUE         40033
-#define _APS_NEXT_CONTROL_VALUE         1030
+#define _APS_NEXT_CONTROL_VALUE         1036
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
