@@ -1,1 +1,0 @@
-﻿Stop-Process -Name WinMute
