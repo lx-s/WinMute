@@ -37,6 +37,8 @@ static const LPCWSTR LX_SYSTEMS_SUBKEY
    = _T("SOFTWARE\\lx-systems\\WinMute");
 static const LPCWSTR LX_SYSTEMS_WIFI_SUBKEY
    = _T("SOFTWARE\\lx-systems\\WinMute\\WifiNetworks");
+static const LPCWSTR LX_SYSTEMS_BLUETOOTH_SUBKEY
+   = _T("SOFTWARE\\lx-systems\\WinMute\\BluetoothDevices");
 
 static const LPCWSTR LX_SYSTEMS_AUTOSTART_KEY
    = _T("LX-Systems WinMute");
@@ -71,6 +73,9 @@ static LPCWSTR KeyToStr(SettingsKey key)
       break;
    case SettingsKey::MUTE_ON_BLUETOOTH:
       keyStr = _T("MuteOnBluetooth");
+      break;
+   case SettingsKey::MUTE_ON_BLUETOOTH_DEVICELIST:
+      keyStr = _T("MuteOnBluetoothDeviceList");
       break;
    case SettingsKey::MUTE_ON_WLAN:
       keyStr = _T("MuteOnWlan");
@@ -145,12 +150,12 @@ static DWORD GetDefaultSetting(SettingsKey key)
 }
 
 
-static void NormalizeNetworkList(std::vector<tstring>& networks)
+static void NormalizeStringList(std::vector<tstring>& items)
 {
-   if (networks.size() > 1) {
-      std::sort(std::begin(networks), std::end(networks));
-      auto it = std::unique(std::begin(networks), std::end(networks));
-      networks.resize(std::distance(std::begin(networks), it));
+   if (items.size() > 1) {
+      std::sort(std::begin(items), std::end(items));
+      auto it = std::unique(std::begin(items), std::end(items));
+      items.resize(std::distance(std::begin(items), it));
    }
 }
 
@@ -183,7 +188,8 @@ static bool ReadStringFromRegistry(HKEY hKey, const TCHAR* subKey, tstring& val)
 
 WMSettings::WMSettings() :
    hSettingsKey_(nullptr),
-   hWifiKey_(nullptr)
+   hWifiKey_(nullptr),
+   hBluetoothKey_(nullptr)
 {
 }
 
@@ -228,6 +234,26 @@ bool WMSettings::Init()
          return false;
       }
    }
+   if (hBluetoothKey_ == nullptr) {
+      DWORD regError = RegCreateKeyEx(
+         HKEY_CURRENT_USER,
+         LX_SYSTEMS_BLUETOOTH_SUBKEY,
+         0,
+         nullptr,
+         0,
+         KEY_READ | KEY_WRITE,
+         nullptr,
+         &hBluetoothKey_,
+         nullptr);
+      if (regError != ERROR_SUCCESS) {
+         PrintWindowsError(_T("RegCreateKeyEx"), regError);
+         RegCloseKey(hWifiKey_);
+         RegCloseKey(hSettingsKey_);
+         hSettingsKey_ = nullptr;
+         hWifiKey_ = nullptr;
+         return false;
+      }
+   }
 
    return true;
 }
@@ -238,6 +264,8 @@ void WMSettings::Unload()
    hSettingsKey_ = nullptr;
    RegCloseKey(hWifiKey_);
    hWifiKey_ = nullptr;
+   RegCloseKey(hBluetoothKey_);
+   hBluetoothKey_ = nullptr;
 }
 
 HKEY WMSettings::OpenAutostartKey(REGSAM samDesired)
@@ -378,11 +406,12 @@ bool WMSettings::StoreWifiNetworks(std::vector<tstring>& networks)
          regError = RegDeleteValue(hWifiKey_, valueName);
          if (regError != ERROR_SUCCESS) {
             PrintWindowsError(_T("RegDeleteValue"), regError);
+            return false;
          }
       }
    }
 
-   NormalizeNetworkList(networks);
+   NormalizeStringList(networks);
 
    for (size_t i = 0; i < networks.size(); ++i) {
       TCHAR valueName[10];
@@ -397,6 +426,7 @@ bool WMSettings::StoreWifiNetworks(std::vector<tstring>& networks)
          static_cast<DWORD>(v.length() + 1) * sizeof(TCHAR));
       if (regError != ERROR_SUCCESS) {
          PrintWindowsError(_T("RegSetValueEx"), regError);
+         return false;
       }
    }
 
@@ -431,6 +461,96 @@ std::vector<tstring> WMSettings::GetWifiNetworks() const
          networks.push_back(dataBuf);
       }
    }
-   NormalizeNetworkList(networks);
+   NormalizeStringList(networks);
    return networks;
+}
+
+bool WMSettings::StoreBluetoothDevices(std::vector<tstring>& devices)
+{
+   // Clear all stored keys
+   for (;;) {
+      TCHAR valueName[260] = { 0 };
+      DWORD valueSize = ARRAY_SIZE(valueName);
+      DWORD regError = RegEnumValue(
+         hBluetoothKey_,
+         0,
+         valueName,
+         &valueSize,
+         NULL,
+         NULL,
+         NULL,
+         NULL);
+      if (regError == ERROR_NO_MORE_ITEMS) {
+         break;
+      }
+      else if (regError != ERROR_SUCCESS) {
+         PrintWindowsError(_T("RegEnumValue"), regError);
+         return false;
+      }
+      else {
+         regError = RegDeleteValue(hBluetoothKey_, valueName);
+         if (regError != ERROR_SUCCESS) {
+            PrintWindowsError(_T("RegDeleteValue"), regError);
+            return false;
+         }
+      }
+   }
+
+   NormalizeStringList(devices);
+
+   for (size_t i = 0; i < devices.size(); ++i) {
+      TCHAR valueName[10];
+      StringCchPrintfW(
+         valueName,
+         ARRAY_SIZE(valueName),
+         _T("Bluetooth %03zu"), i + 1);
+      const tstring& v = devices[i];
+      DWORD regError = RegSetValueEx(
+         hWifiKey_,
+         valueName,
+         NULL,
+         REG_SZ,
+         reinterpret_cast<const BYTE*>(v.c_str()),
+         static_cast<DWORD>(v.length() + 1) * sizeof(TCHAR));
+      if (regError != ERROR_SUCCESS) {
+         PrintWindowsError(_T("RegSetValueEx"), regError);
+         return false;
+      }
+   }
+
+   return true;
+}
+
+std::vector<tstring> WMSettings::GetBluetoothDevices() const
+{
+   std::vector<tstring> devices;
+   for (int valIdx = 0; ; ++valIdx) {
+      TCHAR valueName[260] = { 0 };
+      TCHAR dataBuf[260] = { 0 };
+      DWORD valueSize = ARRAY_SIZE(valueName);
+      DWORD valType = 0;
+      DWORD dataLen = ARRAY_SIZE(dataBuf);
+
+      DWORD regError = RegEnumValue(
+         hBluetoothKey_,
+         valIdx,
+         valueName,
+         &valueSize,
+         NULL,
+         &valType,
+         reinterpret_cast<BYTE*>(dataBuf),
+         &dataLen);
+      if (regError == ERROR_NO_MORE_ITEMS) {
+         break;
+      }
+      else if (regError != ERROR_SUCCESS) {
+         PrintWindowsError(_T("RegEnumValue"), regError);
+         return {};
+      }
+      else {
+         devices.push_back(dataBuf);
+      }
+   }
+   NormalizeStringList(devices);
+   return devices;
 }

@@ -45,6 +45,7 @@ enum class SettingsKey {
    , MUTE_ON_SHUTDOWN
    , MUTE_ON_LOGOUT
    , MUTE_ON_BLUETOOTH
+   , MUTE_ON_BLUETOOTH_DEVICELIST
    , MUTE_ON_WLAN
    , MUTE_ON_WLAN_ALLOWLIST
    , QUIETHOURS_ENABLE
@@ -73,12 +74,16 @@ public:
    bool StoreWifiNetworks(std::vector<tstring>& networks);
    std::vector<tstring> GetWifiNetworks() const;
 
+   bool StoreBluetoothDevices(std::vector<tstring>& networks);
+   std::vector<tstring> GetBluetoothDevices() const;
+
    DWORD QueryValue(SettingsKey key) const;
    bool  SetValue(SettingsKey key, DWORD value);
 
 private:
    HKEY hSettingsKey_;
    HKEY hWifiKey_;
+   HKEY hBluetoothKey_;
 
    HKEY OpenAutostartKey(REGSAM samDesired);
 };
