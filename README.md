@@ -20,6 +20,7 @@ This is very helpful e.g. if you leave your desk and don't want to annoy your co
 ![Screenshot of the Settings](https://raw.githubusercontent.com/lx-s/WinMute/master/Dist/screenshots/settings_general.png? "Screenshot of the Settings")
 ![Screenshot of the QuietHour-Settings](https://raw.githubusercontent.com/lx-s/WinMute/master/Dist/screenshots/settings_quiethours.png? "Screenshot of the QuietHour-Settings")
 ![Screenshot of the WLAN-Settings](https://raw.githubusercontent.com/lx-s/WinMute/master/Dist/screenshots/settings_wlan.png? "Screenshot of the WLAN-Settings")
+![Screenshot of the Bluetooth-Settings](https://raw.githubusercontent.com/lx-s/WinMute/master/Dist/screenshots/settings_bluetooth.png? "Screenshot of the WLAN-Settings")
 
 ### Requirements ###
 * Windows Vista or any newer version of Windows.
