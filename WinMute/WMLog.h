@@ -40,6 +40,7 @@ public:
    static WMLog& GetInstance();
 
    void Write(const TCHAR* fmt, ...);
+   void WriteWindowsError(LPCWSTR lpszFunction, DWORD errorCode = -1);
 
    void SetEnabled(bool enable);
    std::string GetLogFilePath();
