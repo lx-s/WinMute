@@ -26,8 +26,8 @@ computer whenever I left the room and forgot to mute all sounds.
 
 ## Screenshots
 
-![Screenshot of WinMute](dist/screenshots/app.png? "Screenshot of WinMute")
-![Screenshot of the Settings](dist/screenshots/settings.gif? "Settings dialog")
+![Screenshot of WinMute](Dist/screenshots/app.png? "Screenshot of WinMute")
+![Screenshot of the Settings](Dist/screenshots/settings.gif? "Settings dialog")
 
 
 ## Development
