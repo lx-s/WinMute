@@ -3,7 +3,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
 	<metadata>
 		<id>winmute</id>
-		<version>2.1.0.20220426</version>
+		<version>2.1.0.20220802</version>
 		<title>WinMute</title>
 		<authors>Alexander Steinhöfer</authors>
 		<owners>Alexander Steinhöfer</owners>
@@ -18,7 +18,7 @@
 		<copyright>© 2022, Alexander Steinhöfer</copyright>
 		<licenseUrl>https://raw.githubusercontent.com/lx-s/WinMute/main/LICENSE</licenseUrl>
 		<dependencies>
-			<dependency id="vcredist140" version="14.30"/>
+			<dependency id="vcredist140" version="14.3"/>
 		</dependencies>
 	</metadata>
 	<files>
