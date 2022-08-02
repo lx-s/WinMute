@@ -9,13 +9,19 @@ If your idea is too big for the scope of this tool or I don't have the time to
 implement it, I'll let you know and you are free to provide a PR with the code,
 if you have the time to provide the code yourself.
 
-# Bug fixes
+## Bug fixes
 
 You're welcome at any time to provide pull requests with fixes for bugs you discovered.
 Try to keep it in the current coding style as much as possible. Otherwise I won't
 dictate any strict rules.
 
-# Internationalization
+## Art
+
+Since my artistic competence is hovering right around the skill level of "programmer art",
+a new program icon suitable for Windows' light and dark theme (or GitHubs README) would be greatly appreciated 🙂
+
+## Internationalization
+
 WinMute would greatly benefit from transalation. As of now WinMute does not support
 any form of i18n.
 If you know how to best implement i18n in a simple WinAPI app, I'd be happy if you
