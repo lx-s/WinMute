@@ -1,6 +1,3 @@
-#define public Dependency_NoExampleSetup
-#include "CodeDependencies.iss"
-
 #define MyAppName "WinMute"
 #define MyAppVersion "2.1.1.0"
 #define MyAppPublisher "LX-Systems"
@@ -19,10 +16,11 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppPublisher}\{#MyAppName}
 DisableProgramGroupPage=yes
 LicenseFile=..\bin\license.txt
+InfoBeforeFile=info-before.txt
 PrivilegesRequiredOverridesAllowed=dialog
 PrivilegesRequired=lowest
 OutputDir=..\bin\
-OutputBaseFilename=winmute-setup
+OutputBaseFilename=WinMute-Setup
 SetupIconFile=..\..\WinMute\icons\app.ico
 ArchitecturesInstallIn64BitMode=x64
 Compression=lzma
@@ -38,12 +36,12 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "autostart" ; Description: "Start WinMute when you log on" ; GroupDescription: "Autostart"; Flags: unchecked
 
 [Files]
-Source: "..\bin\{#MyAppExeName}"; DestDir: "{app}"; Check: Dependency_IsX64; Flags: ignoreversion
+Source: "..\bin\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\bin\changelog.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\bin\license.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\bin\liesmich.html"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\bin\readme.html"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\bin\ScreensaverNotify.dll"; DestDir: "{app}"; Check: Dependency_IsX64; Flags: ignoreversion
+Source: "..\bin\ScreensaverNotify.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\bin\ScreensaverNotify32.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\bin\ScreensaverProxy32.exe"; DestDir: "{app}"; Flags: ignoreversion
 
@@ -54,17 +52,10 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 [Registry]
 Root: HKCU; Subkey: "Software\lx-systems"; Flags: uninsdeletekeyifempty
 Root: HKCU; Subkey: "Software\lx-systems\WinMute"; Flags: uninsdeletekey
-Root: HKCU; Subkey: "Software\lx-systems\WinMute"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}\{#MyAppExeName}"
+Root: HKCU; Subkey: "Software\lx-systems\WinMute"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"
 Root: HKCU; Subkey: "Software\lx-systems\WinMute\BluetoothDevices"; Flags: uninsdeletekey
 Root: HKCU; Subkey: "Software\lx-systems\WinMute\WifiNetworks"; Flags: uninsdeletekey
-Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "LX-Systems WinMute"; ValueData: "{app}"; Tasks: autostart
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "LX-Systems WinMute"; ValueData: "{app}\{#MyAppExeName}"; Tasks: autostart
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
-
-[Code]
-function InitializeSetup: Boolean;
-begin
-  Dependency_AddVC2015To2022;
-  Result := True;
-end;
