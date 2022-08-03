@@ -322,6 +322,7 @@ bool WinMute::LoadSettings()
 
    muteConfig_.muteOnBluetooth = settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH);
    if (!muteConfig_.muteOnBluetooth) {
+      muteCtrl_.SetMuteOnBluetoothDisconnect(false);
       btDetector_.Unload();
    } else {
       if (!btDetector_.Init(hWnd_)) {
@@ -331,6 +332,7 @@ bool WinMute::LoadSettings()
             L"Bluetooth muting will be disabled on this computer");
          settings_.SetValue(SettingsKey::MUTE_ON_BLUETOOTH, FALSE);
       } else {
+         muteCtrl_.SetMuteOnBluetoothDisconnect(true);
          bool muteOnWithDeviceList = settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH_DEVICELIST);
          btDetector_.SetDeviceList(settings_.GetBluetoothDevicesA(), muteOnWithDeviceList);
       }
@@ -576,19 +578,9 @@ LRESULT CALLBACK WinMute::WindowProc(
       if (muteConfig_.muteOnBluetooth) {
          const auto btStatus = btDetector_.GetBluetoothStatus(msg, wParam, lParam);
          if (btStatus == BluetoothDetector::BluetoothStatus::Connected) {
-            if (settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED)) {
-               trayIcon_.ShowPopup(
-                  L"Bluetooth muting",
-                  L"Bluetooth device connected: Restoring audio");
-            }
-            muteCtrl_.SetMute(false);
+            muteCtrl_.NotifyBluetoothConnected(true);
          } else if (btStatus == BluetoothDetector::BluetoothStatus::Disconnected) {
-            if (settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED)) {
-               trayIcon_.ShowPopup(
-                  L"Bluetooth muting",
-                  L"Bluetooth device disconnected: Muting");
-            }
-            muteCtrl_.SetMute(true);
+            muteCtrl_.NotifyBluetoothConnected(false);
          }
       }
       return TRUE;

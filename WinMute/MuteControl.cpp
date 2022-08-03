@@ -39,6 +39,7 @@ enum MuteType {
    MuteTypeScreensaverActive,
    MuteTypeRemoteSession,
    MuteTypeDisplayStandby,
+   MuteTypeBluetoothDisconnect,
 
    // Without restore
    MuteTypeLogout,
@@ -173,42 +174,52 @@ void MuteControl::SetMuteOnDisplayStandby(bool enable)
    muteConfig_[MuteTypeDisplayStandby].shouldMute = enable;
 }
 
+void MuteControl::SetMuteOnBluetoothDisconnect(bool enable)
+{
+   muteConfig_[MuteTypeBluetoothDisconnect].shouldMute = enable;
+}
+
 bool MuteControl::GetRestoreVolume()
 {
    return restoreVolume_;
 }
 
-bool MuteControl::GetMuteOnWorkstationLock()
+bool MuteControl::GetMuteOnWorkstationLock() const
 {
    return muteConfig_[MuteTypeWorkstationLock].shouldMute;
 }
 
-bool MuteControl::GetMuteOnScreensaverActivation()
+bool MuteControl::GetMuteOnScreensaverActivation() const
 {
    return muteConfig_[MuteTypeScreensaverActive].shouldMute;
 }
 
-bool MuteControl::GetMuteOnRemoteSession()
+bool MuteControl::GetMuteOnRemoteSession() const
 {
    return muteConfig_[MuteTypeRemoteSession].shouldMute;
 }
 
-bool MuteControl::GetMuteOnDisplayStandby()
+bool MuteControl::GetMuteOnDisplayStandby() const
 {
    return muteConfig_[MuteTypeDisplayStandby].shouldMute;
 }
 
-bool MuteControl::GetMuteOnLogout()
+bool MuteControl::GetMuteOnBluetoothDisconnect() const
+{
+   return muteConfig_[MuteTypeBluetoothDisconnect].shouldMute;
+}
+
+bool MuteControl::GetMuteOnLogout() const
 {
    return muteConfig_[MuteTypeLogout].shouldMute;
 }
 
-bool MuteControl::GetMuteOnSuspend()
+bool MuteControl::GetMuteOnSuspend() const
 {
    return muteConfig_[MuteTypeSuspend].shouldMute;
 }
 
-bool MuteControl::GetMuteOnShutdown()
+bool MuteControl::GetMuteOnShutdown() const
 {
    return muteConfig_[MuteTypeShutdown].shouldMute;
 }
@@ -264,6 +275,14 @@ void MuteControl::NotifyDisplayStandby(bool active)
       NotifyRestoreCondition(MuteTypeDisplayStandby, active);
       displayWasOffOnce_ = true;
    }
+}
+
+void MuteControl::NotifyBluetoothConnected(bool connected)
+{
+   WMLog::GetInstance().Write(
+      L"Mute Event: Bluetooth audio device %s",
+      connected ? L"connected" : L"disconnected");
+   NotifyRestoreCondition(MuteTypeBluetoothDisconnect, !connected);
 }
 
 void MuteControl::NotifyLogout()
