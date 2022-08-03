@@ -66,10 +66,10 @@ HRESULT STDMETHODCALLTYPE MMNotificationClient::QueryInterface(
 {
    if (IID_IUnknown == riid) {
       AddRef();
-      *ppvInterface = (IUnknown*)this;
+      *ppvInterface = reinterpret_cast<IUnknown*>(this);
    } else if (__uuidof(IMMNotificationClient) == riid) {
       AddRef();
-      *ppvInterface = (IMMNotificationClient*)this;
+      *ppvInterface = reinterpret_cast<IMMNotificationClient*>(this);
    } else {
       *ppvInterface = nullptr;
       return E_NOINTERFACE;

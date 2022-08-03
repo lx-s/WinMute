@@ -211,7 +211,7 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
       if (lpnmhdr->code == TCN_SELCHANGE
           && lpnmhdr->hwndFrom == dlgData->hTabCtrl) {
          const int curSel = TabCtrl_GetCurSel(dlgData->hTabCtrl);
-         if (curSel >= 0 && curSel <= SETTINGS_TAB_COUNT) {
+         if (curSel >= 0 && curSel < SETTINGS_TAB_COUNT) {
             SwitchTab(dlgData, dlgData->hTabs[curSel]);
          }
       }

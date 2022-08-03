@@ -89,7 +89,7 @@ bool WifiDetector::Init(HWND hNotifyWnd)
    return initialized_;
 }
 
-void WifiDetector::SetNetworkList(const std::vector<std::wstring> networks, bool isMuteList)
+void WifiDetector::SetNetworkList(const std::vector<std::wstring>& networks, bool isMuteList)
 {
    networks_ = networks;
    isMuteList_ = isMuteList;

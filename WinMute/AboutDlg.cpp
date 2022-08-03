@@ -276,10 +276,9 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
       SwitchTab(dlgData, dlgData->hTabs[ABOUT_TAB_GENERAL]);
 
       HWND hTitle = GetDlgItem(hDlg, IDC_ABOUT_TITLE);
-      std::wstring progName{ L"WinMute" };
-      std::wstring progVers{ L"WinMute" };
+      std::wstring progVers;
       if (GetWinMuteVersion(progVers)) {
-         progName = std::wstring{ L"WinMute " } + progVers;
+         std::wstring progName = std::wstring{ L"WinMute " } + progVers;
          Static_SetText(hTitle, progName.c_str());
       }
 
@@ -320,7 +319,7 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
       if (lpnmhdr->code == TCN_SELCHANGE
          && lpnmhdr->hwndFrom == dlgData->hTabCtrl) {
          const int curSel = TabCtrl_GetCurSel(dlgData->hTabCtrl);
-         if (curSel >= 0 && curSel <= ABOUT_TAB_COUNT) {
+         if (curSel >= 0 && curSel < ABOUT_TAB_COUNT) {
             SwitchTab(dlgData, dlgData->hTabs[curSel]);
          }
       }

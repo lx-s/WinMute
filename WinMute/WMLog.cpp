@@ -100,7 +100,7 @@ void WMLog::SetEnabled(bool enable)
 
 void WMLog::WriteMessage(const wchar_t* msg)
 {
-   struct tm tm;
+   struct tm tm = { 0 };
    auto now = std::chrono::system_clock::now();
    auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
