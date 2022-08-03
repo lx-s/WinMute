@@ -131,6 +131,12 @@ static bool IsWlanAvailable()
    return true;
 }
 
+static BOOL CALLBACK ShowChildWindow(HWND hWnd, LPARAM lParam)
+{
+   ShowWindow(hWnd, static_cast<int>(lParam));
+   return TRUE;
+}
+
 INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    switch (msg) {
@@ -163,13 +169,24 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
                     ListBox_GetCount(hList) > 0);
 
       if (!IsWlanAvailable()) {
-         ShowWindow(GetDlgItem(hDlg, IDC_STATIC_WLAN_NOT_AVAILABLE), SW_SHOW);
+         // Set defaults
          Button_SetCheck(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE), BST_UNCHECKED);
          Button_Enable(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE), FALSE);
          Button_SetCheck(GetDlgItem(hDlg, IDC_IS_PERMITLIST), BST_UNCHECKED);
          Button_Enable(GetDlgItem(hDlg, IDC_IS_PERMITLIST), FALSE);
-      }
-      else {
+
+         // Hide all child windows, except the notice
+         EnumChildWindows(hDlg, ShowChildWindow, SW_HIDE);
+
+         HWND hWifiNotAvail = GetDlgItem(hDlg, IDC_STATIC_WLAN_NOT_AVAILABLE);
+         RECT r;
+         GetClientRect(hWifiNotAvail, &r);
+         const int margin = 20;
+         SetWindowPos(
+            hWifiNotAvail, HWND_TOP,
+            margin, margin, r.right, r.bottom,
+            SWP_SHOWWINDOW);
+      } else {
          ShowWindow(GetDlgItem(hDlg, IDC_STATIC_WLAN_NOT_AVAILABLE), SW_HIDE);
       }
       return TRUE;

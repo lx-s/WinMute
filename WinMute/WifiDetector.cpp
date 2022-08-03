@@ -122,7 +122,7 @@ void WifiDetector::CheckNetwork()
                   if (isMuteList_ && it != std::end(networks_)
                       || !isMuteList_ && it == std::end(networks_)) {
                      size_t profileNameLen = lstrlen(net->strProfileName);
-                     TCHAR* wiFiName = new TCHAR[profileNameLen + 1];
+                     wchar_t* wiFiName = new wchar_t[profileNameLen + 1];
                      StringCchCopy(wiFiName, profileNameLen + 1, net->strProfileName);
                      SendMessage(hNotifyWnd_, WM_WIFISTATUSCHANGED, 1,
                                  reinterpret_cast<LPARAM>(wiFiName));
@@ -153,7 +153,7 @@ void WifiDetector::WlanNotificationCallback(PWLAN_NOTIFICATION_DATA notifyData)
       if (isMuteList_ && it != std::end(networks_)
           || !isMuteList_ && it == std::end(networks_)) {
          size_t profileNameLen = lstrlen(wcnd->strProfileName);
-         TCHAR* wiFiName = new TCHAR[profileNameLen + 1];
+         wchar_t* wiFiName = new wchar_t[profileNameLen + 1];
          StringCchCopy(wiFiName, profileNameLen + 1, wcnd->strProfileName);
          SendMessage(hNotifyWnd_, WM_WIFISTATUSCHANGED, connected,
                       reinterpret_cast<LPARAM>(wiFiName));

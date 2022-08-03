@@ -169,6 +169,12 @@ static bool IsBluetoothAvailable()
    return true;
 }
 
+static BOOL CALLBACK ShowChildWindow(HWND hWnd, LPARAM lParam)
+{
+   ShowWindow(hWnd, static_cast<int>(lParam));
+   return TRUE;
+}
+
 INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    switch (msg) {
@@ -205,13 +211,24 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
          ListBox_GetCount(hList) > 0);
 
       if (!IsBluetoothAvailable()) {
-         ShowWindow(GetDlgItem(hDlg, IDC_STATIC_BLUETOOTH_NOT_AVAILABLE), SW_SHOW);
+         // Set defaults
          Button_SetCheck(GetDlgItem(hDlg, IDC_ENABLE_BLUETOOTH_MUTE), BST_UNCHECKED);
          Button_Enable(GetDlgItem(hDlg, IDC_ENABLE_BLUETOOTH_MUTE), FALSE);
          Button_SetCheck(GetDlgItem(hDlg, IDC_ENABLE_BLUETOOTH_MUTE_DEVICE_LIST), BST_UNCHECKED);
          Button_Enable(GetDlgItem(hDlg, IDC_ENABLE_BLUETOOTH_MUTE_DEVICE_LIST), FALSE);
-      }
-      else {
+
+         // Hide all child windows, except the notice
+         EnumChildWindows(hDlg, ShowChildWindow, SW_HIDE);
+
+         HWND hBtNotAvail = GetDlgItem(hDlg, IDC_STATIC_BLUETOOTH_NOT_AVAILABLE);
+         RECT r;
+         GetClientRect(hBtNotAvail, &r);
+         const int margin = 20;
+         SetWindowPos(
+            hBtNotAvail, HWND_TOP,
+            margin, margin, r.right, r.bottom,
+            SWP_SHOWWINDOW);
+      } else {
          ShowWindow(GetDlgItem(hDlg, IDC_STATIC_BLUETOOTH_NOT_AVAILABLE), SW_HIDE);
       }
       return TRUE;
