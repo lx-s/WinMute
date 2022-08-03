@@ -1,5 +1,9 @@
 Version 2.1.1 (2022-08-03)
  * Improved UI when WLAN or Bluetooth is not available
+ * Added a 5 second delay before unmuting the workstation,
+   when a bluetooth device reconnects. This should prevent
+   music blasting out of your pc, when the device is connected,
+   but the audio endpoint has not been changed yet.
  * Integrated Bluetooth muting into overall mute logic, so that
    the workstation is not unmuted, when it is locked but an audio
    Bluetooth device reconnects.
