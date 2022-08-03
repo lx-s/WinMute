@@ -33,6 +33,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
+const int BLUETOOTH_RECONNECT_UNMUTE_DELAY = 5000; // Milliseconds
+
 enum MuteType {
    // With restore
    MuteTypeWorkstationLock = 0,
@@ -131,7 +133,7 @@ void MuteControl::RestoreVolume(bool withDelay)
          L"Volume restored",
          L"All endpoints have been restored to their previous configuration");
       if (withDelay) {
-         Sleep(2000);
+         Sleep(BLUETOOTH_RECONNECT_UNMUTE_DELAY);
       }
       winAudio_->RestoreMuteStatus();
    }
@@ -285,7 +287,7 @@ void MuteControl::NotifyBluetoothConnected(bool connected)
    WMLog::GetInstance().Write(
       L"Mute Event: Bluetooth audio device %s",
       connected ? L"connected" : L"disconnected");
-   NotifyRestoreCondition(MuteTypeBluetoothDisconnect, !connected);
+   NotifyRestoreCondition(MuteTypeBluetoothDisconnect, !connected, true);
 }
 
 void MuteControl::NotifyLogout()
