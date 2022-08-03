@@ -1,3 +1,9 @@
+Version 2.1.1 (2022-08-03)
+ * Improved UI when WLAN or Bluetooth is not available
+ * Integrated Bluetooth muting into overall mute logic, so that
+   the workstation is not unmuted, when it is locked but an audio
+   Bluetooth device reconnects.
+
 Version 2.1.0 (2022-08-02)
  * Added new feature to mute workstation when an bluetooth audio device
    disconnects (and re-enable audio if it reconnects)
