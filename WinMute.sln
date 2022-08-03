@@ -11,8 +11,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ScreensaverNotify32", "Scre
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ScreensaverProxy32", "ScreensaverProxy32\ScreensaverProxy32.vcxproj", "{7214696D-B598-435D-8622-AD4AE3755D28}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{32108F6D-9488-4EB0-A9E8-B613F8B7D32B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -53,11 +51,6 @@ Global
 		{7214696D-B598-435D-8622-AD4AE3755D28}.Release|x64.Build.0 = Release|x64
 		{7214696D-B598-435D-8622-AD4AE3755D28}.Release|x86.ActiveCfg = Release|Win32
 		{7214696D-B598-435D-8622-AD4AE3755D28}.Release|x86.Build.0 = Release|Win32
-		{32108F6D-9488-4EB0-A9E8-B613F8B7D32B}.Debug|x64.ActiveCfg = Debug
-		{32108F6D-9488-4EB0-A9E8-B613F8B7D32B}.Debug|x86.ActiveCfg = Debug
-		{32108F6D-9488-4EB0-A9E8-B613F8B7D32B}.Release|x64.ActiveCfg = Release
-		{32108F6D-9488-4EB0-A9E8-B613F8B7D32B}.Release|x64.Build.0 = Release
-		{32108F6D-9488-4EB0-A9E8-B613F8B7D32B}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
