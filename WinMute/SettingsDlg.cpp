@@ -37,8 +37,8 @@ enum SettingsTabsIDs {
    SETTINGS_TAB_GENERAL = 0,
    SETTINGS_TAB_MUTE,
    SETTINGS_TAB_QUIETHOURS,
-   SETTINGS_TAB_WIFI,
    SETTINGS_TAB_BLUETOOTH,
+   SETTINGS_TAB_WIFI,
    SETTINGS_TAB_COUNT
 };
 
@@ -143,8 +143,8 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
       InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_GENERAL, L"General");
       InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_MUTE, L"Mute");
       InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_QUIETHOURS, L"Quiet Hours");
-      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_WIFI, L"WLAN");
       InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_BLUETOOTH, L"Bluetooth");
+      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_WIFI, L"WLAN");
 
       dlgData->hTabs[SETTINGS_TAB_GENERAL] = CreateDialogParam(
          hglobInstance,
