@@ -39,12 +39,12 @@ extern HINSTANCE hglobInstance;
 extern INT_PTR CALLBACK AboutDlgProc(HWND, UINT, WPARAM, LPARAM);
 extern INT_PTR CALLBACK SettingsDlgProc(HWND, UINT, WPARAM, LPARAM);
 
-static LPCTSTR WINMUTE_CLASS_NAME = _T("WinMute");
+static const wchar_t *WINMUTE_CLASS_NAME = L"WinMute";
 
-static LPCTSTR TERMINAL_SERVER_KEY
-   = _T("SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\");
-static LPCTSTR GLASS_SESSION_ID
-   = _T("GlassSessionId");
+static const wchar_t *TERMINAL_SERVER_KEY
+   = L"SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\";
+static const wchar_t* GLASS_SESSION_ID
+   = L"GlassSessionId";
 
 static LRESULT CALLBACK WinMuteWndProc(
    HWND hWnd,
@@ -72,26 +72,26 @@ static int IsDarkMode(bool& isDarkMode)
    HKEY hKey;
    int rc = 1;
    //RegOpenCurrentUser
-   LSTATUS error = RegOpenKey(
+   LSTATUS error = RegOpenKeyW(
       HKEY_CURRENT_USER,
-      _T("Software\\Microsoft\\Windows\\CurrentVersion\\")
-      _T("Themes\\Personalize"),
+      L"Software\\Microsoft\\Windows\\CurrentVersion\\"
+      L"Themes\\Personalize",
       &hKey);
    if (error != ERROR_SUCCESS) {
-      PrintWindowsError(_T("RegOpenKey"), error);
+      PrintWindowsError(L"RegOpenKey", error);
    } else {
       DWORD isLightTheme = 0;
       DWORD bufSize = sizeof(isLightTheme);
       DWORD valType = 0;
-      error = RegQueryValueEx(
+      error = RegQueryValueExW(
          hKey,
-         _T("SystemUsesLightTheme"),
+         L"SystemUsesLightTheme",
          NULL,
          &valType,
          reinterpret_cast<LPBYTE>(&isLightTheme),
          &bufSize);
       if (error != ERROR_SUCCESS) {
-         PrintWindowsError(_T("RegQueryValueEx"), error);
+         PrintWindowsError(L"RegQueryValueEx", error);
       } else {
          isDarkMode = !isLightTheme;
          rc = 0;
@@ -162,7 +162,7 @@ bool WinMute::RegisterWindowClass()
    wc.lpszClassName = WINMUTE_CLASS_NAME;
 
    if (!RegisterClass(&wc)) {
-      PrintWindowsError(_T("RegisterClass"));
+      PrintWindowsError(L"RegisterClass");
       return false;
    }
    return true;
@@ -173,7 +173,7 @@ bool WinMute::InitWindow()
    hWnd_ = CreateWindowEx(WS_EX_TOOLWINDOW, WINMUTE_CLASS_NAME, PROGRAM_NAME,
       WS_POPUP, 0, 0, 0, 0, NULL, 0, hglobInstance, this);
    if (hWnd_ == nullptr) {
-      PrintWindowsError(_T("CreateWindowEx"));
+      PrintWindowsError(L"CreateWindowEx");
       return false;
    }
    return true;
@@ -184,10 +184,11 @@ bool WinMute::InitAudio()
    if (IsWindowsVistaOrGreater()) {
       // Nothing to do
    } else if (IsWindowsXPOrGreater()) {
-      TaskDialog(nullptr, nullptr, PROGRAM_NAME,
-         _T("Only Windows Vista and newer is supported"),
-         _T("For Windows XP support, please download WinMute ")
-         _T(" version 1.4.2 or older"),
+      TaskDialog(
+         nullptr, nullptr, PROGRAM_NAME,
+         L"Only Windows Vista and newer is supported",
+         L"For Windows XP support, please download WinMute "
+         L" version 1.4.2 or older",
          TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
       return false;
    }
@@ -207,7 +208,7 @@ bool WinMute::InitTrayMenu()
    if (hTrayMenu_ == NULL) {
       hTrayMenu_ = LoadMenu(hglobInstance, MAKEINTRESOURCE(IDR_TRAYMENU));
       if (hTrayMenu_ == NULL) {
-         PrintWindowsError(_T("LoadMenu"));
+         PrintWindowsError(L"LoadMenu");
          return false;
       }
    }
@@ -239,7 +240,7 @@ bool WinMute::Init()
 #else
    WMLog::GetInstance().SetEnabled(settings_.QueryValue(SettingsKey::LOGGING_ENABLED));
 #endif
-   log.Write(_T("Starting new session..."));
+   log.Write(L"Starting new session...");
 
    if (!RegisterWindowClass() || !InitWindow()) {
       return false;
@@ -268,12 +269,12 @@ bool WinMute::Init()
    }
 
    if (!WTSRegisterSessionNotification(hWnd_, NOTIFY_FOR_THIS_SESSION)) {
-      PrintWindowsError(_T("WTSRegisterSessionNotification"));
+      PrintWindowsError(L"WTSRegisterSessionNotification");
       return false;
    }
 
    if (!RegisterPowerSettingNotification(hWnd_, &GUID_CONSOLE_DISPLAY_STATE, 0)) {
-      PrintWindowsError(_T("RegisterPowerSettingNotification"));
+      PrintWindowsError(L"RegisterPowerSettingNotification");
       return false;
    }
 
@@ -287,18 +288,18 @@ bool WinMute::Init()
       PrintWindowsError(_T("LoadIcon"));
       return false;
    }
-   trayIcon_.Init(hWnd_, 0, hTrayIcon_, _T("WinMute"), true);
+   trayIcon_.Init(hWnd_, 0, hTrayIcon_, L"WinMute", true);
 
 
    quietHours_.Init(hWnd_, settings_);
 
-   log.Write(_T("WinMute initialized"));
+   log.Write(L"WinMute initialized");
 
    if (settings_.QueryValue(SettingsKey::MUTE_ON_RDP)
        && IsCurrentSessionRemoteable()) {
       trayIcon_.ShowPopup(
-         _T("Remote Session detected"),
-         _T("All audio endpoints have been muted"));
+         L"Remote Session detected",
+         L"All audio endpoints have been muted");
       muteCtrl_.SetMute(true);
    }
 
@@ -325,9 +326,9 @@ bool WinMute::LoadSettings()
    } else {
       if (!btDetector_.Init(hWnd_)) {
          trayIcon_.ShowPopup(
-            _T("Bluetooth muting disabled"),
-            _T("Bluetooth is not available or disabled. ")
-            _T("Bluetooth muting will be disabled on this computer"));
+            L"Bluetooth muting disabled",
+            L"Bluetooth is not available or disabled. "
+            L"Bluetooth muting will be disabled on this computer");
          settings_.SetValue(SettingsKey::MUTE_ON_BLUETOOTH, FALSE);
       } else {
          bool muteOnWithDeviceList = settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH_DEVICELIST);
@@ -341,9 +342,9 @@ bool WinMute::LoadSettings()
    } else {
       if (!wifiDetector_.Init(hWnd_)) {
          trayIcon_.ShowPopup(
-            _T("WLAN muting disabled"),
-            _T("WLAN is not available or disabled. ")
-            _T("WLAN muting will be disabled on this computer"));
+            L"WLAN muting disabled",
+            L"WLAN is not available or disabled. "
+            L"WLAN muting will be disabled on this computer");
          settings_.SetValue(SettingsKey::MUTE_ON_WLAN, FALSE);
       } else {
          bool isMuteList = !settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST);
@@ -376,7 +377,7 @@ LRESULT CALLBACK WinMute::WindowProc(
    static UINT uTaskbarRestart = 0;
    switch (msg) {
    case WM_CREATE: {
-      uTaskbarRestart = RegisterWindowMessage(_T("TaskbarCreated"));
+      uTaskbarRestart = RegisterWindowMessageW(L"TaskbarCreated");
       return TRUE;
    }
    case WM_COMMAND: {
@@ -495,8 +496,10 @@ LRESULT CALLBACK WinMute::WindowProc(
          POINT p = { 0 };
          GetCursorPos(&p);
          SetForegroundWindow(hWnd);
-         TrackPopupMenuEx(GetSubMenu(hTrayMenu_, 0), TPM_NONOTIFY | TPM_TOPALIGN
-            | TPM_LEFTALIGN, p.x, p.y, hWnd_, nullptr);
+         TrackPopupMenuEx(
+            GetSubMenu(hTrayMenu_, 0),
+            TPM_NONOTIFY | TPM_TOPALIGN | TPM_LEFTALIGN,
+            p.x, p.y, hWnd_, nullptr);
          break;
       }
       default:
@@ -544,8 +547,8 @@ LRESULT CALLBACK WinMute::WindowProc(
       muteCtrl_.NotifyQuietHours(true);
       if (settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS)) {
          trayIcon_.ShowPopup(
-            _T("WinMute: Quiet hours started"),
-            _T("Your workstation audio will now be muted."));
+            L"WinMute: Quiet hours started",
+            L"Your workstation audio will now be muted.");
       }
       quietHours_.SetEnd();
       return 0;
@@ -553,8 +556,8 @@ LRESULT CALLBACK WinMute::WindowProc(
       muteCtrl_.NotifyQuietHours(false);
       if (settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS)) {
          trayIcon_.ShowPopup(
-            _T("WinMute: Quiet Hours ended"),
-            _T("Your workstation audio has been restored."));
+            L"WinMute: Quiet Hours ended",
+            L"Your workstation audio has been restored.");
       }
       if (settings_.QueryValue(SettingsKey::QUIETHOURS_FORCEUNMUTE)) {
          muteCtrl_.SetMute(false);
@@ -575,15 +578,15 @@ LRESULT CALLBACK WinMute::WindowProc(
          if (btStatus == BluetoothDetector::BluetoothStatus::Connected) {
             if (settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED)) {
                trayIcon_.ShowPopup(
-                  _T("Bluetooth muting"),
-                  _T("Bluetooth device connected: Restoring audio"));
+                  L"Bluetooth muting",
+                  L"Bluetooth device connected: Restoring audio");
             }
             muteCtrl_.SetMute(false);
          } else if (btStatus == BluetoothDetector::BluetoothStatus::Disconnected) {
             if (settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED)) {
                trayIcon_.ShowPopup(
-                  _T("Bluetooth muting"),
-                  _T("Bluetooth device disconnected: Muting"));
+                  L"Bluetooth muting",
+                  L"Bluetooth device disconnected: Muting");
             }
             muteCtrl_.SetMute(true);
          }
@@ -594,20 +597,20 @@ LRESULT CALLBACK WinMute::WindowProc(
       if (muteConfig_.muteOnWlan) {
          if (wParam == 1) { // Connected
             if (settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED)) {
-               TCHAR msgBuf[260] = { 0 };
-               TCHAR* wifiName = reinterpret_cast<TCHAR*>(lParam);
+               wchar_t msgBuf[260] = { 0 };
+               wchar_t* wifiName = reinterpret_cast<wchar_t*>(lParam);
                if (settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST)) {
                   StringCchPrintfW(
                      msgBuf, ARRAY_SIZE(msgBuf),
-                     _T("WLAN \"%s\"network is not on allowed list.\n"),
+                     L"WLAN \"%s\"network is not on allowed list.\n",
                      wifiName);
                }  else {
                   StringCchPrintfW(
                      msgBuf, ARRAY_SIZE(msgBuf),
-                     _T("WLAN network \"%s\" is configured for AutoMute."),
+                     L"WLAN network \"%s\" is configured for AutoMute.",
                      wifiName);
                }
-               trayIcon_.ShowPopup(_T("Workstation muted"), msgBuf);
+               trayIcon_.ShowPopup(L"Workstation muted", msgBuf);
                delete [] wifiName;
             }
             muteCtrl_.SetMute(true);
@@ -615,15 +618,15 @@ LRESULT CALLBACK WinMute::WindowProc(
       }
       return 0;
    case WM_SETTINGCHANGE: {
-      if (lstrcmp(LPCTSTR(lParam), _T("ImmersiveColorSet")) == 0) {
+      if (wcscmp(reinterpret_cast<const wchar_t*>(lParam), L"ImmersiveColorSet") == 0) {
          bool isDarkMode = true;
          IsDarkMode(isDarkMode);
-         hTrayIcon_ = LoadIcon(
+         hTrayIcon_ = LoadIconW(
             hglobInstance,
             isDarkMode ? MAKEINTRESOURCE(IDI_TRAY_DARK)
             : MAKEINTRESOURCE(IDI_TRAY_BRIGHT));
          if (hTrayIcon_ == NULL) {
-            PrintWindowsError(_T("LoadIcon"));
+            PrintWindowsError(L"LoadIcon");
          } else {
             trayIcon_.ChangeIcon(hTrayIcon_);
          }

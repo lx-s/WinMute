@@ -33,11 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
-#ifdef UNICODE
-static bool OpenLogFile(const std::string& filePath, std::wofstream& logFile)
-#else
-static bool OpenLogFile(const std::string& filePath, std::ofstream& logFile)
-#endif
+static bool OpenLogFile(const std::wstring& filePath, std::wofstream& logFile)
 {
    logFile.open(filePath, std::ios::out | std::ios::app | std::ios::binary);
    return logFile.is_open();
@@ -61,18 +57,24 @@ WMLog::~WMLog()
    }
 }
 
-std::string WMLog::GetLogFilePath()
+std::wstring WMLog::GetLogFilePath()
 {
-   auto path = std::filesystem::temp_directory_path();
-   path /= _T("WinMute.log");
-   return path.string();
+   wchar_t tempPath[MAX_PATH + 1];
+   if (GetTempPathW(ARRAY_SIZE(tempPath), tempPath)) {
+      std::wstring path{ tempPath };
+      path += L"\\WinMute.log";
+      return path;
+   }
+   return std::wstring();
 }
 
 void WMLog::DeleteLogFile()
 {
-   auto p = GetLogFilePath();
-   logFile_.close();
-   DeleteFileA(p.c_str());
+   const auto logFilePath = GetLogFilePath();
+   if (logFile_.is_open()) {
+      logFile_.close();
+   }
+   DeleteFileW(logFilePath.c_str());
 }
 
 void WMLog::SetEnabled(bool enable)
@@ -96,46 +98,38 @@ void WMLog::SetEnabled(bool enable)
    }
 }
 
-void WMLog::WriteMessage(const TCHAR* msg)
+void WMLog::WriteMessage(const wchar_t* msg)
 {
    struct tm tm;
    auto now = std::chrono::system_clock::now();
    auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
-#ifdef UNICODE
    std::wstringstream ss;
-#else
-   std::stringstream ss;
-#endif
    localtime_s(&tm, &in_time_t);
-   ss << _T("[") << std::put_time(&tm, _T("%Y-%m-%d %X")) << _T("] ")
-      << msg << _T("\n");
+   ss << L"[" << std::put_time(&tm, L"%Y-%m-%d %X") << L"] "
+      << msg << L"\n";
    const auto& logStr = ss.str();
    logFile_.write(logStr.c_str(), logStr.length());
    logFile_.flush();
 }
 
-void WMLog::Write(const TCHAR *fmt, ...)
+void WMLog::Write(const wchar_t *fmt, ...)
 {
    if (!enabled_) {
       return;
    }
 
-   TCHAR buf[200];
+   wchar_t buf[200];
    va_list ap;
    va_start(ap, fmt);
 
-#ifdef _UNICODE
    vswprintf_s(buf, fmt, ap);
-#else
-   snprintf(buf, ARRAY_SIZE(buf), fmt, ap);
-#endif
    WriteMessage(buf);
 
    va_end(ap);
 }
 
-void WMLog::WriteWindowsError(LPCWSTR lpszFunction, DWORD lastError)
+void WMLog::WriteWindowsError(const wchar_t *functionName, DWORD lastError)
 {
    // Retrieve the system error message for the last-error code
    if (lastError == -1) {
@@ -143,27 +137,29 @@ void WMLog::WriteWindowsError(LPCWSTR lpszFunction, DWORD lastError)
    }
 
    LPVOID lpMsgBuf;
-   if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-      FORMAT_MESSAGE_FROM_SYSTEM |
-      FORMAT_MESSAGE_IGNORE_INSERTS,
-      nullptr, lastError,
-      MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-      reinterpret_cast<LPTSTR>(&lpMsgBuf), 0, nullptr) != 0) {
+   if (FormatMessage(
+         FORMAT_MESSAGE_ALLOCATE_BUFFER
+         | FORMAT_MESSAGE_FROM_SYSTEM
+         | FORMAT_MESSAGE_IGNORE_INSERTS,
+         nullptr, lastError,
+         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+         reinterpret_cast<wchar_t*>(&lpMsgBuf), 0, nullptr) != 0) {
       size_t displayBufSize =
-         ((size_t)lstrlen(static_cast<LPCTSTR>(lpMsgBuf)) +
-            (size_t)lstrlen(static_cast<LPCTSTR>(lpszFunction))
-            + 40) * sizeof(TCHAR);
+         (wcslen(static_cast<const wchar_t*>(lpMsgBuf))
+          + wcslen(static_cast<const wchar_t*>(functionName))
+          + 40) * sizeof(wchar_t);
       // Display the error message and exit the process
       LPVOID lpDisplayBuf = reinterpret_cast<LPVOID>(
          LocalAlloc(LMEM_ZEROINIT, displayBufSize));
       if (lpDisplayBuf) {
-         StringCchPrintf((LPTSTR)lpDisplayBuf,
+         StringCchPrintfW(
+            reinterpret_cast<wchar_t*>(lpDisplayBuf),
             LocalSize(lpDisplayBuf),
-            _T("%s failed with error %u: %s"),
-            lpszFunction,
+            L"%s failed with error %u: %s",
+            functionName,
             lastError,
-            reinterpret_cast<TCHAR*>(lpMsgBuf));
-         WriteMessage(static_cast<LPCTSTR>(lpMsgBuf));
+            reinterpret_cast<wchar_t*>(lpMsgBuf));
+         WriteMessage(static_cast<const wchar_t*>(lpMsgBuf));
          LocalFree(lpDisplayBuf);
       }
       LocalFree(lpMsgBuf);

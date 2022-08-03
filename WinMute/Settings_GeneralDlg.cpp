@@ -64,8 +64,8 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
          Button_Enable(GetDlgItem(hDlg, IDC_OPENLOG), checked == BST_CHECKED);
       } else if (LOWORD(wParam) == IDC_OPENLOG) {
          WMLog& log = WMLog::GetInstance();
-         const std::string filePath = log.GetLogFilePath().c_str();
-         ShellExecuteA(NULL, "open", filePath.c_str(), NULL, NULL, SW_SHOW);
+         const std::wstring filePath = log.GetLogFilePath().c_str();
+         ShellExecuteW(NULL, L"open", filePath.c_str(), NULL, NULL, SW_SHOW);
       }
       return 0;
    }

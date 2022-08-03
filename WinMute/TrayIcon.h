@@ -38,24 +38,24 @@ POSSIBILITY OF SUCH DAMAGE.
 #define WM_TRAYICON (WM_APP + 700)
 
 struct TrayIconPopup {
-   tstring title;
-   tstring text;
+   std::wstring title;
+   std::wstring text;
 };
 
 class TrayIcon {
 public:
    TrayIcon();
-   TrayIcon(HWND hWnd, UINT trayID, HICON hIcon, const tstring& tooltip,
+   TrayIcon(HWND hWnd, UINT trayID, HICON hIcon, const std::wstring& tooltip,
       bool show);
    ~TrayIcon();
-   void Init(HWND hWnd, UINT trayID, HICON hIcon, const tstring& tooltip,
+   void Init(HWND hWnd, UINT trayID, HICON hIcon, const std::wstring& tooltip,
       bool show);
    void Hide();
    void Show();
    bool IsShown() const { return iconVisible_; }
    void ChangeIcon(HICON hNewIcon);
-   void ChangeText(const tstring& tooltip);
-   void ShowPopup(const tstring& title, const tstring& text) const;
+   void ChangeText(const std::wstring& tooltip);
+   void ShowPopup(const std::wstring& title, const std::wstring& text) const;
 
 private:
    void DestroyTrayIcon();
@@ -70,5 +70,5 @@ private:
    UINT trayID_;
    HICON hIcon_;
    HWND hWnd_;
-   tstring tooltip_;
+   std::wstring tooltip_;
 };

@@ -98,9 +98,6 @@
     <ClInclude Include="MuteControl.h">
       <Filter>Source Files\Controllers\Muting</Filter>
     </ClInclude>
-    <ClInclude Include="BaseTypes.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="WiFiDetector.h">
       <Filter>Source Files\Controllers\WiFi</Filter>
     </ClInclude>

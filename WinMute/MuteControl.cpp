@@ -77,7 +77,7 @@ bool MuteControl::Init(HWND hParent, const TrayIcon *trayIcon)
 
 void MuteControl::SetMute(bool mute)
 {
-   WMLog::GetInstance().Write(_T("Manual muting: %s"), mute ? _T("on") : _T("off"));
+   WMLog::GetInstance().Write(L"Manual muting: %s", mute ? L"on" : L"off");
    winAudio_->SetMute(mute);
 }
 
@@ -86,18 +86,18 @@ void MuteControl::SaveMuteStatus()
    bool alreadySaved = false;
    for (const auto& conf : muteConfig_) {
       if (conf.shouldMute && conf.active) {
-         WMLog::GetInstance().Write(_T("Muting event already active. Skipping status save"));
+         WMLog::GetInstance().Write(L"Muting event already active. Skipping status save");
          alreadySaved = true;
          break;
       }
    }
    if (!alreadySaved) {
-      WMLog::GetInstance().Write(_T("Saving mute status"));
+      WMLog::GetInstance().Write(L"Saving mute status");
       winAudio_->SaveMuteStatus();
    }
 }
 
-void MuteControl::ShowNotification(const tstring& title, const tstring& text)
+void MuteControl::ShowNotification(const std::wstring& title, const std::wstring& text)
 {
    if (notificationsEnabled_ && trayIcon_ != nullptr) {
       trayIcon_->ShowPopup(title, text);
@@ -113,22 +113,22 @@ void MuteControl::RestoreVolume()
 {
    WMLog& log = WMLog::GetInstance();
    if (!restoreVolume_) {
-      log.Write(_T("Volume Restore has been disabled"));
+      log.Write(L"Volume Restore has been disabled");
       return;
    }
    bool restore = true;
    for (const auto& conf : muteConfig_) {
       if (conf.shouldMute && conf.active) {
-         log.Write(_T("Skipping restore since other mute event is currently active"));
+         log.Write(L"Skipping restore since other mute event is currently active");
          restore = false;
          break;
       }
    }
    if (restore) {
-      log.Write(_T("Restoring previous mute state"));
+      log.Write(L"Restoring previous mute state");
       ShowNotification(
-         _T("Volume restored"),
-         _T("All endpoints have been restored to their previous configuration"));
+         L"Volume restored",
+         L"All endpoints have been restored to their previous configuration");
       winAudio_->RestoreMuteStatus();
    }
 }
@@ -219,10 +219,10 @@ void MuteControl::NotifyRestoreCondition(int type, bool active)
       SaveMuteStatus();
       muteConfig_[type].active = active;
       if (muteConfig_[type].shouldMute) {
-         WMLog::GetInstance().Write(_T("Muting workstation"));
+         WMLog::GetInstance().Write(L"Muting workstation");
          ShowNotification(
-            _T("Muting workstation"),
-            _T("All endpoints have been muted"));
+            L"Muting workstation",
+            L"All endpoints have been muted");
          winAudio_->SetMute(true);
       }
    } else {
@@ -237,30 +237,30 @@ void MuteControl::NotifyRestoreCondition(int type, bool active)
 
 void MuteControl::NotifyWorkstationLock(bool active)
 {
-   WMLog::GetInstance().Write(_T("Mute Event: Workstation Lock %s"),
-                              active ? _T("start") : _T("stop"));
+   WMLog::GetInstance().Write(L"Mute Event: Workstation Lock %s",
+                              active ? L"start" : L"stop");
    NotifyRestoreCondition(MuteTypeWorkstationLock, active);
 }
 
 void MuteControl::NotifyScreensaver(bool active)
 {
-   WMLog::GetInstance().Write(_T("Mute Event: Screensaver %s"),
-                              active ? _T("start") : _T("stop"));
+   WMLog::GetInstance().Write(L"Mute Event: Screensaver %s",
+                              active ? L"start" : L"stop");
    NotifyRestoreCondition(MuteTypeScreensaverActive, active);
 }
 
 void MuteControl::NotifyRemoteSession(bool active)
 {
-   WMLog::GetInstance().Write(_T("Mute Event: Remote Session %s"),
-                              active ? _T("start") : _T("stop"));
+   WMLog::GetInstance().Write(L"Mute Event: Remote Session %s",
+                              active ? L"start" : L"stop");
    NotifyRestoreCondition(MuteTypeRemoteSession, active);
 }
 
 void MuteControl::NotifyDisplayStandby(bool active)
 {
    if (displayWasOffOnce_ || active) {
-      WMLog::GetInstance().Write(_T("Mute Event: Display Standby %s"),
-                                 active ? _T("start") : _T("stop"));
+      WMLog::GetInstance().Write(L"Mute Event: Display Standby %s",
+                                 active ? L"start" : L"stop");
       NotifyRestoreCondition(MuteTypeDisplayStandby, active);
       displayWasOffOnce_ = true;
    }
@@ -268,7 +268,7 @@ void MuteControl::NotifyDisplayStandby(bool active)
 
 void MuteControl::NotifyLogout()
 {
-   WMLog::GetInstance().Write(_T("Mute Event: Logout start"));
+   WMLog::GetInstance().Write(L"Mute Event: Logout start");
    if (muteConfig_[MuteTypeLogout].shouldMute) {
       winAudio_->SetMute(true);
    }
@@ -276,7 +276,7 @@ void MuteControl::NotifyLogout()
 
 void MuteControl::NotifySuspend(bool /*active*/)
 {
-   WMLog::GetInstance().Write(_T("Mute Event: Suspend start"));
+   WMLog::GetInstance().Write(L"Mute Event: Suspend start");
    if (muteConfig_[MuteTypeSuspend].shouldMute) {
       winAudio_->SetMute(true);
    }
@@ -284,7 +284,7 @@ void MuteControl::NotifySuspend(bool /*active*/)
 
 void MuteControl::NotifyShutdown()
 {
-   WMLog::GetInstance().Write(_T("Mute Event: Shutdown start"));
+   WMLog::GetInstance().Write(L"Mute Event: Shutdown start");
    if (muteConfig_[MuteTypeShutdown].shouldMute) {
       winAudio_->SetMute(true);
    }

@@ -47,7 +47,7 @@ public:
 
    bool Init(HWND hNotifyWnd);
    void Unload();
-   void SetNetworkList(const std::vector<tstring> networks, bool isMuteList);
+   void SetNetworkList(const std::vector<std::wstring> networks, bool isMuteList);
 
    void CheckNetwork();
    void WlanNotificationCallback(PWLAN_NOTIFICATION_DATA notifyData);
@@ -60,5 +60,5 @@ private:
    // not be muted.
    bool isMuteList_;
    bool initialized_;
-   std::vector<tstring> networks_;
+   std::vector<std::wstring> networks_;
 };

@@ -98,5 +98,5 @@ private:
    void NotifyRestoreCondition(int type, bool active);
    void SaveMuteStatus();
    void RestoreVolume();
-   void ShowNotification(const tstring& title, const tstring& text);
+   void ShowNotification(const std::wstring& title, const std::wstring& text);
 };

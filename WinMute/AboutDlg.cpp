@@ -33,7 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
-static const TCHAR *licenseText = _T("\
+static const wchar_t *licenseText = L"\
 WinMute\r\n\
 Copyright(c) 2022, Alexander Steinhoefer\r\n\
 \r\n\
@@ -64,9 +64,9 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT\r\n\
 LIABILITY, OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY\r\n\
 WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE\r\n\
 POSSIBILITY OF SUCH DAMAGE.\r\n\
-");
+";
 
-static const TCHAR *aboutText = _T("\
+static const wchar_t *aboutText = L"\
 WinMute is developed by Alexander Steinhoefer\r\n\
 in his spare time.\r\n\
 \r\n\
@@ -76,7 +76,7 @@ Contributions in the form of code, tickets or\r\n\
 feature requests are very welcome.\r\n\
 \r\n\
 Thank your for using this little tool!\r\n\
-");
+";
 
 enum AboutTabsIDs {
    ABOUT_TAB_GENERAL = 0,
@@ -97,10 +97,10 @@ struct AboutDlgData {
    }
 };
 
-static void InsertTabItem(HWND hTabCtrl, UINT id, const TCHAR* itemName)
+static void InsertTabItem(HWND hTabCtrl, UINT id, const wchar_t *itemName)
 {
    constexpr int bufSize = 50;
-   TCHAR buf[bufSize];
+   wchar_t buf[bufSize];
    TC_ITEM tcItem;
    ZeroMemory(&tcItem, sizeof(tcItem));
    tcItem.mask |= TCIF_TEXT;
@@ -136,7 +136,7 @@ static void ResizeTabs(HWND hTabCtrl, HWND* hTabs, int tabCount)
 
    HDWP hdwp = BeginDeferWindowPos(tabCount);
    if (hdwp == NULL) {
-      PrintWindowsError(_T("BeginDeferWindowPos"), GetLastError());
+      PrintWindowsError(L"BeginDeferWindowPos", GetLastError());
    } else {
       for (int i = 0; i < tabCount; ++i) {
          HDWP newHdwp = DeferWindowPos(
@@ -149,7 +149,7 @@ static void ResizeTabs(HWND hTabCtrl, HWND* hTabs, int tabCount)
             tabCtrlRect.bottom - tabCtrlRect.top,
             0);
          if (hdwp == NULL) {
-            PrintWindowsError(_T("DeferWindowPos"), GetLastError());
+            PrintWindowsError(L"DeferWindowPos", GetLastError());
             break;
          } else {
             hdwp = newHdwp;
@@ -177,8 +177,7 @@ static INT_PTR CALLBACK About_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM
               || ctrlId == IDC_LINK_TICKETS
               || ctrlId == IDC_LINK_PROJECT)
             && item.iLink == 0) {
-            ShellExecute(nullptr, _T("open"), item.szUrl, nullptr, nullptr,
-               SW_SHOW);
+            ShellExecuteW(nullptr, L"open", item.szUrl, nullptr, nullptr, SW_SHOW);
          }
       }
       return TRUE;
@@ -204,11 +203,11 @@ static INT_PTR CALLBACK About_LicenseDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM
    return FALSE;
 }
 
-static bool GetWinMuteVersion(tstring& versNumber)
+static bool GetWinMuteVersion(std::wstring& versNumber)
 {
    bool success = false;
    DWORD dummy;
-   TCHAR szFileName[MAX_PATH];
+   wchar_t szFileName[MAX_PATH];
    GetModuleFileName(NULL, szFileName, sizeof(szFileName)/sizeof(szFileName[0]));
    DWORD versSize = GetFileVersionInfoSizeEx(FILE_VER_GET_NEUTRAL, szFileName, &dummy);
    LPVOID versData = malloc(versSize);
@@ -221,16 +220,16 @@ static bool GetWinMuteVersion(tstring& versNumber)
             versData)) {
          VS_FIXEDFILEINFO *pvi;
          UINT pviLen = sizeof(*pvi);
-         if (VerQueryValue(
+         if (VerQueryValueW(
                versData,
-               _T("\\"),
+               L"\\",
                reinterpret_cast<LPVOID*>(&pvi),
                &pviLen)) {
-            TCHAR buf[30];
-            StringCchPrintf(
+            wchar_t buf[50];
+            StringCchPrintfW(
                buf,
                ARRAY_SIZE(buf),
-               _T("%d.%d.%d.%d"),
+               L"%d.%d.%d.%d",
                pvi->dwProductVersionMS >> 16,
                pvi->dwFileVersionMS & 0xFFFF,
                pvi->dwFileVersionLS >> 16,
@@ -255,8 +254,8 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
       dlgData->hTabCtrl = GetDlgItem(hDlg, IDC_ABOUT_TAB);
 
-      InsertTabItem(dlgData->hTabCtrl, ABOUT_TAB_GENERAL, _T("WinMute"));
-      InsertTabItem(dlgData->hTabCtrl, ABOUT_TAB_LICENSE, _T("License"));
+      InsertTabItem(dlgData->hTabCtrl, ABOUT_TAB_GENERAL, L"WinMute");
+      InsertTabItem(dlgData->hTabCtrl, ABOUT_TAB_LICENSE, L"License");
 
       dlgData->hTabs[ABOUT_TAB_GENERAL] = CreateDialog(
          nullptr,
@@ -277,10 +276,10 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
       SwitchTab(dlgData, dlgData->hTabs[ABOUT_TAB_GENERAL]);
 
       HWND hTitle = GetDlgItem(hDlg, IDC_ABOUT_TITLE);
-      tstring progName = _T("WinMute");
-      tstring progVers = _T("WinMute");
+      std::wstring progName{ L"WinMute" };
+      std::wstring progVers{ L"WinMute" };
       if (GetWinMuteVersion(progVers)) {
-         progName = tstring(_T("WinMute ")) + progVers;
+         progName = std::wstring{ L"WinMute " } + progVers;
          Static_SetText(hTitle, progName.c_str());
       }
 
@@ -300,7 +299,7 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
       font.lfClipPrecision = CLIP_STROKE_PRECIS | CLIP_MASK | CLIP_TT_ALWAYS | CLIP_LH_ANGLES;
       font.lfQuality = CLEARTYPE_QUALITY;
       font.lfPitchAndFamily = VARIABLE_PITCH | FF_ROMAN;
-      lstrcpy(font.lfFaceName, _T("Segoe UI"));
+      wcscpy_s(font.lfFaceName, L"Segoe UI");
 
       dlgData->hTitleFont = CreateFontIndirect(&font);
       SendMessage(

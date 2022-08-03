@@ -60,9 +60,9 @@ static bool SaveQuietHours(
             nullptr,
             nullptr,
             PROGRAM_NAME,
-            _T("Invalid time range"),
-            _T("Can't start and stop at the same time.\n")
-            _T("Please correct your time range.\n"),
+            L"Invalid time range",
+            L"Can't start and stop at the same time.\n"
+            L"Please correct your time range.\n",
             TDCBF_OK_BUTTON,
             TD_WARNING_ICON,
             nullptr);
@@ -82,8 +82,8 @@ static bool SaveQuietHours(
          nullptr,
          nullptr,
          PROGRAM_NAME,
-         _T("Failed to save quiet hours settings"),
-         _T("Something went wrong while saving your settings."),
+         L"Failed to save quiet hours settings",
+         L"Something went wrong while saving your settings.",
          TDCBF_OK_BUTTON,
          TD_ERROR_ICON,
          nullptr);

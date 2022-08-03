@@ -64,14 +64,14 @@ extern INT_PTR CALLBACK Settings_WifiDlgProc(HWND, UINT, WPARAM, LPARAM);
 
 extern HINSTANCE hglobInstance;
 
-static void InsertTabItem(HWND hTabCtrl, UINT id, const TCHAR* itemName)
+static void InsertTabItem(HWND hTabCtrl, UINT id, const wchar_t *itemName)
 {
    constexpr int bufSize = 50;
-   TCHAR buf[bufSize];
+   wchar_t buf[bufSize];
    TC_ITEM tcItem;
    ZeroMemory(&tcItem, sizeof(tcItem));
    tcItem.mask |= TCIF_TEXT;
-   StringCchCopy(buf, bufSize, itemName);
+   StringCchCopyW(buf, bufSize, itemName);
    tcItem.pszText = buf;
    tcItem.cchTextMax = bufSize;
 
@@ -104,7 +104,7 @@ static void ResizeTabs(HWND hTabCtrl, HWND* hTabs, int tabCount)
 
    HDWP hdwp = BeginDeferWindowPos(tabCount);
    if (hdwp == NULL) {
-      PrintWindowsError(_T("BeginDeferWindowPos"), GetLastError());
+      PrintWindowsError(L"BeginDeferWindowPos", GetLastError());
    } else {
       for (int i = 0; i < tabCount; ++i) {
          HDWP newHdwp = DeferWindowPos(
@@ -117,7 +117,7 @@ static void ResizeTabs(HWND hTabCtrl, HWND* hTabs, int tabCount)
             tabCtrlRect.bottom - tabCtrlRect.top,
             0);
          if (newHdwp == NULL) {
-            PrintWindowsError(_T("DeferWindowPos"), GetLastError());
+            PrintWindowsError(L"DeferWindowPos", GetLastError());
             break;
          } else {
             hdwp = newHdwp;
@@ -140,11 +140,11 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
       
       dlgData->hTabCtrl = GetDlgItem(hDlg, IDC_SETTINGS_TAB);
 
-      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_GENERAL, _T("General"));
-      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_MUTE, _T("Mute"));
-      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_QUIETHOURS, _T("Quiet Hours"));
-      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_WIFI, _T("WLAN"));
-      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_BLUETOOTH, _T("Bluetooth"));
+      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_GENERAL, L"General");
+      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_MUTE, L"Mute");
+      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_QUIETHOURS, L"Quiet Hours");
+      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_WIFI, L"WLAN");
+      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_BLUETOOTH, L"Bluetooth");
 
       dlgData->hTabs[SETTINGS_TAB_GENERAL] = CreateDialogParam(
          hglobInstance,

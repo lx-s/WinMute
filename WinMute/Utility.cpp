@@ -33,7 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "Common.h"
 
-void PrintWindowsError(LPCWSTR lpszFunction, DWORD lastError)
+void PrintWindowsError(const wchar_t *functionName, DWORD lastError)
 {
    // Retrieve the system error message for the last-error code
    if (lastError == -1) {
@@ -41,26 +41,27 @@ void PrintWindowsError(LPCWSTR lpszFunction, DWORD lastError)
    }
 
    LPVOID lpMsgBuf;
-   if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-      FORMAT_MESSAGE_FROM_SYSTEM |
-      FORMAT_MESSAGE_IGNORE_INSERTS,
-      nullptr, lastError,
-      MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-      reinterpret_cast<LPTSTR>(&lpMsgBuf), 0, nullptr) != 0) {
+   if (FormatMessage(
+         FORMAT_MESSAGE_ALLOCATE_BUFFER |
+         FORMAT_MESSAGE_FROM_SYSTEM |
+         FORMAT_MESSAGE_IGNORE_INSERTS,
+         nullptr, lastError,
+         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+         reinterpret_cast<wchar_t*>(&lpMsgBuf), 0, nullptr) != 0) {
       size_t displayBufSize =
-         ((size_t)lstrlen(static_cast<LPCTSTR>(lpMsgBuf)) +
-            (size_t)lstrlen(static_cast<LPCTSTR>(lpszFunction))
-            + 40) * sizeof(TCHAR);
+         (wcslen(static_cast<const wchar_t*>(lpMsgBuf))
+          + wcslen(static_cast<const wchar_t*>(functionName))
+          + 40) * sizeof(wchar_t);
       // Display the error message and exit the process
       LPVOID lpDisplayBuf = reinterpret_cast<LPVOID>(
          LocalAlloc(LMEM_ZEROINIT, displayBufSize));
       if (lpDisplayBuf) {
-         StringCchPrintf((LPTSTR)lpDisplayBuf,
+         StringCchPrintfW((LPTSTR)lpDisplayBuf,
             LocalSize(lpDisplayBuf),
-            _T("%s failed with error %u: %s"),
-            lpszFunction,
+            L"%s failed with error %u: %s",
+            functionName,
             lastError,
-            reinterpret_cast<TCHAR*>(lpMsgBuf));
+            reinterpret_cast<wchar_t*>(lpMsgBuf));
          TaskDialog(
             nullptr,
             nullptr,

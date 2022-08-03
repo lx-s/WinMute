@@ -158,8 +158,8 @@ bool QuietHoursTimer::LoadFromSettings(const WMSettings& settings)
             hParent_,
             hglobInstance,
             PROGRAM_NAME,
-            _T("Quiet Hours Start"),
-            _T("Failed to register quiet hours start with windows timer system"),
+            L"Quiet Hours Start",
+            L"Failed to register quiet hours start with windows timer system",
             TDCBF_OK_BUTTON,
             TD_ERROR_ICON,
             nullptr);
@@ -192,8 +192,8 @@ bool QuietHoursTimer::SetStart()
          hParent_,
          hglobInstance,
          PROGRAM_NAME,
-         _T("Quiet Hours Start"),
-         _T("Failed to register quiet hours start with windows timer system"),
+         L"Quiet Hours Start",
+         L"Failed to register quiet hours start with windows timer system",
          TDCBF_OK_BUTTON,
          TD_ERROR_ICON,
          nullptr);
@@ -227,8 +227,8 @@ bool QuietHoursTimer::SetEnd()
          hParent_,
          hglobInstance,
          PROGRAM_NAME,
-         _T("Quiet Hours Stop"),
-         _T("Failed to register end of quiet hours with windows timer system"),
+         L"Quiet Hours Stop",
+         L"Failed to register end of quiet hours with windows timer system",
          TDCBF_OK_BUTTON,
          TD_ERROR_ICON,
          nullptr);

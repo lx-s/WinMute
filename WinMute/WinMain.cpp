@@ -54,7 +54,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
    _In_ PWSTR,
    _In_ int)
 {
-   HANDLE hMutex = CreateMutex(nullptr, TRUE, _T("LxSystemsWinMute"));
+   HANDLE hMutex = CreateMutexW(nullptr, TRUE, L"LxSystemsWinMute");
    if (hMutex == nullptr) {
       return FALSE;
    }
@@ -63,9 +63,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
       TaskDialog(nullptr,
          nullptr,
          PROGRAM_NAME,
-         _T("WinMute is already running"),
-         _T("Please look for a white speaker icon in your Windows ")
-         _T(" taskbar notification area."),
+         L"WinMute is already running",
+         L"Please look for a white speaker icon in your Windows "
+         L" taskbar notification area.",
          TDCBF_OK_BUTTON,
          TD_INFORMATION_ICON,
          nullptr);
@@ -86,8 +86,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
       TaskDialog(nullptr,
          nullptr,
          PROGRAM_NAME,
-         _T("Failed to register extended window controls."),
-         _T("Please try to restart the program."),
+         L"Failed to register extended window controls.",
+         L"Please try to restart the program.",
          TDCBF_OK_BUTTON,
          TD_ERROR_ICON,
          nullptr);
@@ -101,8 +101,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
       TaskDialog(nullptr,
          nullptr,
          PROGRAM_NAME,
-         _T("Failed to initialize COM library."),
-         _T("Please try to restart the program."),
+         L"Failed to initialize COM library.",
+         L"Please try to restart the program.",
          TDCBF_OK_BUTTON,
          TD_ERROR_ICON,
          nullptr);

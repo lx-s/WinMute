@@ -36,10 +36,10 @@ POSSIBILITY OF SUCH DAMAGE.
 static constexpr int BT_DEV_NAME_MAX_LEN = 100;
 
 struct BtDeviceName {
-   tstring devName;
+   std::wstring devName;
 };
 
-static bool GetPairedBtAudioDevices(std::vector<tstring>& devices)
+static bool GetPairedBtAudioDevices(std::vector<std::wstring>& devices)
 {
    auto& log = WMLog::GetInstance();
 
@@ -78,20 +78,20 @@ static INT_PTR CALLBACK Settings_BluetoothAddDlgProc(HWND hDlg, UINT msg, WPARAM
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(btDeviceData));
 
       if (btDeviceData->devName.length() == 0) {
-         if (!SetWindowText(hDlg, _T("Add Bluetooth device"))) {
-             PrintWindowsError(_T("SetWindowText"), GetLastError());
+         if (!SetWindowTextW(hDlg, L"Add Bluetooth device")) {
+             PrintWindowsError(L"SetWindowText", GetLastError());
             return FALSE;
          }
       } else {
-         if (!SetWindowText(hDlg, _T("Edit Bluetooth device"))
-             || !SetWindowText(GetDlgItem(hDlg, IDC_BT_DEVICE_NAME),
+         if (!SetWindowTextW(hDlg, L"Edit Bluetooth device")
+             || !SetWindowTextW(GetDlgItem(hDlg, IDC_BT_DEVICE_NAME),
                                btDeviceData->devName.c_str())) {
-            PrintWindowsError(_T("SetWindowText"), GetLastError());
+            PrintWindowsError(L"SetWindowText", GetLastError());
             return FALSE;
          }
       }
       // Fill Combobox
-      std::vector<tstring> registeredBtDevices;
+      std::vector<std::wstring> registeredBtDevices;
       if (GetPairedBtAudioDevices(registeredBtDevices)) {
          for (const auto& devName : registeredBtDevices) {
             ComboBox_AddString(hBtDevName, devName.c_str());
@@ -113,12 +113,12 @@ static INT_PTR CALLBACK Settings_BluetoothAddDlgProc(HWND hDlg, UINT msg, WPARAM
             EDITBALLOONTIP ebt;
             ZeroMemory(&ebt, sizeof(ebt));
             ebt.cbStruct = sizeof(ebt);
-            ebt.pszText = _T("Please enter a Bluetooth device name");
-            ebt.pszTitle = _T("Bluetooth Device Name");
+            ebt.pszText = L"Please enter a Bluetooth device name";
+            ebt.pszTitle = L"Bluetooth Device Name";
             ebt.ttiIcon = TTI_INFO;
             Edit_ShowBalloonTip(hDevName, &ebt);
          } else {
-            TCHAR devNameBuf[BT_DEV_NAME_MAX_LEN + 1];
+            wchar_t devNameBuf[BT_DEV_NAME_MAX_LEN + 1];
             BtDeviceName* btDevName = reinterpret_cast<BtDeviceName*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
             if (btDevName != nullptr) {
                Edit_GetText(hDevName, devNameBuf, ARRAY_SIZE(devNameBuf));
@@ -142,12 +142,12 @@ static INT_PTR CALLBACK Settings_BluetoothAddDlgProc(HWND hDlg, UINT msg, WPARAM
    return FALSE;
 }
 
-static std::vector<tstring> ExportBluetoothDeviceList(HWND hList)
+static std::vector<std::wstring> ExportBluetoothDeviceList(HWND hList)
 {
-   std::vector<tstring> items;
+   std::vector<std::wstring> items;
    DWORD itemCount = ListBox_GetCount(hList);
    for (DWORD i = 0; i < itemCount; ++i) {
-      TCHAR textBuf[BT_DEV_NAME_MAX_LEN + 1] = { 0 };
+      wchar_t textBuf[BT_DEV_NAME_MAX_LEN + 1] = { 0 };
       DWORD textLen = ListBox_GetTextLen(hList, i);
       if (textLen < ARRAY_SIZE(textBuf)) {
          ListBox_GetText(hList, i, textBuf);
@@ -241,7 +241,7 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
                hDlg,
                Settings_BluetoothAddDlgProc,
                reinterpret_cast<LPARAM>(&btDeviceName)) == 0) {
-            std::vector<tstring> devices = ExportBluetoothDeviceList(GetDlgItem(hDlg, IDC_BLUETOOTH_LIST));
+            std::vector<std::wstring> devices = ExportBluetoothDeviceList(GetDlgItem(hDlg, IDC_BLUETOOTH_LIST));
             if (std::find(begin(devices), end(devices), btDeviceName.devName) == end(devices)) {
                ListBox_AddString(
                   GetDlgItem(hDlg, IDC_BLUETOOTH_LIST),
@@ -257,9 +257,9 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
          WPARAM sel = ListBox_GetCurSel(hList);
          if (sel != LB_ERR) {
             int len = ListBox_GetTextLen(hList, sel);
-            TCHAR* textBuf = NULL;
+            wchar_t* textBuf = NULL;
             if (len != LB_ERR) {
-               if ((textBuf = new TCHAR[static_cast<size_t>(len) + 1]) != NULL) {
+               if ((textBuf = new wchar_t[static_cast<size_t>(len) + 1]) != NULL) {
                   ListBox_GetText(hList, sel, textBuf);
 
                   BtDeviceName btDevName;
@@ -272,7 +272,7 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
                         hDlg,
                         Settings_BluetoothAddDlgProc,
                         reinterpret_cast<LPARAM>(&btDevName)) == 0) {
-                     std::vector<tstring> networks = ExportBluetoothDeviceList(GetDlgItem(hDlg, IDC_WIFI_LIST));
+                     std::vector<std::wstring> networks = ExportBluetoothDeviceList(GetDlgItem(hDlg, IDC_WIFI_LIST));
                      if (std::find(begin(networks), end(networks), btDevName.devName) == end(networks)) {
                         ListBox_InsertString(hList, sel, btDevName.devName.c_str());
                         ListBox_DeleteString(hList, sel + 1);
@@ -305,7 +305,7 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
    }
    case WM_SAVESETTINGS: {
       WMSettings* settings = reinterpret_cast<WMSettings*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
-      std::vector<tstring> devices = ExportBluetoothDeviceList(GetDlgItem(hDlg, IDC_BLUETOOTH_LIST));
+      std::vector<std::wstring> devices = ExportBluetoothDeviceList(GetDlgItem(hDlg, IDC_BLUETOOTH_LIST));
       settings->StoreBluetoothDevices(devices);
 
       DWORD checked = Button_GetCheck(GetDlgItem(hDlg, IDC_ENABLE_BLUETOOTH_MUTE));

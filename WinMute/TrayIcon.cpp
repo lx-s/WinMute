@@ -39,7 +39,7 @@ TrayIcon::TrayIcon() :
 }
 
 TrayIcon::TrayIcon(HWND hWnd, UINT trayID, HICON hIcon,
-                   const tstring& tooltip, bool show) :
+                   const std::wstring& tooltip, bool show) :
    initialized_(false),
    iconVisible_(false)
 {
@@ -47,7 +47,7 @@ TrayIcon::TrayIcon(HWND hWnd, UINT trayID, HICON hIcon,
 }
 
 void TrayIcon::Init(HWND hWnd, UINT trayID, HICON hIcon,
-                    const tstring& tooltip, bool show)
+                    const std::wstring& tooltip, bool show)
 {
    if (!hIcon) {
       hIcon_ = LoadIcon(0, IDI_APPLICATION);
@@ -123,7 +123,7 @@ void TrayIcon::ChangeIcon(HICON hNewIcon)
    return;
 }
 
-void TrayIcon::ChangeText(const tstring& tooltip)
+void TrayIcon::ChangeText(const std::wstring& tooltip)
 {
    tooltip_ = tooltip;
 
@@ -131,7 +131,7 @@ void TrayIcon::ChangeText(const tstring& tooltip)
       ChangeText();
 }
 
-void TrayIcon::ShowPopup(const tstring& title, const tstring& text) const
+void TrayIcon::ShowPopup(const std::wstring& title, const std::wstring& text) const
 {
    if (!initialized_) {
       TrayIconPopup popup;

@@ -33,76 +33,76 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
-static const LPCWSTR LX_SYSTEMS_SUBKEY
-   = _T("SOFTWARE\\lx-systems\\WinMute");
-static const LPCWSTR LX_SYSTEMS_WIFI_SUBKEY
-   = _T("SOFTWARE\\lx-systems\\WinMute\\WifiNetworks");
-static const LPCWSTR LX_SYSTEMS_BLUETOOTH_SUBKEY
-   = _T("SOFTWARE\\lx-systems\\WinMute\\BluetoothDevices");
+static const wchar_t *LX_SYSTEMS_SUBKEY
+   = L"SOFTWARE\\lx-systems\\WinMute";
+static const wchar_t* LX_SYSTEMS_WIFI_SUBKEY
+   = L"SOFTWARE\\lx-systems\\WinMute\\WifiNetworks";
+static const wchar_t* LX_SYSTEMS_BLUETOOTH_SUBKEY
+   = L"SOFTWARE\\lx-systems\\WinMute\\BluetoothDevices";
 
-static const LPCWSTR LX_SYSTEMS_AUTOSTART_KEY
-   = _T("LX-Systems WinMute");
+static const wchar_t* LX_SYSTEMS_AUTOSTART_KEY
+   = L"LX-Systems WinMute";
 
-static LPCWSTR KeyToStr(SettingsKey key)
+static const wchar_t* KeyToStr(SettingsKey key)
 {
-   LPCWSTR keyStr = nullptr;
+   const wchar_t* keyStr = nullptr;
    switch (key) {
    case SettingsKey::MUTE_ON_LOCK:
-      keyStr = _T("MuteOnLock");
+      keyStr = L"MuteOnLock";
       break;
    case SettingsKey::MUTE_ON_SCREENSAVER:
-      keyStr = _T("MuteOnScreensaver");
+      keyStr = L"MuteOnScreensaver";
       break;
    case SettingsKey::MUTE_ON_DISPLAYSTANDBY:
-      keyStr = _T("MuteOnDisplayStandby");
+      keyStr = L"MuteOnDisplayStandby";
       break;
    case SettingsKey::MUTE_ON_RDP:
-      keyStr = _T("MuteOnRDP");
+      keyStr = L"MuteOnRDP";
       break;
    case SettingsKey::RESTORE_AUDIO:
-      keyStr = _T("RestoreAudio");
+      keyStr = L"RestoreAudio";
       break;
    case SettingsKey::MUTE_ON_SUSPEND:
-      keyStr = _T("MuteOnSuspend");
+      keyStr = L"MuteOnSuspend";
       break;
    case SettingsKey::MUTE_ON_SHUTDOWN:
-      keyStr = _T("MuteOnShutdown");
+      keyStr = L"MuteOnShutdown";
       break;
    case SettingsKey::MUTE_ON_LOGOUT:
-      keyStr = _T("MuteOnLogout");
+      keyStr = L"MuteOnLogout";
       break;
    case SettingsKey::MUTE_ON_BLUETOOTH:
-      keyStr = _T("MuteOnBluetooth");
+      keyStr = L"MuteOnBluetooth";
       break;
    case SettingsKey::MUTE_ON_BLUETOOTH_DEVICELIST:
-      keyStr = _T("MuteOnBluetoothDeviceList");
+      keyStr = L"MuteOnBluetoothDeviceList";
       break;
    case SettingsKey::MUTE_ON_WLAN:
-      keyStr = _T("MuteOnWlan");
+      keyStr = L"MuteOnWlan";
       break;
    case SettingsKey::MUTE_ON_WLAN_ALLOWLIST:
-      keyStr = _T("MuteOnWlanAllowList");
+      keyStr = L"MuteOnWlanAllowList";
       break;
    case SettingsKey::QUIETHOURS_ENABLE:
-      keyStr = _T("QuietHoursEnabled");
+      keyStr = L"QuietHoursEnabled";
       break;
    case SettingsKey::QUIETHOURS_FORCEUNMUTE:
-      keyStr = _T("QuietHoursForceUnmute");
+      keyStr = L"QuietHoursForceUnmute";
       break;
    case SettingsKey::QUIETHOURS_NOTIFICATIONS:
-      keyStr = _T("QuietHoursNotifications");
+      keyStr = L"QuietHoursNotifications";
       break;
    case SettingsKey::QUIETHOURS_START:
-      keyStr = _T("QuietHoursStart");
+      keyStr = L"QuietHoursStart";
       break;
    case SettingsKey::QUIETHOURS_END:
-      keyStr = _T("QuietHoursEnd");
+      keyStr = L"QuietHoursEnd";
       break;
    case SettingsKey::LOGGING_ENABLED:
-      keyStr = _T("Logging");
+      keyStr = L"Logging";
       break;
    case SettingsKey::NOTIFICATIONS_ENABLED:
-      keyStr = _T("ShowNotifications");
+      keyStr = L"ShowNotifications";
       break;
    }
    return keyStr;
@@ -160,23 +160,23 @@ static void NormalizeStringList(std::vector<std::basic_string<T>> &items)
    }
 }
 
-static bool ReadStringFromRegistry(HKEY hKey, const TCHAR* subKey, tstring& val)
+static bool ReadStringFromRegistry(HKEY hKey, const wchar_t *subKey, std::wstring& val)
 {
    bool success = false;
    DWORD regError = 0;
    DWORD bufSize = 0;
-   regError = RegQueryValueEx(hKey, subKey, nullptr, nullptr, nullptr, &bufSize);
+   regError = RegQueryValueExW(hKey, subKey, nullptr, nullptr, nullptr, &bufSize);
    if (regError != ERROR_SUCCESS) {
       if (regError != ERROR_FILE_NOT_FOUND) {
-         PrintWindowsError(_T("RegQueryValueEx"), regError);
+         PrintWindowsError(L"RegQueryValueEx", regError);
       }
    } else {
       bufSize += 1; // Trailing '\0'
-      TCHAR *buf = new TCHAR[bufSize];
-      regError = RegQueryValueEx(hKey, subKey, nullptr, nullptr,
+      wchar_t *buf = new wchar_t[bufSize];
+      regError = RegQueryValueExW(hKey, subKey, nullptr, nullptr,
                                  reinterpret_cast<LPBYTE>(buf), &bufSize);
       if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(_T("RegQueryValueEx"), regError);
+         PrintWindowsError(L"RegQueryValueEx", regError);
       } else {
          success = true;
          val = buf;
@@ -202,7 +202,7 @@ WMSettings::~WMSettings()
 bool WMSettings::Init()
 {
    if (hSettingsKey_ == nullptr) {
-      DWORD regError = RegCreateKeyEx(
+      DWORD regError = RegCreateKeyExW(
          HKEY_CURRENT_USER,
          LX_SYSTEMS_SUBKEY,
          0,
@@ -213,12 +213,12 @@ bool WMSettings::Init()
          &hSettingsKey_,
          nullptr);
       if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(_T("RegCreateKeyEx"), regError);
+         PrintWindowsError(L"RegCreateKeyEx", regError);
          return false;
       }
    }
    if (hWifiKey_ == nullptr) {
-      DWORD regError = RegCreateKeyEx(
+      DWORD regError = RegCreateKeyExW(
          HKEY_CURRENT_USER,
          LX_SYSTEMS_WIFI_SUBKEY,
          0,
@@ -229,14 +229,14 @@ bool WMSettings::Init()
          &hWifiKey_,
          nullptr);
       if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(_T("RegCreateKeyEx"), regError);
+         PrintWindowsError(L"RegCreateKeyEx", regError);
          RegCloseKey(hSettingsKey_);
          hSettingsKey_ = nullptr;
          return false;
       }
    }
    if (hBluetoothKey_ == nullptr) {
-      DWORD regError = RegCreateKeyEx(
+      DWORD regError = RegCreateKeyExW(
          HKEY_CURRENT_USER,
          LX_SYSTEMS_BLUETOOTH_SUBKEY,
          0,
@@ -247,7 +247,7 @@ bool WMSettings::Init()
          &hBluetoothKey_,
          nullptr);
       if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(_T("RegCreateKeyEx"), regError);
+         PrintWindowsError(L"RegCreateKeyEx", regError);
          RegCloseKey(hWifiKey_);
          RegCloseKey(hSettingsKey_);
          hSettingsKey_ = nullptr;
@@ -272,14 +272,14 @@ void WMSettings::Unload()
 HKEY WMSettings::OpenAutostartKey(REGSAM samDesired)
 {
    HKEY hRunKey = NULL;
-   DWORD regError = RegOpenKeyEx(
+   DWORD regError = RegOpenKeyExW(
       HKEY_CURRENT_USER,
-      _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"),
+      L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
       0,
       samDesired,
       &hRunKey);
    if (regError != ERROR_SUCCESS) {
-      PrintWindowsError(_T("RegOpenKeyEx"), regError);
+      PrintWindowsError(L"RegOpenKeyEx", regError);
    }
    return hRunKey;
 }
@@ -288,16 +288,16 @@ bool WMSettings::IsAutostartEnabled()
 {
    bool isEnabled = false;
    WMLog& log = WMLog::GetInstance();
-   TCHAR wmPath[MAX_PATH + 1];
+   wchar_t wmPath[MAX_PATH + 1];
    if (GetModuleFileName(NULL, wmPath, sizeof(wmPath) / sizeof(wmPath[0])) == 0) {
-      log.Write(_T("Failed to get path of winmute"));
+      log.Write(L"Failed to get path of winmute");
    } else {
       HKEY hRunKey = OpenAutostartKey(KEY_READ);
       if (hRunKey != NULL) {
-         tstring path;
+         std::wstring path;
          if (ReadStringFromRegistry(hRunKey, LX_SYSTEMS_AUTOSTART_KEY, path)) {
             if (path != wmPath) {
-               log.Write(_T("Autostart entry has wrong path"));
+               log.Write(L"Autostart entry has wrong path");
             } else {
                isEnabled = true;
             }
@@ -314,25 +314,25 @@ void WMSettings::EnableAutostart(bool enable)
    HKEY hRunKey = OpenAutostartKey(KEY_WRITE);
    if (hRunKey != NULL) {
       if (enable) {
-         TCHAR wmPath[MAX_PATH + 1];
-         if (GetModuleFileName(NULL, wmPath, sizeof(wmPath) / sizeof(wmPath[0])) == 0) {
-            log.Write(_T("Failed to get path of winmute"));
+         wchar_t wmPath[MAX_PATH + 1];
+         if (GetModuleFileNameW(NULL, wmPath, sizeof(wmPath) / sizeof(wmPath[0])) == 0) {
+            log.Write(L"Failed to get path of winmute");
          } else {
-            DWORD regError = RegSetKeyValue(
+            DWORD regError = RegSetKeyValueW(
                hRunKey,
                NULL,
                LX_SYSTEMS_AUTOSTART_KEY,
                REG_SZ,
                wmPath,
-               (lstrlen(wmPath) + 1) * sizeof(TCHAR));
+               (lstrlen(wmPath) + 1) * sizeof(wchar_t));
             if (regError != ERROR_SUCCESS) {
-               PrintWindowsError(_T("RegSetKeyValue"), regError);
+               PrintWindowsError(L"RegSetKeyValue", regError);
             }
          }
       } else {
-         DWORD regError = RegDeleteKeyValue(hRunKey, NULL, LX_SYSTEMS_AUTOSTART_KEY);
+         DWORD regError = RegDeleteKeyValueW(hRunKey, NULL, LX_SYSTEMS_AUTOSTART_KEY);
          if (regError != ERROR_SUCCESS && regError != ERROR_FILE_NOT_FOUND) {
-            PrintWindowsError(_T("RegDeleteKeyValue"), regError);
+            PrintWindowsError(L"RegDeleteKeyValue", regError);
          }
       }
       RegCloseKey(hRunKey);
@@ -346,7 +346,7 @@ DWORD WMSettings::QueryValue(SettingsKey key) const
 
    DWORD value = 0;
    DWORD size = sizeof(DWORD);
-   DWORD regError = RegQueryValueEx(
+   DWORD regError = RegQueryValueExW(
       hSettingsKey_,
       keyStr,
       0,
@@ -355,7 +355,7 @@ DWORD WMSettings::QueryValue(SettingsKey key) const
       &size);
    if (regError != ERROR_SUCCESS) {
       if (regError != ERROR_FILE_NOT_FOUND) {
-         PrintWindowsError(_T("RegCreateKeyEx"), regError);
+         PrintWindowsError(L"RegCreateKeyEx", regError);
       }
       return GetDefaultSetting(key);
    }
@@ -368,7 +368,7 @@ bool WMSettings::SetValue(SettingsKey key, DWORD value)
    auto keyStr = KeyToStr(key);
    assert(keyStr != nullptr);
 
-   DWORD regError = RegSetValueEx(
+   DWORD regError = RegSetValueExW(
       hSettingsKey_,
       keyStr,
       0,
@@ -376,20 +376,20 @@ bool WMSettings::SetValue(SettingsKey key, DWORD value)
       reinterpret_cast<BYTE*>(&value),
       sizeof(DWORD));
    if (regError != ERROR_SUCCESS) {
-      PrintWindowsError(_T("RegCreateKeyEx"), regError);
+      PrintWindowsError(L"RegCreateKeyEx", regError);
       return false;
    }
 
    return true;
 }
 
-bool WMSettings::StoreWifiNetworks(std::vector<tstring>& networks)
+bool WMSettings::StoreWifiNetworks(std::vector<std::wstring>& networks)
 {
    // Clear all stored keys
    for (;;) {
-      TCHAR valueName[260] = { 0 };
+      wchar_t valueName[260] = { 0 };
       DWORD valueSize = ARRAY_SIZE(valueName);
-      DWORD regError = RegEnumValue(
+      DWORD regError = RegEnumValueW(
          hWifiKey_,
          0,
          valueName,
@@ -401,12 +401,12 @@ bool WMSettings::StoreWifiNetworks(std::vector<tstring>& networks)
       if (regError == ERROR_NO_MORE_ITEMS) {
          break;
       } else if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(_T("RegEnumValue"), regError);
+         PrintWindowsError(L"RegEnumValue", regError);
          return false;
       } else {
          regError = RegDeleteValue(hWifiKey_, valueName);
          if (regError != ERROR_SUCCESS) {
-            PrintWindowsError(_T("RegDeleteValue"), regError);
+            PrintWindowsError(L"RegDeleteValue", regError);
             return false;
          }
       }
@@ -415,18 +415,18 @@ bool WMSettings::StoreWifiNetworks(std::vector<tstring>& networks)
    NormalizeStringList(networks);
 
    for (size_t i = 0; i < networks.size(); ++i) {
-      TCHAR valueName[25];
-      StringCchPrintfW(valueName, ARRAY_SIZE(valueName), _T("WiFi %03d"), i + 1);
-      const tstring& v = networks[i];
-      DWORD regError = RegSetValueEx(
+      wchar_t valueName[25];
+      StringCchPrintfW(valueName, ARRAY_SIZE(valueName), L"WiFi %03ld", i + 1);
+      const std::wstring& v = networks[i];
+      DWORD regError = RegSetValueExW(
          hWifiKey_,
          valueName,
          NULL,
          REG_SZ,
          reinterpret_cast<const BYTE*>(v.c_str()),
-         static_cast<DWORD>(v.length() + 1) * sizeof(TCHAR));
+         static_cast<DWORD>(v.length() + 1) * sizeof(wchar_t));
       if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(_T("RegSetValueEx"), regError);
+         PrintWindowsError(L"RegSetValueEx", regError);
          return false;
       }
    }
@@ -434,17 +434,17 @@ bool WMSettings::StoreWifiNetworks(std::vector<tstring>& networks)
    return true;
 }
 
-std::vector<tstring> WMSettings::GetWifiNetworks() const
+std::vector<std::wstring> WMSettings::GetWifiNetworks() const
 {
-   std::vector<tstring> networks;
+   std::vector<std::wstring> networks;
    for (int valIdx = 0; ; ++valIdx) {
-      TCHAR valueName[260] = { 0 };
-      TCHAR dataBuf[260] = { 0 };
+      wchar_t valueName[260] = { 0 };
+      wchar_t dataBuf[260] = { 0 };
       DWORD valueSize = ARRAY_SIZE(valueName);
       DWORD valType = 0;
       DWORD dataLen = ARRAY_SIZE(dataBuf);
 
-      DWORD regError = RegEnumValue(
+      DWORD regError = RegEnumValueW(
          hWifiKey_,
          valIdx,
          valueName,
@@ -456,7 +456,7 @@ std::vector<tstring> WMSettings::GetWifiNetworks() const
       if (regError == ERROR_NO_MORE_ITEMS) {
          break;
       } else if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(_T("RegEnumValue"), regError);
+         PrintWindowsError(L"RegEnumValue", regError);
          return {};
       } else {
          networks.push_back(dataBuf);
@@ -466,13 +466,13 @@ std::vector<tstring> WMSettings::GetWifiNetworks() const
    return networks;
 }
 
-bool WMSettings::StoreBluetoothDevices(std::vector<tstring>& devices)
+bool WMSettings::StoreBluetoothDevices(std::vector<std::wstring>& devices)
 {
    // Clear all stored keys
    for (;;) {
-      TCHAR valueName[260] = { 0 };
+      wchar_t valueName[260] = { 0 };
       DWORD valueSize = ARRAY_SIZE(valueName);
-      DWORD regError = RegEnumValue(
+      DWORD regError = RegEnumValueW(
          hBluetoothKey_,
          0,
          valueName,
@@ -484,12 +484,12 @@ bool WMSettings::StoreBluetoothDevices(std::vector<tstring>& devices)
       if (regError == ERROR_NO_MORE_ITEMS) {
          break;
       } else if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(_T("RegEnumValue"), regError);
+         PrintWindowsError(L"RegEnumValue", regError);
          return false;
       } else {
          regError = RegDeleteValue(hBluetoothKey_, valueName);
          if (regError != ERROR_SUCCESS) {
-            PrintWindowsError(_T("RegDeleteValue"), regError);
+            PrintWindowsError(L"RegDeleteValue", regError);
             return false;
          }
       }
@@ -498,21 +498,21 @@ bool WMSettings::StoreBluetoothDevices(std::vector<tstring>& devices)
    NormalizeStringList(devices);
 
    for (size_t i = 0; i < devices.size(); ++i) {
-      TCHAR valueName[25];
+      wchar_t valueName[25];
       StringCchPrintfW(
          valueName,
          ARRAY_SIZE(valueName),
-         _T("Bluetooth %03d"), i + 1);
-      const tstring& v = devices[i];
+         L"Bluetooth %03ld", i + 1);
+      const std::wstring& v = devices[i];
       DWORD regError = RegSetValueEx(
          hBluetoothKey_,
          valueName,
          NULL,
          REG_SZ,
          reinterpret_cast<const BYTE*>(v.c_str()),
-         static_cast<DWORD>(v.length() + 1) * sizeof(TCHAR));
+         static_cast<DWORD>(v.length() + 1) * sizeof(wchar_t));
       if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(_T("RegSetValueEx"), regError);
+         PrintWindowsError(L"RegSetValueEx", regError);
          return false;
       }
    }
@@ -542,7 +542,7 @@ std::vector<std::string> WMSettings::GetBluetoothDevicesA() const
       if (regError == ERROR_NO_MORE_ITEMS) {
          break;
       } else if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(_T("RegEnumValue"), regError);
+         PrintWindowsError(L"RegEnumValue", regError);
          return {};
       } else {
          devices.push_back(dataBuf);
@@ -574,7 +574,7 @@ std::vector<std::wstring> WMSettings::GetBluetoothDevicesW() const
       if (regError == ERROR_NO_MORE_ITEMS) {
          break;
       } else if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(_T("RegEnumValue"), regError);
+         PrintWindowsError(L"RegEnumValue", regError);
          return {};
       } else {
          devices.push_back(dataBuf);

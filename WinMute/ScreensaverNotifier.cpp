@@ -40,7 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 extern HINSTANCE hglobInstance;
 
-static LPCTSTR SCRSVER_NOTIFY_WND_CLASS = _T("LXS_WinMuteScreensaverNotifyClass");
+static const wchar_t *SCRSVER_NOTIFY_WND_CLASS = L"LXS_WinMuteScreensaverNotifyClass";
 
 #define SCRSV_TIMER_ID 1
 
@@ -109,10 +109,10 @@ bool ScreensaverNotifier::Init()
 
 bool ScreensaverNotifier::InitWindow()
 {
-   hWnd_ = CreateWindowEx(
+   hWnd_ = CreateWindowExW(
       WS_EX_TOOLWINDOW,
       SCRSVER_NOTIFY_WND_CLASS,
-      _T("LXS_WinMute_ScreensaverNotify"),
+      L"LXS_WinMute_ScreensaverNotify",
       WS_POPUP,
       0, 0, 0, 0,
       NULL,
@@ -120,7 +120,7 @@ bool ScreensaverNotifier::InitWindow()
       hglobInstance,
       this);
    if (hWnd_ == nullptr) {
-      PrintWindowsError(_T("CreateWindow"));
+      PrintWindowsError(L"CreateWindow");
       return false;
    }
    ShowWindow(hWnd_, SW_HIDE);
@@ -129,9 +129,9 @@ bool ScreensaverNotifier::InitWindow()
 
 bool ScreensaverNotifier::InitWindowMessage()
 {
-   hookWndMsg_ = RegisterWindowMessage(_T("WinMuteScreenSaveNotifyMsg"));
+   hookWndMsg_ = RegisterWindowMessageW(L"WinMuteScreenSaveNotifyMsg");
    if (hookWndMsg_ == 0) {
-      PrintWindowsError(_T("RegisterWindowMessage"));
+      PrintWindowsError(L"RegisterWindowMessage");
       return false;
    }
    return true;
@@ -140,13 +140,8 @@ bool ScreensaverNotifier::InitWindowMessage()
 bool ScreensaverNotifier::InitHook32()
 {
    bool success = false;
-#ifdef _UNICODE
    wchar_t commandLine[MAX_PATH + 1];
    swprintf_s(commandLine, L"/msgId:%d", hookWndMsg_);
-#else
-   char commandLine[MAX_PATH + 1];
-   sprintf_s(commandLine, "/msgId:%d", hookWndMsg_));
-#endif
 
    JOBOBJECT_EXTENDED_LIMIT_INFORMATION jobInfo;
    ZeroMemory(&jobInfo, sizeof(jobInfo));
@@ -159,16 +154,16 @@ bool ScreensaverNotifier::InitHook32()
 
    hJob_ = CreateJobObject(NULL, NULL);
    if (hJob_ == nullptr) {
-      PrintWindowsError(_T("CreateJobObject"), GetLastError());
+      PrintWindowsError(L"CreateJobObject", GetLastError());
    } else if (SetInformationJobObject(
       hJob_,
       JobObjectExtendedLimitInformation,
       &jobInfo,
       sizeof(jobInfo)) == FALSE) {
-      PrintWindowsError(_T("SetInformationJobObject"), GetLastError());
+      PrintWindowsError(L"SetInformationJobObject", GetLastError());
       CloseHandle(hJob_);
-   } else if (CreateProcess(
-         _T(".\\ScreensaverProxy32.exe"),
+   } else if (CreateProcessW(
+         L".\\ScreensaverProxy32.exe",
          commandLine,
          NULL,
          NULL,
@@ -178,12 +173,12 @@ bool ScreensaverNotifier::InitHook32()
          NULL,
          &startupInfo,
          &procInfo) == FALSE) {
-      PrintWindowsError(_T("CreateProcess"));
+      PrintWindowsError(L"CreateProcess");
       CloseHandle(hJob_);
       hJob_ = nullptr;
    } else {
       if (AssignProcessToJobObject(hJob_, procInfo.hProcess) == FALSE) {
-         PrintWindowsError(_T("AssignProcessToJobObject"), GetLastError());
+         PrintWindowsError(L"AssignProcessToJobObject", GetLastError());
          CloseHandle(hJob_);
          hJob_ = nullptr;
       } else {
@@ -198,9 +193,9 @@ bool ScreensaverNotifier::InitHook32()
 bool ScreensaverNotifier::InitHookDll()
 {
    if (hookDll_ == nullptr) {
-      hookDll_ = LoadLibrary(_T("ScreensaverNotify"));
+      hookDll_ = LoadLibraryW(L"ScreensaverNotify");
       if (hookDll_ == nullptr) {
-         PrintWindowsError(_T("LoadLibrary"));
+         PrintWindowsError(L"LoadLibrary");
       } else {
          regHook_ = reinterpret_cast<RegisterHook>(
             GetProcAddress(hookDll_, "RegisterScreensaverHook"));
@@ -224,7 +219,7 @@ bool ScreensaverNotifier::RegisterWindowClass()
    wc.lpszClassName = SCRSVER_NOTIFY_WND_CLASS;
 
    if (!RegisterClass(&wc)) {
-      PrintWindowsError(_T("RegisterClass"));
+      PrintWindowsError(L"RegisterClass");
       return false;
    }
    return true;
@@ -280,7 +275,7 @@ void ScreensaverNotifier::StartScreensaverPollTimer(bool start)
             1000,
             nullptr,
             TIMERV_DEFAULT_COALESCING) == 0) {
-         PrintWindowsError(_T("SetCoalescableTimer"));
+         PrintWindowsError(L"SetCoalescableTimer");
       }
    } else {
       KillTimer(hWnd_, SCRSV_TIMER_ID);
@@ -299,7 +294,7 @@ bool ScreensaverNotifier::IsScreensaverRunning()
          0,
          &isRunning,
          FALSE) == FALSE) {
-      PrintWindowsError(_T("SystemParametersInfo"));
+      PrintWindowsError(L"SystemParametersInfo");
       return false;
    }
    return isRunning != 0;

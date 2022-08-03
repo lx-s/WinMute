@@ -129,9 +129,9 @@ HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnSessionDisconnected(
       TaskDialog(nullptr,
          nullptr,
          PROGRAM_NAME,
-         _T("The audio service has been shut down. "),
-         _T("WinMute is not able to recover from that condition.\n")
-         _T("Please try restarting the program"),
+         L"The audio service has been shut down. ",
+         L"WinMute is not able to recover from that condition.\n"
+         L"Please try restarting the program",
          TDCBF_OK_BUTTON,
          TD_WARNING_ICON,
          nullptr);

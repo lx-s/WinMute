@@ -72,14 +72,14 @@ bool WifiDetector::Init(HWND hNotifyWnd)
       DWORD wlErr = WlanOpenHandle(vers, NULL, &vers, &wlanHandle_);
       if (wlErr != ERROR_SUCCESS) {
          if (wlErr != ERROR_SERVICE_NOT_ACTIVE) {
-            PrintWindowsError(_T("WlanOpenHandle"), wlErr);
+            PrintWindowsError(L"WlanOpenHandle", wlErr);
          }
       } else {
          wlErr = WlanRegisterNotification(
             wlanHandle_, WLAN_NOTIFICATION_SOURCE_ACM, TRUE,
             ::WlanNotificationCallback, this, NULL, NULL);
          if (wlErr != ERROR_SUCCESS) {
-            PrintWindowsError(_T("WlanOpenHandle"), wlErr);
+            PrintWindowsError(L"WlanOpenHandle", wlErr);
             WlanCloseHandle(wlanHandle_, NULL);
          } else {
             initialized_ = true;
@@ -89,7 +89,7 @@ bool WifiDetector::Init(HWND hNotifyWnd)
    return initialized_;
 }
 
-void WifiDetector::SetNetworkList(const std::vector<tstring> networks, bool isMuteList)
+void WifiDetector::SetNetworkList(const std::vector<std::wstring> networks, bool isMuteList)
 {
    networks_ = networks;
    isMuteList_ = isMuteList;
@@ -100,7 +100,7 @@ void WifiDetector::CheckNetwork()
    PWLAN_INTERFACE_INFO_LIST ifList;
    DWORD wlanErr = WlanEnumInterfaces(wlanHandle_, NULL, &ifList);
    if (wlanErr != ERROR_SUCCESS) {
-      PrintWindowsError(_T("WlanEnumInterfaces"), wlanErr);
+      PrintWindowsError(L"WlanEnumInterfaces", wlanErr);
    } else {
       for (; ifList->dwIndex < ifList->dwNumberOfItems; ++ifList->dwIndex) {
          PWLAN_AVAILABLE_NETWORK_LIST availList;
@@ -111,7 +111,7 @@ void WifiDetector::CheckNetwork()
             NULL,
             &availList);
          if (wlanErr != ERROR_SUCCESS) {
-            PrintWindowsError(_T("WlanGetAvailableNetworkList"), wlanErr);
+            PrintWindowsError(L"WlanGetAvailableNetworkList", wlanErr);
          } else {
             for (; availList->dwIndex < availList->dwNumberOfItems; ++availList->dwIndex) {
                PWLAN_AVAILABLE_NETWORK net = &availList->Network[availList->dwIndex];

@@ -36,7 +36,7 @@ POSSIBILITY OF SUCH DAMAGE.
 static constexpr int SSID_MAX_LEN = 32;
 
 struct WiFiData {
-   tstring ssidName;
+   std::wstring ssidName;
 };
 
 INT_PTR CALLBACK Settings_WifiAddDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -51,16 +51,14 @@ INT_PTR CALLBACK Settings_WifiAddDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(wifiData));
 
       if (wifiData->ssidName.length() == 0) {
-         if (!SetWindowText(hDlg, _T("Add WiFi network"))) {
-            PrintWindowsError(_T("SetWindowText"), GetLastError());
+         if (!SetWindowTextW(hDlg, L"Add WiFi network")) {
+            PrintWindowsError(L"SetWindowText", GetLastError());
             return FALSE;
          }
       } else {
-         if (!SetWindowText(hDlg, _T("Edit WiFi network"))
-            || !SetWindowText(
-               GetDlgItem(hDlg, IDC_WIFI_NAME),
-               wifiData->ssidName.c_str())) {
-            PrintWindowsError(_T("SetWindowText"), GetLastError());
+         if (!SetWindowTextW(hDlg, L"Edit WiFi network")
+             || !SetWindowTextW(GetDlgItem(hDlg, IDC_WIFI_NAME), wifiData->ssidName.c_str())) {
+            PrintWindowsError(L"SetWindowText", GetLastError());
             return FALSE;
          }
       }
@@ -79,12 +77,12 @@ INT_PTR CALLBACK Settings_WifiAddDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
             EDITBALLOONTIP ebt;
             ZeroMemory(&ebt, sizeof(ebt));
             ebt.cbStruct = sizeof(ebt);
-            ebt.pszText = _T("Please enter a SSID/WIFI name");
-            ebt.pszTitle = _T("SSID Name");
+            ebt.pszText = L"Please enter a SSID/WIFI name";
+            ebt.pszTitle = L"SSID Name";
             ebt.ttiIcon = TTI_INFO;
             Edit_ShowBalloonTip(hSsid, &ebt);
          } else {
-            TCHAR ssidBuf[SSID_MAX_LEN + 1];
+            wchar_t ssidBuf[SSID_MAX_LEN + 1];
             WiFiData* wifiData = reinterpret_cast<WiFiData*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
             if (wifiData != nullptr) {
                Edit_GetText(hSsid, ssidBuf, ARRAY_SIZE(ssidBuf));
@@ -107,12 +105,12 @@ INT_PTR CALLBACK Settings_WifiAddDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
    return FALSE;
 }
 
-static std::vector<tstring> ExportSsidListItems(HWND hList)
+static std::vector<std::wstring> ExportSsidListItems(HWND hList)
 {
-   std::vector<tstring> items;
+   std::vector<std::wstring> items;
    DWORD itemCount = ListBox_GetCount(hList);
    for (DWORD i = 0; i < itemCount; ++i) {
-      TCHAR textBuf[SSID_MAX_LEN + 1] = { 0 };
+      wchar_t textBuf[SSID_MAX_LEN + 1] = { 0 };
       DWORD textLen = ListBox_GetTextLen(hList, i);
       if (textLen < ARRAY_SIZE(textBuf)) {
          ListBox_GetText(hList, i, textBuf);
@@ -152,7 +150,6 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       enabled = settings->QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST);
       Button_SetCheck(GetDlgItem(hDlg, IDC_IS_PERMITLIST),
                       enabled ? BST_CHECKED : BST_UNCHECKED);
-      
 
       Button_Enable(GetDlgItem(hDlg, IDC_WIFI_EDIT), FALSE);
       Button_Enable(GetDlgItem(hDlg, IDC_WIFI_REMOVE), FALSE);
@@ -201,7 +198,7 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
                hDlg,
                Settings_WifiAddDlgProc,
                reinterpret_cast<LPARAM>(&wifiData)) == 0) {
-            std::vector<tstring> networks = ExportSsidListItems(GetDlgItem(hDlg, IDC_WIFI_LIST));
+            std::vector<std::wstring> networks = ExportSsidListItems(GetDlgItem(hDlg, IDC_WIFI_LIST));
             if (std::find(begin(networks), end(networks), wifiData.ssidName) == end(networks)) {
                ListBox_AddString(
                   GetDlgItem(hDlg, IDC_WIFI_LIST),
@@ -217,9 +214,9 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
          WPARAM sel = ListBox_GetCurSel(hList);
          if (sel != LB_ERR) {
             int len = ListBox_GetTextLen(hList, sel);
-            TCHAR * textBuf = NULL;
+            wchar_t *textBuf = NULL;
             if (len != LB_ERR) {
-               if ((textBuf = new TCHAR[static_cast<size_t>(len) + 1]) != NULL) {
+               if ((textBuf = new wchar_t[static_cast<size_t>(len) + 1]) != NULL) {
                   ListBox_GetText(hList, sel, textBuf);
 
                   WiFiData wifiData;
@@ -232,7 +229,7 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
                         hDlg,
                         Settings_WifiAddDlgProc,
                         reinterpret_cast<LPARAM>(&wifiData)) == 0) {
-                     std::vector<tstring> networks = ExportSsidListItems(GetDlgItem(hDlg, IDC_WIFI_LIST));
+                     std::vector<std::wstring> networks = ExportSsidListItems(GetDlgItem(hDlg, IDC_WIFI_LIST));
                      if (std::find(begin(networks), end(networks), wifiData.ssidName) == end(networks)) {
                         ListBox_InsertString(hList, sel, wifiData.ssidName.c_str());
                         ListBox_DeleteString(hList, sel + 1);
@@ -264,7 +261,7 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
    }
    case WM_SAVESETTINGS: {
       WMSettings* settings = reinterpret_cast<WMSettings*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
-      std::vector<tstring> networks = ExportSsidListItems(GetDlgItem(hDlg, IDC_WIFI_LIST));
+      std::vector<std::wstring> networks = ExportSsidListItems(GetDlgItem(hDlg, IDC_WIFI_LIST));
       settings->StoreWifiNetworks(networks);
 
       DWORD checked = Button_GetCheck(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE));

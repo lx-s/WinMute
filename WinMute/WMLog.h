@@ -39,11 +39,11 @@ class WMLog {
 public:
    static WMLog& GetInstance();
 
-   void Write(const TCHAR* fmt, ...);
-   void WriteWindowsError(LPCWSTR lpszFunction, DWORD errorCode = -1);
+   void Write(const wchar_t* fmt, ...);
+   void WriteWindowsError(const wchar_t *functionName, DWORD errorCode = -1);
 
    void SetEnabled(bool enable);
-   std::string GetLogFilePath();
+   std::wstring GetLogFilePath();
 
 private:
    WMLog();
@@ -51,13 +51,9 @@ private:
    WMLog(const WMLog&) = delete;
    WMLog& operator=(const WMLog&) = delete;
 
-   void WriteMessage(const TCHAR* msg);
+   void WriteMessage(const wchar_t* msg);
    void DeleteLogFile();
 
    bool enabled_;
-#ifdef UNICODE
    std::wofstream logFile_;
-#else
-   std::ofstream logFile_;
-#endif
 };

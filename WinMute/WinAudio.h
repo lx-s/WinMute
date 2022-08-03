@@ -54,7 +54,7 @@ public:
 };
 
 struct Endpoint {
-   TCHAR deviceName[100];
+   wchar_t deviceName[100];
    IAudioEndpointVolumePtr endpointVolume;
    IAudioSessionControlPtr sessionCtrl;
    std::unique_ptr<VistaAudioSessionEvents> wasapiAudioEvents;

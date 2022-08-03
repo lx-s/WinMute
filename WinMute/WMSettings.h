@@ -71,10 +71,10 @@ public:
    bool IsAutostartEnabled();
    void EnableAutostart(bool enable);
 
-   bool StoreWifiNetworks(std::vector<tstring>& networks);
-   std::vector<tstring> GetWifiNetworks() const;
+   bool StoreWifiNetworks(std::vector<std::wstring>& networks);
+   std::vector<std::wstring> GetWifiNetworks() const;
 
-   bool StoreBluetoothDevices(std::vector<tstring>& networks);
+   bool StoreBluetoothDevices(std::vector<std::wstring>& networks);
    std::vector<std::wstring> GetBluetoothDevicesW() const;
    std::vector<std::string> GetBluetoothDevicesA() const;
 
