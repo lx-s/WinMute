@@ -98,8 +98,8 @@ private:
 
    const TrayIcon* trayIcon_;
 
-   void NotifyRestoreCondition(int type, bool active);
+   void NotifyRestoreCondition(int type, bool active, bool withDelay);
    void SaveMuteStatus();
-   void RestoreVolume();
+   void RestoreVolume(bool withDelay = false);
    void ShowNotification(const std::wstring& title, const std::wstring& text);
 };

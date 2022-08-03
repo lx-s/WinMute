@@ -110,7 +110,7 @@ void MuteControl::SetNotifications(bool enable)
    notificationsEnabled_ = enable;
 }
 
-void MuteControl::RestoreVolume()
+void MuteControl::RestoreVolume(bool withDelay)
 {
    WMLog& log = WMLog::GetInstance();
    if (!restoreVolume_) {
@@ -130,6 +130,9 @@ void MuteControl::RestoreVolume()
       ShowNotification(
          L"Volume restored",
          L"All endpoints have been restored to their previous configuration");
+      if (withDelay) {
+         Sleep(2000);
+      }
       winAudio_->RestoreMuteStatus();
    }
 }
@@ -224,7 +227,7 @@ bool MuteControl::GetMuteOnShutdown() const
    return muteConfig_[MuteTypeShutdown].shouldMute;
 }
 
-void MuteControl::NotifyRestoreCondition(int type, bool active)
+void MuteControl::NotifyRestoreCondition(int type, bool active, bool withDelay)
 {
    if (active) {
       SaveMuteStatus();
@@ -240,7 +243,7 @@ void MuteControl::NotifyRestoreCondition(int type, bool active)
       if (muteConfig_[type].active) {
          muteConfig_[type].active = false;
          if (muteConfig_[type].shouldMute) {
-            RestoreVolume();
+            RestoreVolume(withDelay);
          }
       }
    }

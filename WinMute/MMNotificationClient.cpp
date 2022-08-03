@@ -101,8 +101,15 @@ HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceRemoved(LPCWSTR)
 }
 
 HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceStateChanged(
-   LPCWSTR, DWORD)
+   LPCWSTR pwstrDeviceId, DWORD dwNewState)
 {
+   UNREFERENCED_PARAMETER(pwstrDeviceId);
+   if (dwNewState == DEVICE_STATE_UNPLUGGED ||
+       dwNewState == DEVICE_STATE_ACTIVE) {
+      if (notifyParent_) {
+         notifyParent_->ShouldReInit();
+      }
+   } 
    return S_OK;
 }
 
