@@ -7,7 +7,7 @@
 based on triggers, e.g. the screensaver starts, or your bluetooth headphone disconnects.
 
 It was created to not repeatedly annoy my co-workers with random sounds or music from my
-computer whenever I left the room and forgot to mute all sounds.
+computer whenever I left the room and forgot to mute my computer.
 
 ## Features
 
