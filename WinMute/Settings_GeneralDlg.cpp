@@ -55,6 +55,16 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       enabled = !!settings->QueryValue(SettingsKey::LOGGING_ENABLED);
       Button_SetCheck(hLogging, enabled ? BST_CHECKED : BST_UNCHECKED);
       Button_Enable(hOpenLog, enabled);
+      if (enabled) {
+         WMLog& log = WMLog::GetInstance();
+         const std::wstring filePath = log.GetLogFilePath().c_str();
+         SendMessageW(GetDlgItem(hDlg, IDC_LOGFILEPATH), WM_SETTEXT, NULL,
+            reinterpret_cast<LPARAM>(filePath.c_str()));
+                      
+      } else {
+         SendMessageW(GetDlgItem(hDlg, IDC_LOGFILEPATH), WM_SETTEXT, NULL,
+            reinterpret_cast<LPARAM>(L""));
+      }
 
       return TRUE;
    }
@@ -62,6 +72,16 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       if (LOWORD(wParam) == IDC_ENABLELOGGING) {
          DWORD checked = Button_GetCheck(GetDlgItem(hDlg, IDC_ENABLELOGGING));
          Button_Enable(GetDlgItem(hDlg, IDC_OPENLOG), checked == BST_CHECKED);
+         if (checked == BST_CHECKED) {
+            WMLog& log = WMLog::GetInstance();
+            const std::wstring filePath = log.GetLogFilePath().c_str();
+            SendMessageW(GetDlgItem(hDlg, IDC_LOGFILEPATH), WM_SETTEXT, NULL,
+               reinterpret_cast<LPARAM>(filePath.c_str()));
+
+         } else {
+            SendMessageW(GetDlgItem(hDlg, IDC_LOGFILEPATH), WM_SETTEXT, NULL,
+               reinterpret_cast<LPARAM>(L""));
+         }
       } else if (LOWORD(wParam) == IDC_OPENLOG) {
          WMLog& log = WMLog::GetInstance();
          const std::wstring filePath = log.GetLogFilePath().c_str();

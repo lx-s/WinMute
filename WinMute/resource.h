@@ -70,6 +70,7 @@
 #define IDC_ENABLE_BLUETOOTH_MUTE       1036
 #define IDC_ENABLE_BLUETOOTH_MUTE_DEVICE_LIST 1037
 #define IDC_BT_DEVICE_NAME              1038
+#define IDC_LOGFILEPATH                 1040
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_                    40002
 #define ID_TRAYMENU_MUTEON              40003
@@ -113,7 +114,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        135
 #define _APS_NEXT_COMMAND_VALUE         40037
-#define _APS_NEXT_CONTROL_VALUE         1040
+#define _APS_NEXT_CONTROL_VALUE         1041
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

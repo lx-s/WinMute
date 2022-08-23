@@ -62,7 +62,7 @@ std::wstring WMLog::GetLogFilePath()
    wchar_t tempPath[MAX_PATH + 1];
    if (GetTempPathW(ARRAY_SIZE(tempPath), tempPath)) {
       std::wstring path{ tempPath };
-      path += L"\\WinMute.log";
+      path += L"WinMute.log";
       return path;
    }
    return std::wstring();
