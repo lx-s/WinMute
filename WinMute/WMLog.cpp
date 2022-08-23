@@ -98,6 +98,11 @@ void WMLog::SetEnabled(bool enable)
    }
 }
 
+bool WMLog::IsEnabled() const
+{
+   return enabled_;
+}
+
 void WMLog::WriteMessage(const wchar_t* msg)
 {
    struct tm tm = { 0 };

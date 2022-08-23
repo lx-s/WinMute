@@ -290,7 +290,6 @@ bool WinMute::Init()
    }
    trayIcon_.Init(hWnd_, 0, hTrayIcon_, L"WinMute", true);
 
-
    quietHours_.Init(hWnd_, settings_);
 
    log.Write(L"WinMute initialized");
@@ -308,6 +307,24 @@ bool WinMute::Init()
 
 bool WinMute::LoadSettings()
 {
+   WMLog& log = WMLog::GetInstance();
+
+   if (log.IsEnabled()) {
+      log.Write(L"Loading settings:");
+      log.Write(L"\tRestore volume: %s", settings_.QueryValue(SettingsKey::RESTORE_AUDIO) ? L"Yes" : L"No");
+      log.Write(L"\tMute on lock: %s", settings_.QueryValue(SettingsKey::MUTE_ON_LOCK) ? L"Yes" : L"No");
+      log.Write(L"\tMute on screensaver: %s", settings_.QueryValue(SettingsKey::MUTE_ON_SCREENSAVER) ? L"Yes" : L"No");
+      log.Write(L"\tMute on display standby: %s", settings_.QueryValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY) ? L"Yes" : L"No");
+      log.Write(L"\tMute on logout: %s", settings_.QueryValue(SettingsKey::MUTE_ON_LOGOUT) ? L"Yes" : L"No");
+      log.Write(L"\tMute on suspend: %s", settings_.QueryValue(SettingsKey::MUTE_ON_SUSPEND) ? L"Yes" : L"No");
+      log.Write(L"\tMute on shutdown: %s", settings_.QueryValue(SettingsKey::MUTE_ON_SHUTDOWN) ? L"Yes" : L"No");
+      log.Write(L"\tShow notifications: %s", settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED) ? L"Yes" : L"No");
+      log.Write(L"\tMute on bluetooth: %s", settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH) ? L"Yes" : L"No");
+      log.Write(L"\t\tUse devicelist: %s", settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH_DEVICELIST) ? L"Yes" : L"No");
+      log.Write(L"\tMute on WLAN: %s", settings_.QueryValue(SettingsKey::MUTE_ON_WLAN) ? L"Yes" : L"No");
+      log.Write(L"\t\tUse allowlist: %s", settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST) ? L"Yes" : L"No");
+   }
+
    muteCtrl_.SetRestoreVolume(settings_.QueryValue(SettingsKey::RESTORE_AUDIO));
    muteCtrl_.SetMuteOnWorkstationLock(settings_.QueryValue(SettingsKey::MUTE_ON_LOCK));
    muteCtrl_.SetMuteOnScreensaverActivation(settings_.QueryValue(SettingsKey::MUTE_ON_SCREENSAVER));

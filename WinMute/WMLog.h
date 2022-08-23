@@ -43,6 +43,7 @@ public:
    void WriteWindowsError(const wchar_t *functionName, DWORD errorCode = -1);
 
    void SetEnabled(bool enable);
+   bool IsEnabled() const;
    std::wstring GetLogFilePath();
 
 private:
