@@ -37,12 +37,12 @@ HINSTANCE hglobInstance;
 
 static bool SetWorkingDirectory()
 {
-   char wmFileName[MAX_PATH + 1];
-   if (GetModuleFileNameA(NULL, wmFileName, ARRAY_SIZE(wmFileName)) > 0) {
-      char* p = strrchr(wmFileName, '\\');
+   wchar_t wmFileName[MAX_PATH + 1];
+   if (GetModuleFileNameW(NULL, wmFileName, ARRAY_SIZE(wmFileName)) > 0) {
+      wchar_t* p = wcsrchr(wmFileName, L'\\');
       if (p != NULL) {
-         *(p+1) = '\0';
-         SetCurrentDirectoryA(wmFileName);
+         *(p + 1) = L'\0';
+         SetCurrentDirectoryW(wmFileName);
          return true;
       }
    }
