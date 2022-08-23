@@ -162,10 +162,12 @@ BluetoothDetector::BluetoothStatus BluetoothDetector::GetBluetoothStatus(
          return BluetoothStatus::Unknown;
       }
    }
-   if (inRangeInfo->deviceInfo.flags & BDIF_CONNECTED) {
+   if ((inRangeInfo->deviceInfo.flags & BDIF_CONNECTED) && !(inRangeInfo->previousDeviceFlags & BDIF_CONNECTED)) {
       log.Write(L"Bluetooth Audio device \"%S\" connected.", inRangeInfo->deviceInfo.name);
       return BluetoothStatus::Connected;
+   } else if (!(inRangeInfo->deviceInfo.flags & BDIF_CONNECTED) && (inRangeInfo->previousDeviceFlags & BDIF_CONNECTED)) {
+      log.Write(L"Bluetooth Audio device \"%S\" disconnected.", inRangeInfo->deviceInfo.name);
+      return BluetoothStatus::Disconnected;
    }
-   log.Write(L"Bluetooth Audio device \"%S\" disconnected.", inRangeInfo->deviceInfo.name);
-   return BluetoothStatus::Disconnected;
+   return BluetoothStatus::Unknown;
 }
