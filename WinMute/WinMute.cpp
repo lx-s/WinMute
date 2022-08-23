@@ -495,13 +495,6 @@ LRESULT CALLBACK WinMute::WindowProc(
          settings_.SetValue(SettingsKey::MUTE_ON_LOGOUT, checked);
          break;
       }
-      case ID_TRAYMENU_BLUETOOTH: {
-         bool checked = false;
-         ToggleMenuCheck(ID_TRAYMENU_MUTEON, &checked);
-         settings_.SetValue(SettingsKey::MUTE_ON_BLUETOOTH, checked);
-
-         break;
-      }
       default:
          break;
       }
