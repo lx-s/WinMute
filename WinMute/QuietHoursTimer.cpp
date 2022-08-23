@@ -95,11 +95,11 @@ static VOID CALLBACK QuietHoursTimerProc(HWND hWnd, UINT msg, UINT_PTR id, DWORD
    UNREFERENCED_PARAMETER(msSinceSysStart);
    if (id == QUIETHOURS_TIMER_START_ID) {
       KillTimer(hWnd, id);
-      SendMessage(hWnd, WM_WINMUTE_QUIETHOURS_START, 0, 0);
+      SendMessageW(hWnd, WM_WINMUTE_QUIETHOURS_START, 0, 0);
    }
    else if (id == QUIETHOURS_TIMER_END_ID) {
       KillTimer(hWnd, id);
-      SendMessage(hWnd, WM_WINMUTE_QUIETHOURS_END, 0, 0);
+      SendMessageW(hWnd, WM_WINMUTE_QUIETHOURS_END, 0, 0);
    }
 }
 

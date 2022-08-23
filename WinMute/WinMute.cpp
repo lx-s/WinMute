@@ -56,7 +56,7 @@ static LRESULT CALLBACK WinMuteWndProc(
    switch (msg) {
    case WM_NCCREATE: {
       LPCREATESTRUCTW cs = reinterpret_cast<LPCREATESTRUCTW>(lParam);
-      SetWindowLongPtr(hWnd, GWLP_USERDATA,
+      SetWindowLongPtrW(hWnd, GWLP_USERDATA,
          reinterpret_cast<LONG_PTR>(cs->lpCreateParams));
       return TRUE;
    }
@@ -64,7 +64,7 @@ static LRESULT CALLBACK WinMuteWndProc(
       break;
    }
    return (wm) ? wm->WindowProc(hWnd, msg, wParam, lParam)
-      : DefWindowProc(hWnd, msg, wParam, lParam);
+      : DefWindowProcW(hWnd, msg, wParam, lParam);
 }
 
 static int IsDarkMode(bool& isDarkMode)
@@ -111,13 +111,13 @@ static bool IsCurrentSessionRemoteable()
       HKEY hRegKey = NULL;
       LONG lResult;
 
-      lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, TERMINAL_SERVER_KEY, 0, KEY_READ, &hRegKey);
+      lResult = RegOpenKeyExW(HKEY_LOCAL_MACHINE, TERMINAL_SERVER_KEY, 0, KEY_READ, &hRegKey);
       if (lResult == ERROR_SUCCESS) {
          DWORD dwGlassSessionId;
          DWORD cbGlassSessionId = sizeof(dwGlassSessionId);
          DWORD dwType;
 
-         lResult = RegQueryValueEx(hRegKey, GLASS_SESSION_ID, NULL, &dwType,
+         lResult = RegQueryValueExW(hRegKey, GLASS_SESSION_ID, NULL, &dwType,
             reinterpret_cast<BYTE*>(&dwGlassSessionId),
             &cbGlassSessionId);
 
@@ -170,7 +170,7 @@ bool WinMute::RegisterWindowClass()
 
 bool WinMute::InitWindow()
 {
-   hWnd_ = CreateWindowEx(WS_EX_TOOLWINDOW, WINMUTE_CLASS_NAME, PROGRAM_NAME,
+   hWnd_ = CreateWindowExW(WS_EX_TOOLWINDOW, WINMUTE_CLASS_NAME, PROGRAM_NAME,
       WS_POPUP, 0, 0, 0, 0, NULL, 0, hglobInstance, this);
    if (hWnd_ == nullptr) {
       PrintWindowsError(L"CreateWindowEx");
@@ -206,7 +206,7 @@ bool WinMute::InitAudio()
 bool WinMute::InitTrayMenu()
 {
    if (hTrayMenu_ == NULL) {
-      hTrayMenu_ = LoadMenu(hglobInstance, MAKEINTRESOURCE(IDR_TRAYMENU));
+      hTrayMenu_ = LoadMenuW(hglobInstance, MAKEINTRESOURCE(IDR_TRAYMENU));
       if (hTrayMenu_ == NULL) {
          PrintWindowsError(L"LoadMenu");
          return false;
@@ -229,7 +229,7 @@ bool WinMute::Init()
 {
    WMLog& log = WMLog::GetInstance();
 
-   hAppIcon_ = LoadIcon(hglobInstance, MAKEINTRESOURCE(IDI_APP));
+   hAppIcon_ = LoadIconW(hglobInstance, MAKEINTRESOURCE(IDI_APP));
 
    if (!settings_.Init()) {
       return false;
@@ -280,7 +280,7 @@ bool WinMute::Init()
 
    bool isDarkMode = true;
    IsDarkMode(isDarkMode);
-   hTrayIcon_ = LoadIcon(
+   hTrayIcon_ = LoadIconW(
       hglobInstance,
       isDarkMode ? MAKEINTRESOURCE(IDI_TRAY_DARK)
                  : MAKEINTRESOURCE(IDI_TRAY_BRIGHT));
@@ -421,7 +421,7 @@ LRESULT CALLBACK WinMute::WindowProc(
          static bool dialogOpen = false;
          if (!dialogOpen) {
             dialogOpen = true;
-            if (DialogBoxParam(
+            if (DialogBoxParamW(
                   hglobInstance,
                   MAKEINTRESOURCE(IDD_SETTINGS),
                   hWnd_,
@@ -600,7 +600,7 @@ LRESULT CALLBACK WinMute::WindowProc(
          if (wParam == 1) { // Connected
             if (settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED)) {
                wchar_t msgBuf[260] = { 0 };
-               wchar_t* wifiName = reinterpret_cast<wchar_t*>(lParam);
+               wchar_t *wifiName = reinterpret_cast<wchar_t*>(lParam);
                if (settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST)) {
                   StringCchPrintfW(
                      msgBuf, ARRAY_SIZE(msgBuf),
