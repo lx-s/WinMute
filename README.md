@@ -7,7 +7,7 @@
 based on triggers, e.g. the screensaver starts, or your bluetooth headphone disconnects.
 
 It was created to not repeatedly annoy my co-workers with random sounds or music from my
-computer whenever I left the room and forgot to mute all sounds.
+computer whenever I left the room and forgot to mute my computer.
 
 ## Features
 
@@ -20,7 +20,7 @@ computer whenever I left the room and forgot to mute all sounds.
   * your bluetooth headset/headphones disconnect.
   * your workstation is connected to a particular wireless network.
     * alternatively: your Workstation is _not_ connected to particular wireless network
-* WinMute is small and only needs a few kilobytes disk space
+* WinMute is small and only needs a few kilobytes of disk space
 * WinMute is ad-free, telemetry-free and generally does not send any data whatsoever
 
 
@@ -34,17 +34,16 @@ computer whenever I left the room and forgot to mute all sounds.
 
 Check out [CONTRIBUTING.md](CONTRIBUTING.md), if you are interested in participating.
 
-
 ## Usage
 
 ### Requirements
 
-* Windows Vista or any newer version of Windows.
+* Windows 7 or any newer version of Windows.
 * [Visual Studio 2015-2022 Redistributable](https://support.microsoft.com/help/2977003/the-latest-supported-visual-c-downloads)
 
 ### Installation
 
-Either unzip it to your favourite directory or run the WinMute-Setup.msi and you are all set up!
+Either unzip it to your favourite directory or run the WinMute-Setup.exe and you are all set up!
 
 ### Uninstalling WinMute
 
