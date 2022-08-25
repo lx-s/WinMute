@@ -620,7 +620,8 @@ LRESULT CALLBACK WinMute::WindowProc(
       }
       return 0;
    case WM_SETTINGCHANGE: {
-      if (wcscmp(reinterpret_cast<const wchar_t*>(lParam), L"ImmersiveColorSet") == 0) {
+      const wchar_t *changeParam = reinterpret_cast<const wchar_t *>(lParam);
+      if (changeParam != nullptr && wcscmp(changeParam, L"ImmersiveColorSet") == 0) {
          bool isDarkMode = true;
          IsDarkMode(isDarkMode);
          hTrayIcon_ = LoadIconW(
