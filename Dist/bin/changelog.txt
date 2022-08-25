@@ -1,3 +1,11 @@
+Version 2.1.2 (2022-08-25)
+ * Changed bluetooth detection logic, so that muting 
+   the workstation doesn't happen, when scanning for new
+   devices.
+ * Fixed crash when connectiong via remote desktop
+ * Show log-file path in settings UI
+ * Enhanced logging
+
 Version 2.1.1 (2022-08-03)
  * Improved UI when WLAN or Bluetooth is not available
  * Added a 5 second delay before unmuting the workstation,
