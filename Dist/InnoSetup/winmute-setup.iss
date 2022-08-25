@@ -1,8 +1,9 @@
 #define MyAppName "WinMute"
-#define MyAppVersion "2.1.1.0"
+#define MyAppVersion "2.1.2.0"
 #define MyAppPublisher "LX-Systems"
 #define MyAppURL "https://www.lx-s.de/winmute"
 #define MyAppExeName "WinMute.exe"
+#define MyAppMutex "LxSystemsWinMute"
 
 [Setup]
 AppId={{D2E8F9EF-11E7-418B-B9B7-A35A69A30490}
@@ -17,15 +18,19 @@ DefaultDirName={autopf}\{#MyAppPublisher}\{#MyAppName}
 DisableProgramGroupPage=yes
 LicenseFile=..\bin\license.txt
 InfoBeforeFile=info-before.txt
+AppMutex={#MyAppMutex}
+SetupMutex={#MyAppMutex}Setup
 PrivilegesRequiredOverridesAllowed=dialog
 PrivilegesRequired=lowest
 OutputDir=..\bin\
-OutputBaseFilename=WinMute-Setup
+OutputBaseFilename=WinMuteSetup
 SetupIconFile=..\..\WinMute\icons\app.ico
+UninstallDisplayIcon={app}\{#MyAppExeName}.exe
 ArchitecturesInstallIn64BitMode=x64
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
+ShowLanguageDialog=auto
 
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl"
