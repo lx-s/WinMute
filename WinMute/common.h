@@ -93,7 +93,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "resource.h"
 
 #include "WMSettings.h"
-#include "ScreensaverNotifier.h"
 #include "WMLog.h"
 #include "TrayIcon.h"
 #include "WinAudio.h"

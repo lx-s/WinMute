@@ -68,9 +68,6 @@
     <ClInclude Include="VistaAudioSessionEvents.h">
       <Filter>Source Files\Controllers\Muting\Audio\VistaAudio</Filter>
     </ClInclude>
-    <ClInclude Include="ScreensaverNotifier.h">
-      <Filter>Source Files\Base\Helper</Filter>
-    </ClInclude>
     <ClInclude Include="WMLog.h">
       <Filter>Source Files\Base\Log</Filter>
     </ClInclude>
@@ -133,9 +130,6 @@
     </ClCompile>
     <ClCompile Include="VistaAudioSessionEvents.cpp">
       <Filter>Source Files\Controllers\Muting\Audio\VistaAudio</Filter>
-    </ClCompile>
-    <ClCompile Include="ScreensaverNotifier.cpp">
-      <Filter>Source Files\Base\Helper</Filter>
     </ClCompile>
     <ClCompile Include="Utility.cpp">
       <Filter>Source Files\Base\Helper</Filter>
