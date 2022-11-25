@@ -391,7 +391,6 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Mute when...",                40003, INACTIVE
         MENUITEM "... Workstation is locked",   ID_TRAYMENU_MUTEONLOCK, CHECKED
-        MENUITEM "... Screensaver starts",      ID_TRAYMENU_MUTEONSCREENSAVER, CHECKED
         MENUITEM "... Screen turns off",        ID_TRAYMENU_MUTEONSCREENSUSPEND, CHECKED
         MENUITEM SEPARATOR
         MENUITEM "Restore volume afterwards",   ID_TRAYMENU_RESTOREAUDIO, CHECKED
