@@ -59,7 +59,6 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       HWND hNotify = GetDlgItem(hDlg, IDC_SHOWNOTIFICATIONS);
 
       HWND hMuteOnLock = GetDlgItem(hDlg, IDC_MUTE_WHEN_WS_LOCKED);
-      HWND hMuteOnScreensaver = GetDlgItem(hDlg, IDC_MUTE_WHEN_SCREENSAVER_STARTS);
       HWND hMuteOnScreenOff = GetDlgItem(hDlg, IDC_MUTE_WHEN_SCREEN_OFF);
       HWND hMuteOnRDP = GetDlgItem(hDlg, IDC_MUTE_WHEN_RDP_SESSION);
       HWND hRestoreVolume = GetDlgItem(hDlg, IDC_RESTOREVOLUME);
@@ -77,7 +76,6 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 
       // With restore
       SetCheckButton(hMuteOnLock, *settings, SettingsKey::MUTE_ON_LOCK);
-      SetCheckButton(hMuteOnScreensaver, *settings, SettingsKey::MUTE_ON_SCREENSAVER);
       SetCheckButton(hMuteOnScreenOff, *settings, SettingsKey::MUTE_ON_DISPLAYSTANDBY);
       SetCheckButton(hMuteOnRDP, *settings, SettingsKey::MUTE_ON_RDP);
       SetCheckButton(hRestoreVolume, *settings, SettingsKey::RESTORE_AUDIO);
@@ -96,7 +94,6 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       HWND hNotify = GetDlgItem(hDlg, IDC_SHOWNOTIFICATIONS);
 
       HWND hMuteOnLock = GetDlgItem(hDlg, IDC_MUTE_WHEN_WS_LOCKED);
-      HWND hMuteOnScreensaver = GetDlgItem(hDlg, IDC_MUTE_WHEN_SCREENSAVER_STARTS);
       HWND hMuteOnScreenOff = GetDlgItem(hDlg, IDC_MUTE_WHEN_SCREEN_OFF);
       HWND hMuteOnRDP = GetDlgItem(hDlg, IDC_MUTE_WHEN_RDP_SESSION);
       HWND hRestoreVolume = GetDlgItem(hDlg, IDC_RESTOREVOLUME);
@@ -110,7 +107,6 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 
       // With restore
       SetOption(hMuteOnLock, *settings, SettingsKey::MUTE_ON_LOCK);
-      SetOption(hMuteOnScreensaver, *settings, SettingsKey::MUTE_ON_SCREENSAVER);
       SetOption(hMuteOnScreenOff, *settings, SettingsKey::MUTE_ON_DISPLAYSTANDBY);
       SetOption(hMuteOnRDP, *settings, SettingsKey::MUTE_ON_RDP);
       SetOption(hRestoreVolume, *settings, SettingsKey::RESTORE_AUDIO);

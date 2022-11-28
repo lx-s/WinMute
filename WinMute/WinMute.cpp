@@ -214,7 +214,6 @@ bool WinMute::InitTrayMenu()
    }
 
    if (!CHECK_MENU_ITEM(MUTEONLOCK, muteCtrl_.GetMuteOnWorkstationLock()) ||
-       !CHECK_MENU_ITEM(MUTEONSCREENSAVER, muteCtrl_.GetMuteOnScreensaverActivation()) ||
        !CHECK_MENU_ITEM(RESTOREAUDIO, muteCtrl_.GetRestoreVolume()) ||
        !CHECK_MENU_ITEM(MUTEONSUSPEND, muteCtrl_.GetMuteOnSuspend()) ||
        !CHECK_MENU_ITEM(MUTEONSHUTDOWN, muteCtrl_.GetMuteOnShutdown()) ||
@@ -256,16 +255,6 @@ bool WinMute::Init()
 
    if (!InitTrayMenu()) {
       return false;
-   }
-
-   if (!scrnSaverNoti_.Init()) {
-      return false;
-   }
-
-   if (muteCtrl_.GetMuteOnScreensaverActivation()) {
-      if (!scrnSaverNoti_.ActivateNotifications(hWnd_)) {
-         return false;
-      }
    }
 
    if (!WTSRegisterSessionNotification(hWnd_, NOTIFY_FOR_THIS_SESSION)) {
@@ -313,7 +302,6 @@ bool WinMute::LoadSettings()
       log.Write(L"Loading settings:");
       log.Write(L"\tRestore volume: %s", settings_.QueryValue(SettingsKey::RESTORE_AUDIO) ? L"Yes" : L"No");
       log.Write(L"\tMute on lock: %s", settings_.QueryValue(SettingsKey::MUTE_ON_LOCK) ? L"Yes" : L"No");
-      log.Write(L"\tMute on screensaver: %s", settings_.QueryValue(SettingsKey::MUTE_ON_SCREENSAVER) ? L"Yes" : L"No");
       log.Write(L"\tMute on display standby: %s", settings_.QueryValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY) ? L"Yes" : L"No");
       log.Write(L"\tMute on logout: %s", settings_.QueryValue(SettingsKey::MUTE_ON_LOGOUT) ? L"Yes" : L"No");
       log.Write(L"\tMute on suspend: %s", settings_.QueryValue(SettingsKey::MUTE_ON_SUSPEND) ? L"Yes" : L"No");
@@ -327,7 +315,6 @@ bool WinMute::LoadSettings()
 
    muteCtrl_.SetRestoreVolume(settings_.QueryValue(SettingsKey::RESTORE_AUDIO));
    muteCtrl_.SetMuteOnWorkstationLock(settings_.QueryValue(SettingsKey::MUTE_ON_LOCK));
-   muteCtrl_.SetMuteOnScreensaverActivation(settings_.QueryValue(SettingsKey::MUTE_ON_SCREENSAVER));
    muteCtrl_.SetMuteOnDisplayStandby(settings_.QueryValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY));
    muteCtrl_.SetMuteOnLogout(settings_.QueryValue(SettingsKey::MUTE_ON_LOGOUT));
    muteCtrl_.SetMuteOnSuspend(settings_.QueryValue(SettingsKey::MUTE_ON_SUSPEND));
@@ -455,18 +442,6 @@ LRESULT CALLBACK WinMute::WindowProc(
          settings_.SetValue(SettingsKey::RESTORE_AUDIO, checked);
          break;
       }
-      case ID_TRAYMENU_MUTEONSCREENSAVER: {
-         bool checked = false;
-         ToggleMenuCheck(ID_TRAYMENU_MUTEONSCREENSAVER, &checked);
-         muteCtrl_.SetMuteOnScreensaverActivation(checked);
-         settings_.SetValue(SettingsKey::MUTE_ON_SCREENSAVER, checked);
-         if (checked) {
-            scrnSaverNoti_.ActivateNotifications(hWnd_);
-         } else {
-            scrnSaverNoti_.ClearNotifications();
-         }
-         break;
-      }
       case ID_TRAYMENU_MUTEONSCREENSUSPEND: {
          bool checked = false;
          ToggleMenuCheck(ID_TRAYMENU_SCREENSUSPEND, &checked);
@@ -576,14 +551,6 @@ LRESULT CALLBACK WinMute::WindowProc(
       }
       quietHours_.SetStart();
       return 0;
-   case WM_SCRNSAVE_CHANGE: {
-      if (wParam == SCRNSAVE_START) {
-         muteCtrl_.NotifyScreensaver(true);
-      } else if (wParam == SCRNSAVE_STOP) {
-         muteCtrl_.NotifyScreensaver(false);
-      }
-      return 0;
-   }
    case WM_DEVICECHANGE: {
       if (muteConfig_.muteOnBluetooth) {
          const auto btStatus = btDetector_.GetBluetoothStatus(msg, wParam, lParam);
@@ -649,7 +616,6 @@ LRESULT CALLBACK WinMute::WindowProc(
 
 void WinMute::Unload()
 {
-   scrnSaverNoti_.Unload();
    settings_.Unload();
 }
 
