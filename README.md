@@ -13,7 +13,6 @@ computer whenever I left the room and forgot to mute my computer.
 
 * WinMute can automatically mute all sound devices on your workstation when:
   * you lock your workstation.
-  * the screensaver turns on.
   * the display turns off.
   * you log off or switch user.
   * your workstation shuts down, goes into hibernate or goes to sleep.
