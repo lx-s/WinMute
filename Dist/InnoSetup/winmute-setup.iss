@@ -1,5 +1,5 @@
 #define MyAppName "WinMute"
-#define MyAppVersion "2.1.2.0"
+#define MyAppVersion "2.2.0.0"
 #define MyAppPublisher "LX-Systems"
 #define MyAppURL "https://www.lx-s.de/winmute"
 #define MyAppExeName "WinMute.exe"
@@ -46,9 +46,6 @@ Source: "..\bin\changelog.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\bin\license.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\bin\liesmich.html"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\bin\readme.html"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\bin\ScreensaverNotify.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\bin\ScreensaverNotify32.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\bin\ScreensaverProxy32.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
    <meta charset="utf-8">
-   <title>WinMute 2.1.2 - Readme</title>
+   <title>WinMute 2.2.0 - Readme</title>
 
    <style type="text/css">
    <!--
@@ -18,14 +18,14 @@
    </style>
 </head>
 <body>
-   <h1>WinMute 2.1.2</h1>
+   <h1>WinMute 2.2.0</h1>
    <p class="copyright">&copy; Copyright 2022, by Alexander Steinh&ouml;fer - <a href="http://www.lx-s.de">www.lx-s.de</a></p>
 
    <h2>About</h2>
    <p>WinMute can automatically mute your volume when</p>
    <ol>
     <li>You lock your PC.</li>
-    <li>The screensaver turns on.</li>
+    <li>Your screen turns off.</li>
     <li>Your PC shuts down</li>
     <li>You log off</li>
     <li>Your PC goes to sleep</li>
@@ -62,23 +62,16 @@
 
    <h2>Uninstalling WinMute</h2>
    <p>
-      Just delete the <code>WinMute.exe</code>, <code>ScreensaverNotify.dll</code><sub>*</sub>,
-      <code>ScreensaverNotify32.dll</code><sub>*</sub> und <code>ScreensaverProxy32.exe</code>
-      files from your hard drive.
+      Just delete the file <code>WinMute.exe</code> from your hard drive.
       If you want to also remove your personal WinMute settings, then open
       the registry (<code>regedit.exe</code>) and delete the key
       <code>HKEY_CURRENT_USER\Software\lx-systems\WinMute.</code>
-   </p>
-   <p>
-    <sub>* It can happen, that you cannot remove these DLL-files file right away.
-      If you get an error trying to remove it, just wait until your next reboot
-      and delete it afterwards. This is unfortunately a windows limitation.</sub>
    </p>
 
    <h2>Usage</h2>
    <p>Start it and that's it!</p>
    <p>
-      Whenever you lock your screen from now on or the screensaver starts,
+      Whenever you lock your screen from now on or your screen goes into standby,
       WinMute will automatically mute your windows volume, and unmute it
       right away when you come back to your pc.<br>
       If you want to change the behaviour or explore all the other options,

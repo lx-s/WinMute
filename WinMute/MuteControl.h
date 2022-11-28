@@ -51,7 +51,6 @@ public:
    void SetRestoreVolume(bool enable);
 
    void SetMuteOnWorkstationLock(bool enable);
-   void SetMuteOnScreensaverActivation(bool enable);
    void SetMuteOnRemoteSession(bool enable);
    void SetMuteOnDisplayStandby(bool enable);
    void SetMuteOnBluetoothDisconnect(bool enable);
@@ -63,7 +62,6 @@ public:
    bool GetRestoreVolume();
 
    bool GetMuteOnWorkstationLock()  const;
-   bool GetMuteOnScreensaverActivation()  const;
    bool GetMuteOnRemoteSession()  const;
    bool GetMuteOnDisplayStandby()  const;
    bool GetMuteOnBluetoothDisconnect() const;
@@ -72,7 +70,6 @@ public:
    bool GetMuteOnSuspend() const;
    bool GetMuteOnShutdown() const;
 
-   void NotifyScreensaver(bool active);
    void NotifyWorkstationLock(bool active);
    void NotifyRemoteSession(bool active);
    void NotifyDisplayStandby(bool active);

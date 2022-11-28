@@ -128,22 +128,20 @@ BEGIN
     GROUPBOX        "General",IDC_STATIC,7,7,228,31
     CONTROL         "Show mute event notifications",IDC_SHOWNOTIFICATIONS,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,17,219,18
-    GROUPBOX        "Mute with volume restore, when...",IDC_STATIC,7,42,228,75
+    GROUPBOX        "Mute with volume restore, when...",IDC_STATIC,7,42,228,60
     CONTROL         "... the workstation is locked.",IDC_MUTE_WHEN_WS_LOCKED,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,57,107,10
-    CONTROL         "... the screensaver starts.",IDC_MUTE_WHEN_SCREENSAVER_STARTS,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,71,101,10
     CONTROL         "... the screen turns off.",IDC_MUTE_WHEN_SCREEN_OFF,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,85,93,10
-    CONTROL         "Restore volume afterwards.",IDC_RESTOREVOLUME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,101,106,10
-    GROUPBOX        "Mute without volume restore, when...",IDC_STATIC,7,121,228,73
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,71,93,10
+    CONTROL         "Restore volume afterwards.",IDC_RESTOREVOLUME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,86,106,10
+    GROUPBOX        "Mute without volume restore, when...",IDC_STATIC,7,106,228,88
     CONTROL         "... the computer shuts down.",IDC_MUTE_WHEN_SHUTDOWN,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,135,110,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,121,110,10
     CONTROL         "... the computer goes into sleep/hibernate.",IDC_MUTE_WHEN_SLEEP,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,149,155,10
-    CONTROL         "... you log out.",IDC_MUTE_WHEN_LOGOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,163,65,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,135,155,10
+    CONTROL         "... you log out.",IDC_MUTE_WHEN_LOGOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,149,65,10
     CONTROL         "... when WinMute is started within a RDP session.",IDC_MUTE_WHEN_RDP_SESSION,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,177,175,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,163,175,10
 END
 
 IDD_SETTINGS_WIFI DIALOGEX 0, 0, 242, 204
@@ -393,7 +391,6 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Mute when...",                40003, INACTIVE
         MENUITEM "... Workstation is locked",   ID_TRAYMENU_MUTEONLOCK, CHECKED
-        MENUITEM "... Screensaver starts",      ID_TRAYMENU_MUTEONSCREENSAVER, CHECKED
         MENUITEM "... Screen turns off",        ID_TRAYMENU_MUTEONSCREENSUSPEND, CHECKED
         MENUITEM SEPARATOR
         MENUITEM "Restore volume afterwards",   ID_TRAYMENU_RESTOREAUDIO, CHECKED
@@ -418,8 +415,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,1,2,0
- PRODUCTVERSION 2,1,2,0
+ FILEVERSION 2,2,0,0
+ PRODUCTVERSION 2,2,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -436,23 +433,23 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "LX-Systems"
             VALUE "FileDescription", "WinMute"
-            VALUE "FileVersion", "2.1.2.0"
+            VALUE "FileVersion", "2.2.0.0"
             VALUE "InternalName", "WinMute.exe"
             VALUE "LegalCopyright", "Copyright (C) 2022, Alexander Steinhöfer"
             VALUE "OriginalFilename", "WinMute.exe"
             VALUE "ProductName", "WinMute"
-            VALUE "ProductVersion", "2.1.2.0"
+            VALUE "ProductVersion", "2.2.0.0"
         END
         BLOCK "040704b0"
         BEGIN
             VALUE "CompanyName", "LX-Systems"
             VALUE "FileDescription", "WinMute"
-            VALUE "FileVersion", "2.1.2.0"
+            VALUE "FileVersion", "2.2.0.0"
             VALUE "InternalName", "WinMute.exe"
             VALUE "LegalCopyright", "Copyright (C) 2022, Alexander Steinhöfer"
             VALUE "OriginalFilename", "WinMute.exe"
             VALUE "ProductName", "WinMute"
-            VALUE "ProductVersion", "2.1.2.0"
+            VALUE "ProductVersion", "2.2.0.0"
         END
     END
     BLOCK "VarFileInfo"

@@ -198,7 +198,6 @@
     <ClInclude Include="MuteControl.h" />
     <ClInclude Include="QuietHoursTimer.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="ScreensaverNotifier.h" />
     <ClInclude Include="WMSettings.h" />
     <ClInclude Include="TrayIcon.h" />
     <ClInclude Include="VersionHelper.h" />
@@ -232,7 +231,6 @@
     <ClCompile Include="MMNotificationClient.cpp" />
     <ClCompile Include="MuteControl.cpp" />
     <ClCompile Include="QuietHoursTimer.cpp" />
-    <ClCompile Include="ScreensaverNotifier.cpp" />
     <ClCompile Include="WMSettings.cpp" />
     <ClCompile Include="SettingsDlg.cpp" />
     <ClCompile Include="Settings_GeneralDlg.cpp" />

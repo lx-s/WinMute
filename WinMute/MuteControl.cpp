@@ -38,7 +38,6 @@ const int BLUETOOTH_RECONNECT_UNMUTE_DELAY = 5000; // Milliseconds
 enum MuteType {
    // With restore
    MuteTypeWorkstationLock = 0,
-   MuteTypeScreensaverActive,
    MuteTypeRemoteSession,
    MuteTypeDisplayStandby,
    MuteTypeBluetoothDisconnect,
@@ -149,11 +148,6 @@ void MuteControl::SetMuteOnWorkstationLock(bool enable)
    muteConfig_[MuteTypeWorkstationLock].shouldMute = enable;
 }
 
-void MuteControl::SetMuteOnScreensaverActivation(bool enable)
-{
-   muteConfig_[MuteTypeScreensaverActive].shouldMute = enable;
-}
-
 void MuteControl::SetMuteOnLogout(bool enable)
 {
    muteConfig_[MuteTypeLogout].shouldMute = enable;
@@ -192,11 +186,6 @@ bool MuteControl::GetRestoreVolume()
 bool MuteControl::GetMuteOnWorkstationLock() const
 {
    return muteConfig_[MuteTypeWorkstationLock].shouldMute;
-}
-
-bool MuteControl::GetMuteOnScreensaverActivation() const
-{
-   return muteConfig_[MuteTypeScreensaverActive].shouldMute;
 }
 
 bool MuteControl::GetMuteOnRemoteSession() const
@@ -256,13 +245,6 @@ void MuteControl::NotifyWorkstationLock(bool active)
    WMLog::GetInstance().Write(L"Mute Event: Workstation Lock %s",
                               active ? L"start" : L"stop");
    NotifyRestoreCondition(MuteTypeWorkstationLock, active);
-}
-
-void MuteControl::NotifyScreensaver(bool active)
-{
-   WMLog::GetInstance().Write(L"Mute Event: Screensaver %s",
-                              active ? L"start" : L"stop");
-   NotifyRestoreCondition(MuteTypeScreensaverActive, active);
 }
 
 void MuteControl::NotifyRemoteSession(bool active)
