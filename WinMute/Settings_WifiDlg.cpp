@@ -124,10 +124,10 @@ static bool IsWlanAvailable()
 {
    HANDLE wlanHandle;
    DWORD vers = 2;
-   if (WlanOpenHandle(vers, NULL, &vers, &wlanHandle) != ERROR_SUCCESS) {
+   if (WlanOpenHandle(vers, nullptr, &vers, &wlanHandle) != ERROR_SUCCESS) {
       return false;
    }
-   WlanCloseHandle(wlanHandle, NULL);
+   WlanCloseHandle(wlanHandle, nullptr);
    return true;
 }
 
@@ -210,7 +210,7 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       } else if (LOWORD(wParam) == IDC_WIFI_ADD) {
          WiFiData wifiData;
          if (DialogBoxParam(
-               NULL,
+               nullptr,
                MAKEINTRESOURCE(IDD_SETTINGS_WIFI_ADD),
                hDlg,
                Settings_WifiAddDlgProc,
@@ -231,9 +231,9 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
          WPARAM sel = ListBox_GetCurSel(hList);
          if (sel != LB_ERR) {
             int len = ListBox_GetTextLen(hList, sel);
-            wchar_t *textBuf = NULL;
+            wchar_t *textBuf = nullptr;
             if (len != LB_ERR) {
-               if ((textBuf = new wchar_t[static_cast<size_t>(len) + 1]) != NULL) {
+               if ((textBuf = new wchar_t[static_cast<size_t>(len) + 1]) != nullptr) {
                   ListBox_GetText(hList, sel, textBuf);
 
                   WiFiData wifiData;
@@ -241,7 +241,7 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
                   delete[] textBuf;
 
                   if (DialogBoxParam(
-                        NULL,
+                        nullptr,
                         MAKEINTRESOURCE(IDD_SETTINGS_WIFI_ADD),
                         hDlg,
                         Settings_WifiAddDlgProc,

@@ -104,7 +104,7 @@ static VOID CALLBACK QuietHoursTimerProc(HWND hWnd, UINT msg, UINT_PTR id, DWORD
 }
 
 QuietHoursTimer::QuietHoursTimer() :
-   initialized_{ false }, enabled_{ false }, hParent_{ NULL }, qhStart_{0}, qhEnd_{ 0 }
+   initialized_{ false }, enabled_{ false }, hParent_{ nullptr }, qhStart_{0}, qhEnd_{ 0 }
 {}
 
 QuietHoursTimer::~QuietHoursTimer()

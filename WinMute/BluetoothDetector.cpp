@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "common.h"
 
 BluetoothDetector::BluetoothDetector() :
-   hNotifyWnd_(NULL),  hBluetoothNotify_(NULL),
+   hNotifyWnd_(nullptr),  hBluetoothNotify_(nullptr),
    initialized_(false), useDeviceList_(false)
 {
 
@@ -82,7 +82,7 @@ bool BluetoothDetector::LoadRadioNotifications()
          DEVICE_NOTIFY_WINDOW_HANDLE);
       CloseHandle(btHandle);
 
-      if (devNotify == NULL) {
+      if (devNotify == nullptr) {
          log.WriteWindowsError(L"RegisterDeviceNotification", GetLastError());
       } else {
          notificationHandles_.push_back(devNotify);
@@ -114,7 +114,7 @@ bool BluetoothDetector::Init(HWND hNotifyWnd)
 void BluetoothDetector::Unload()
 {
    UnloadRadioNotifications();
-   hNotifyWnd_ = NULL;
+   hNotifyWnd_ = nullptr;
    initialized_ = false;
 }
 

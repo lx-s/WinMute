@@ -91,7 +91,7 @@ struct AboutDlgData {
    HFONT hTitleFont;
 
    AboutDlgData()
-      : hTabCtrl(NULL), hActiveTab(NULL), hTitleFont(NULL)
+      : hTabCtrl(nullptr), hActiveTab(nullptr), hTitleFont(nullptr)
    {
       ZeroMemory(hTabs, sizeof(hTabs));
    }
@@ -113,7 +113,7 @@ static void InsertTabItem(HWND hTabCtrl, UINT id, const wchar_t *itemName)
 
 static void SwitchTab(AboutDlgData* dlgData, HWND hNewTab)
 {
-   if (dlgData->hActiveTab != NULL) {
+   if (dlgData->hActiveTab != nullptr) {
       ShowWindow(dlgData->hActiveTab, SW_HIDE);
    }
    dlgData->hActiveTab = hNewTab;
@@ -135,7 +135,7 @@ static void ResizeTabs(HWND hTabCtrl, HWND* hTabs, int tabCount)
    tabCtrlRect.top += tabCtrlPos.y;
 
    HDWP hdwp = BeginDeferWindowPos(tabCount);
-   if (hdwp == NULL) {
+   if (hdwp == nullptr) {
       PrintWindowsError(L"BeginDeferWindowPos", GetLastError());
    } else {
       for (int i = 0; i < tabCount; ++i) {
@@ -148,7 +148,7 @@ static void ResizeTabs(HWND hTabCtrl, HWND* hTabs, int tabCount)
             tabCtrlRect.right - tabCtrlRect.left,
             tabCtrlRect.bottom - tabCtrlRect.top,
             0);
-         if (hdwp == NULL) {
+         if (newHdwp == nullptr) {
             PrintWindowsError(L"DeferWindowPos", GetLastError());
             break;
          } else {
@@ -208,14 +208,14 @@ static bool GetWinMuteVersion(std::wstring& versNumber)
    bool success = false;
    DWORD dummy;
    wchar_t szFileName[MAX_PATH];
-   GetModuleFileName(NULL, szFileName, sizeof(szFileName)/sizeof(szFileName[0]));
+   GetModuleFileName(nullptr, szFileName, sizeof(szFileName)/sizeof(szFileName[0]));
    DWORD versSize = GetFileVersionInfoSizeEx(FILE_VER_GET_NEUTRAL, szFileName, &dummy);
    LPVOID versData = malloc(versSize);
    if (versData != nullptr) {
-      if (GetFileVersionInfoEx(
+      if (GetFileVersionInfoExW(
             FILE_VER_GET_NEUTRAL,
             szFileName,
-            NULL,
+            0,
             versSize,
             versData)) {
          VS_FIXEDFILEINFO *pvi;
@@ -308,7 +308,7 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
          TRUE);
 
       HICON hIcon = LoadIcon(
-         GetModuleHandle(NULL),
+         GetModuleHandle(nullptr),
          MAKEINTRESOURCE(IDI_TRAY_DARK));
       SendMessageW(hDlg, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(hIcon));
 
@@ -333,7 +333,7 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
    case WM_DESTROY:
       DeleteObject(dlgData->hTitleFont);
       delete dlgData;
-      SetWindowLongPtr(hDlg, GWLP_USERDATA, NULL);
+      SetWindowLongPtrW(hDlg, GWLP_USERDATA, 0);
       return 0;
    case WM_CLOSE:
       EndDialog(hDlg, 0);

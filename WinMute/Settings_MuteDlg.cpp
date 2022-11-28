@@ -68,7 +68,7 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       HWND hMuteOnLogout = GetDlgItem(hDlg, IDC_MUTE_WHEN_LOGOUT);
 
       WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
-      assert(settings != NULL);
+      assert(settings != nullptr);
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(settings));
 
       // General

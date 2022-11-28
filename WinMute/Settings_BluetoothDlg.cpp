@@ -51,7 +51,7 @@ static bool GetPairedBtAudioDevices(std::vector<std::wstring>& devices)
    ZeroMemory(&btdi, sizeof(btdi));
    btdi.dwSize = sizeof(btdi);
    HBLUETOOTH_DEVICE_FIND hBtDevFind = BluetoothFindFirstDevice(&bfrp, &btdi);
-   if (hBtDevFind == NULL) {
+   if (hBtDevFind == nullptr) {
       PrintWindowsError(L"BluetoothFindFirstDevice");
       log.WriteWindowsError(L"BluetoothFindFirstDevice", GetLastError());
    } else {
@@ -253,7 +253,7 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
       } else if (LOWORD(wParam) == IDC_BLUETOOTH_ADD) {
          BtDeviceName btDeviceName;
          if (DialogBoxParam(
-               NULL,
+            nullptr,
                MAKEINTRESOURCE(IDD_SETTINGS_BLUETOOTH_ADD),
                hDlg,
                Settings_BluetoothAddDlgProc,
@@ -274,9 +274,9 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
          WPARAM sel = ListBox_GetCurSel(hList);
          if (sel != LB_ERR) {
             int len = ListBox_GetTextLen(hList, sel);
-            wchar_t* textBuf = NULL;
+            wchar_t* textBuf = nullptr;
             if (len != LB_ERR) {
-               if ((textBuf = new wchar_t[static_cast<size_t>(len) + 1]) != NULL) {
+               if ((textBuf = new wchar_t[static_cast<size_t>(len) + 1]) != nullptr) {
                   ListBox_GetText(hList, sel, textBuf);
 
                   BtDeviceName btDevName;
@@ -284,7 +284,7 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
                   delete[] textBuf;
 
                   if (DialogBoxParam(
-                        NULL,
+                        nullptr,
                         MAKEINTRESOURCE(IDD_SETTINGS_BLUETOOTH_ADD),
                         hDlg,
                         Settings_BluetoothAddDlgProc,

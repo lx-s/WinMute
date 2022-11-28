@@ -38,9 +38,9 @@ HINSTANCE hglobInstance;
 static bool SetWorkingDirectory()
 {
    wchar_t wmFileName[MAX_PATH + 1];
-   if (GetModuleFileNameW(NULL, wmFileName, ARRAY_SIZE(wmFileName)) > 0) {
+   if (GetModuleFileNameW(nullptr, wmFileName, ARRAY_SIZE(wmFileName)) > 0) {
       wchar_t* p = wcsrchr(wmFileName, L'\\');
-      if (p != NULL) {
+      if (p != nullptr) {
          *(p + 1) = L'\0';
          SetCurrentDirectoryW(wmFileName);
          return true;

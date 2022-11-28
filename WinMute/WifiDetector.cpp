@@ -45,7 +45,7 @@ static void WlanNotificationCallback(
 
 
 WifiDetector::WifiDetector()
-   : hNotifyWnd_(NULL), wlanHandle_(NULL), isMuteList_(true), initialized_(false)
+   : hNotifyWnd_(nullptr), wlanHandle_(nullptr), isMuteList_(true), initialized_(false)
 {
 }
 
@@ -57,10 +57,10 @@ void WifiDetector::Unload()
 {
    if (initialized_) {
       WlanRegisterNotification(wlanHandle_, WLAN_NOTIFICATION_SOURCE_NONE,
-         TRUE, NULL, NULL, NULL, NULL);
-      WlanCloseHandle(wlanHandle_, NULL);
+         TRUE, nullptr, nullptr, nullptr, nullptr);
+      WlanCloseHandle(wlanHandle_, nullptr);
       initialized_ = false;
-      hNotifyWnd_ = NULL;
+      hNotifyWnd_ = nullptr;
    }
 }
 
@@ -69,7 +69,7 @@ bool WifiDetector::Init(HWND hNotifyWnd)
    if (!initialized_) {
       DWORD vers = 2;
       hNotifyWnd_ = hNotifyWnd;
-      DWORD wlErr = WlanOpenHandle(vers, NULL, &vers, &wlanHandle_);
+      DWORD wlErr = WlanOpenHandle(vers, nullptr, &vers, &wlanHandle_);
       if (wlErr != ERROR_SUCCESS) {
          if (wlErr != ERROR_SERVICE_NOT_ACTIVE) {
             PrintWindowsError(L"WlanOpenHandle", wlErr);
@@ -77,10 +77,10 @@ bool WifiDetector::Init(HWND hNotifyWnd)
       } else {
          wlErr = WlanRegisterNotification(
             wlanHandle_, WLAN_NOTIFICATION_SOURCE_ACM, TRUE,
-            ::WlanNotificationCallback, this, NULL, NULL);
+            ::WlanNotificationCallback, this, nullptr, nullptr);
          if (wlErr != ERROR_SUCCESS) {
             PrintWindowsError(L"WlanOpenHandle", wlErr);
-            WlanCloseHandle(wlanHandle_, NULL);
+            WlanCloseHandle(wlanHandle_, nullptr);
          } else {
             initialized_ = true;
          }
@@ -98,7 +98,7 @@ void WifiDetector::SetNetworkList(const std::vector<std::wstring>& networks, boo
 void WifiDetector::CheckNetwork()
 {
    PWLAN_INTERFACE_INFO_LIST ifList;
-   DWORD wlanErr = WlanEnumInterfaces(wlanHandle_, NULL, &ifList);
+   DWORD wlanErr = WlanEnumInterfaces(wlanHandle_, nullptr, &ifList);
    if (wlanErr != ERROR_SUCCESS) {
       PrintWindowsError(L"WlanEnumInterfaces", wlanErr);
    } else {
@@ -108,7 +108,7 @@ void WifiDetector::CheckNetwork()
             wlanHandle_,
             &ifList->InterfaceInfo[ifList->dwIndex].InterfaceGuid,
             0,
-            NULL,
+            nullptr,
             &availList);
          if (wlanErr != ERROR_SUCCESS) {
             PrintWindowsError(L"WlanGetAvailableNetworkList", wlanErr);

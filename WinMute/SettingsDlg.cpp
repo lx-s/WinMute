@@ -50,7 +50,7 @@ struct SettingsDlgData {
    WMSettings* settings;
 
    SettingsDlgData(WMSettings* settings)
-      : settings(settings), hTabCtrl(NULL), hActiveTab(NULL)
+      : settings(settings), hTabCtrl(nullptr), hActiveTab(nullptr)
    {
       ZeroMemory(hTabs, sizeof(hTabs));
    }
@@ -80,7 +80,7 @@ static void InsertTabItem(HWND hTabCtrl, UINT id, const wchar_t *itemName)
 
 static void SwitchTab(SettingsDlgData* dlgData, HWND hNewTab)
 {
-   if (dlgData->hActiveTab != NULL) {
+   if (dlgData->hActiveTab != nullptr) {
       ShowWindow(dlgData->hActiveTab, SW_HIDE);
    }
    dlgData->hActiveTab = hNewTab;
@@ -103,7 +103,7 @@ static void ResizeTabs(HWND hTabCtrl, HWND* hTabs, int tabCount)
    tabCtrlRect.top += tabCtrlPos.y;
 
    HDWP hdwp = BeginDeferWindowPos(tabCount);
-   if (hdwp == NULL) {
+   if (hdwp == nullptr) {
       PrintWindowsError(L"BeginDeferWindowPos", GetLastError());
    } else {
       for (int i = 0; i < tabCount; ++i) {
@@ -116,7 +116,7 @@ static void ResizeTabs(HWND hTabCtrl, HWND* hTabs, int tabCount)
             tabCtrlRect.right - tabCtrlRect.left,
             tabCtrlRect.bottom - tabCtrlRect.top,
             0);
-         if (newHdwp == NULL) {
+         if (newHdwp == nullptr) {
             PrintWindowsError(L"DeferWindowPos", GetLastError());
             break;
          } else {
@@ -185,7 +185,7 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
       }
 
       HICON hIcon = LoadIcon(
-         GetModuleHandle(NULL),
+         GetModuleHandle(nullptr),
          MAKEINTRESOURCE(IDI_SETTINGS));
       SendMessageW(hDlg, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(hIcon));
 
@@ -222,7 +222,7 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
       return TRUE;
    case WM_DESTROY:
       delete dlgData;
-      SetWindowLongPtr(hDlg, GWLP_USERDATA, NULL);
+      SetWindowLongPtrW(hDlg, GWLP_USERDATA, 0);
       return 0;
    default:
       break;

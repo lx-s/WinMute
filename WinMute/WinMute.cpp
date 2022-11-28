@@ -86,7 +86,7 @@ static int IsDarkMode(bool& isDarkMode)
       error = RegQueryValueExW(
          hKey,
          L"SystemUsesLightTheme",
-         NULL,
+         nullptr,
          &valType,
          reinterpret_cast<LPBYTE>(&isLightTheme),
          &bufSize);
@@ -108,7 +108,7 @@ static bool IsCurrentSessionRemoteable()
    if (GetSystemMetrics(SM_REMOTESESSION)) {
       isRemoteable = true;
    } else {
-      HKEY hRegKey = NULL;
+      HKEY hRegKey = nullptr;
       LONG lResult;
 
       lResult = RegOpenKeyExW(HKEY_LOCAL_MACHINE, TERMINAL_SERVER_KEY, 0, KEY_READ, &hRegKey);
@@ -117,7 +117,7 @@ static bool IsCurrentSessionRemoteable()
          DWORD cbGlassSessionId = sizeof(dwGlassSessionId);
          DWORD dwType;
 
-         lResult = RegQueryValueExW(hRegKey, GLASS_SESSION_ID, NULL, &dwType,
+         lResult = RegQueryValueExW(hRegKey, GLASS_SESSION_ID, nullptr, &dwType,
             reinterpret_cast<BYTE*>(&dwGlassSessionId),
             &cbGlassSessionId);
 
@@ -171,7 +171,7 @@ bool WinMute::RegisterWindowClass()
 bool WinMute::InitWindow()
 {
    hWnd_ = CreateWindowExW(WS_EX_TOOLWINDOW, WINMUTE_CLASS_NAME, PROGRAM_NAME,
-      WS_POPUP, 0, 0, 0, 0, NULL, 0, hglobInstance, this);
+      WS_POPUP, 0, 0, 0, 0, nullptr, 0, hglobInstance, this);
    if (hWnd_ == nullptr) {
       PrintWindowsError(L"CreateWindowEx");
       return false;
@@ -205,9 +205,9 @@ bool WinMute::InitAudio()
                   (cond) ? MF_CHECKED : MF_UNCHECKED) != -1)
 bool WinMute::InitTrayMenu()
 {
-   if (hTrayMenu_ == NULL) {
+   if (hTrayMenu_ == nullptr) {
       hTrayMenu_ = LoadMenuW(hglobInstance, MAKEINTRESOURCE(IDR_TRAYMENU));
-      if (hTrayMenu_ == NULL) {
+      if (hTrayMenu_ == nullptr) {
          PrintWindowsError(L"LoadMenu");
          return false;
       }
@@ -273,7 +273,7 @@ bool WinMute::Init()
       hglobInstance,
       isDarkMode ? MAKEINTRESOURCE(IDI_TRAY_DARK)
                  : MAKEINTRESOURCE(IDI_TRAY_BRIGHT));
-   if (hTrayIcon_ == NULL) {
+   if (hTrayIcon_ == nullptr) {
       PrintWindowsError(_T("LoadIcon"));
       return false;
    }
@@ -595,7 +595,7 @@ LRESULT CALLBACK WinMute::WindowProc(
             hglobInstance,
             isDarkMode ? MAKEINTRESOURCE(IDI_TRAY_DARK)
             : MAKEINTRESOURCE(IDI_TRAY_BRIGHT));
-         if (hTrayIcon_ == NULL) {
+         if (hTrayIcon_ == nullptr) {
             PrintWindowsError(L"LoadIcon");
          } else {
             trayIcon_.ChangeIcon(hTrayIcon_);
