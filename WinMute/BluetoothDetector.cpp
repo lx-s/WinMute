@@ -47,7 +47,7 @@ BluetoothDetector::~BluetoothDetector()
    }
 }
 
-void BluetoothDetector::UnloadRadioNotifications()
+void BluetoothDetector::UnloadRadioNotifications() noexcept
 {
    for (auto hDevNotify : notificationHandles_) {
       UnregisterDeviceNotification(hDevNotify);
@@ -61,8 +61,8 @@ bool BluetoothDetector::LoadRadioNotifications()
    auto& log = WMLog::GetInstance();
    notificationHandles_.clear();
 
-   HANDLE btHandle;
-   BLUETOOTH_FIND_RADIO_PARAMS bfrp = { sizeof(BLUETOOTH_FIND_RADIO_PARAMS) };
+   HANDLE btHandle = nullptr;
+   const BLUETOOTH_FIND_RADIO_PARAMS bfrp = { sizeof(BLUETOOTH_FIND_RADIO_PARAMS) };
    HBLUETOOTH_RADIO_FIND hRadiosFind = BluetoothFindFirstRadio(&bfrp, &btHandle);
    if (hRadiosFind == nullptr) {
       log.WriteWindowsError(L"BluetoothFindFirstRadio", GetLastError());
@@ -88,7 +88,7 @@ bool BluetoothDetector::LoadRadioNotifications()
          notificationHandles_.push_back(devNotify);
       }
    } while (BluetoothFindNextRadio(hRadiosFind, &btHandle));
-   DWORD dwLastError = GetLastError();
+   const DWORD dwLastError = GetLastError();
    if (dwLastError != ERROR_NO_MORE_ITEMS) {
       log.WriteWindowsError(L"BluetoothFindNextRadio", GetLastError());
       UnloadRadioNotifications();

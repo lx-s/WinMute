@@ -44,7 +44,7 @@ static void WlanNotificationCallback(
 }
 
 
-WifiDetector::WifiDetector()
+WifiDetector::WifiDetector() noexcept
    : hNotifyWnd_(nullptr), wlanHandle_(nullptr), isMuteList_(true), initialized_(false)
 {
 }
@@ -53,7 +53,7 @@ WifiDetector::~WifiDetector()
 {
 }
 
-void WifiDetector::Unload()
+void WifiDetector::Unload() noexcept
 {
    if (initialized_) {
       WlanRegisterNotification(wlanHandle_, WLAN_NOTIFICATION_SOURCE_NONE,
@@ -103,7 +103,7 @@ void WifiDetector::CheckNetwork()
       PrintWindowsError(L"WlanEnumInterfaces", wlanErr);
    } else {
       for (; ifList->dwIndex < ifList->dwNumberOfItems; ++ifList->dwIndex) {
-         PWLAN_AVAILABLE_NETWORK_LIST availList;
+         PWLAN_AVAILABLE_NETWORK_LIST availList = nullptr;
          wlanErr = WlanGetAvailableNetworkList(
             wlanHandle_,
             &ifList->InterfaceInfo[ifList->dwIndex].InterfaceGuid,
@@ -114,14 +114,14 @@ void WifiDetector::CheckNetwork()
             PrintWindowsError(L"WlanGetAvailableNetworkList", wlanErr);
          } else {
             for (; availList->dwIndex < availList->dwNumberOfItems; ++availList->dwIndex) {
-               PWLAN_AVAILABLE_NETWORK net = &availList->Network[availList->dwIndex];
+               const PWLAN_AVAILABLE_NETWORK net = &availList->Network[availList->dwIndex];
                if (net->dwFlags & WLAN_AVAILABLE_NETWORK_CONNECTED) {
                   const auto it = std::find(std::begin(networks_),
                                             std::end(networks_),
                                             net->strProfileName);
                   if (isMuteList_ && it != std::end(networks_)
                       || !isMuteList_ && it == std::end(networks_)) {
-                     size_t profileNameLen = lstrlen(net->strProfileName);
+                     const size_t profileNameLen = lstrlen(net->strProfileName);
                      wchar_t* wiFiName = new wchar_t[profileNameLen + 1];
                      StringCchCopy(wiFiName, profileNameLen + 1, net->strProfileName);
                      SendMessage(hNotifyWnd_, WM_WIFISTATUSCHANGED, 1,

@@ -76,38 +76,38 @@ HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::QueryInterface(
 }
 
 HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnDisplayNameChanged(
-   LPCWSTR /*newDisplayName*/, LPCGUID /*eventContext*/)
+   LPCWSTR /*newDisplayName*/, LPCGUID /*eventContext*/) noexcept
 {
    return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnIconPathChanged(
-   LPCWSTR /*newIconPath*/, LPCGUID /*eventContext*/)
+   LPCWSTR /*newIconPath*/, LPCGUID /*eventContext*/) noexcept
 {
    return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnSimpleVolumeChanged(
-   float /*newVolume*/, BOOL /*newMute*/, LPCGUID /*eventContext*/)
+   float /*newVolume*/, BOOL /*newMute*/, LPCGUID /*eventContext*/) noexcept
 {
    return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnChannelVolumeChanged(
    DWORD /*channelCount*/, float* /*newChannelVolumeArray[]*/,
-   DWORD /*changedChannel*/, LPCGUID /*eventContext*/)
+   DWORD /*changedChannel*/, LPCGUID /*eventContext*/) noexcept
 {
    return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnGroupingParamChanged(
-   LPCGUID /*newGroupingParam*/, LPCGUID /*eventContext*/)
+   LPCGUID /*newGroupingParam*/, LPCGUID /*eventContext*/) noexcept
 {
    return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnStateChanged(
-   AudioSessionState /*newState*/)
+   AudioSessionState /*newState*/) noexcept
 {
    return S_OK;
 }
@@ -116,7 +116,7 @@ HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnStateChanged(
  * http://blogs.msdn.com/b/larryosterman/archive/2007/10/31/what-happens-when-audio-rendering-fails.aspx
  * for detailed information about each of these entries */
 HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnSessionDisconnected(
-   AudioSessionDisconnectReason disconnectReason)
+   AudioSessionDisconnectReason disconnectReason) noexcept
 {
 
    switch (disconnectReason) {

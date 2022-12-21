@@ -37,9 +37,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #ifndef _versionhelpers_H_INCLUDED_ // avoid conflict with MS versionhelpers
 
-inline bool IsWindowsVersionOrGreater(WORD wMajorVersion,
+inline bool IsWindowsVersionOrGreater(
+   WORD wMajorVersion,
    WORD wMinorVersion,
-   WORD wServicePackMajor)
+   WORD wServicePackMajor) noexcept
 {
    OSVERSIONINFOEXW osvi = { sizeof(osvi), 0, 0, 0, 0, { 0 }, 0, 0 };
    DWORDLONG        const dwlConditionMask = VerSetConditionMask(

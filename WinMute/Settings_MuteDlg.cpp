@@ -35,13 +35,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 static void SetCheckButton(HWND hBtn, const WMSettings& settings, SettingsKey key)
 {
-   DWORD enabled = !!settings.QueryValue(key);
+   const DWORD enabled = !!settings.QueryValue(key);
    Button_SetCheck(hBtn, enabled ? BST_CHECKED : BST_UNCHECKED);
 }
 
 static void SetOption(HWND hBtn, WMSettings& settings, SettingsKey key)
 {
-   int enable = Button_GetCheck(hBtn) == BST_CHECKED;
+   const int enable = Button_GetCheck(hBtn) == BST_CHECKED;
    settings.SetValue(key, enable);
 }
 

@@ -108,7 +108,7 @@ static INT_PTR CALLBACK Settings_BluetoothAddDlgProc(HWND hDlg, UINT msg, WPARAM
    case WM_COMMAND:
       if (LOWORD(wParam) == IDOK) {
          HWND hDevName = GetDlgItem(hDlg, IDC_BT_DEVICE_NAME);
-         int textLen = Edit_GetTextLength(hDevName);
+         const int textLen = Edit_GetTextLength(hDevName);
          if (textLen == 0) {
             EDITBALLOONTIP ebt;
             ZeroMemory(&ebt, sizeof(ebt));
@@ -118,7 +118,7 @@ static INT_PTR CALLBACK Settings_BluetoothAddDlgProc(HWND hDlg, UINT msg, WPARAM
             ebt.ttiIcon = TTI_INFO;
             Edit_ShowBalloonTip(hDevName, &ebt);
          } else {
-            wchar_t devNameBuf[BT_DEV_NAME_MAX_LEN + 1];
+            wchar_t devNameBuf[BT_DEV_NAME_MAX_LEN + 1] = { 'L\0' };
             BtDeviceName* btDevName = reinterpret_cast<BtDeviceName*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
             if (btDevName != nullptr) {
                Edit_GetText(hDevName, devNameBuf, ARRAY_SIZE(devNameBuf));
@@ -157,7 +157,7 @@ static std::vector<std::wstring> ExportBluetoothDeviceList(HWND hList)
    return items;
 }
 
-static bool IsBluetoothAvailable()
+static bool IsBluetoothAvailable() noexcept
 {
    HANDLE btHandle;
    BLUETOOTH_FIND_RADIO_PARAMS bfrp = { sizeof(BLUETOOTH_FIND_RADIO_PARAMS) };
@@ -169,7 +169,7 @@ static bool IsBluetoothAvailable()
    return true;
 }
 
-static BOOL CALLBACK ShowChildWindow(HWND hWnd, LPARAM lParam)
+static BOOL CALLBACK ShowChildWindow(HWND hWnd, LPARAM lParam) noexcept
 {
    ShowWindow(hWnd, static_cast<int>(lParam));
    return TRUE;
@@ -223,7 +223,7 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
          HWND hBtNotAvail = GetDlgItem(hDlg, IDC_STATIC_BLUETOOTH_NOT_AVAILABLE);
          RECT r;
          GetClientRect(hBtNotAvail, &r);
-         const int margin = 20;
+         constexpr int margin = 20;
          SetWindowPos(
             hBtNotAvail, HWND_TOP,
             margin, margin, r.right, r.bottom,
@@ -236,17 +236,17 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
    case WM_COMMAND:
    {
       if (LOWORD(wParam) == IDC_ENABLE_BLUETOOTH_MUTE) {
-         DWORD checked = Button_GetCheck(GetDlgItem(hDlg, IDC_ENABLE_BLUETOOTH_MUTE));
+         const DWORD checked = Button_GetCheck(GetDlgItem(hDlg, IDC_ENABLE_BLUETOOTH_MUTE));
          Button_Enable(GetDlgItem(hDlg, IDC_ENABLE_BLUETOOTH_MUTE_DEVICE_LIST), checked == BST_CHECKED);
       } else if (LOWORD(wParam) == IDC_BLUETOOTH_LIST) {
          HWND hList = GetDlgItem(hDlg, IDC_BLUETOOTH_LIST);
          if (HIWORD(wParam) == LBN_SELCHANGE || HIWORD(wParam) == LBN_SELCANCEL) {
-            bool entrySelected = (ListBox_GetCurSel(hList) != LB_ERR);
+            const bool entrySelected = (ListBox_GetCurSel(hList) != LB_ERR);
             Button_Enable(GetDlgItem(hDlg, IDC_BLUETOOTH_EDIT), entrySelected);
             Button_Enable(GetDlgItem(hDlg, IDC_BLUETOOTH_REMOVE), entrySelected);
          }
          else if (HIWORD(wParam) == LBN_KILLFOCUS) {
-            bool entrySelected = (ListBox_GetCurSel(hList) != LB_ERR);
+            const bool entrySelected = (ListBox_GetCurSel(hList) != LB_ERR);
             Button_Enable(GetDlgItem(hDlg, IDC_BLUETOOTH_EDIT), entrySelected);
             Button_Enable(GetDlgItem(hDlg, IDC_BLUETOOTH_REMOVE), entrySelected);
          }
@@ -271,9 +271,9 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
          }
       } else if (LOWORD(wParam) == IDC_BLUETOOTH_EDIT) {
          HWND hList = GetDlgItem(hDlg, IDC_BLUETOOTH_LIST);
-         WPARAM sel = ListBox_GetCurSel(hList);
+         const WPARAM sel = ListBox_GetCurSel(hList);
          if (sel != LB_ERR) {
-            int len = ListBox_GetTextLen(hList, sel);
+            const int len = ListBox_GetTextLen(hList, sel);
             wchar_t* textBuf = nullptr;
             if (len != LB_ERR) {
                if ((textBuf = new wchar_t[static_cast<size_t>(len) + 1]) != nullptr) {
@@ -303,7 +303,7 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
          }
       } else if (LOWORD(wParam) == IDC_BLUETOOTH_REMOVE) {
          HWND hList = GetDlgItem(hDlg, IDC_BLUETOOTH_LIST);
-         WPARAM sel = ListBox_GetCurSel(hList);
+         const WPARAM sel = ListBox_GetCurSel(hList);
          if (sel != LB_ERR) {
             ListBox_DeleteString(hList, sel);
             if (ListBox_GetCount(hList) == 0) {

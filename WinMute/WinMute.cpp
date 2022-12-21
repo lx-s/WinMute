@@ -101,7 +101,7 @@ static int IsDarkMode(bool& isDarkMode)
    return rc;
 }
 
-static bool IsCurrentSessionRemoteable()
+static bool IsCurrentSessionRemoteable() noexcept
 {
    bool isRemoteable = false;
 
@@ -113,7 +113,7 @@ static bool IsCurrentSessionRemoteable()
 
       lResult = RegOpenKeyExW(HKEY_LOCAL_MACHINE, TERMINAL_SERVER_KEY, 0, KEY_READ, &hRegKey);
       if (lResult == ERROR_SUCCESS) {
-         DWORD dwGlassSessionId;
+         DWORD dwGlassSessionId = 0;
          DWORD cbGlassSessionId = sizeof(dwGlassSessionId);
          DWORD dwType;
 
@@ -147,7 +147,7 @@ WinMute::WinMute() :
 {
 }
 
-WinMute::~WinMute()
+WinMute::~WinMute() noexcept
 {
    Unload();
 }
@@ -337,7 +337,7 @@ bool WinMute::LoadSettings()
          settings_.SetValue(SettingsKey::MUTE_ON_BLUETOOTH, FALSE);
       } else {
          muteCtrl_.SetMuteOnBluetoothDisconnect(true);
-         bool muteOnWithDeviceList = settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH_DEVICELIST);
+         const bool muteOnWithDeviceList = settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH_DEVICELIST);
          btDetector_.SetDeviceList(settings_.GetBluetoothDevicesA(), muteOnWithDeviceList);
       }
    }
@@ -353,7 +353,7 @@ bool WinMute::LoadSettings()
             L"WLAN muting will be disabled on this computer");
          settings_.SetValue(SettingsKey::MUTE_ON_WLAN, FALSE);
       } else {
-         bool isMuteList = !settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST);
+         const bool isMuteList = !settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST);
          wifiDetector_.SetNetworkList(settings_.GetWifiNetworks(), isMuteList);
          wifiDetector_.CheckNetwork();
       }
@@ -362,7 +362,7 @@ bool WinMute::LoadSettings()
    return true;
 }
 
-void WinMute::ToggleMenuCheck(UINT item, bool* setting)
+void WinMute::ToggleMenuCheck(UINT item, bool* setting) noexcept
 {
    UINT state = GetMenuState(hTrayMenu_, item, MF_BYCOMMAND);
    if (state & MF_CHECKED) {
@@ -614,7 +614,7 @@ LRESULT CALLBACK WinMute::WindowProc(
    return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-void WinMute::Unload()
+void WinMute::Unload() noexcept
 {
    settings_.Unload();
 }

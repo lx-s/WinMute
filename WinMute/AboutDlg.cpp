@@ -96,21 +96,21 @@ struct AboutDlgData {
    }
 };
 
-static void InsertTabItem(HWND hTabCtrl, UINT id, const wchar_t *itemName)
+static void InsertTabItem(HWND hTabCtrl, UINT id, const std::wstring& itemName)
 {
    constexpr int bufSize = 50;
-   wchar_t buf[bufSize];
+   wchar_t buf[bufSize] = { L'\0' };
    TC_ITEM tcItem;
    ZeroMemory(&tcItem, sizeof(tcItem));
    tcItem.mask |= TCIF_TEXT;
-   StringCchCopy(buf, bufSize, itemName);
+   StringCchCopyW(buf, bufSize, itemName.c_str());
    tcItem.pszText = buf;
    tcItem.cchTextMax = bufSize;
 
    TabCtrl_InsertItem(hTabCtrl, id, &tcItem);
 }
 
-static void SwitchTab(AboutDlgData* dlgData, HWND hNewTab)
+static void SwitchTab(AboutDlgData* dlgData, HWND hNewTab) noexcept
 {
    if (dlgData->hActiveTab != nullptr) {
       ShowWindow(dlgData->hActiveTab, SW_HIDE);
@@ -158,7 +158,7 @@ static void ResizeTabs(HWND hTabCtrl, std::span<HWND> tabs)
    }
 }
 
-static INT_PTR CALLBACK About_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM lParam)
+static INT_PTR CALLBACK About_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM lParam) noexcept
 {
    switch (msg) {
    case WM_INITDIALOG:
@@ -168,10 +168,10 @@ static INT_PTR CALLBACK About_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM
       Edit_SetText(GetDlgItem(hDlg, IDC_ABOUTTEXT), aboutText.c_str());
       return TRUE;
    case WM_NOTIFY: {
-      PNMLINK pNmLink = reinterpret_cast<PNMLINK>(lParam);
+      const PNMLINK pNmLink = reinterpret_cast<PNMLINK>(lParam);
       if (pNmLink->hdr.code == NM_CLICK || pNmLink->hdr.code == NM_RETURN) {
-         UINT_PTR ctrlId = pNmLink->hdr.idFrom;
-         LITEM item = pNmLink->item;
+         const UINT_PTR ctrlId = pNmLink->hdr.idFrom;
+         const LITEM item = pNmLink->item;
          if ((ctrlId == IDC_LINK_HOMEPAGE
               || ctrlId == IDC_LINK_TICKETS
               || ctrlId == IDC_LINK_PROJECT)
@@ -187,7 +187,7 @@ static INT_PTR CALLBACK About_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM
    return FALSE;
 }
 
-static INT_PTR CALLBACK About_LicenseDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM)
+static INT_PTR CALLBACK About_LicenseDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM) noexcept
 {
    switch (msg) {
    case WM_INITDIALOG:
@@ -208,7 +208,7 @@ static bool GetWinMuteVersion(std::wstring& versNumber)
    DWORD dummy;
    wchar_t szFileName[MAX_PATH];
    GetModuleFileName(nullptr, szFileName, sizeof(szFileName)/sizeof(szFileName[0]));
-   DWORD versSize = GetFileVersionInfoSizeEx(FILE_VER_GET_NEUTRAL, szFileName, &dummy);
+   const DWORD versSize = GetFileVersionInfoSizeEx(FILE_VER_GET_NEUTRAL, szFileName, &dummy);
    LPVOID versData = malloc(versSize);
    if (versData != nullptr) {
       if (GetFileVersionInfoExW(

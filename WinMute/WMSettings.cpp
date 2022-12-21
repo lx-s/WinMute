@@ -254,7 +254,7 @@ bool WMSettings::Init()
    return true;
 }
 
-void WMSettings::Unload()
+void WMSettings::Unload() noexcept
 {
    RegCloseKey(hSettingsKey_);
    hSettingsKey_ = nullptr;

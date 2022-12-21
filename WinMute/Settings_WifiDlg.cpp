@@ -194,16 +194,16 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
    case WM_COMMAND:
    {
       if (LOWORD(wParam) == IDC_ENABLE_WIFI_MUTE) {
-         DWORD checked = Button_GetCheck(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE));
+         const DWORD checked = Button_GetCheck(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE));
          Button_Enable(GetDlgItem(hDlg, IDC_IS_PERMITLIST), checked == BST_CHECKED);
       } else if (LOWORD(wParam) == IDC_WIFI_LIST) {
          HWND hList = GetDlgItem(hDlg, IDC_WIFI_LIST);
          if (HIWORD(wParam) == LBN_SELCHANGE || HIWORD(wParam) == LBN_SELCANCEL) {
-            bool entrySelected = (ListBox_GetCurSel(hList) != LB_ERR);
+            const bool entrySelected = (ListBox_GetCurSel(hList) != LB_ERR);
             Button_Enable(GetDlgItem(hDlg, IDC_WIFI_EDIT), entrySelected);
             Button_Enable(GetDlgItem(hDlg, IDC_WIFI_REMOVE), entrySelected);
          } else if (HIWORD(wParam) == LBN_KILLFOCUS) {
-            bool entrySelected = (ListBox_GetCurSel(hList) != LB_ERR);
+            const bool entrySelected = (ListBox_GetCurSel(hList) != LB_ERR);
             Button_Enable(GetDlgItem(hDlg, IDC_WIFI_EDIT), entrySelected);
             Button_Enable(GetDlgItem(hDlg, IDC_WIFI_REMOVE), entrySelected);
          }
@@ -228,9 +228,9 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
          }
       } else if (LOWORD(wParam) == IDC_WIFI_EDIT) {
          HWND hList = GetDlgItem(hDlg, IDC_WIFI_LIST);
-         WPARAM sel = ListBox_GetCurSel(hList);
+         const WPARAM sel = ListBox_GetCurSel(hList);
          if (sel != LB_ERR) {
-            int len = ListBox_GetTextLen(hList, sel);
+            const int len = ListBox_GetTextLen(hList, sel);
             wchar_t *textBuf = nullptr;
             if (len != LB_ERR) {
                if ((textBuf = new wchar_t[static_cast<size_t>(len) + 1]) != nullptr) {

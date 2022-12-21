@@ -97,7 +97,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
    // </Init Common Controls>
 
    // <Init COM>
-   if (CoInitializeEx(0, COINIT_APARTMENTTHREADED) != S_OK) {
+   if (CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED) != S_OK) {
       TaskDialog(nullptr,
          nullptr,
          PROGRAM_NAME,
@@ -110,7 +110,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
       return FALSE;
    }
 
-   MSG msg = { 0 };
+   MSG msg = { nullptr };
    WinMute program;
    if (program.Init()) {
       while (GetMessage(&msg, nullptr, 0, 0)) {
