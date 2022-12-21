@@ -125,23 +125,26 @@ IDD_SETTINGS_MUTE DIALOGEX 0, 0, 242, 205
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    GROUPBOX        "General",IDC_STATIC,7,7,228,31
+    GROUPBOX        "General",IDC_STATIC,7,7,228,57
     CONTROL         "Show mute event notifications",IDC_SHOWNOTIFICATIONS,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,17,219,18
-    GROUPBOX        "Mute with volume restore, when...",IDC_STATIC,7,42,228,60
+    GROUPBOX        "Mute with volume restore, when...",IDC_STATIC,7,67,228,57
     CONTROL         "... the workstation is locked.",IDC_MUTE_WHEN_WS_LOCKED,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,57,107,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,81,107,10
     CONTROL         "... the screen turns off.",IDC_MUTE_WHEN_SCREEN_OFF,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,71,93,10
-    CONTROL         "Restore volume afterwards.",IDC_RESTOREVOLUME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,86,106,10
-    GROUPBOX        "Mute without volume restore, when...",IDC_STATIC,7,106,228,88
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,95,93,10
+    CONTROL         "Restore volume afterwards.",IDC_RESTOREVOLUME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,110,106,10
+    GROUPBOX        "Mute without volume restore, when...",IDC_STATIC,7,127,228,67
     CONTROL         "... the computer shuts down.",IDC_MUTE_WHEN_SHUTDOWN,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,121,110,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,138,110,10
     CONTROL         "... the computer goes into sleep/hibernate.",IDC_MUTE_WHEN_SLEEP,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,135,155,10
-    CONTROL         "... you log out.",IDC_MUTE_WHEN_LOGOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,149,65,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,152,155,10
+    CONTROL         "... you log out.",IDC_MUTE_WHEN_LOGOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,166,65,10
     CONTROL         "... when WinMute is started within a RDP session.",IDC_MUTE_WHEN_RDP_SESSION,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,163,175,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,180,175,10
+    CONTROL         "Manage audio endpoints individually",IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,31,219,18
+    PUSHBUTTON      "Manage endpoints...",IDC_MANAGE_ENDPOINTS,26,47,74,14
 END
 
 IDD_SETTINGS_WIFI DIALOGEX 0, 0, 242, 204

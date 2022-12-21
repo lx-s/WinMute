@@ -30,6 +30,7 @@
 #define IDC_FORCEUNMUTE                 1006
 #define IDC_SHOWNOTIFICATIONS           1007
 #define IDC_TREE1                       1008
+#define IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY 1008
 #define IDC_TAB1                        1010
 #define IDC_SETTINGS_TAB                1010
 #define IDC_CHECK1                      1011
@@ -71,6 +72,8 @@
 #define IDC_ENABLE_BLUETOOTH_MUTE_DEVICE_LIST 1037
 #define IDC_BT_DEVICE_NAME              1038
 #define IDC_LOGFILEPATH                 1040
+#define IDC_BUTTON1                     1041
+#define IDC_MANAGE_ENDPOINTS            1041
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_                    40002
 #define ID_TRAYMENU_MUTEON              40003
@@ -114,7 +117,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        135
 #define _APS_NEXT_COMMAND_VALUE         40037
-#define _APS_NEXT_CONTROL_VALUE         1041
+#define _APS_NEXT_CONTROL_VALUE         1042
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
