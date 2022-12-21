@@ -44,7 +44,9 @@ public:
    BluetoothDetector();
    ~BluetoothDetector();
    BluetoothDetector(const WifiDetector&) = delete;
+   BluetoothDetector(WifiDetector&&) = delete;
    BluetoothDetector& operator=(const WifiDetector&) = delete;
+   BluetoothDetector& operator=(WifiDetector&&) = delete;
 
    void SetDeviceList(const std::vector<std::string>& devices, bool useDeviceList);
 
@@ -61,7 +63,7 @@ private:
    std::vector<HDEVNOTIFY> notificationHandles_;
 
    bool LoadRadioNotifications();
-   void UnloadRadioNotifications();
+   void UnloadRadioNotifications() noexcept;
 
    bool initialized_;
    bool useDeviceList_;

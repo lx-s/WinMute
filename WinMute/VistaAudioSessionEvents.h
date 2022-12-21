@@ -52,31 +52,32 @@ public:
    // Notification methods for audio session events
    HRESULT STDMETHODCALLTYPE OnDisplayNameChanged(
       LPCWSTR newDisplayName,
-      LPCGUID eventContext);
+      LPCGUID eventContext) noexcept override;
 
    HRESULT STDMETHODCALLTYPE OnIconPathChanged(
       LPCWSTR newIconPath,
-      LPCGUID eventContext);
+      LPCGUID eventContext) noexcept override;
 
    HRESULT STDMETHODCALLTYPE OnSimpleVolumeChanged(
       float newVolume,
       BOOL newMute,
-      LPCGUID eventContext);
+      LPCGUID eventContext) noexcept override;
 
    HRESULT STDMETHODCALLTYPE OnChannelVolumeChanged(
       DWORD channelCount,
       float newChannelVolumeArray[],
       DWORD changedChannel,
-      LPCGUID eventContext);
+      LPCGUID eventContext) noexcept override;
 
    HRESULT STDMETHODCALLTYPE OnGroupingParamChanged(
       LPCGUID newGroupingParam,
-      LPCGUID eventContext);
+      LPCGUID eventContext) noexcept override;
 
-   HRESULT STDMETHODCALLTYPE OnStateChanged(AudioSessionState newState);
+   HRESULT STDMETHODCALLTYPE OnStateChanged(
+      AudioSessionState newState) noexcept override;
 
    HRESULT STDMETHODCALLTYPE OnSessionDisconnected(
-      AudioSessionDisconnectReason disconnectReason);
+      AudioSessionDisconnectReason disconnectReason) noexcept override;
 
 private:
    LONG ref_;

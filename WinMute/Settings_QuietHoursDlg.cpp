@@ -106,7 +106,7 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
       HWND hEnd = GetDlgItem(hDlg, IDC_QUIETHOURS_END);
 
       WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
-      assert(settings != NULL);
+      assert(settings != nullptr);
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(settings));
 
       if (IsAppThemed()) {

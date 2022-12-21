@@ -33,7 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
-static const wchar_t *licenseText = L"\
+static const std::wstring licenseText = L"\
 WinMute\r\n\
 Copyright(c) 2022, Alexander Steinhoefer\r\n\
 \r\n\
@@ -66,7 +66,7 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE\r\n\
 POSSIBILITY OF SUCH DAMAGE.\r\n\
 ";
 
-static const wchar_t *aboutText = L"\
+static const std::wstring aboutText = L"\
 WinMute is developed by Alexander Steinhoefer\r\n\
 in his spare time.\r\n\
 \r\n\
@@ -86,41 +86,40 @@ enum AboutTabsIDs {
 
 struct AboutDlgData {
    HWND hTabCtrl;
-   HWND hTabs[ABOUT_TAB_COUNT];
+   std::array<HWND, ABOUT_TAB_COUNT> hTabs;
    HWND hActiveTab;
    HFONT hTitleFont;
 
-   AboutDlgData()
-      : hTabCtrl(NULL), hActiveTab(NULL), hTitleFont(NULL)
+   AboutDlgData() noexcept
+      : hTabCtrl{nullptr}, hTabs{nullptr}, hActiveTab{nullptr}, hTitleFont{nullptr}
    {
-      ZeroMemory(hTabs, sizeof(hTabs));
    }
 };
 
-static void InsertTabItem(HWND hTabCtrl, UINT id, const wchar_t *itemName)
+static void InsertTabItem(HWND hTabCtrl, UINT id, const std::wstring& itemName)
 {
    constexpr int bufSize = 50;
-   wchar_t buf[bufSize];
+   wchar_t buf[bufSize] = { L'\0' };
    TC_ITEM tcItem;
    ZeroMemory(&tcItem, sizeof(tcItem));
    tcItem.mask |= TCIF_TEXT;
-   StringCchCopy(buf, bufSize, itemName);
+   StringCchCopyW(buf, bufSize, itemName.c_str());
    tcItem.pszText = buf;
    tcItem.cchTextMax = bufSize;
 
    TabCtrl_InsertItem(hTabCtrl, id, &tcItem);
 }
 
-static void SwitchTab(AboutDlgData* dlgData, HWND hNewTab)
+static void SwitchTab(AboutDlgData* dlgData, HWND hNewTab) noexcept
 {
-   if (dlgData->hActiveTab != NULL) {
+   if (dlgData->hActiveTab != nullptr) {
       ShowWindow(dlgData->hActiveTab, SW_HIDE);
    }
    dlgData->hActiveTab = hNewTab;
    ShowWindow(dlgData->hActiveTab, SW_SHOW);
 }
 
-static void ResizeTabs(HWND hTabCtrl, HWND* hTabs, int tabCount)
+static void ResizeTabs(HWND hTabCtrl, std::span<HWND> tabs)
 {
    RECT tabCtrlRect = { 0 };
    GetWindowRect(hTabCtrl, &tabCtrlRect);
@@ -134,21 +133,21 @@ static void ResizeTabs(HWND hTabCtrl, HWND* hTabs, int tabCount)
    tabCtrlRect.left += tabCtrlPos.x;
    tabCtrlRect.top += tabCtrlPos.y;
 
-   HDWP hdwp = BeginDeferWindowPos(tabCount);
-   if (hdwp == NULL) {
+   HDWP hdwp = BeginDeferWindowPos(static_cast<int>(tabs.size()));
+   if (hdwp == nullptr) {
       PrintWindowsError(L"BeginDeferWindowPos", GetLastError());
    } else {
-      for (int i = 0; i < tabCount; ++i) {
+      for (auto hTab : tabs) {
          HDWP newHdwp = DeferWindowPos(
             hdwp,
-            hTabs[i],
+            hTab,
             HWND_TOP,
             tabCtrlRect.left,
             tabCtrlRect.top,
             tabCtrlRect.right - tabCtrlRect.left,
             tabCtrlRect.bottom - tabCtrlRect.top,
             0);
-         if (hdwp == NULL) {
+         if (newHdwp == nullptr) {
             PrintWindowsError(L"DeferWindowPos", GetLastError());
             break;
          } else {
@@ -159,20 +158,20 @@ static void ResizeTabs(HWND hTabCtrl, HWND* hTabs, int tabCount)
    }
 }
 
-static INT_PTR CALLBACK About_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM lParam)
+static INT_PTR CALLBACK About_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM lParam) noexcept
 {
    switch (msg) {
    case WM_INITDIALOG:
       if (IsAppThemed()) {
          EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
       }
-      Edit_SetText(GetDlgItem(hDlg, IDC_ABOUTTEXT), aboutText);
+      Edit_SetText(GetDlgItem(hDlg, IDC_ABOUTTEXT), aboutText.c_str());
       return TRUE;
    case WM_NOTIFY: {
-      PNMLINK pNmLink = reinterpret_cast<PNMLINK>(lParam);
+      const PNMLINK pNmLink = reinterpret_cast<PNMLINK>(lParam);
       if (pNmLink->hdr.code == NM_CLICK || pNmLink->hdr.code == NM_RETURN) {
-         UINT_PTR ctrlId = pNmLink->hdr.idFrom;
-         LITEM item = pNmLink->item;
+         const UINT_PTR ctrlId = pNmLink->hdr.idFrom;
+         const LITEM item = pNmLink->item;
          if ((ctrlId == IDC_LINK_HOMEPAGE
               || ctrlId == IDC_LINK_TICKETS
               || ctrlId == IDC_LINK_PROJECT)
@@ -188,14 +187,14 @@ static INT_PTR CALLBACK About_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM
    return FALSE;
 }
 
-static INT_PTR CALLBACK About_LicenseDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM)
+static INT_PTR CALLBACK About_LicenseDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM) noexcept
 {
    switch (msg) {
    case WM_INITDIALOG:
       if (IsAppThemed()) {
          EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
       }
-      Edit_SetText(GetDlgItem(hDlg, IDC_LICENSETEXT), licenseText);
+      Edit_SetText(GetDlgItem(hDlg, IDC_LICENSETEXT), licenseText.c_str());
       return TRUE;
    default:
       break;
@@ -208,14 +207,14 @@ static bool GetWinMuteVersion(std::wstring& versNumber)
    bool success = false;
    DWORD dummy;
    wchar_t szFileName[MAX_PATH];
-   GetModuleFileName(NULL, szFileName, sizeof(szFileName)/sizeof(szFileName[0]));
-   DWORD versSize = GetFileVersionInfoSizeEx(FILE_VER_GET_NEUTRAL, szFileName, &dummy);
+   GetModuleFileName(nullptr, szFileName, sizeof(szFileName)/sizeof(szFileName[0]));
+   const DWORD versSize = GetFileVersionInfoSizeEx(FILE_VER_GET_NEUTRAL, szFileName, &dummy);
    LPVOID versData = malloc(versSize);
    if (versData != nullptr) {
-      if (GetFileVersionInfoEx(
+      if (GetFileVersionInfoExW(
             FILE_VER_GET_NEUTRAL,
             szFileName,
-            NULL,
+            0,
             versSize,
             versData)) {
          VS_FIXEDFILEINFO *pvi;
@@ -269,9 +268,9 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
          About_LicenseDlgProc);
 
       // Init tab pages
-      ResizeTabs(dlgData->hTabCtrl, dlgData->hTabs, ABOUT_TAB_COUNT);
-      for (int i = 0; i < ABOUT_TAB_COUNT; ++i) {
-         ShowWindow(dlgData->hTabs[i], SW_HIDE);
+      ResizeTabs(dlgData->hTabCtrl, std::span{dlgData->hTabs});
+      for (auto hTab : dlgData->hTabs) {
+         ShowWindow(hTab, SW_HIDE);
       }
       SwitchTab(dlgData, dlgData->hTabs[ABOUT_TAB_GENERAL]);
 
@@ -308,7 +307,7 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
          TRUE);
 
       HICON hIcon = LoadIcon(
-         GetModuleHandle(NULL),
+         GetModuleHandle(nullptr),
          MAKEINTRESOURCE(IDI_TRAY_DARK));
       SendMessageW(hDlg, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(hIcon));
 
@@ -333,7 +332,7 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
    case WM_DESTROY:
       DeleteObject(dlgData->hTitleFont);
       delete dlgData;
-      SetWindowLongPtr(hDlg, GWLP_USERDATA, NULL);
+      SetWindowLongPtrW(hDlg, GWLP_USERDATA, 0);
       return 0;
    case WM_CLOSE:
       EndDialog(hDlg, 0);

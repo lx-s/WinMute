@@ -38,9 +38,9 @@ HINSTANCE hglobInstance;
 static bool SetWorkingDirectory()
 {
    wchar_t wmFileName[MAX_PATH + 1];
-   if (GetModuleFileNameW(NULL, wmFileName, ARRAY_SIZE(wmFileName)) > 0) {
+   if (GetModuleFileNameW(nullptr, wmFileName, ARRAY_SIZE(wmFileName)) > 0) {
       wchar_t* p = wcsrchr(wmFileName, L'\\');
-      if (p != NULL) {
+      if (p != nullptr) {
          *(p + 1) = L'\0';
          SetCurrentDirectoryW(wmFileName);
          return true;
@@ -97,7 +97,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
    // </Init Common Controls>
 
    // <Init COM>
-   if (CoInitializeEx(0, COINIT_APARTMENTTHREADED) != S_OK) {
+   if (CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED) != S_OK) {
       TaskDialog(nullptr,
          nullptr,
          PROGRAM_NAME,
@@ -110,7 +110,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
       return FALSE;
    }
 
-   MSG msg = { 0 };
+   MSG msg = { nullptr };
    WinMute program;
    if (program.Init()) {
       while (GetMessage(&msg, nullptr, 0, 0)) {

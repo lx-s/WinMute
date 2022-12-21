@@ -40,7 +40,11 @@ class WinAudio;
 class WinMute {
 public:
    WinMute();
-   ~WinMute();
+   WinMute(const WinMute&) = delete;
+   WinMute(WinMute&&) = delete;
+   WinMute& operator=(const WinMute &) = delete;
+   WinMute& operator=(WinMute&&) = delete;
+   ~WinMute() noexcept;
 
    bool Init();
    void Close();
@@ -73,11 +77,7 @@ private:
    bool InitTrayMenu();
    bool LoadSettings();
 
-   void Unload();
+   void Unload() noexcept;
 
-   void ToggleMenuCheck(UINT item, bool* setting);
-
-   // Disable copying
-   WinMute(const WinMute&) = delete;
-   WinMute& operator=(const WinMute&) = delete;
+   void ToggleMenuCheck(UINT item, bool* setting) noexcept;
 };

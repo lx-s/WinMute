@@ -58,6 +58,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <span>
 #include <chrono>
 #include <cstdarg>
 #include <filesystem>

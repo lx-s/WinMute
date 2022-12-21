@@ -52,7 +52,7 @@ public:
       bool show);
    void Hide();
    void Show();
-   bool IsShown() const { return iconVisible_; }
+   bool IsShown() const noexcept { return iconVisible_; }
    void ChangeIcon(HICON hNewIcon);
    void ChangeText(const std::wstring& tooltip);
    void ShowPopup(const std::wstring& title, const std::wstring& text) const;

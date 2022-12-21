@@ -35,8 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
-static const int WM_WINMUTE_QUIETHOURS_START = WM_APP + 202;
-static const int WM_WINMUTE_QUIETHOURS_END = WM_APP + 203;
+static constexpr int WM_WINMUTE_QUIETHOURS_START = WM_APP + 202;
+static constexpr int WM_WINMUTE_QUIETHOURS_END = WM_APP + 203;
 
 class QuietHoursTimer {
 public:

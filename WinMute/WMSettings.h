@@ -65,7 +65,7 @@ public:
    WMSettings& operator=(const WMSettings&) = delete;
 
    bool Init();
-   void Unload();
+   void Unload() noexcept;
 
    bool IsAutostartEnabled();
    void EnableAutostart(bool enable);
