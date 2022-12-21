@@ -497,7 +497,7 @@ bool WMSettings::StoreBluetoothDevices(std::vector<std::wstring>& devices)
       StringCchPrintfW(
          valueName,
          ARRAY_SIZE(valueName),
-         L"Bluetooth %03ld", i + 1);
+         L"Bluetooth %03lld", i + 1);
       const std::wstring& v = devices[i];
       DWORD regError = RegSetValueEx(
          hBluetoothKey_,

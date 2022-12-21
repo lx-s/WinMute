@@ -33,7 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
-static const wchar_t *licenseText = L"\
+static const std::wstring licenseText = L"\
 WinMute\r\n\
 Copyright(c) 2022, Alexander Steinhoefer\r\n\
 \r\n\
@@ -66,7 +66,7 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE\r\n\
 POSSIBILITY OF SUCH DAMAGE.\r\n\
 ";
 
-static const wchar_t *aboutText = L"\
+static const std::wstring aboutText = L"\
 WinMute is developed by Alexander Steinhoefer\r\n\
 in his spare time.\r\n\
 \r\n\
@@ -86,14 +86,13 @@ enum AboutTabsIDs {
 
 struct AboutDlgData {
    HWND hTabCtrl;
-   HWND hTabs[ABOUT_TAB_COUNT];
+   std::array<HWND, ABOUT_TAB_COUNT> hTabs;
    HWND hActiveTab;
    HFONT hTitleFont;
 
-   AboutDlgData()
-      : hTabCtrl(nullptr), hActiveTab(nullptr), hTitleFont(nullptr)
+   AboutDlgData() noexcept
+      : hTabCtrl{nullptr}, hTabs{nullptr}, hActiveTab{nullptr}, hTitleFont{nullptr}
    {
-      ZeroMemory(hTabs, sizeof(hTabs));
    }
 };
 
@@ -120,7 +119,7 @@ static void SwitchTab(AboutDlgData* dlgData, HWND hNewTab)
    ShowWindow(dlgData->hActiveTab, SW_SHOW);
 }
 
-static void ResizeTabs(HWND hTabCtrl, HWND* hTabs, int tabCount)
+static void ResizeTabs(HWND hTabCtrl, std::span<HWND> tabs)
 {
    RECT tabCtrlRect = { 0 };
    GetWindowRect(hTabCtrl, &tabCtrlRect);
@@ -134,14 +133,14 @@ static void ResizeTabs(HWND hTabCtrl, HWND* hTabs, int tabCount)
    tabCtrlRect.left += tabCtrlPos.x;
    tabCtrlRect.top += tabCtrlPos.y;
 
-   HDWP hdwp = BeginDeferWindowPos(tabCount);
+   HDWP hdwp = BeginDeferWindowPos(static_cast<int>(tabs.size()));
    if (hdwp == nullptr) {
       PrintWindowsError(L"BeginDeferWindowPos", GetLastError());
    } else {
-      for (int i = 0; i < tabCount; ++i) {
+      for (auto hTab : tabs) {
          HDWP newHdwp = DeferWindowPos(
             hdwp,
-            hTabs[i],
+            hTab,
             HWND_TOP,
             tabCtrlRect.left,
             tabCtrlRect.top,
@@ -166,7 +165,7 @@ static INT_PTR CALLBACK About_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM
       if (IsAppThemed()) {
          EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
       }
-      Edit_SetText(GetDlgItem(hDlg, IDC_ABOUTTEXT), aboutText);
+      Edit_SetText(GetDlgItem(hDlg, IDC_ABOUTTEXT), aboutText.c_str());
       return TRUE;
    case WM_NOTIFY: {
       PNMLINK pNmLink = reinterpret_cast<PNMLINK>(lParam);
@@ -195,7 +194,7 @@ static INT_PTR CALLBACK About_LicenseDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM
       if (IsAppThemed()) {
          EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
       }
-      Edit_SetText(GetDlgItem(hDlg, IDC_LICENSETEXT), licenseText);
+      Edit_SetText(GetDlgItem(hDlg, IDC_LICENSETEXT), licenseText.c_str());
       return TRUE;
    default:
       break;
@@ -269,9 +268,9 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
          About_LicenseDlgProc);
 
       // Init tab pages
-      ResizeTabs(dlgData->hTabCtrl, dlgData->hTabs, ABOUT_TAB_COUNT);
-      for (int i = 0; i < ABOUT_TAB_COUNT; ++i) {
-         ShowWindow(dlgData->hTabs[i], SW_HIDE);
+      ResizeTabs(dlgData->hTabCtrl, std::span{dlgData->hTabs});
+      for (auto hTab : dlgData->hTabs) {
+         ShowWindow(hTab, SW_HIDE);
       }
       SwitchTab(dlgData, dlgData->hTabs[ABOUT_TAB_GENERAL]);
 
