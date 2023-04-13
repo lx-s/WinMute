@@ -79,6 +79,9 @@ public:
    std::vector<std::wstring> GetBluetoothDevicesW() const;
    std::vector<std::string> GetBluetoothDevicesA() const;
 
+   bool StoreManagedAudioEndpoints(std::vector<std::wstring> &endpoints);
+   std::vector<std::wstring> GetManagedAudioEndpoints() const;
+
    DWORD QueryValue(SettingsKey key) const;
    bool  SetValue(SettingsKey key, DWORD value);
 
@@ -86,6 +89,7 @@ private:
    HKEY hSettingsKey_;
    HKEY hWifiKey_;
    HKEY hBluetoothKey_;
+   HKEY hAudioEndpointsKey_;
 
    HKEY OpenAutostartKey(REGSAM samDesired);
 };

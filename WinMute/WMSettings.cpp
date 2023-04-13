@@ -39,6 +39,8 @@ static const wchar_t* LX_SYSTEMS_WIFI_SUBKEY
    = L"SOFTWARE\\lx-systems\\WinMute\\WifiNetworks";
 static const wchar_t* LX_SYSTEMS_BLUETOOTH_SUBKEY
    = L"SOFTWARE\\lx-systems\\WinMute\\BluetoothDevices";
+static const wchar_t *LX_SYSTEMS_AUDIO_ENDPOINTS_SUBKEY
+= L"SOFTWARE\\lx-systems\\WinMute\\ManagedAudioEndpoints";
 
 static const wchar_t* LX_SYSTEMS_AUTOSTART_KEY
    = L"LX-Systems WinMute";
@@ -190,7 +192,8 @@ static bool ReadStringFromRegistry(HKEY hKey, const wchar_t *subKey, std::wstrin
 WMSettings::WMSettings() :
    hSettingsKey_(nullptr),
    hWifiKey_(nullptr),
-   hBluetoothKey_(nullptr)
+   hBluetoothKey_(nullptr),
+   hAudioEndpointsKey_(nullptr)
 {
 }
 
@@ -252,6 +255,28 @@ bool WMSettings::Init()
          RegCloseKey(hSettingsKey_);
          hSettingsKey_ = nullptr;
          hWifiKey_ = nullptr;
+         return false;
+      }
+   }
+   if (hAudioEndpointsKey_ == nullptr) {
+      DWORD regError = RegCreateKeyExW(
+         HKEY_CURRENT_USER,
+         LX_SYSTEMS_AUDIO_ENDPOINTS_SUBKEY,
+         0,
+         nullptr,
+         0,
+         KEY_READ | KEY_WRITE,
+         nullptr,
+         &hBluetoothKey_,
+         nullptr);
+      if (regError != ERROR_SUCCESS) {
+         PrintWindowsError(L"RegCreateKeyEx", regError);
+         RegCloseKey(hWifiKey_);
+         RegCloseKey(hSettingsKey_);
+         RegCloseKey(hBluetoothKey_);
+         hSettingsKey_ = nullptr;
+         hWifiKey_ = nullptr;
+         hBluetoothKey_ = nullptr;
          return false;
       }
    }
@@ -570,6 +595,93 @@ std::vector<std::wstring> WMSettings::GetBluetoothDevicesW() const
          nullptr,
          &valType,
          reinterpret_cast<BYTE*>(dataBuf),
+         &dataLen);
+      if (regError == ERROR_NO_MORE_ITEMS) {
+         break;
+      } else if (regError != ERROR_SUCCESS) {
+         PrintWindowsError(L"RegEnumValue", regError);
+         return {};
+      } else {
+         devices.push_back(dataBuf);
+      }
+   }
+   NormalizeStringList(devices);
+   return devices;
+}
+
+
+bool WMSettings::StoreManagedAudioEndpoints(std::vector<std::wstring> &endpoints)
+{
+   // Clear all stored keys
+   for (;;) {
+      wchar_t valueName[260] = { 0 };
+      DWORD valueSize = ARRAY_SIZE(valueName);
+      DWORD regError = RegEnumValueW(
+         hAudioEndpointsKey_,
+         0,
+         valueName,
+         &valueSize,
+         nullptr,
+         nullptr,
+         nullptr,
+         nullptr);
+      if (regError == ERROR_NO_MORE_ITEMS) {
+         break;
+      } else if (regError != ERROR_SUCCESS) {
+         PrintWindowsError(L"RegEnumValue", regError);
+         return false;
+      } else {
+         regError = RegDeleteValue(hAudioEndpointsKey_, valueName);
+         if (regError != ERROR_SUCCESS) {
+            PrintWindowsError(L"RegDeleteValue", regError);
+            return false;
+         }
+      }
+   }
+
+   NormalizeStringList(endpoints);
+
+   for (size_t i = 0; i < endpoints.size(); ++i) {
+      wchar_t valueName[25];
+      StringCchPrintfW(
+         valueName,
+         ARRAY_SIZE(valueName),
+         L"Endpoint %03lld", i + 1);
+      const std::wstring &v = endpoints[i];
+      DWORD regError = RegSetValueEx(
+         hAudioEndpointsKey_,
+         valueName,
+         0,
+         REG_SZ,
+         reinterpret_cast<const BYTE *>(v.c_str()),
+         static_cast<DWORD>(v.length() + 1) * sizeof(wchar_t));
+      if (regError != ERROR_SUCCESS) {
+         PrintWindowsError(L"RegSetValueEx", regError);
+         return false;
+      }
+   }
+
+   return true;
+}
+
+std::vector<std::wstring> WMSettings::GetManagedAudioEndpoints() const
+{
+   std::vector<std::wstring> devices;
+   for (int valIdx = 0; ; ++valIdx) {
+      wchar_t valueName[260] = { 0 };
+      wchar_t dataBuf[260] = { 0 };
+      DWORD valueSize = ARRAY_SIZE(valueName);
+      DWORD valType = 0;
+      DWORD dataLen = ARRAY_SIZE(dataBuf);
+
+      DWORD regError = RegEnumValueW(
+         hAudioEndpointsKey_,
+         valIdx,
+         valueName,
+         &valueSize,
+         nullptr,
+         &valType,
+         reinterpret_cast<BYTE *>(dataBuf),
          &dataLen);
       if (regError == ERROR_NO_MORE_ITEMS) {
          break;
