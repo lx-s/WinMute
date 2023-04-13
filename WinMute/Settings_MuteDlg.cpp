@@ -33,6 +33,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
+extern INT_PTR CALLBACK Settings_ManageEndpointsDlgProc(HWND, UINT, WPARAM, LPARAM);
+
 static void SetCheckButton(HWND hBtn, const WMSettings& settings, SettingsKey key)
 {
    const DWORD enabled = !!settings.QueryValue(key);
@@ -57,6 +59,7 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       }
 
       HWND hNotify = GetDlgItem(hDlg, IDC_SHOWNOTIFICATIONS);
+      HWND hManageEndpoints = GetDlgItem(hDlg, IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY);
 
       HWND hMuteOnLock = GetDlgItem(hDlg, IDC_MUTE_WHEN_WS_LOCKED);
       HWND hMuteOnScreenOff = GetDlgItem(hDlg, IDC_MUTE_WHEN_SCREEN_OFF);
@@ -73,6 +76,8 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 
       // General
       SetCheckButton(hNotify, *settings, SettingsKey::NOTIFICATIONS_ENABLED);
+      SetCheckButton(hManageEndpoints, *settings, SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS);
+      Button_Enable(GetDlgItem(hDlg, IDC_MANAGE_ENDPOINTS), Button_GetCheck(hManageEndpoints) == BST_CHECKED);
 
       // With restore
       SetCheckButton(hMuteOnLock, *settings, SettingsKey::MUTE_ON_LOCK);
@@ -87,11 +92,28 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 
       return TRUE;
    }
+   case WM_COMMAND:
+      if (LOWORD(wParam) == IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY) {
+         int isEnabled = Button_GetCheck(GetDlgItem(hDlg, IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY));
+         Button_Enable(GetDlgItem(hDlg, IDC_MANAGE_ENDPOINTS), isEnabled);
+      } else if (LOWORD(wParam) == IDC_MANAGE_ENDPOINTS) {
+         WMSettings *settings = reinterpret_cast<WMSettings *>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+         if (!DialogBoxParam(
+               nullptr,
+               MAKEINTRESOURCE(IDD_MANAGE_ENDPOINTS),
+               hDlg,
+               Settings_ManageEndpointsDlgProc,
+               reinterpret_cast<LPARAM>(settings)) == 0) {
+            PrintWindowsError(L"DialogBoxParam", GetLastError());
+         }
+      }
+      return 0;
    case WM_SAVESETTINGS:
    {
       WMSettings* settings = reinterpret_cast<WMSettings*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
 
       HWND hNotify = GetDlgItem(hDlg, IDC_SHOWNOTIFICATIONS);
+      HWND hManageEndpoints = GetDlgItem(hDlg, IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY);
 
       HWND hMuteOnLock = GetDlgItem(hDlg, IDC_MUTE_WHEN_WS_LOCKED);
       HWND hMuteOnScreenOff = GetDlgItem(hDlg, IDC_MUTE_WHEN_SCREEN_OFF);
@@ -104,6 +126,7 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 
       // General
       SetOption(hNotify, *settings, SettingsKey::NOTIFICATIONS_ENABLED);
+      SetOption(hManageEndpoints, *settings, SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS);
 
       // With restore
       SetOption(hMuteOnLock, *settings, SettingsKey::MUTE_ON_LOCK);

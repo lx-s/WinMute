@@ -33,6 +33,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
+static constexpr int CURRENT_SETTINGS_VERSION = 0;
+
 static const wchar_t *LX_SYSTEMS_SUBKEY
    = L"SOFTWARE\\lx-systems\\WinMute";
 static const wchar_t* LX_SYSTEMS_WIFI_SUBKEY
@@ -49,6 +51,9 @@ static const wchar_t* KeyToStr(SettingsKey key)
 {
    const wchar_t* keyStr = nullptr;
    switch (key) {
+   case SettingsKey::SETTINGS_VERSION:
+      keyStr = L"SettingsVersion";
+      break;
    case SettingsKey::MUTE_ON_LOCK:
       keyStr = L"MuteOnLock";
       break;
@@ -85,6 +90,9 @@ static const wchar_t* KeyToStr(SettingsKey key)
    case SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS:
       keyStr = L"MuteIndividualEndpoints";
       break;
+   case SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS_MODE:
+      keyStr = L"MuteIndividualEndpointsMode";
+      break;
    case SettingsKey::QUIETHOURS_ENABLE:
       keyStr = L"QuietHoursEnabled";
       break;
@@ -113,6 +121,8 @@ static const wchar_t* KeyToStr(SettingsKey key)
 static DWORD GetDefaultSetting(SettingsKey key)
 {
    switch (key) {
+   case SettingsKey::SETTINGS_VERSION:
+      return 0;
    case SettingsKey::MUTE_ON_LOCK:
       return 1;
    case SettingsKey::MUTE_ON_DISPLAYSTANDBY:
@@ -133,6 +143,8 @@ static DWORD GetDefaultSetting(SettingsKey key)
       return 0;
    case SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS:
       return 0;
+   case SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS_MODE:
+      return MUTE_ENDPOINT_MODE_INDIVIDUAL_ALLOW_LIST;
    case SettingsKey::QUIETHOURS_ENABLE:
       return 0;
    case SettingsKey::QUIETHOURS_FORCEUNMUTE:
@@ -202,6 +214,15 @@ WMSettings::~WMSettings()
    Unload();
 }
 
+bool WMSettings::MigrateSettings()
+{
+   DWORD version = QueryValue(SettingsKey::SETTINGS_VERSION);
+   if (version != CURRENT_SETTINGS_VERSION) {
+      WMLog::GetInstance().Write(L"Unexpected settings version: %d", version);
+   }
+   return true;
+}
+
 bool WMSettings::Init()
 {
    if (hSettingsKey_ == nullptr) {
@@ -267,7 +288,7 @@ bool WMSettings::Init()
          0,
          KEY_READ | KEY_WRITE,
          nullptr,
-         &hBluetoothKey_,
+         &hAudioEndpointsKey_,
          nullptr);
       if (regError != ERROR_SUCCESS) {
          PrintWindowsError(L"RegCreateKeyEx", regError);
@@ -280,6 +301,8 @@ bool WMSettings::Init()
          return false;
       }
    }
+
+   MigrateSettings();
 
    return true;
 }

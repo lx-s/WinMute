@@ -127,7 +127,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     GROUPBOX        "General",IDC_STATIC,7,7,228,57
     CONTROL         "Show mute event notifications",IDC_SHOWNOTIFICATIONS,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,17,219,18
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,15,219,18
     GROUPBOX        "Mute with volume restore, when...",IDC_STATIC,7,67,228,57
     CONTROL         "... the workstation is locked.",IDC_MUTE_WHEN_WS_LOCKED,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,81,107,10
@@ -143,8 +143,8 @@ BEGIN
     CONTROL         "... when WinMute is started within a RDP session.",IDC_MUTE_WHEN_RDP_SESSION,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,180,175,10
     CONTROL         "Manage audio endpoints individually",IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,31,219,18
-    PUSHBUTTON      "Manage endpoints...",IDC_MANAGE_ENDPOINTS,26,47,74,14
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,28,219,18
+    PUSHBUTTON      "Manage endpoints...",IDC_MANAGE_ENDPOINTS,26,46,74,15
 END
 
 IDD_SETTINGS_WIFI DIALOGEX 0, 0, 242, 204
@@ -201,6 +201,37 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,144,41,50,14
     LTEXT           "Bluetooth device name:",IDC_STATIC,7,7,187,14
     COMBOBOX        IDC_BT_DEVICE_NAME,7,22,187,17,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_MANAGE_ENDPOINTS DIALOGEX 0, 0, 241, 200
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Manage Endpoints"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,133,179,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,184,179,50,14
+    LISTBOX         IDC_ENDPOINT_LIST,13,60,159,110,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Add",IDC_ENDPOINT_ADD,175,60,56,16
+    PUSHBUTTON      "Edit",IDC_ENDPOINT_EDIT,175,78,56,16
+    PUSHBUTTON      "Remove",IDC_ENDPOINT_REMOVE,175,97,56,16
+    PUSHBUTTON      "Remove all",IDC_ENDPOINT_REMOVEALL,175,120,56,16
+    CONTROL         "Mute only listed endpoints",IDC_ENDPOINT_LIST_IS_ALLOWLIST,
+                    "Button",BS_AUTORADIOBUTTON,13,19,99,10
+    CONTROL         "Mute all but the listed endpoints",IDC_ENDPOINT_LIST_IS_BLOCKLIST,
+                    "Button",BS_AUTORADIOBUTTON,13,32,118,10
+    GROUPBOX        "List behaviour",IDC_STATIC,7,7,227,41
+    GROUPBOX        "Endpoints",IDC_STATIC,7,48,227,128
+END
+
+IDD_MANAGE_ENDPOINTS_ADD DIALOGEX 0, 0, 201, 62
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Add Endpoint"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Save",IDOK,91,41,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,144,41,50,14
+    LTEXT           "Endpoint name:",IDC_STATIC,7,7,187,14
+    COMBOBOX        IDC_ENDPOINT_NAME,7,22,187,17,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
 END
 
 
@@ -299,6 +330,22 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 55
     END
+
+    IDD_MANAGE_ENDPOINTS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 234
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 193
+    END
+
+    IDD_MANAGE_ENDPOINTS_ADD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 194
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -364,6 +411,16 @@ BEGIN
     0
 END
 
+IDD_MANAGE_ENDPOINTS AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_MANAGE_ENDPOINTS_ADD AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -418,8 +475,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,2,0,0
- PRODUCTVERSION 2,2,0,0
+ FILEVERSION 2,3,0,0
+ PRODUCTVERSION 2,3,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -436,23 +493,23 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "LX-Systems"
             VALUE "FileDescription", "WinMute"
-            VALUE "FileVersion", "2.2.0.0"
+            VALUE "FileVersion", "2.3.0.0"
             VALUE "InternalName", "WinMute.exe"
             VALUE "LegalCopyright", "Copyright (C) 2022, Alexander Steinhöfer"
             VALUE "OriginalFilename", "WinMute.exe"
             VALUE "ProductName", "WinMute"
-            VALUE "ProductVersion", "2.2.0.0"
+            VALUE "ProductVersion", "2.3.0.0"
         END
         BLOCK "040704b0"
         BEGIN
             VALUE "CompanyName", "LX-Systems"
             VALUE "FileDescription", "WinMute"
-            VALUE "FileVersion", "2.2.0.0"
+            VALUE "FileVersion", "2.3.0.0"
             VALUE "InternalName", "WinMute.exe"
-            VALUE "LegalCopyright", "Copyright (C) 2022, Alexander Steinhöfer"
+            VALUE "LegalCopyright", "Copyright (C) 2023, Alexander Steinhöfer"
             VALUE "OriginalFilename", "WinMute.exe"
             VALUE "ProductName", "WinMute"
-            VALUE "ProductVersion", "2.2.0.0"
+            VALUE "ProductVersion", "2.3.0.0"
         END
     END
     BLOCK "VarFileInfo"

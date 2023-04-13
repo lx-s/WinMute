@@ -308,3 +308,15 @@ void MuteControl::NotifyQuietHours(bool active)
       RestoreVolume();
    }
 }
+
+void MuteControl::SetManagedEndpoints(
+   const std::vector<std::wstring> endpoints,
+   bool isAllowList)
+{
+   winAudio_->SetManagedEndpoints(endpoints, isAllowList);
+}
+
+void MuteControl::ClearManagedEndpoints()
+{
+   winAudio_->MuteSpecificEndpoints(false);
+}

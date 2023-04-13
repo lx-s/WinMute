@@ -61,6 +61,8 @@ VistaAudio::VistaAudio() :
    deviceEnumerator_(nullptr),
    mmnAudioEvents_(nullptr),
    reInit_(false),
+   muteSpecificEndpoints_(false),
+   muteSpecificEndpointsAllowList_(false),
    hParent_(nullptr)
 {
    if (FAILED(CoInitialize(nullptr))) {
@@ -260,6 +262,10 @@ bool VistaAudio::RestoreMuteStatus()
    WMLog& log = WMLog::GetInstance();
 
    for (auto& e : endpoints_) {
+      if (!IsEndpointManaged(e->deviceName)) {
+         log.Write(L"Skipping Endpoint %s", e->deviceName);
+            continue;
+      }
       log.Write(L"Restoring: Mute %s for \"%s\"",
                 (e->wasMuted) ? L"true" : L"false",
                 e->deviceName);
@@ -282,6 +288,10 @@ void VistaAudio::SetMute(bool mute)
    if (CheckForReInit()) {
       for (auto& e : endpoints_) {
          BOOL isMuted = !mute;
+         if (!IsEndpointManaged(e->deviceName)) {
+            log.Write(L"Skipping Endpoint %s", e->deviceName);
+            continue;
+         }
          if (FAILED(e->endpointVolume->GetMute(&isMuted))) {
             log.Write(L"Failed to get mute status for \"%s\"",
                       e->deviceName);
@@ -296,3 +306,39 @@ void VistaAudio::SetMute(bool mute)
       }
    }
 }
+
+bool VistaAudio::IsEndpointManaged(const std::wstring &endpointName) const
+{
+   if (!muteSpecificEndpoints_) {
+      return true;
+   }
+
+   const bool inManagedEndpoints = std::find(
+      std::begin(managedEndpointNames_),
+      std::end(managedEndpointNames_),
+      endpointName) != std::end(managedEndpointNames_);
+
+   // ----------------------------
+   //             | In List  | Not in List |
+   // ------------+----------+-------------+
+   //  Allow List | Mute     |  Not mute   |
+   //  Block List | Not mute |  Mute       |
+   return inManagedEndpoints
+      ? muteSpecificEndpointsAllowList_
+      : !muteSpecificEndpointsAllowList_;
+}
+
+void VistaAudio::MuteSpecificEndpoints(bool muteSpecific)
+{
+   muteSpecificEndpoints_ = muteSpecific;
+}
+
+void VistaAudio::SetManagedEndpoints(
+   const std::vector<std::wstring> &endpoints,
+   bool isAllowList)
+{
+   managedEndpointNames_ = endpoints;
+   muteSpecificEndpointsAllowList_ = isAllowList;
+}
+
+

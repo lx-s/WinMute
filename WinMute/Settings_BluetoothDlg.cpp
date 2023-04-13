@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 static constexpr int BT_DEV_NAME_MAX_LEN = 100;
 
-struct BtDeviceName {
+struct BtDeviceData {
    std::wstring devName;
 };
 
@@ -71,7 +71,7 @@ static INT_PTR CALLBACK Settings_BluetoothAddDlgProc(HWND hDlg, UINT msg, WPARAM
    switch (msg) {
    case WM_INITDIALOG: {
       HWND hBtDevName = GetDlgItem(hDlg, IDC_BT_DEVICE_NAME);
-      BtDeviceName* btDeviceData = reinterpret_cast<BtDeviceName*>(lParam);
+      BtDeviceData* btDeviceData = reinterpret_cast<BtDeviceData*>(lParam);
       if (btDeviceData == nullptr) {
          return FALSE;
       }
@@ -119,7 +119,7 @@ static INT_PTR CALLBACK Settings_BluetoothAddDlgProc(HWND hDlg, UINT msg, WPARAM
             Edit_ShowBalloonTip(hDevName, &ebt);
          } else {
             wchar_t devNameBuf[BT_DEV_NAME_MAX_LEN + 1] = { 'L\0' };
-            BtDeviceName* btDevName = reinterpret_cast<BtDeviceName*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+            BtDeviceData* btDevName = reinterpret_cast<BtDeviceData*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
             if (btDevName != nullptr) {
                Edit_GetText(hDevName, devNameBuf, ARRAY_SIZE(devNameBuf));
                btDevName->devName = devNameBuf;
@@ -251,7 +251,7 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
             Button_Enable(GetDlgItem(hDlg, IDC_BLUETOOTH_REMOVE), entrySelected);
          }
       } else if (LOWORD(wParam) == IDC_BLUETOOTH_ADD) {
-         BtDeviceName btDeviceName;
+         BtDeviceData btDeviceName;
          if (DialogBoxParam(
             nullptr,
                MAKEINTRESOURCE(IDD_SETTINGS_BLUETOOTH_ADD),
@@ -279,7 +279,7 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
                if ((textBuf = new wchar_t[static_cast<size_t>(len) + 1]) != nullptr) {
                   ListBox_GetText(hList, sel, textBuf);
 
-                  BtDeviceName btDevName;
+                  BtDeviceData btDevName;
                   btDevName.devName = textBuf;
                   delete[] textBuf;
 

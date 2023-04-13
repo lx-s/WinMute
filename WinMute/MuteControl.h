@@ -80,6 +80,10 @@ public:
    void NotifyShutdown();
 
    void NotifyQuietHours(bool active);
+
+   void SetManagedEndpoints(const std::vector<std::wstring> endpoints,
+                            bool isAllowList);
+   void ClearManagedEndpoints();
 private:
    struct MuteConfig {
       bool shouldMute;
