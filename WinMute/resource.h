@@ -20,6 +20,7 @@
 #define IDD_SETTINGS_BLUETOOTH          131
 #define IDD_DIALOG1                     133
 #define IDD_SETTINGS_BLUETOOTH_ADD      133
+#define IDD_MANAGE_ENDPOINTS            135
 #define IDC_LINK_HOMEPAGE               1001
 #define IDC_LINK_SUPPORT                1002
 #define IDC_LINK_PROJECT                1002
@@ -74,6 +75,9 @@
 #define IDC_LOGFILEPATH                 1040
 #define IDC_BUTTON1                     1041
 #define IDC_MANAGE_ENDPOINTS            1041
+#define IDC_ENDPOINT_LIST_IS_ALLOWLIST  1042
+#define IDC_MUTE_SPECIFIC_ENDPOINTS2    1043
+#define IDC_ENDPOINT_LIST_IS_BLOCKLIST  1043
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_                    40002
 #define ID_TRAYMENU_MUTEON              40003
@@ -115,9 +119,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        135
+#define _APS_NEXT_RESOURCE_VALUE        137
 #define _APS_NEXT_COMMAND_VALUE         40037
-#define _APS_NEXT_CONTROL_VALUE         1042
+#define _APS_NEXT_CONTROL_VALUE         1043
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

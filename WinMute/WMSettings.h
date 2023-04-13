@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2022, Alexander Steinhoefer
+           Copyright (c) 2023, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,8 @@ enum class SettingsKey {
    , MUTE_ON_BLUETOOTH_DEVICELIST
    , MUTE_ON_WLAN
    , MUTE_ON_WLAN_ALLOWLIST
+   // 0 = mute all, 1 = mute specific (allowlist), 2 = mute specific (blocklist)
+   , MUTE_INDIVIDUAL_ENDPOINTS 
    , QUIETHOURS_ENABLE
    , QUIETHOURS_FORCEUNMUTE
    , QUIETHOURS_NOTIFICATIONS

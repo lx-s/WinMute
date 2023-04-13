@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2022, Alexander Steinhoefer
+           Copyright (c) 2023, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -80,6 +80,9 @@ static const wchar_t* KeyToStr(SettingsKey key)
    case SettingsKey::MUTE_ON_WLAN_ALLOWLIST:
       keyStr = L"MuteOnWlanAllowList";
       break;
+   case SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS:
+      keyStr = L"MuteIndividualEndpoints";
+      break;
    case SettingsKey::QUIETHOURS_ENABLE:
       keyStr = L"QuietHoursEnabled";
       break;
@@ -125,6 +128,8 @@ static DWORD GetDefaultSetting(SettingsKey key)
    case SettingsKey::MUTE_ON_WLAN:
       return 0;
    case SettingsKey::MUTE_ON_WLAN_ALLOWLIST:
+      return 0;
+   case SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS:
       return 0;
    case SettingsKey::QUIETHOURS_ENABLE:
       return 0;
