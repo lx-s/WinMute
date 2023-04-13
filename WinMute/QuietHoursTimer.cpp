@@ -148,12 +148,11 @@ bool QuietHoursTimer::LoadFromSettings(const WMSettings& settings)
       SendMessage(hParent_, WM_WINMUTE_QUIETHOURS_START, 0, 0);
    } else {
       int timerQhStart = GetDiffMillseconds(&start, &now);
-      if (SetCoalescableTimer(
+      if (SetTimer(
             hParent_,
             QUIETHOURS_TIMER_START_ID,
             timerQhStart,
-            QuietHoursTimerProc,
-            TIMERV_DEFAULT_COALESCING) == 0) {
+            QuietHoursTimerProc) == 0) {
          TaskDialog(
             hParent_,
             hglobInstance,
@@ -182,12 +181,11 @@ bool QuietHoursTimer::SetStart()
    start.wHour = static_cast<WORD>((qhStart_ - start.wMinute - start.wSecond) / 3600);
 
    const int timerQhStart = GetDiffMillseconds(&start, &now);
-   if (SetCoalescableTimer(
+   if (SetTimer(
          hParent_,
          QUIETHOURS_TIMER_START_ID,
          timerQhStart,
-         QuietHoursTimerProc,
-         TIMERV_DEFAULT_COALESCING) == 0) {
+         QuietHoursTimerProc) == 0) {
       TaskDialog(
          hParent_,
          hglobInstance,
@@ -217,12 +215,11 @@ bool QuietHoursTimer::SetEnd()
    int timerQhEnd = GetDiffMillseconds(&end, &now);
    if (timerQhEnd <= 0) {
       SendMessage(hParent_, WM_WINMUTE_QUIETHOURS_END, 0, 0);
-   } else if (SetCoalescableTimer(
+   } else if (SetTimer(
          hParent_,
          QUIETHOURS_TIMER_END_ID,
          timerQhEnd,
-         QuietHoursTimerProc,
-         TIMERV_DEFAULT_COALESCING) == 0) {
+         QuietHoursTimerProc) == 0) {
       TaskDialog(
          hParent_,
          hglobInstance,
