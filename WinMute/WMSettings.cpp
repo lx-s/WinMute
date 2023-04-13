@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2022, Alexander Steinhoefer
+           Copyright (c) 2023, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -33,12 +33,16 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
+static constexpr int CURRENT_SETTINGS_VERSION = 0;
+
 static const wchar_t *LX_SYSTEMS_SUBKEY
    = L"SOFTWARE\\lx-systems\\WinMute";
 static const wchar_t* LX_SYSTEMS_WIFI_SUBKEY
    = L"SOFTWARE\\lx-systems\\WinMute\\WifiNetworks";
 static const wchar_t* LX_SYSTEMS_BLUETOOTH_SUBKEY
    = L"SOFTWARE\\lx-systems\\WinMute\\BluetoothDevices";
+static const wchar_t *LX_SYSTEMS_AUDIO_ENDPOINTS_SUBKEY
+= L"SOFTWARE\\lx-systems\\WinMute\\ManagedAudioEndpoints";
 
 static const wchar_t* LX_SYSTEMS_AUTOSTART_KEY
    = L"LX-Systems WinMute";
@@ -47,6 +51,9 @@ static const wchar_t* KeyToStr(SettingsKey key)
 {
    const wchar_t* keyStr = nullptr;
    switch (key) {
+   case SettingsKey::SETTINGS_VERSION:
+      keyStr = L"SettingsVersion";
+      break;
    case SettingsKey::MUTE_ON_LOCK:
       keyStr = L"MuteOnLock";
       break;
@@ -80,6 +87,12 @@ static const wchar_t* KeyToStr(SettingsKey key)
    case SettingsKey::MUTE_ON_WLAN_ALLOWLIST:
       keyStr = L"MuteOnWlanAllowList";
       break;
+   case SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS:
+      keyStr = L"MuteIndividualEndpoints";
+      break;
+   case SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS_MODE:
+      keyStr = L"MuteIndividualEndpointsMode";
+      break;
    case SettingsKey::QUIETHOURS_ENABLE:
       keyStr = L"QuietHoursEnabled";
       break;
@@ -108,6 +121,8 @@ static const wchar_t* KeyToStr(SettingsKey key)
 static DWORD GetDefaultSetting(SettingsKey key)
 {
    switch (key) {
+   case SettingsKey::SETTINGS_VERSION:
+      return 0;
    case SettingsKey::MUTE_ON_LOCK:
       return 1;
    case SettingsKey::MUTE_ON_DISPLAYSTANDBY:
@@ -126,6 +141,10 @@ static DWORD GetDefaultSetting(SettingsKey key)
       return 0;
    case SettingsKey::MUTE_ON_WLAN_ALLOWLIST:
       return 0;
+   case SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS:
+      return 0;
+   case SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS_MODE:
+      return MUTE_ENDPOINT_MODE_INDIVIDUAL_ALLOW_LIST;
    case SettingsKey::QUIETHOURS_ENABLE:
       return 0;
    case SettingsKey::QUIETHOURS_FORCEUNMUTE:
@@ -185,13 +204,23 @@ static bool ReadStringFromRegistry(HKEY hKey, const wchar_t *subKey, std::wstrin
 WMSettings::WMSettings() :
    hSettingsKey_(nullptr),
    hWifiKey_(nullptr),
-   hBluetoothKey_(nullptr)
+   hBluetoothKey_(nullptr),
+   hAudioEndpointsKey_(nullptr)
 {
 }
 
 WMSettings::~WMSettings()
 {
    Unload();
+}
+
+bool WMSettings::MigrateSettings()
+{
+   DWORD version = QueryValue(SettingsKey::SETTINGS_VERSION);
+   if (version != CURRENT_SETTINGS_VERSION) {
+      WMLog::GetInstance().Write(L"Unexpected settings version: %d", version);
+   }
+   return true;
 }
 
 bool WMSettings::Init()
@@ -250,6 +279,30 @@ bool WMSettings::Init()
          return false;
       }
    }
+   if (hAudioEndpointsKey_ == nullptr) {
+      DWORD regError = RegCreateKeyExW(
+         HKEY_CURRENT_USER,
+         LX_SYSTEMS_AUDIO_ENDPOINTS_SUBKEY,
+         0,
+         nullptr,
+         0,
+         KEY_READ | KEY_WRITE,
+         nullptr,
+         &hAudioEndpointsKey_,
+         nullptr);
+      if (regError != ERROR_SUCCESS) {
+         PrintWindowsError(L"RegCreateKeyEx", regError);
+         RegCloseKey(hWifiKey_);
+         RegCloseKey(hSettingsKey_);
+         RegCloseKey(hBluetoothKey_);
+         hSettingsKey_ = nullptr;
+         hWifiKey_ = nullptr;
+         hBluetoothKey_ = nullptr;
+         return false;
+      }
+   }
+
+   MigrateSettings();
 
    return true;
 }
@@ -565,6 +618,93 @@ std::vector<std::wstring> WMSettings::GetBluetoothDevicesW() const
          nullptr,
          &valType,
          reinterpret_cast<BYTE*>(dataBuf),
+         &dataLen);
+      if (regError == ERROR_NO_MORE_ITEMS) {
+         break;
+      } else if (regError != ERROR_SUCCESS) {
+         PrintWindowsError(L"RegEnumValue", regError);
+         return {};
+      } else {
+         devices.push_back(dataBuf);
+      }
+   }
+   NormalizeStringList(devices);
+   return devices;
+}
+
+
+bool WMSettings::StoreManagedAudioEndpoints(std::vector<std::wstring> &endpoints)
+{
+   // Clear all stored keys
+   for (;;) {
+      wchar_t valueName[260] = { 0 };
+      DWORD valueSize = ARRAY_SIZE(valueName);
+      DWORD regError = RegEnumValueW(
+         hAudioEndpointsKey_,
+         0,
+         valueName,
+         &valueSize,
+         nullptr,
+         nullptr,
+         nullptr,
+         nullptr);
+      if (regError == ERROR_NO_MORE_ITEMS) {
+         break;
+      } else if (regError != ERROR_SUCCESS) {
+         PrintWindowsError(L"RegEnumValue", regError);
+         return false;
+      } else {
+         regError = RegDeleteValue(hAudioEndpointsKey_, valueName);
+         if (regError != ERROR_SUCCESS) {
+            PrintWindowsError(L"RegDeleteValue", regError);
+            return false;
+         }
+      }
+   }
+
+   NormalizeStringList(endpoints);
+
+   for (size_t i = 0; i < endpoints.size(); ++i) {
+      wchar_t valueName[25];
+      StringCchPrintfW(
+         valueName,
+         ARRAY_SIZE(valueName),
+         L"Endpoint %03lld", i + 1);
+      const std::wstring &v = endpoints[i];
+      DWORD regError = RegSetValueEx(
+         hAudioEndpointsKey_,
+         valueName,
+         0,
+         REG_SZ,
+         reinterpret_cast<const BYTE *>(v.c_str()),
+         static_cast<DWORD>(v.length() + 1) * sizeof(wchar_t));
+      if (regError != ERROR_SUCCESS) {
+         PrintWindowsError(L"RegSetValueEx", regError);
+         return false;
+      }
+   }
+
+   return true;
+}
+
+std::vector<std::wstring> WMSettings::GetManagedAudioEndpoints() const
+{
+   std::vector<std::wstring> devices;
+   for (int valIdx = 0; ; ++valIdx) {
+      wchar_t valueName[260] = { 0 };
+      wchar_t dataBuf[260] = { 0 };
+      DWORD valueSize = ARRAY_SIZE(valueName);
+      DWORD valType = 0;
+      DWORD dataLen = ARRAY_SIZE(dataBuf);
+
+      DWORD regError = RegEnumValueW(
+         hAudioEndpointsKey_,
+         valIdx,
+         valueName,
+         &valueSize,
+         nullptr,
+         &valType,
+         reinterpret_cast<BYTE *>(dataBuf),
          &dataLen);
       if (regError == ERROR_NO_MORE_ITEMS) {
          break;

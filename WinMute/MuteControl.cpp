@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2022, Alexander Steinhoefer
+           Copyright (c) 2023, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -307,4 +307,17 @@ void MuteControl::NotifyQuietHours(bool active)
       WMLog::GetInstance().Write(L"Mute Event: Quiet Hours ended");
       RestoreVolume();
    }
+}
+
+void MuteControl::SetManagedEndpoints(
+   const std::vector<std::wstring> endpoints,
+   bool isAllowList)
+{
+   winAudio_->MuteSpecificEndpoints(true);
+   winAudio_->SetManagedEndpoints(endpoints, isAllowList);
+}
+
+void MuteControl::ClearManagedEndpoints()
+{
+   winAudio_->MuteSpecificEndpoints(false);
 }
