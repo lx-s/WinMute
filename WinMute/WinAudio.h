@@ -83,10 +83,10 @@ public:
    bool RestoreMuteStatus() override;
    void SetMute(bool mute) override;
 
-   void MuteSpecificEndpoints(bool muteSpecific);
+   void MuteSpecificEndpoints(bool muteSpecific) override;
    void SetManagedEndpoints(
       const std::vector<std::wstring> &endpoints,
-      bool isAllowList);
+      bool isAllowList) override;
 
 private:
    void Uninit();

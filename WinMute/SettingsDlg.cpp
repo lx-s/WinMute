@@ -49,7 +49,7 @@ struct SettingsDlgData {
    HWND hActiveTab;
    WMSettings* settings;
 
-   SettingsDlgData(WMSettings* settings)
+   explicit SettingsDlgData(WMSettings* settings)
       : settings(settings), hTabCtrl(nullptr), hActiveTab(nullptr)
    {
       ZeroMemory(hTabs, sizeof(hTabs));
