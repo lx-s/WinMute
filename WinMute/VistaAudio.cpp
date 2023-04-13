@@ -323,6 +323,7 @@ bool VistaAudio::IsEndpointManaged(const std::wstring &endpointName) const
    // ------------+----------+-------------+
    //  Allow List | Mute     |  Not mute   |
    //  Block List | Not mute |  Mute       |
+
    return inManagedEndpoints
       ? muteSpecificEndpointsAllowList_
       : !muteSpecificEndpointsAllowList_;

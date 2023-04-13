@@ -120,7 +120,7 @@ static INT_PTR CALLBACK Settings_EndpointAddDlgProc(HWND hDlg, UINT msg, WPARAM 
          }
       } else {
          if (!SetWindowTextW(hDlg, L"Edit endpoint") ||
-             !SetWindowTextW(GetDlgItem(hDlg, IDC_BT_DEVICE_NAME),
+             !SetWindowTextW(GetDlgItem(hDlg, IDC_ENDPOINT_NAME),
                              endpointData->name.c_str())) {
             PrintWindowsError(L"SetWindowText", GetLastError());
             return FALSE;
@@ -135,7 +135,7 @@ static INT_PTR CALLBACK Settings_EndpointAddDlgProc(HWND hDlg, UINT msg, WPARAM 
       }
 
       Edit_LimitText(hEndpointName, ENDPOINT_NAME_MAX_LEN);
-      if (GetDlgCtrlID(reinterpret_cast<HWND>(wParam)) != IDC_BT_DEVICE_NAME) {
+      if (GetDlgCtrlID(reinterpret_cast<HWND>(wParam)) != IDC_ENDPOINT_NAME) {
          SetFocus(hEndpointName);
          return FALSE;
       }
