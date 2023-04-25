@@ -189,7 +189,8 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,52,228,14
     CONTROL         "Only mute when one of the following devices connect to or disconnect from your PC.",IDC_ENABLE_BLUETOOTH_MUTE_DEVICE_LIST,
                     "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,20,66,215,18
-    LTEXT           """Bluetooth Muting"" allows disabling your pc-audio if an audio-class bluetooth device is disconnected, and re-enables your pc-audio if a device is reconnected to your pc.\nYou can enable this behaviour for all audio bluetooth devices or only for a specific set of devices.",IDC_STATIC,7,7,228,43
+    LTEXT           """Bluetooth Muting"" allows disabling your PC-audio if an audio-class bluetooth device is disconnected, and re-enables your PC-audio if a device is reconnected to your computer.",IDC_STATIC,7,7,228,30
+    LTEXT           "You can enable this behaviour for all audio bluetooth devices or only for a specific set of devices.",IDC_STATIC,7,32,230,21
 END
 
 IDD_SETTINGS_BLUETOOTH_ADD DIALOGEX 0, 0, 201, 62
