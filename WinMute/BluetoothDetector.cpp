@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2022, Alexander Steinhoefer
+           Copyright (c) 2023, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "common.h"
 
 BluetoothDetector::BluetoothDetector() :
-   hNotifyWnd_(NULL),  hBluetoothNotify_(NULL),
+   hNotifyWnd_(nullptr),  hBluetoothNotify_(nullptr),
    initialized_(false), useDeviceList_(false)
 {
 
@@ -47,7 +47,7 @@ BluetoothDetector::~BluetoothDetector()
    }
 }
 
-void BluetoothDetector::UnloadRadioNotifications()
+void BluetoothDetector::UnloadRadioNotifications() noexcept
 {
    for (auto hDevNotify : notificationHandles_) {
       UnregisterDeviceNotification(hDevNotify);
@@ -61,8 +61,8 @@ bool BluetoothDetector::LoadRadioNotifications()
    auto& log = WMLog::GetInstance();
    notificationHandles_.clear();
 
-   HANDLE btHandle;
-   BLUETOOTH_FIND_RADIO_PARAMS bfrp = { sizeof(BLUETOOTH_FIND_RADIO_PARAMS) };
+   HANDLE btHandle = nullptr;
+   const BLUETOOTH_FIND_RADIO_PARAMS bfrp = { sizeof(BLUETOOTH_FIND_RADIO_PARAMS) };
    HBLUETOOTH_RADIO_FIND hRadiosFind = BluetoothFindFirstRadio(&bfrp, &btHandle);
    if (hRadiosFind == nullptr) {
       log.WriteWindowsError(L"BluetoothFindFirstRadio", GetLastError());
@@ -82,13 +82,13 @@ bool BluetoothDetector::LoadRadioNotifications()
          DEVICE_NOTIFY_WINDOW_HANDLE);
       CloseHandle(btHandle);
 
-      if (devNotify == NULL) {
+      if (devNotify == nullptr) {
          log.WriteWindowsError(L"RegisterDeviceNotification", GetLastError());
       } else {
          notificationHandles_.push_back(devNotify);
       }
    } while (BluetoothFindNextRadio(hRadiosFind, &btHandle));
-   DWORD dwLastError = GetLastError();
+   const DWORD dwLastError = GetLastError();
    if (dwLastError != ERROR_NO_MORE_ITEMS) {
       log.WriteWindowsError(L"BluetoothFindNextRadio", GetLastError());
       UnloadRadioNotifications();
@@ -114,7 +114,7 @@ bool BluetoothDetector::Init(HWND hNotifyWnd)
 void BluetoothDetector::Unload()
 {
    UnloadRadioNotifications();
-   hNotifyWnd_ = NULL;
+   hNotifyWnd_ = nullptr;
    initialized_ = false;
 }
 

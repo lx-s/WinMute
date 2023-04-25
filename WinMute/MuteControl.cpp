@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2022, Alexander Steinhoefer
+           Copyright (c) 2023, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -85,15 +85,17 @@ void MuteControl::SetMute(bool mute)
 
 void MuteControl::SaveMuteStatus()
 {
-   bool alreadySaved = false;
-   for (const auto& conf : muteConfig_) {
-      if (conf.shouldMute && conf.active) {
-         WMLog::GetInstance().Write(L"Muting event already active. Skipping status save");
-         alreadySaved = true;
-         break;
+   const bool alreadySaved = std::any_of(
+      muteConfig_.begin(),
+      muteConfig_.end(),
+      [](const MuteConfig &conf) {
+         return conf.shouldMute && conf.active;
       }
-   }
-   if (!alreadySaved) {
+   );
+
+   if (alreadySaved) {
+      WMLog::GetInstance().Write(L"Muting event already active. Skipping status save");
+   } else {
       WMLog::GetInstance().Write(L"Saving mute status");
       winAudio_->SaveMuteStatus();
    }
@@ -118,15 +120,16 @@ void MuteControl::RestoreVolume(bool withDelay)
       log.Write(L"Volume Restore has been disabled");
       return;
    }
-   bool restore = true;
-   for (const auto& conf : muteConfig_) {
-      if (conf.shouldMute && conf.active) {
-         log.Write(L"Skipping restore since other mute event is currently active");
-         restore = false;
-         break;
+   const bool restore = !std::any_of(
+      muteConfig_.begin(),
+      muteConfig_.end(),
+      [](const MuteConfig &conf) {
+         return conf.shouldMute && conf.active;
       }
-   }
-   if (restore) {
+   );
+   if (!restore) {
+      log.Write(L"Skipping restore since other mute event is currently active");
+   } else {
       log.Write(L"Restoring previous mute state");
       ShowNotification(
          L"Volume restored",
@@ -307,4 +310,17 @@ void MuteControl::NotifyQuietHours(bool active)
       WMLog::GetInstance().Write(L"Mute Event: Quiet Hours ended");
       RestoreVolume();
    }
+}
+
+void MuteControl::SetManagedEndpoints(
+   const std::vector<std::wstring>& endpoints,
+   bool isAllowList)
+{
+   winAudio_->MuteSpecificEndpoints(true);
+   winAudio_->SetManagedEndpoints(endpoints, isAllowList);
+}
+
+void MuteControl::ClearManagedEndpoints()
+{
+   winAudio_->MuteSpecificEndpoints(false);
 }

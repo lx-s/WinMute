@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2022, Alexander Steinhoefer
+           Copyright (c) 2023, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -86,7 +86,7 @@ static int IsDarkMode(bool& isDarkMode)
       error = RegQueryValueExW(
          hKey,
          L"SystemUsesLightTheme",
-         NULL,
+         nullptr,
          &valType,
          reinterpret_cast<LPBYTE>(&isLightTheme),
          &bufSize);
@@ -101,23 +101,23 @@ static int IsDarkMode(bool& isDarkMode)
    return rc;
 }
 
-static bool IsCurrentSessionRemoteable()
+static bool IsCurrentSessionRemoteable() noexcept
 {
    bool isRemoteable = false;
 
    if (GetSystemMetrics(SM_REMOTESESSION)) {
       isRemoteable = true;
    } else {
-      HKEY hRegKey = NULL;
+      HKEY hRegKey = nullptr;
       LONG lResult;
 
       lResult = RegOpenKeyExW(HKEY_LOCAL_MACHINE, TERMINAL_SERVER_KEY, 0, KEY_READ, &hRegKey);
       if (lResult == ERROR_SUCCESS) {
-         DWORD dwGlassSessionId;
+         DWORD dwGlassSessionId = 0;
          DWORD cbGlassSessionId = sizeof(dwGlassSessionId);
          DWORD dwType;
 
-         lResult = RegQueryValueExW(hRegKey, GLASS_SESSION_ID, NULL, &dwType,
+         lResult = RegQueryValueExW(hRegKey, GLASS_SESSION_ID, nullptr, &dwType,
             reinterpret_cast<BYTE*>(&dwGlassSessionId),
             &cbGlassSessionId);
 
@@ -147,7 +147,7 @@ WinMute::WinMute() :
 {
 }
 
-WinMute::~WinMute()
+WinMute::~WinMute() noexcept
 {
    Unload();
 }
@@ -171,7 +171,7 @@ bool WinMute::RegisterWindowClass()
 bool WinMute::InitWindow()
 {
    hWnd_ = CreateWindowExW(WS_EX_TOOLWINDOW, WINMUTE_CLASS_NAME, PROGRAM_NAME,
-      WS_POPUP, 0, 0, 0, 0, NULL, 0, hglobInstance, this);
+      WS_POPUP, 0, 0, 0, 0, nullptr, 0, hglobInstance, this);
    if (hWnd_ == nullptr) {
       PrintWindowsError(L"CreateWindowEx");
       return false;
@@ -205,9 +205,9 @@ bool WinMute::InitAudio()
                   (cond) ? MF_CHECKED : MF_UNCHECKED) != -1)
 bool WinMute::InitTrayMenu()
 {
-   if (hTrayMenu_ == NULL) {
+   if (hTrayMenu_ == nullptr) {
       hTrayMenu_ = LoadMenuW(hglobInstance, MAKEINTRESOURCE(IDR_TRAYMENU));
-      if (hTrayMenu_ == NULL) {
+      if (hTrayMenu_ == nullptr) {
          PrintWindowsError(L"LoadMenu");
          return false;
       }
@@ -273,7 +273,7 @@ bool WinMute::Init()
       hglobInstance,
       isDarkMode ? MAKEINTRESOURCE(IDI_TRAY_DARK)
                  : MAKEINTRESOURCE(IDI_TRAY_BRIGHT));
-   if (hTrayIcon_ == NULL) {
+   if (hTrayIcon_ == nullptr) {
       PrintWindowsError(_T("LoadIcon"));
       return false;
    }
@@ -311,8 +311,16 @@ bool WinMute::LoadSettings()
       log.Write(L"\t\tUse devicelist: %s", settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH_DEVICELIST) ? L"Yes" : L"No");
       log.Write(L"\tMute on WLAN: %s", settings_.QueryValue(SettingsKey::MUTE_ON_WLAN) ? L"Yes" : L"No");
       log.Write(L"\t\tUse allowlist: %s", settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST) ? L"Yes" : L"No");
+      log.Write(L"\tMute specific endpoints only: %s", settings_.QueryValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS) ? L"Yes" : L"No");
    }
 
+   if (!settings_.QueryValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS)) {
+      muteCtrl_.ClearManagedEndpoints();
+   } else {
+      const auto endpoints = settings_.GetManagedAudioEndpoints();
+      const bool isAllowList = settings_.QueryValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS_MODE) == MUTE_ENDPOINT_MODE_INDIVIDUAL_ALLOW_LIST;
+      muteCtrl_.SetManagedEndpoints(endpoints, isAllowList);
+   }
    muteCtrl_.SetRestoreVolume(settings_.QueryValue(SettingsKey::RESTORE_AUDIO));
    muteCtrl_.SetMuteOnWorkstationLock(settings_.QueryValue(SettingsKey::MUTE_ON_LOCK));
    muteCtrl_.SetMuteOnDisplayStandby(settings_.QueryValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY));
@@ -337,7 +345,7 @@ bool WinMute::LoadSettings()
          settings_.SetValue(SettingsKey::MUTE_ON_BLUETOOTH, FALSE);
       } else {
          muteCtrl_.SetMuteOnBluetoothDisconnect(true);
-         bool muteOnWithDeviceList = settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH_DEVICELIST);
+         const bool muteOnWithDeviceList = settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH_DEVICELIST);
          btDetector_.SetDeviceList(settings_.GetBluetoothDevicesA(), muteOnWithDeviceList);
       }
    }
@@ -353,7 +361,7 @@ bool WinMute::LoadSettings()
             L"WLAN muting will be disabled on this computer");
          settings_.SetValue(SettingsKey::MUTE_ON_WLAN, FALSE);
       } else {
-         bool isMuteList = !settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST);
+         const bool isMuteList = !settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST);
          wifiDetector_.SetNetworkList(settings_.GetWifiNetworks(), isMuteList);
          wifiDetector_.CheckNetwork();
       }
@@ -362,7 +370,7 @@ bool WinMute::LoadSettings()
    return true;
 }
 
-void WinMute::ToggleMenuCheck(UINT item, bool* setting)
+void WinMute::ToggleMenuCheck(UINT item, bool* setting) noexcept
 {
    UINT state = GetMenuState(hTrayMenu_, item, MF_BYCOMMAND);
    if (state & MF_CHECKED) {
@@ -595,7 +603,7 @@ LRESULT CALLBACK WinMute::WindowProc(
             hglobInstance,
             isDarkMode ? MAKEINTRESOURCE(IDI_TRAY_DARK)
             : MAKEINTRESOURCE(IDI_TRAY_BRIGHT));
-         if (hTrayIcon_ == NULL) {
+         if (hTrayIcon_ == nullptr) {
             PrintWindowsError(L"LoadIcon");
          } else {
             trayIcon_.ChangeIcon(hTrayIcon_);
@@ -614,7 +622,7 @@ LRESULT CALLBACK WinMute::WindowProc(
    return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-void WinMute::Unload()
+void WinMute::Unload() noexcept
 {
    settings_.Unload();
 }

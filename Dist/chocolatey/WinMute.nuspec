@@ -3,7 +3,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
 	<metadata>
 		<id>winmute</id>
-		<version>2.2.0.20221128</version>
+		<version>2.3.0.20231225</version>
 		<title>WinMute</title>
 		<authors>Alexander Steinhöfer</authors>
 		<owners>Alexander Steinhöfer</owners>
@@ -15,7 +15,7 @@
 		<tags>winmute windows utility audio</tags>
 		<summary>Automatic sound muter</summary>
 		<description>WinMute automatically mutes your PC volume if you lock your screen or the screensaver is running.</description>
-		<copyright>© 2022, Alexander Steinhöfer</copyright>
+		<copyright>© 2023 Alexander Steinhöfer</copyright>
 		<licenseUrl>https://raw.githubusercontent.com/lx-s/WinMute/main/LICENSE</licenseUrl>
 		<dependencies>
 			<dependency id="vcredist140" version="14.3"/>

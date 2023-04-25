@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2022, Alexander Steinhoefer
+           Copyright (c) 2023, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       }
 
       WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
-      assert(settings != NULL);
+      assert(settings != nullptr);
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(settings));
 
       DWORD enabled = settings->IsAutostartEnabled();
@@ -58,11 +58,11 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       if (enabled) {
          WMLog& log = WMLog::GetInstance();
          const std::wstring filePath = log.GetLogFilePath().c_str();
-         SendMessageW(GetDlgItem(hDlg, IDC_LOGFILEPATH), WM_SETTEXT, NULL,
+         SendMessageW(GetDlgItem(hDlg, IDC_LOGFILEPATH), WM_SETTEXT, 0,
             reinterpret_cast<LPARAM>(filePath.c_str()));
                       
       } else {
-         SendMessageW(GetDlgItem(hDlg, IDC_LOGFILEPATH), WM_SETTEXT, NULL,
+         SendMessageW(GetDlgItem(hDlg, IDC_LOGFILEPATH), WM_SETTEXT, 0,
             reinterpret_cast<LPARAM>(L""));
       }
 
@@ -75,17 +75,17 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
          if (checked == BST_CHECKED) {
             WMLog& log = WMLog::GetInstance();
             const std::wstring filePath = log.GetLogFilePath().c_str();
-            SendMessageW(GetDlgItem(hDlg, IDC_LOGFILEPATH), WM_SETTEXT, NULL,
+            SendMessageW(GetDlgItem(hDlg, IDC_LOGFILEPATH), WM_SETTEXT, 0,
                reinterpret_cast<LPARAM>(filePath.c_str()));
 
          } else {
-            SendMessageW(GetDlgItem(hDlg, IDC_LOGFILEPATH), WM_SETTEXT, NULL,
+            SendMessageW(GetDlgItem(hDlg, IDC_LOGFILEPATH), WM_SETTEXT, 0,
                reinterpret_cast<LPARAM>(L""));
          }
       } else if (LOWORD(wParam) == IDC_OPENLOG) {
          WMLog& log = WMLog::GetInstance();
          const std::wstring filePath = log.GetLogFilePath().c_str();
-         ShellExecuteW(NULL, L"open", filePath.c_str(), NULL, NULL, SW_SHOW);
+         ShellExecuteW(nullptr, L"open", filePath.c_str(), nullptr, nullptr, SW_SHOW);
       }
       return 0;
    }

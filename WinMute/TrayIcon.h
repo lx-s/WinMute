@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2022, Alexander Steinhoefer
+           Copyright (c) 2023, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ public:
       bool show);
    void Hide();
    void Show();
-   bool IsShown() const { return iconVisible_; }
+   bool IsShown() const noexcept { return iconVisible_; }
    void ChangeIcon(HICON hNewIcon);
    void ChangeText(const std::wstring& tooltip);
    void ShowPopup(const std::wstring& title, const std::wstring& text) const;

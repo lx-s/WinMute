@@ -185,5 +185,8 @@
     <ClCompile Include="BluetoothDetector.cpp">
       <Filter>Source Files\Controllers\Bluetooth</Filter>
     </ClCompile>
+    <ClCompile Include="Settings_ManageEndpointsDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\Settings</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

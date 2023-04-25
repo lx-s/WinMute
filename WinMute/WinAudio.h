@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2022, Alexander Steinhoefer
+           Copyright (c) 2023, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -50,6 +50,10 @@ public:
    virtual bool SaveMuteStatus() = 0;
    virtual bool RestoreMuteStatus() = 0;
    virtual void SetMute(bool mute) = 0;
+   virtual void MuteSpecificEndpoints(bool muteSpecific) = 0;
+   virtual void SetManagedEndpoints(
+      const std::vector<std::wstring> &endpoints,
+      bool isAllowList) = 0;
    virtual ~WinAudio() noexcept {};
 };
 
@@ -79,18 +83,28 @@ public:
    bool RestoreMuteStatus() override;
    void SetMute(bool mute) override;
 
+   void MuteSpecificEndpoints(bool muteSpecific) override;
+   void SetManagedEndpoints(
+      const std::vector<std::wstring> &endpoints,
+      bool isAllowList) override;
+
 private:
    void Uninit();
    bool CheckForReInit();
 
    bool LoadAllEndpoints();
+   bool IsEndpointManaged(const std::wstring& endpointName) const;
 
    std::vector<std::unique_ptr<Endpoint>> endpoints_;
    MMNotificationClient* mmnAudioEvents_;
    IMMDeviceEnumeratorPtr deviceEnumerator_;
 
    bool reInit_;
+   bool muteSpecificEndpoints_;
+   bool muteSpecificEndpointsAllowList_;
    HWND hParent_;
+
+   std::vector<std::wstring> managedEndpointNames_;
 
    // non copy-able
    VistaAudio(const VistaAudio& other) = delete;

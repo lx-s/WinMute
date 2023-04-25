@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2022, Alexander Steinhoefer
+           Copyright (c) 2023, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -106,7 +106,7 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
       HWND hEnd = GetDlgItem(hDlg, IDC_QUIETHOURS_END);
 
       WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
-      assert(settings != NULL);
+      assert(settings != nullptr);
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(settings));
 
       if (IsAppThemed()) {

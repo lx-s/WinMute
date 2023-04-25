@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2022, Alexander Steinhoefer
+           Copyright (c) 2023, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -40,13 +40,15 @@ constexpr int WM_WIFISTATUSCHANGED = WM_USER + 400;
 
 class WifiDetector {
 public:
-   WifiDetector();
+   WifiDetector() noexcept;
    ~WifiDetector();
    WifiDetector(const WifiDetector&) = delete;
+   WifiDetector(WifiDetector&&) = delete;
    WifiDetector& operator=(const WifiDetector&) = delete;
+   WifiDetector &operator=(WifiDetector&&) = delete;
 
    bool Init(HWND hNotifyWnd);
-   void Unload();
+   void Unload() noexcept;
    void SetNetworkList(const std::vector<std::wstring>& networks, bool isMuteList);
 
    void CheckNetwork();

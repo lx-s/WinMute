@@ -125,23 +125,26 @@ IDD_SETTINGS_MUTE DIALOGEX 0, 0, 242, 205
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    GROUPBOX        "General",IDC_STATIC,7,7,228,31
+    GROUPBOX        "General",IDC_STATIC,7,7,228,57
     CONTROL         "Show mute event notifications",IDC_SHOWNOTIFICATIONS,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,17,219,18
-    GROUPBOX        "Mute with volume restore, when...",IDC_STATIC,7,42,228,60
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,15,219,18
+    GROUPBOX        "Mute with volume restore, when...",IDC_STATIC,7,67,228,57
     CONTROL         "... the workstation is locked.",IDC_MUTE_WHEN_WS_LOCKED,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,57,107,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,81,107,10
     CONTROL         "... the screen turns off.",IDC_MUTE_WHEN_SCREEN_OFF,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,71,93,10
-    CONTROL         "Restore volume afterwards.",IDC_RESTOREVOLUME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,86,106,10
-    GROUPBOX        "Mute without volume restore, when...",IDC_STATIC,7,106,228,88
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,95,93,10
+    CONTROL         "Restore volume afterwards.",IDC_RESTOREVOLUME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,110,106,10
+    GROUPBOX        "Mute without volume restore, when...",IDC_STATIC,7,127,228,67
     CONTROL         "... the computer shuts down.",IDC_MUTE_WHEN_SHUTDOWN,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,121,110,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,138,110,10
     CONTROL         "... the computer goes into sleep/hibernate.",IDC_MUTE_WHEN_SLEEP,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,135,155,10
-    CONTROL         "... you log out.",IDC_MUTE_WHEN_LOGOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,149,65,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,152,155,10
+    CONTROL         "... you log out.",IDC_MUTE_WHEN_LOGOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,166,65,10
     CONTROL         "... when WinMute is started within a RDP session.",IDC_MUTE_WHEN_RDP_SESSION,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,163,175,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,180,175,10
+    CONTROL         "Manage audio endpoints individually",IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,28,219,18
+    PUSHBUTTON      "Manage endpoints...",IDC_MANAGE_ENDPOINTS,26,46,74,15
 END
 
 IDD_SETTINGS_WIFI DIALOGEX 0, 0, 242, 204
@@ -186,7 +189,8 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,52,228,14
     CONTROL         "Only mute when one of the following devices connect to or disconnect from your PC.",IDC_ENABLE_BLUETOOTH_MUTE_DEVICE_LIST,
                     "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,20,66,215,18
-    LTEXT           """Bluetooth Muting"" enables if an audio-class bluetooth device is disconnected from, and re-enables audio if a device is reconnected to your pc.\nYou can enable this behaviour for all audio bluetooth devices or only for a specific set of devices.",IDC_STATIC,7,7,228,43
+    LTEXT           """Bluetooth Muting"" allows disabling your PC-audio if an audio-class bluetooth device is disconnected, and re-enables your PC-audio if a device is reconnected to your computer.",IDC_STATIC,7,7,228,30
+    LTEXT           "You can enable this behaviour for all audio bluetooth devices or only for a specific set of devices.",IDC_STATIC,7,32,230,21
 END
 
 IDD_SETTINGS_BLUETOOTH_ADD DIALOGEX 0, 0, 201, 62
@@ -198,6 +202,37 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,144,41,50,14
     LTEXT           "Bluetooth device name:",IDC_STATIC,7,7,187,14
     COMBOBOX        IDC_BT_DEVICE_NAME,7,22,187,17,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_MANAGE_ENDPOINTS DIALOGEX 0, 0, 241, 200
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Manage Endpoints"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,133,179,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,184,179,50,14
+    LISTBOX         IDC_ENDPOINT_LIST,13,60,159,110,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Add",IDC_ENDPOINT_ADD,175,60,56,16
+    PUSHBUTTON      "Edit",IDC_ENDPOINT_EDIT,175,78,56,16
+    PUSHBUTTON      "Remove",IDC_ENDPOINT_REMOVE,175,97,56,16
+    PUSHBUTTON      "Remove all",IDC_ENDPOINT_REMOVEALL,175,120,56,16
+    CONTROL         "Mute only listed endpoints",IDC_ENDPOINT_LIST_IS_ALLOWLIST,
+                    "Button",BS_AUTORADIOBUTTON,13,19,99,10
+    CONTROL         "Mute all but the listed endpoints",IDC_ENDPOINT_LIST_IS_BLOCKLIST,
+                    "Button",BS_AUTORADIOBUTTON,13,32,118,10
+    GROUPBOX        "List behaviour",IDC_STATIC,7,7,227,41
+    GROUPBOX        "Endpoints",IDC_STATIC,7,48,227,128
+END
+
+IDD_MANAGE_ENDPOINTS_ADD DIALOGEX 0, 0, 201, 62
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Add Endpoint"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Save",IDOK,91,41,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,144,41,50,14
+    LTEXT           "Endpoint name:",IDC_STATIC,7,7,187,14
+    COMBOBOX        IDC_ENDPOINT_NAME,7,22,187,17,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
 END
 
 
@@ -296,6 +331,22 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 55
     END
+
+    IDD_MANAGE_ENDPOINTS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 234
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 193
+    END
+
+    IDD_MANAGE_ENDPOINTS_ADD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 194
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -361,6 +412,16 @@ BEGIN
     0
 END
 
+IDD_MANAGE_ENDPOINTS AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_MANAGE_ENDPOINTS_ADD AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -415,8 +476,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,2,0,0
- PRODUCTVERSION 2,2,0,0
+ FILEVERSION 2,3,0,0
+ PRODUCTVERSION 2,3,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -433,23 +494,23 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "LX-Systems"
             VALUE "FileDescription", "WinMute"
-            VALUE "FileVersion", "2.2.0.0"
+            VALUE "FileVersion", "2.3.0.0"
             VALUE "InternalName", "WinMute.exe"
-            VALUE "LegalCopyright", "Copyright (C) 2022, Alexander Steinhöfer"
+            VALUE "LegalCopyright", "Copyright (C) 2023, Alexander Steinhoefer"
             VALUE "OriginalFilename", "WinMute.exe"
             VALUE "ProductName", "WinMute"
-            VALUE "ProductVersion", "2.2.0.0"
+            VALUE "ProductVersion", "2.3.0.0"
         END
         BLOCK "040704b0"
         BEGIN
             VALUE "CompanyName", "LX-Systems"
             VALUE "FileDescription", "WinMute"
-            VALUE "FileVersion", "2.2.0.0"
+            VALUE "FileVersion", "2.3.0.0"
             VALUE "InternalName", "WinMute.exe"
-            VALUE "LegalCopyright", "Copyright (C) 2022, Alexander Steinhöfer"
+            VALUE "LegalCopyright", "Copyright (C) 2023, Alexander Steinhoefer"
             VALUE "OriginalFilename", "WinMute.exe"
             VALUE "ProductName", "WinMute"
-            VALUE "ProductVersion", "2.2.0.0"
+            VALUE "ProductVersion", "2.3.0.0"
         END
     END
     BLOCK "VarFileInfo"

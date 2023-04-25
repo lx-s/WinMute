@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2022, Alexander Steinhoefer
+           Copyright (c) 2023, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -35,17 +35,17 @@ POSSIBILITY OF SUCH DAMAGE.
 
 extern HINSTANCE hglobInstance;
 
-static const int QUIETHOURS_TIMER_START_ID = 271020;
-static const int QUIETHOURS_TIMER_END_ID = 271021;
+static constexpr int QUIETHOURS_TIMER_START_ID = 271020;
+static constexpr int QUIETHOURS_TIMER_END_ID = 271021;
 
-static __int64 ConvertSystemTimeTo100NS(const LPSYSTEMTIME sysTime)
+static std::int64_t ConvertSystemTimeTo100NS(const LPSYSTEMTIME sysTime) noexcept
 {
    FILETIME ft;
    SystemTimeToFileTime(sysTime, &ft);
    ULARGE_INTEGER ulInt;
    ulInt.HighPart = ft.dwHighDateTime;
    ulInt.LowPart = ft.dwLowDateTime;
-   return static_cast<__int64>(ulInt.QuadPart);
+   return static_cast<std::int64_t>(ulInt.QuadPart);
 }
 
 static bool IsQuietHours(
@@ -53,9 +53,9 @@ static bool IsQuietHours(
    const LPSYSTEMTIME qhStart,
    const LPSYSTEMTIME qhEnd)
 {
-   __int64 iStart = ConvertSystemTimeTo100NS(qhStart);
-   __int64 iEnd = ConvertSystemTimeTo100NS(qhEnd);
-   __int64 iNow = ConvertSystemTimeTo100NS(now);
+   const std::int64_t iStart = ConvertSystemTimeTo100NS(qhStart);
+   std::int64_t iEnd = ConvertSystemTimeTo100NS(qhEnd);
+   const std::int64_t iNow = ConvertSystemTimeTo100NS(now);
 
    if (iEnd < iStart) {
       // Add one day
@@ -89,7 +89,7 @@ static int GetDiffMillseconds(const LPSYSTEMTIME t1, const LPSYSTEMTIME t2)
    return static_cast<int>(res);
 }
 
-static VOID CALLBACK QuietHoursTimerProc(HWND hWnd, UINT msg, UINT_PTR id, DWORD msSinceSysStart)
+static VOID CALLBACK QuietHoursTimerProc(HWND hWnd, UINT msg, UINT_PTR id, DWORD msSinceSysStart) noexcept
 {
    UNREFERENCED_PARAMETER(msg);
    UNREFERENCED_PARAMETER(msSinceSysStart);
@@ -104,8 +104,13 @@ static VOID CALLBACK QuietHoursTimerProc(HWND hWnd, UINT msg, UINT_PTR id, DWORD
 }
 
 QuietHoursTimer::QuietHoursTimer() :
-   initialized_{ false }, enabled_{ false }, hParent_{ NULL }, qhStart_{0}, qhEnd_{ 0 }
-{}
+   initialized_{ false },
+   enabled_{ false },
+   hParent_{ nullptr },
+   qhStart_{0},
+   qhEnd_{ 0 }
+{
+}
 
 QuietHoursTimer::~QuietHoursTimer()
 {
@@ -148,12 +153,11 @@ bool QuietHoursTimer::LoadFromSettings(const WMSettings& settings)
       SendMessage(hParent_, WM_WINMUTE_QUIETHOURS_START, 0, 0);
    } else {
       int timerQhStart = GetDiffMillseconds(&start, &now);
-      if (SetCoalescableTimer(
+      if (SetTimer(
             hParent_,
             QUIETHOURS_TIMER_START_ID,
             timerQhStart,
-            QuietHoursTimerProc,
-            TIMERV_DEFAULT_COALESCING) == 0) {
+            QuietHoursTimerProc) == 0) {
          TaskDialog(
             hParent_,
             hglobInstance,
@@ -181,13 +185,12 @@ bool QuietHoursTimer::SetStart()
    start.wMinute = static_cast<WORD>(((qhStart_ - start.wSecond) / 60) % 60);
    start.wHour = static_cast<WORD>((qhStart_ - start.wMinute - start.wSecond) / 3600);
 
-   int timerQhStart = GetDiffMillseconds(&start, &now);
-   if (SetCoalescableTimer(
+   const int timerQhStart = GetDiffMillseconds(&start, &now);
+   if (SetTimer(
          hParent_,
          QUIETHOURS_TIMER_START_ID,
          timerQhStart,
-         QuietHoursTimerProc,
-         TIMERV_DEFAULT_COALESCING) == 0) {
+         QuietHoursTimerProc) == 0) {
       TaskDialog(
          hParent_,
          hglobInstance,
@@ -217,12 +220,11 @@ bool QuietHoursTimer::SetEnd()
    int timerQhEnd = GetDiffMillseconds(&end, &now);
    if (timerQhEnd <= 0) {
       SendMessage(hParent_, WM_WINMUTE_QUIETHOURS_END, 0, 0);
-   } else if (SetCoalescableTimer(
+   } else if (SetTimer(
          hParent_,
          QUIETHOURS_TIMER_END_ID,
          timerQhEnd,
-         QuietHoursTimerProc,
-         TIMERV_DEFAULT_COALESCING) == 0) {
+         QuietHoursTimerProc) == 0) {
       TaskDialog(
          hParent_,
          hglobInstance,

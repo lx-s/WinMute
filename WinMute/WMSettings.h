@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2022, Alexander Steinhoefer
+           Copyright (c) 2023, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -35,8 +35,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
+enum MuteEndPointMode {
+   MUTE_ENDPOINT_MODE_INDIVIDUAL_ALLOW_LIST = 0,
+   MUTE_ENDPOINT_MODE_INDIVIDUAL_BLOCK_LIST = 1
+};
+
 enum class SettingsKey {
-     MUTE_ON_LOCK
+     SETTINGS_VERSION
+   , MUTE_ON_LOCK
    , MUTE_ON_DISPLAYSTANDBY
    , MUTE_ON_RDP
    , RESTORE_AUDIO
@@ -47,6 +53,9 @@ enum class SettingsKey {
    , MUTE_ON_BLUETOOTH_DEVICELIST
    , MUTE_ON_WLAN
    , MUTE_ON_WLAN_ALLOWLIST
+   , MUTE_INDIVIDUAL_ENDPOINTS
+   // 1 = mute specific (allowlist), 2 = mute specific (blocklist)
+   , MUTE_INDIVIDUAL_ENDPOINTS_MODE
    , QUIETHOURS_ENABLE
    , QUIETHOURS_FORCEUNMUTE
    , QUIETHOURS_NOTIFICATIONS
@@ -65,7 +74,7 @@ public:
    WMSettings& operator=(const WMSettings&) = delete;
 
    bool Init();
-   void Unload();
+   void Unload() noexcept;
 
    bool IsAutostartEnabled();
    void EnableAutostart(bool enable);
@@ -77,6 +86,9 @@ public:
    std::vector<std::wstring> GetBluetoothDevicesW() const;
    std::vector<std::string> GetBluetoothDevicesA() const;
 
+   bool StoreManagedAudioEndpoints(std::vector<std::wstring> &endpoints);
+   std::vector<std::wstring> GetManagedAudioEndpoints() const;
+
    DWORD QueryValue(SettingsKey key) const;
    bool  SetValue(SettingsKey key, DWORD value);
 
@@ -84,6 +96,8 @@ private:
    HKEY hSettingsKey_;
    HKEY hWifiKey_;
    HKEY hBluetoothKey_;
+   HKEY hAudioEndpointsKey_;
 
+   bool MigrateSettings();
    HKEY OpenAutostartKey(REGSAM samDesired);
 };
