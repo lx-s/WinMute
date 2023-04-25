@@ -1,5 +1,5 @@
 #define MyAppName "WinMute"
-#define MyAppVersion "2.2.0.0"
+#define MyAppVersion "2.3.0.0"
 #define MyAppPublisher "LX-Systems"
 #define MyAppURL "https://www.lx-s.de/winmute"
 #define MyAppExeName "WinMute.exe"
@@ -57,6 +57,7 @@ Root: HKCU; Subkey: "Software\lx-systems\WinMute"; Flags: uninsdeletekey
 Root: HKCU; Subkey: "Software\lx-systems\WinMute"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"
 Root: HKCU; Subkey: "Software\lx-systems\WinMute\BluetoothDevices"; Flags: uninsdeletekey
 Root: HKCU; Subkey: "Software\lx-systems\WinMute\WifiNetworks"; Flags: uninsdeletekey
+Root: HKCU; Subkey: "Software\lx-systems\WinMute\ManagedAudioEndpoints"; Flags: uninsdeletekey
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "LX-Systems WinMute"; ValueData: "{app}\{#MyAppExeName}"; Tasks: autostart
 
 [Run]
