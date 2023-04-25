@@ -1,12 +1,10 @@
-Version 2.3.0 (2023-04-13)
+Version 2.3.0 (2023-04-25)
  * Added function to only mute specific endpoints
    * As is good tradition, also added a switch to NOT mute specific endpoints
  * Fixed a problem that WinMute never unmutes, when the PC bootet during quiet hours.
  * Fixed bluetooth muting description
  * Changed SetCoalescableTimer to SetTimer, so WinMute can run under Windows 7.
-   Not that despite that Windows 7 is not supported any more.
-
-
+   Please note that Windows 7 is nevertheless not supported any more.
 
 Version 2.2.0 (2022-11-28)
  * Removed screensaver detection as it caused problems with
