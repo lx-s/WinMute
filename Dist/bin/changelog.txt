@@ -1,3 +1,6 @@
+Version 2.3.1 (2023-07-27)
+ * Fixed annoying error message when the Windows registry key "SystemUsesLightTheme" is not present.
+
 Version 2.3.0 (2023-04-25)
  * Added function to only mute specific endpoints
    * As is good tradition, also added a switch to NOT mute specific endpoints

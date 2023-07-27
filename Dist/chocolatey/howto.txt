@@ -1,0 +1,2 @@
+choco pack
+choco push <file> --source https://push.chocolatey.org/
