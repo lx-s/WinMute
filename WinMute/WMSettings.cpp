@@ -179,10 +179,12 @@ static bool ReadStringFromRegistry(HKEY hKey, const wchar_t *subKey, std::wstrin
    bool success = false;
    DWORD regError = 0;
    DWORD bufSize = 0;
+   WMLog &log = WMLog::GetInstance();
    regError = RegQueryValueExW(hKey, subKey, nullptr, nullptr, nullptr, &bufSize);
    if (regError != ERROR_SUCCESS) {
       if (regError != ERROR_FILE_NOT_FOUND) {
-         PrintWindowsError(L"RegQueryValueEx", regError);
+         PrintWindowsError(L"RegQueryValueExW", regError);
+         log.Write(L"[Registry] Failed to read key \"%s\".", subKey);
       }
    } else {
       bufSize += 1; // Trailing '\0'
@@ -190,7 +192,8 @@ static bool ReadStringFromRegistry(HKEY hKey, const wchar_t *subKey, std::wstrin
       regError = RegQueryValueExW(hKey, subKey, nullptr, nullptr,
                                  reinterpret_cast<LPBYTE>(buf), &bufSize);
       if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(L"RegQueryValueEx", regError);
+         PrintWindowsError(L"RegQueryValueExW", regError);
+         log.Write(L"[Registry] Failed to query value for key \"%s\".", subKey);
       } else {
          success = true;
          val = buf;
@@ -403,7 +406,9 @@ DWORD WMSettings::QueryValue(SettingsKey key) const
       &size);
    if (regError != ERROR_SUCCESS) {
       if (regError != ERROR_FILE_NOT_FOUND) {
-         PrintWindowsError(L"RegCreateKeyEx", regError);
+         PrintWindowsError(L"RegQueryValueExW", regError);
+         WMLog &log = WMLog::GetInstance();
+         log.Write(L"[Registry] Failed to query value for key \"%s\"", keyStr);
       }
       return GetDefaultSetting(key);
    }
@@ -424,7 +429,7 @@ bool WMSettings::SetValue(SettingsKey key, DWORD value)
       reinterpret_cast<BYTE*>(&value),
       sizeof(DWORD));
    if (regError != ERROR_SUCCESS) {
-      PrintWindowsError(L"RegCreateKeyEx", regError);
+      PrintWindowsError(L"RegSetValueExW", regError);
       return false;
    }
 

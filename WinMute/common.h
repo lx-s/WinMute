@@ -87,6 +87,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <comdef.h>
 #include <wlanapi.h>
 #include <Mmdeviceapi.h>
+#include <dwmapi.h>
 #pragma warning(disable : 4201)
 #  include <endpointvolume.h>
 #pragma warning(default : 4201)
@@ -106,6 +107,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 // Utility
 void PrintWindowsError(const wchar_t *functionName, DWORD lastError = -1);
+bool GetWinMuteVersion(std::wstring &versNumber);
 
 static const wchar_t *PROGRAM_NAME = L"WinMute";
 constexpr int WM_SAVESETTINGS = WM_USER + 300;

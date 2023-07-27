@@ -76,3 +76,43 @@ void PrintWindowsError(const wchar_t *functionName, DWORD lastError)
       LocalFree(lpMsgBuf);
    }
 }
+
+bool GetWinMuteVersion(std::wstring &versNumber)
+{
+   bool success = false;
+   DWORD dummy;
+   wchar_t szFileName[MAX_PATH];
+   GetModuleFileName(nullptr, szFileName, sizeof(szFileName) / sizeof(szFileName[0]));
+   const DWORD versSize = GetFileVersionInfoSizeEx(FILE_VER_GET_NEUTRAL, szFileName, &dummy);
+   LPVOID versData = malloc(versSize);
+   if (versData != nullptr) {
+      if (GetFileVersionInfoExW(
+         FILE_VER_GET_NEUTRAL,
+         szFileName,
+         0,
+         versSize,
+         versData)) {
+         VS_FIXEDFILEINFO *pvi;
+         UINT pviLen = sizeof(*pvi);
+         if (VerQueryValueW(
+            versData,
+            L"\\",
+            reinterpret_cast<LPVOID *>(&pvi),
+            &pviLen)) {
+            wchar_t buf[50];
+            StringCchPrintfW(
+               buf,
+               ARRAY_SIZE(buf),
+               L"%d.%d.%d.%d",
+               pvi->dwProductVersionMS >> 16,
+               pvi->dwFileVersionMS & 0xFFFF,
+               pvi->dwFileVersionLS >> 16,
+               pvi->dwFileVersionLS & 0xFFFF);
+            versNumber = buf;
+            success = true;
+         }
+      }
+      free(versData);
+   }
+   return success;
+}

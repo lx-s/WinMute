@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "WinMute.h"
 #include "WinAudio.h"
 
+
 extern HINSTANCE hglobInstance;
 extern INT_PTR CALLBACK AboutDlgProc(HWND, UINT, WPARAM, LPARAM);
 extern INT_PTR CALLBACK SettingsDlgProc(HWND, UINT, WPARAM, LPARAM);
@@ -69,16 +70,19 @@ static LRESULT CALLBACK WinMuteWndProc(
 
 static int IsDarkMode(bool& isDarkMode)
 {
+   WMLog &log = WMLog::GetInstance();
    HKEY hKey;
    int rc = 1;
    //RegOpenCurrentUser
+   const std::wstring regKey =
+      L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize";
    LSTATUS error = RegOpenKeyW(
       HKEY_CURRENT_USER,
-      L"Software\\Microsoft\\Windows\\CurrentVersion\\"
-      L"Themes\\Personalize",
+      regKey.c_str(),
       &hKey);
    if (error != ERROR_SUCCESS) {
       PrintWindowsError(L"RegOpenKey", error);
+      log.Write(L"[Registry] Failed to open registry key \"%s\"", regKey.c_str());
    } else {
       DWORD isLightTheme = 0;
       DWORD bufSize = sizeof(isLightTheme);
@@ -91,7 +95,7 @@ static int IsDarkMode(bool& isDarkMode)
          reinterpret_cast<LPBYTE>(&isLightTheme),
          &bufSize);
       if (error != ERROR_SUCCESS) {
-         PrintWindowsError(L"RegQueryValueEx", error);
+         log.Write(L"[Registry] Failed to query value for key \"SystemUsesLightTheme\"");
       } else {
          isDarkMode = !isLightTheme;
          rc = 0;
@@ -299,6 +303,9 @@ bool WinMute::LoadSettings()
    WMLog& log = WMLog::GetInstance();
 
    if (log.IsEnabled()) {
+      std::wstring versionNumber;
+      GetWinMuteVersion(versionNumber);
+      log.Write(L"Starting WinMute %s", versionNumber.c_str());
       log.Write(L"Loading settings:");
       log.Write(L"\tRestore volume: %s", settings_.QueryValue(SettingsKey::RESTORE_AUDIO) ? L"Yes" : L"No");
       log.Write(L"\tMute on lock: %s", settings_.QueryValue(SettingsKey::MUTE_ON_LOCK) ? L"Yes" : L"No");
