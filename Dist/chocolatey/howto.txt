@@ -1,2 +1,6 @@
 choco pack
 choco push <file> --source https://push.chocolatey.org/
+
+
+Get API-Key from: https://push.chocolatey.org/account
+choco apikey add -k <your key here> -s https://push.chocolatey.org/
