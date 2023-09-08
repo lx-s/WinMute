@@ -33,7 +33,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
-const int BLUETOOTH_RECONNECT_UNMUTE_DELAY = 5000; // Milliseconds
+extern HINSTANCE hglobInstance;
+
+static const int BLUETOOTH_RECONNECT_UNMUTE_DELAY = 5000; // Milliseconds
+static const int MUTE_DELAY_MAGIC_VALUE = 0x198604;
+
+static const wchar_t* MUTECONTROL_CLASS_NAME = L"WinMuteMuteControl";
 
 enum MuteType {
    // With restore
@@ -49,11 +54,38 @@ enum MuteType {
    MuteTypeCount // Meta
 };
 
-MuteControl::MuteControl() :
-   restoreVolume_(false),
-   notificationsEnabled_(false),
-   displayWasOffOnce_(false),
-   trayIcon_(nullptr)
+void DelayedMuteTimerProc(HWND hWnd, UINT, UINT_PTR, DWORD)
+{
+   MuteControl *muteCtrl = reinterpret_cast<MuteControl*>(GetWindowLongPtrW(hWnd, GWLP_USERDATA));
+   if (muteCtrl != nullptr) {
+      muteCtrl->MuteDelayed(MUTE_DELAY_MAGIC_VALUE);
+   }
+}
+
+static LRESULT CALLBACK MuteControlWndProc(
+   HWND hWnd,
+   UINT msg,
+   WPARAM wParam,
+   LPARAM lParam)
+{
+   auto wm = reinterpret_cast<WinMute *>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+   switch (msg) {
+   case WM_NCCREATE:
+   {
+      LPCREATESTRUCTW cs = reinterpret_cast<LPCREATESTRUCTW>(lParam);
+      SetWindowLongPtrW(hWnd, GWLP_USERDATA,
+                        reinterpret_cast<LONG_PTR>(cs->lpCreateParams));
+      return TRUE;
+   }
+   default:
+      break;
+   }
+   return (wm)
+      ? wm->WindowProc(hWnd, msg, wParam, lParam)
+      : DefWindowProcW(hWnd, msg, wParam, lParam);
+}
+
+MuteControl::MuteControl()
 {
    MuteConfig initMuteConf;
    initMuteConf.active = false;
@@ -65,16 +97,54 @@ MuteControl::MuteControl() :
 
 MuteControl::~MuteControl()
 {
+   UnregisterClassW(MUTECONTROL_CLASS_NAME, hglobInstance);
+   DestroyWindow(hMuteCtrlWnd_);
 }
 
 bool MuteControl::Init(HWND hParent, const TrayIcon *trayIcon)
 {
-   winAudio_ = std::make_unique<VistaAudio>();
-   if (!winAudio_->Init(hParent)) {
+   WNDCLASSEXW wndClass{ 0 };
+   wndClass.cbSize = sizeof(wndClass);
+   wndClass.lpfnWndProc = MuteControlWndProc;
+   wndClass.hInstance = hglobInstance;
+   wndClass.lpszClassName = MUTECONTROL_CLASS_NAME;
+   if (!RegisterClassExW(&wndClass)) {
+      WMLog::GetInstance().WriteWindowsError(L"RegisterClassEx");
       return false;
    }
+   hMuteCtrlWnd_ = CreateWindowEx(
+      WS_EX_TOOLWINDOW,
+      MUTECONTROL_CLASS_NAME,
+      L"",
+      0,
+      0, 0, 0, 0,
+      nullptr,
+      nullptr,
+      hglobInstance,
+      this);
+   if (hMuteCtrlWnd_ == nullptr) {
+      WMLog::GetInstance().WriteWindowsError(L"CreateWindowEx");
+      UnregisterClassW(MUTECONTROL_CLASS_NAME, hglobInstance);
+      return false;
+   }
+   winAudio_ = std::make_unique<VistaAudio>();
+   if (!winAudio_->Init(hParent)) {
+      DestroyWindow(hMuteCtrlWnd_);
+      UnregisterClassW(MUTECONTROL_CLASS_NAME, hglobInstance);
+      return false;
+   }
+
    trayIcon_ = trayIcon;
    return true;
+}
+
+LRESULT CALLBACK MuteControl::WindowProc(
+   HWND hWnd,
+   UINT msg,
+   WPARAM wParam,
+   LPARAM lParam)
+{
+   return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
 void MuteControl::SetMute(bool mute)
@@ -113,6 +183,33 @@ void MuteControl::SetNotifications(bool enable)
    notificationsEnabled_ = enable;
 }
 
+void MuteControl::MuteDelayed(int magic)
+{
+   if (magic != MUTE_DELAY_MAGIC_VALUE || delayedMuteTimerId_ == 0) {
+      return;
+   }
+   WMLog::GetInstance().Write(L"Muting workstation after delay");
+   ShowNotification(
+      L"Muting workstation after delay",
+      L"All endpoints have been muted");
+   winAudio_->SetMute(true);
+   KillTimer(hMuteCtrlWnd_, delayedMuteTimerId_);
+   delayedMuteTimerId_ = 0;
+}
+
+bool MuteControl::StartDelayedMute()
+{
+   delayedMuteTimerId_ = SetTimer(
+      hMuteCtrlWnd_,
+      delayedMuteTimerId_,
+      muteDelaySeconds_ * 1000,
+      DelayedMuteTimerProc);
+   if (delayedMuteTimerId_ == 0) {
+      WMLog::GetInstance().WriteWindowsError(L"SetTimer", GetLastError());
+   }
+   return delayedMuteTimerId_ != 0;
+}
+
 void MuteControl::RestoreVolume(bool withDelay)
 {
    WMLog& log = WMLog::GetInstance();
@@ -129,6 +226,10 @@ void MuteControl::RestoreVolume(bool withDelay)
    );
    if (!restore) {
       log.Write(L"Skipping restore since other mute event is currently active");
+   } else if (delayedMuteTimerId_ != 0) {
+      KillTimer(hMuteCtrlWnd_, delayedMuteTimerId_);
+      delayedMuteTimerId_ = 0;
+      log.Write(L"Skipping restore, since delayed mute was not triggered yet");
    } else {
       log.Write(L"Restoring previous mute state");
       ShowNotification(
@@ -144,6 +245,11 @@ void MuteControl::RestoreVolume(bool withDelay)
 void MuteControl::SetRestoreVolume(bool enable)
 {
    restoreVolume_ = enable;
+}
+
+void MuteControl::SetMuteDelay(int delaySeconds)
+{
+   muteDelaySeconds_ = delaySeconds;
 }
 
 void MuteControl::SetMuteOnWorkstationLock(bool enable)
@@ -227,11 +333,16 @@ void MuteControl::NotifyRestoreCondition(int type, bool active, bool withDelay)
       SaveMuteStatus();
       muteConfig_[type].active = active;
       if (muteConfig_[type].shouldMute) {
-         WMLog::GetInstance().Write(L"Muting workstation");
-         ShowNotification(
-            L"Muting workstation",
-            L"All endpoints have been muted");
-         winAudio_->SetMute(true);
+         if (muteDelaySeconds_ == 0) {
+            WMLog::GetInstance().Write(L"Muting workstation");
+            ShowNotification(
+               L"Muting workstation",
+               L"All endpoints have been muted");
+            winAudio_->SetMute(true);
+         } else {
+            WMLog::GetInstance().Write(L"Starting delayed mute timer...");
+            StartDelayedMute();
+         }
       }
    } else {
       if (muteConfig_[type].active) {

@@ -78,6 +78,8 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       SetCheckButton(hNotify, *settings, SettingsKey::NOTIFICATIONS_ENABLED);
       SetCheckButton(hManageEndpoints, *settings, SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS);
       Button_Enable(GetDlgItem(hDlg, IDC_MANAGE_ENDPOINTS), Button_GetCheck(hManageEndpoints) == BST_CHECKED);
+      const DWORD muteDelay = settings->QueryValue(SettingsKey::MUTE_DELAY);
+      SetDlgItemInt(hDlg, IDC_MUTEDELAY, (muteDelay < 0) ? 0 : muteDelay, false);
 
       // With restore
       SetCheckButton(hMuteOnLock, *settings, SettingsKey::MUTE_ON_LOCK);
@@ -127,6 +129,8 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       // General
       SetOption(hNotify, *settings, SettingsKey::NOTIFICATIONS_ENABLED);
       SetOption(hManageEndpoints, *settings, SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS);
+      const DWORD muteDelay = GetDlgItemInt(hDlg, IDC_MUTEDELAY, nullptr, TRUE);
+      settings->SetValue(SettingsKey::MUTE_DELAY, (muteDelay < 0) ? 0 : muteDelay);
 
       // With restore
       SetOption(hMuteOnLock, *settings, SettingsKey::MUTE_ON_LOCK);
