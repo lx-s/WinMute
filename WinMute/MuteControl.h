@@ -50,6 +50,8 @@ public:
 
    void SetRestoreVolume(bool enable);
 
+   void SetMuteDelay(int delaySeconds);
+
    void SetMuteOnWorkstationLock(bool enable);
    void SetMuteOnRemoteSession(bool enable);
    void SetMuteOnDisplayStandby(bool enable);
@@ -85,23 +87,33 @@ public:
       const std::vector<std::wstring>& endpoints,
       bool isAllowList);
    void ClearManagedEndpoints();
+
+   LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+   // Should only be called internally
+   void MuteDelayed(int magic);
 private:
    struct MuteConfig {
       bool shouldMute;
       bool active;
    };
    std::vector<MuteConfig> muteConfig_;
-   bool restoreVolume_;
-   bool notificationsEnabled_;
+   bool restoreVolume_ = false;
+   bool notificationsEnabled_ = false;
+   int muteDelaySeconds_ = 0;
+   UINT_PTR delayedMuteTimerId_ = 0;
    std::unique_ptr<WinAudio> winAudio_;
+   HWND hMuteCtrlWnd_ = nullptr;
 
-   bool displayWasOffOnce_; // Since a power message is sent right after registering
-                            // We skip the first "was on" message
+   // Since a power message is sent right after registering
+   // We skip the first "was on" message
+   bool displayWasOffOnce_ = false;
 
-   const TrayIcon* trayIcon_;
+   const TrayIcon* trayIcon_ = nullptr;
 
    void NotifyRestoreCondition(int type, bool active, bool withDelay = false);
    void SaveMuteStatus();
    void RestoreVolume(bool withDelay = false);
    void ShowNotification(const std::wstring& title, const std::wstring& text);
+   bool StartDelayedMute();
 };

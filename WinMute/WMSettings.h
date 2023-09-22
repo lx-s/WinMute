@@ -56,6 +56,7 @@ enum class SettingsKey {
    , MUTE_INDIVIDUAL_ENDPOINTS
    // 1 = mute specific (allowlist), 2 = mute specific (blocklist)
    , MUTE_INDIVIDUAL_ENDPOINTS_MODE
+   , MUTE_DELAY
    , QUIETHOURS_ENABLE
    , QUIETHOURS_FORCEUNMUTE
    , QUIETHOURS_NOTIFICATIONS

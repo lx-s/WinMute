@@ -85,6 +85,7 @@
 #define IDC_ENDPOINT_REMOVE             1047
 #define IDC_ENDPOINT_REMOVEALL          1048
 #define IDC_ENDPOINT_NAME               1049
+#define IDC_MUTEDELAY                   1050
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_                    40002
 #define ID_TRAYMENU_MUTEON              40003
@@ -128,7 +129,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        139
 #define _APS_NEXT_COMMAND_VALUE         40037
-#define _APS_NEXT_CONTROL_VALUE         1050
+#define _APS_NEXT_CONTROL_VALUE         1051
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

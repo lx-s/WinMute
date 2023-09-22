@@ -158,14 +158,15 @@ WinMute::~WinMute() noexcept
 
 bool WinMute::RegisterWindowClass()
 {
-   WNDCLASS wc = { 0 };
+   WNDCLASSEX wc = { 0 };
+   wc.cbSize = sizeof(wc);
    wc.hIcon = LoadIcon(hglobInstance, MAKEINTRESOURCE(IDI_APP));
    wc.hbrBackground = CreateSolidBrush(GetSysColor(COLOR_BTNFACE));
    wc.hInstance = hglobInstance;
    wc.lpfnWndProc = WinMuteWndProc;
    wc.lpszClassName = WINMUTE_CLASS_NAME;
 
-   if (!RegisterClass(&wc)) {
+   if (!RegisterClassExW(&wc)) {
       PrintWindowsError(L"RegisterClass");
       return false;
    }
@@ -308,6 +309,7 @@ bool WinMute::LoadSettings()
       log.Write(L"Starting WinMute %s", versionNumber.c_str());
       log.Write(L"Loading settings:");
       log.Write(L"\tRestore volume: %s", settings_.QueryValue(SettingsKey::RESTORE_AUDIO) ? L"Yes" : L"No");
+      log.Write(L"\tMute delay: %d", settings_.QueryValue(SettingsKey::MUTE_DELAY));
       log.Write(L"\tMute on lock: %s", settings_.QueryValue(SettingsKey::MUTE_ON_LOCK) ? L"Yes" : L"No");
       log.Write(L"\tMute on display standby: %s", settings_.QueryValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY) ? L"Yes" : L"No");
       log.Write(L"\tMute on logout: %s", settings_.QueryValue(SettingsKey::MUTE_ON_LOGOUT) ? L"Yes" : L"No");
@@ -328,6 +330,7 @@ bool WinMute::LoadSettings()
       const bool isAllowList = settings_.QueryValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS_MODE) == MUTE_ENDPOINT_MODE_INDIVIDUAL_ALLOW_LIST;
       muteCtrl_.SetManagedEndpoints(endpoints, isAllowList);
    }
+   muteCtrl_.SetMuteDelay(settings_.QueryValue(SettingsKey::MUTE_DELAY));
    muteCtrl_.SetRestoreVolume(settings_.QueryValue(SettingsKey::RESTORE_AUDIO));
    muteCtrl_.SetMuteOnWorkstationLock(settings_.QueryValue(SettingsKey::MUTE_ON_LOCK));
    muteCtrl_.SetMuteOnDisplayStandby(settings_.QueryValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY));
