@@ -1,3 +1,6 @@
+Version 2.4.0 (2023-09-22)
+ * Added the option to delay muting by a configurable amount of seconds.
+
 Version 2.3.1 (2023-07-27)
  * Fixed annoying error message when the Windows registry key "SystemUsesLightTheme" is not present.
 
@@ -14,7 +17,7 @@ Version 2.2.0 (2022-11-28)
    anti-cheat software of current games (e.g. Overwatch 2, Darktide).
 
 Version 2.1.2 (2022-08-25)
- * Changed bluetooth detection logic, so that muting 
+ * Changed bluetooth detection logic, so that muting
    the workstation doesn't happen, when scanning for new
    devices.
  * Fixed crash when connectiong via remote desktop
