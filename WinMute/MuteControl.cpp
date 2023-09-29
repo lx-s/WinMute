@@ -68,7 +68,7 @@ static LRESULT CALLBACK MuteControlWndProc(
    WPARAM wParam,
    LPARAM lParam)
 {
-   auto wm = reinterpret_cast<WinMute *>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+   auto wm = reinterpret_cast<MuteControl*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
    switch (msg) {
    case WM_NCCREATE:
    {

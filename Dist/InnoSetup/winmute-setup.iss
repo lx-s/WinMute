@@ -1,5 +1,5 @@
 #define MyAppName "WinMute"
-#define MyAppVersion "2.4.0.0"
+#define MyAppVersion "2.4.1.0"
 #define MyAppPublisher "LX-Systems"
 #define MyAppURL "https://www.lx-s.de/winmute"
 #define MyAppExeName "WinMute.exe"

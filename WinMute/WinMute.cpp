@@ -542,10 +542,14 @@ LRESULT CALLBACK WinMute::WindowProc(
       }
       return TRUE;
    case WM_QUERYENDSESSION:
-      if (lParam == 0) { // Shutdown
-         muteCtrl_.NotifyShutdown();
-      } else if ((lParam & ENDSESSION_LOGOFF)) {
-         muteCtrl_.NotifyLogout();
+      return TRUE;
+   case WM_ENDSESSION:
+      if (wParam == TRUE) {
+         if (lParam == 0) { // Shutdown
+            muteCtrl_.NotifyShutdown();
+         } else if ((lParam & ENDSESSION_LOGOFF)) {
+            muteCtrl_.NotifyLogout();
+         }
       }
       break;
    case WM_WINMUTE_QUIETHOURS_START:
