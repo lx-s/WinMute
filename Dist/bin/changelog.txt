@@ -1,3 +1,6 @@
+Version 2.4.1 (2023-09-29)
+ * Fixes crash on signout and shutdown
+
 Version 2.4.0 (2023-09-22)
  * Added the option to delay muting by a configurable amount of seconds.
 
