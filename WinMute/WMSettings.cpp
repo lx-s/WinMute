@@ -47,6 +47,8 @@ static const wchar_t *LX_SYSTEMS_AUDIO_ENDPOINTS_SUBKEY
 static const wchar_t* LX_SYSTEMS_AUTOSTART_KEY
    = L"LX-Systems WinMute";
 
+extern HINSTANCE hglobInstance;
+
 static const wchar_t* KeyToStr(SettingsKey key)
 {
    const wchar_t* keyStr = nullptr;
@@ -167,7 +169,6 @@ static DWORD GetDefaultSetting(SettingsKey key)
    }
    return 0;
 }
-
 
 template<typename T>
 static void NormalizeStringList(std::vector<std::basic_string<T>> &items)
@@ -323,6 +324,7 @@ void WMSettings::Unload() noexcept
    hWifiKey_ = nullptr;
    RegCloseKey(hBluetoothKey_);
    hBluetoothKey_ = nullptr;
+   UnloadLanguage();
 }
 
 HKEY WMSettings::OpenAutostartKey(REGSAM samDesired)
@@ -727,4 +729,61 @@ std::vector<std::wstring> WMSettings::GetManagedAudioEndpoints() const
    }
    NormalizeStringList(devices);
    return devices;
+}
+// https://learn.microsoft.com/en-us/windows/win32/intl/creating-a-multilingual-user-interface-application
+
+bool WMSettings::SetLanguage(const std::wstring &dllName)
+{
+   if (dllName.empty()) {
+      UnloadLanguage();
+      return true;
+   } else {
+      wchar_t winMutePath[MAX_PATH + 1];
+      GetModuleFileNameW(GetModuleHandleW(nullptr), winMutePath, ARRAY_SIZE(winMutePath));
+      fs::path langPath{winMutePath};
+      langPath /= L"lang";
+      langPath /= dllName;
+      if (!fs::exists(langPath)) {
+         // TODO: Error
+      } else {
+         auto newLangModule = LoadLibraryExW(
+            langPath.c_str(), nullptr,
+            LOAD_LIBRARY_AS_IMAGE_RESOURCE | LOAD_LIBRARY_AS_DATAFILE);
+         if (newLangModule == nullptr) {
+            // TODO: Error
+         } else {
+            UnloadLanguage();
+            textModule_ = newLangModule;
+            return true;
+         }
+      }
+   }
+   return false;
+}
+
+void WMSettings::UnloadLanguage()
+{
+   if (textModule_ != nullptr) {
+      FreeLibrary(textModule_);
+      textModule_ = nullptr;
+   }
+}
+
+std::wstring WMSettings::GetString(UINT strId)
+{
+   HMODULE strModule = (textModule_ == nullptr) ? hglobInstance : textModule_;
+   wchar_t strBuffer[2048 + 1]{ 0 };
+   int strLength = LoadStringW(strModule, strId, strBuffer, 0);
+   if (strLength == 0) {
+      return L"";
+   } else if (strLength < 2048) {
+      LoadStringW(strModule, strId, strBuffer, ARRAY_SIZE(strBuffer));
+      return std::wstring(strBuffer, strBuffer + strLength);
+   } else {
+      wchar_t *largeBuffer = new wchar_t[strLength + 1];
+      LoadStringW(strModule, strId, largeBuffer, strLength + 1);
+      std::wstring ret(strBuffer, largeBuffer + strLength);
+      delete[] largeBuffer;
+      return ret;
+   }
 }

@@ -62,6 +62,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <chrono>
 #include <cstdarg>
 #include <filesystem>
+#include <optional>
 #include <fstream>
 #include <iterator>
 #include <locale>
@@ -104,6 +105,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "QuietHoursTimer.h"
 #include "WinMute.h"
 #include "VersionHelper.h"
+
+namespace fs = std::filesystem;
 
 // Utility
 void PrintWindowsError(const wchar_t *functionName, DWORD lastError = -1);

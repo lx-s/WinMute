@@ -93,12 +93,18 @@ public:
    DWORD QueryValue(SettingsKey key) const;
    bool  SetValue(SettingsKey key, DWORD value);
 
+   bool SetLanguage(const std::wstring &dllName);
+   std::wstring GetString(UINT strId);
+
 private:
    HKEY hSettingsKey_;
    HKEY hWifiKey_;
    HKEY hBluetoothKey_;
    HKEY hAudioEndpointsKey_;
 
+   HMODULE textModule_;
+
    bool MigrateSettings();
    HKEY OpenAutostartKey(REGSAM samDesired);
+   void UnloadLanguage();
 };
