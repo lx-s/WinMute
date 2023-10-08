@@ -35,10 +35,26 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace fs = std::filesystem;
 
-struct LanguageDll {
-   std::wstring langName;
-   std::wstring file;
+struct SettingsGeneralData {
+   WMSettings *settings;
+   std::vector<LanguageModule> langModules;
 };
+
+static void FillLanguageList(HWND hLanguageList, const SettingsGeneralData& dlgData)
+{
+   SendMessage(hLanguageList,
+               CB_INITSTORAGE,
+               static_cast<WPARAM>(dlgData.langModules.size()), 200);
+   for (const auto &lang : dlgData.langModules) {
+      int itemId = ComboBox_AddString(hLanguageList, lang.langName.c_str());
+      if (itemId == CB_ERR || itemId == CB_ERRSPACE) {
+         WMLog::GetInstance().Write(L"Failed to add language %ls to language selector", lang.langName.c_str());
+      } else {
+         ComboBox_SetItemData(hLanguageList, itemId, lang.fileName.c_str());
+      }
+   }
+   ComboBox_SelectString(hLanguageList, 0, WMi18n::GetInstance().GetcurrentLanguageName().c_str());
+}
 
 INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -52,14 +68,20 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
          EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
       }
 
-      WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
-      assert(settings != nullptr);
-      SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(settings));
+      SettingsGeneralData *dlgData = new SettingsGeneralData;
+      memset(dlgData, 0, sizeof(*dlgData));
+      dlgData->langModules = WMi18n::GetInstance().GetAvailableLanguages();
+      dlgData->settings = reinterpret_cast<WMSettings *>(lParam);
+      assert(dlgData->settings != nullptr);
 
-      DWORD enabled = settings->IsAutostartEnabled();
+      SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(dlgData));
+     
+      FillLanguageList(GetDlgItem(hDlg, IDC_LANGUAGE), *dlgData);
+
+      DWORD enabled = dlgData->settings->IsAutostartEnabled();
       Button_SetCheck(hAutostart, enabled ? BST_CHECKED : BST_UNCHECKED);
 
-      enabled = !!settings->QueryValue(SettingsKey::LOGGING_ENABLED);
+      enabled = !!dlgData->settings->QueryValue(SettingsKey::LOGGING_ENABLED);
       Button_SetCheck(hLogging, enabled ? BST_CHECKED : BST_UNCHECKED);
       Button_Enable(hOpenLog, enabled);
       if (enabled) {
@@ -74,6 +96,14 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       }
 
       return TRUE;
+   }
+   case WM_DESTROY: {
+      SettingsGeneralData *dlgData = reinterpret_cast<SettingsGeneralData *>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+      if (dlgData != nullptr) {
+         delete dlgData;
+         SetWindowLongPtr(hDlg, GWLP_USERDATA, 0);
+      }
+      return FALSE;
    }
    case WM_COMMAND: {
       if (LOWORD(wParam) == IDC_ENABLELOGGING) {
@@ -97,19 +127,20 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       return 0;
    }
    case WM_SAVESETTINGS: {
-      WMSettings* settings = reinterpret_cast<WMSettings*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+      SettingsGeneralData *dlgData = reinterpret_cast<SettingsGeneralData *>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+      assert(dlgData != nullptr);
 
       HWND hAutostart = GetDlgItem(hDlg, IDC_RUNONSTARTUP);
       HWND hLogging = GetDlgItem(hDlg, IDC_ENABLELOGGING);
 
       int enableLog = Button_GetCheck(hLogging) == BST_CHECKED;
-      settings->SetValue(SettingsKey::LOGGING_ENABLED, enableLog);
+      dlgData->settings->SetValue(SettingsKey::LOGGING_ENABLED, enableLog);
       WMLog::GetInstance().SetEnabled(enableLog);
 
       if (Button_GetCheck(hAutostart) == BST_CHECKED) {
-         settings->EnableAutostart(true);
+         dlgData->settings->EnableAutostart(true);
       } else {
-         settings->EnableAutostart(false);
+         dlgData->settings->EnableAutostart(false);
       }
 
       return 0;
