@@ -205,6 +205,7 @@
     <ClInclude Include="BluetoothDetector.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="WiFiDetector.h" />
+    <ClInclude Include="WMi18n.h" />
     <ClInclude Include="WMLog.h" />
     <ClInclude Include="MMNotificationClient.h" />
     <ClInclude Include="MuteControl.h" />
@@ -240,6 +241,7 @@
     <ClCompile Include="Settings_MuteDlg.cpp" />
     <ClCompile Include="Settings_WifiDlg.cpp" />
     <ClCompile Include="WifiDetector.cpp" />
+    <ClCompile Include="WMi18n.cpp" />
     <ClCompile Include="WMLog.cpp" />
     <ClCompile Include="MMNotificationClient.cpp" />
     <ClCompile Include="MuteControl.cpp" />

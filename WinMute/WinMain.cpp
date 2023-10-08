@@ -49,16 +49,39 @@ static bool SetWorkingDirectory()
    return false;
 }
 
+static void LoadLanguage(WMSettings &settings, WMi18n &i18n)
+{
+   const auto langModule = settings.QueryStrValue(SettingsKey::APP_LANGUAGE);
+   if (langModule.has_value()) {
+      i18n.LoadLanguage(*langModule);
+   }
+}
+
 int WINAPI wWinMain(_In_ HINSTANCE hInstance,
    _In_opt_ HINSTANCE,
    _In_ PWSTR,
    _In_ int)
 {
+   WMSettings settings;
+   WMi18n& i18n = WMi18n::GetInstance();
+   if (!settings.Init()) {
+      TaskDialog(nullptr,
+                 nullptr,
+                 PROGRAM_NAME,
+                 L"Failed to initialize settings",
+                 L"Critical error while initializing WinMute",
+                 TDCBF_OK_BUTTON,
+                 TD_ERROR_ICON,
+                 nullptr);
+      return FALSE;
+   }
+
+   LoadLanguage(settings, i18n);
+
    HANDLE hMutex = CreateMutexW(nullptr, TRUE, L"LxSystemsWinMute");
    if (hMutex == nullptr) {
       return FALSE;
-   }
-   if (GetLastError() == ERROR_ALREADY_EXISTS) {
+   } else if (GetLastError() == ERROR_ALREADY_EXISTS) {
       ReleaseMutex(hMutex);
       TaskDialog(nullptr,
          nullptr,
@@ -111,7 +134,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
    }
 
    MSG msg = { nullptr };
-   WinMute program;
+   WinMute program(settings);
    if (program.Init()) {
       while (GetMessage(&msg, nullptr, 0, 0)) {
          HWND hwnd = GetForegroundWindow();

@@ -39,7 +39,7 @@ class WinAudio;
 
 class WinMute {
 public:
-   WinMute();
+   explicit WinMute(WMSettings& settings);
    WinMute(const WinMute&) = delete;
    WinMute(WinMute&&) = delete;
    WinMute& operator=(const WinMute &) = delete;
@@ -66,7 +66,7 @@ private:
 
    TrayIcon trayIcon_;
    WifiDetector wifiDetector_;
-   WMSettings settings_;
+   WMSettings& settings_;
    MuteControl muteCtrl_;
    QuietHoursTimer quietHours_;
    BluetoothDetector btDetector_;

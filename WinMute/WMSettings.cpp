@@ -119,6 +119,9 @@ static const wchar_t* KeyToStr(SettingsKey key)
    case SettingsKey::NOTIFICATIONS_ENABLED:
       keyStr = L"ShowNotifications";
       break;
+   case SettingsKey::APP_LANGUAGE:
+      keyStr = L"AppLanguage";
+      break;
    }
    return keyStr;
 }
@@ -165,6 +168,8 @@ static DWORD GetDefaultSetting(SettingsKey key)
    case SettingsKey::LOGGING_ENABLED:
       return 0;
    case SettingsKey::NOTIFICATIONS_ENABLED:
+      return 0;
+   case SettingsKey::APP_LANGUAGE:
       return 0;
    }
    return 0;
@@ -324,7 +329,6 @@ void WMSettings::Unload() noexcept
    hWifiKey_ = nullptr;
    RegCloseKey(hBluetoothKey_);
    hBluetoothKey_ = nullptr;
-   UnloadLanguage();
 }
 
 HKEY WMSettings::OpenAutostartKey(REGSAM samDesired)
@@ -423,6 +427,17 @@ DWORD WMSettings::QueryValue(SettingsKey key) const
    return value;
 }
 
+std::optional<std::wstring> WMSettings::QueryStrValue(SettingsKey key) const
+{
+   std::wstring val;
+   auto keyStr = KeyToStr(key);
+   assert(keyStr != nullptr);
+   if (!ReadStringFromRegistry(hSettingsKey_, keyStr, val)) {
+      return std::nullopt;
+   }
+   return val;
+}
+
 bool WMSettings::SetValue(SettingsKey key, DWORD value)
 {
    auto keyStr = KeyToStr(key);
@@ -435,6 +450,28 @@ bool WMSettings::SetValue(SettingsKey key, DWORD value)
       REG_DWORD,
       reinterpret_cast<BYTE*>(&value),
       sizeof(DWORD));
+   if (regError != ERROR_SUCCESS) {
+      PrintWindowsError(L"RegSetValueExW", regError);
+      return false;
+   }
+
+   return true;
+}
+
+bool WMSettings::SetValue(SettingsKey key, const std::wstring &value)
+{
+   auto keyStr = KeyToStr(key);
+   assert(keyStr != nullptr);
+
+   BYTE *strValue = reinterpret_cast<BYTE *>(const_cast<wchar_t *>(value.c_str()));
+   DWORD strLen = static_cast<DWORD>((value.length() + 1) * sizeof(wchar_t));
+   DWORD regError = RegSetValueExW(
+      hSettingsKey_,
+      keyStr,
+      0,
+      REG_SZ,
+      strValue,
+      strLen);
    if (regError != ERROR_SUCCESS) {
       PrintWindowsError(L"RegSetValueExW", regError);
       return false;
@@ -730,60 +767,4 @@ std::vector<std::wstring> WMSettings::GetManagedAudioEndpoints() const
    NormalizeStringList(devices);
    return devices;
 }
-// https://learn.microsoft.com/en-us/windows/win32/intl/creating-a-multilingual-user-interface-application
 
-bool WMSettings::SetLanguage(const std::wstring &dllName)
-{
-   if (dllName.empty()) {
-      UnloadLanguage();
-      return true;
-   } else {
-      wchar_t winMutePath[MAX_PATH + 1];
-      GetModuleFileNameW(GetModuleHandleW(nullptr), winMutePath, ARRAY_SIZE(winMutePath));
-      fs::path langPath{winMutePath};
-      langPath /= L"lang";
-      langPath /= dllName;
-      if (!fs::exists(langPath)) {
-         // TODO: Error
-      } else {
-         auto newLangModule = LoadLibraryExW(
-            langPath.c_str(), nullptr,
-            LOAD_LIBRARY_AS_IMAGE_RESOURCE | LOAD_LIBRARY_AS_DATAFILE);
-         if (newLangModule == nullptr) {
-            // TODO: Error
-         } else {
-            UnloadLanguage();
-            textModule_ = newLangModule;
-            return true;
-         }
-      }
-   }
-   return false;
-}
-
-void WMSettings::UnloadLanguage()
-{
-   if (textModule_ != nullptr) {
-      FreeLibrary(textModule_);
-      textModule_ = nullptr;
-   }
-}
-
-std::wstring WMSettings::GetString(UINT strId)
-{
-   HMODULE strModule = (textModule_ == nullptr) ? hglobInstance : textModule_;
-   wchar_t strBuffer[2048 + 1]{ 0 };
-   int strLength = LoadStringW(strModule, strId, strBuffer, 0);
-   if (strLength == 0) {
-      return L"";
-   } else if (strLength < 2048) {
-      LoadStringW(strModule, strId, strBuffer, ARRAY_SIZE(strBuffer));
-      return std::wstring(strBuffer, strBuffer + strLength);
-   } else {
-      wchar_t *largeBuffer = new wchar_t[strLength + 1];
-      LoadStringW(strModule, strId, largeBuffer, strLength + 1);
-      std::wstring ret(strBuffer, largeBuffer + strLength);
-      delete[] largeBuffer;
-      return ret;
-   }
-}

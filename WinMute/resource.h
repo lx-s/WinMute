@@ -4,6 +4,7 @@
 //
 #define IDI_APP                         5
 #define IDD_ABOUT                       9
+#define IDI_LANG_NAME                   101
 #define IDI_TRAY_BRIGHT                 104
 #define IDI_TRAY_DARK                   105
 #define IDR_TRAYMENU                    106
@@ -86,7 +87,6 @@
 #define IDC_ENDPOINT_REMOVEALL          1048
 #define IDC_ENDPOINT_NAME               1049
 #define IDC_MUTEDELAY                   1050
-#define IDC_COMBO1                      1051
 #define IDC_LANGUAGE                    1051
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_                    40002
@@ -129,7 +129,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        139
+#define _APS_NEXT_RESOURCE_VALUE        140
 #define _APS_NEXT_COMMAND_VALUE         40037
 #define _APS_NEXT_CONTROL_VALUE         1052
 #define _APS_NEXT_SYMED_VALUE           101

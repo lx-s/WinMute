@@ -143,11 +143,12 @@ WinMute::MuteConfig::MuteConfig()
 {
 }
 
-WinMute::WinMute() :
+WinMute::WinMute(WMSettings& settings) :
    hWnd_(nullptr),
    hTrayMenu_(nullptr),
    hAppIcon_(nullptr),
-   hTrayIcon_(nullptr)
+   hTrayIcon_(nullptr),
+   settings_(settings)
 {
 }
 
@@ -234,10 +235,6 @@ bool WinMute::Init()
    WMLog& log = WMLog::GetInstance();
 
    hAppIcon_ = LoadIconW(hglobInstance, MAKEINTRESOURCE(IDI_APP));
-
-   if (!settings_.Init()) {
-      return false;
-   }
 
 #ifdef _DEBUG
    WMLog::GetInstance().SetEnabled(true);

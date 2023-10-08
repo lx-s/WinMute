@@ -72,6 +72,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <unordered_map>
 #include <vector>
 
+namespace fs = std::filesystem;
+
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
@@ -95,6 +97,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "resource.h"
 
+#include "WMi18n.h"
 #include "WMSettings.h"
 #include "WMLog.h"
 #include "TrayIcon.h"
@@ -106,7 +109,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "WinMute.h"
 #include "VersionHelper.h"
 
-namespace fs = std::filesystem;
 
 // Utility
 void PrintWindowsError(const wchar_t *functionName, DWORD lastError = -1);

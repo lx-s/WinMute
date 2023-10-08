@@ -33,35 +33,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
-
-
 namespace fs = std::filesystem;
 
-static std::optional<fs::path> GetTranslationSearchString()
-{
-   wchar_t wmPath[MAX_PATH + 1]{ 0 };
-   if (GetModuleFileNameW(nullptr, wmPath, MAX_PATH) <= 0) {
-      WMLog::GetInstance().WriteWindowsError(L"GetModuleFileNameW", GetLastError());
-      return std::nullopt;
-   }
-   return fs::path{ wmPath } / L"lang" / "*.dll";
-}
-
-static std::vector<std::wstring> GetLanguageList()
-{
-   const auto langPath = GetTranslationSearchString();
-   if (!langPath.has_value()) {
-      return {};
-   }
-   WIN32_FIND_DATAW wfd{ 0 };
-   FindFirstFileExW(
-      langPath->c_str(),
-      FindExInfoBasic,
-      &wfd,
-      FindExSearchNameMatch,
-      nullptr,
-      FIND_FIRST_EX_CASE_SENSITIVE);
-}
+struct LanguageDll {
+   std::wstring langName;
+   std::wstring file;
+};
 
 INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {

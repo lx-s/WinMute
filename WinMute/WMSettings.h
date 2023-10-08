@@ -64,6 +64,7 @@ enum class SettingsKey {
    , QUIETHOURS_END
    , NOTIFICATIONS_ENABLED
    , LOGGING_ENABLED
+   , APP_LANGUAGE
 };
 
 class WMSettings {
@@ -93,8 +94,8 @@ public:
    DWORD QueryValue(SettingsKey key) const;
    bool  SetValue(SettingsKey key, DWORD value);
 
-   bool SetLanguage(const std::wstring &dllName);
-   std::wstring GetString(UINT strId);
+   std::optional<std::wstring> QueryStrValue(SettingsKey key) const;
+   bool SetValue(SettingsKey key, const std::wstring &value);
 
 private:
    HKEY hSettingsKey_;
@@ -102,9 +103,6 @@ private:
    HKEY hBluetoothKey_;
    HKEY hAudioEndpointsKey_;
 
-   HMODULE textModule_;
-
    bool MigrateSettings();
    HKEY OpenAutostartKey(REGSAM samDesired);
-   void UnloadLanguage();
 };
