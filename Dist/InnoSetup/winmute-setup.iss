@@ -1,4 +1,6 @@
+
 #include               ".\winmute-setup-languages.iss"
+
 #define MyAppName      "WinMute"
 #define MyAppExeName   "..\bin\" + MyAppName + ".exe"
 #define MyAppVersion   GetVersionNumbersString(MyAppExeName)
@@ -42,6 +44,7 @@ SetupMutex={#MyAppMutex}Setup
 PrivilegesRequired=lowest
 OutputDir=..\bin\
 OutputBaseFilename=WinMuteSetup
+
 SetupIconFile=..\..\WinMute\icons\app.ico
 ArchitecturesInstallIn64BitMode=x64
 Compression=lzma
