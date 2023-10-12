@@ -1,4 +1,6 @@
-#include               ".\winmute-setup-strings.iss"
+
+#include               ".\winmute-setup-languages.iss"
+
 #define MyAppName      "WinMute"
 #define MyAppExeName   "..\bin\" + MyAppName + ".exe"
 #define MyAppVersion   GetVersionNumbersString(MyAppExeName)
@@ -30,6 +32,7 @@ UninstallDisplayIcon={app}\{#MyAppExeName}.exe
 WizardStyle=modern
 ShowLanguageDialog=yes
 UsePreviousLanguage=no
+LanguageDetectionMethod=uilanguage
 
 DefaultDirName={autopf}\{#MyAppPublisher}\{#MyAppName}
 DisableProgramGroupPage=yes
@@ -41,7 +44,8 @@ SetupMutex={#MyAppMutex}Setup
 PrivilegesRequired=lowest
 OutputDir=..\bin\
 OutputBaseFilename=WinMuteSetup
-;SetupIconFile=..\..\WinMute\icons\app.ico
+
+SetupIconFile=..\..\WinMute\icons\app.ico
 ArchitecturesInstallIn64BitMode=x64
 Compression=lzma
 SolidCompression=yes
