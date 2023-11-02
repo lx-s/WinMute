@@ -59,5 +59,7 @@ private:
    LONG ref_;
    IMMDeviceEnumerator* pEnumerator_;
    WinAudio* notifyParent_;
+
+   std::wstring GetFriendlyDeviceName(LPCWSTR pwstrDeviceId);
 };
 

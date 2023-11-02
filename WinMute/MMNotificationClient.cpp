@@ -35,6 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "WinAudio.h"
 #include "MMNotificationClient.h"
 
+#include <Functiondiscoverykeys_devpkey.h>
+
 class WinAudio;
 
 MMNotificationClient::MMNotificationClient(WinAudio* notifyParent) :
@@ -84,17 +86,21 @@ HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDefaultDeviceChanged(
    return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceAdded(LPCWSTR)
+HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceAdded(LPCWSTR pwstrDeviceId)
 {
-   if (notifyParent_) {
+   if (notifyParent_ && pwstrDeviceId != nullptr) {
+      const auto deviceName = GetFriendlyDeviceName(pwstrDeviceId);
+      WMLog::GetInstance().GetInstance().Write(L"Device \"%S\" added", deviceName.c_str());
       notifyParent_->ShouldReInit();
    }
    return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceRemoved(LPCWSTR)
+HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceRemoved(LPCWSTR pwstrDeviceId)
 {
-   if (notifyParent_) {
+   if (notifyParent_ && pwstrDeviceId != nullptr) {
+      const auto deviceName = GetFriendlyDeviceName(pwstrDeviceId);
+      WMLog::GetInstance().GetInstance().Write(L"Device \"%S\" removed", deviceName.c_str());
       notifyParent_->ShouldReInit();
    }
    return S_OK;
@@ -103,12 +109,29 @@ HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceRemoved(LPCWSTR)
 HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceStateChanged(
    LPCWSTR pwstrDeviceId, DWORD dwNewState)
 {
-   UNREFERENCED_PARAMETER(pwstrDeviceId);
-   if (dwNewState == DEVICE_STATE_UNPLUGGED ||
-       dwNewState == DEVICE_STATE_ACTIVE) {
-      if (notifyParent_) {
-         notifyParent_->ShouldReInit();
-      }
+   bool notify = true;
+   std::wstring what;
+   if (pwstrDeviceId == nullptr) {
+      return S_OK;
+   }
+   if (dwNewState == DEVICE_STATE_NOTPRESENT) {
+      what = L"Not present";
+   } else if (dwNewState == DEVICE_STATE_UNPLUGGED) {
+      what = L"Unplugged";
+   } else if (dwNewState == DEVICE_STATE_ACTIVE) {
+      what = L"Active";
+   } else {
+      notify = false;
+   }
+
+   if (notify && notifyParent_) {
+      // TODO: Check if output device
+      const auto deviceName = GetFriendlyDeviceName(pwstrDeviceId);
+      WMLog::GetInstance().GetInstance().Write(
+         L"Device \"%s\" status changed to %s",
+         deviceName.c_str(),
+         what.c_str());
+      notifyParent_->ShouldReInit();
    } 
    return S_OK;
 }
@@ -119,3 +142,41 @@ HRESULT STDMETHODCALLTYPE MMNotificationClient::OnPropertyValueChanged(
    return S_OK;
 }
 
+std::wstring MMNotificationClient:: GetFriendlyDeviceName(LPCWSTR pwstrDeviceId)
+{
+   HRESULT hr = S_OK;
+   IMMDevice *pDevice = nullptr;
+   IPropertyStore *pProps = nullptr;
+   PROPVARIANT varString;
+
+   PropVariantInit(&varString);
+
+   if (pEnumerator_ == nullptr) {
+      // Get enumerator for audio endpoint devices.
+      hr = CoCreateInstance(
+         __uuidof(MMDeviceEnumerator),
+         nullptr, CLSCTX_INPROC_SERVER,
+         __uuidof(IMMDeviceEnumerator),
+         reinterpret_cast<void **>(&pEnumerator_));
+   }
+   if (hr == S_OK) {
+      hr = pEnumerator_->GetDevice(pwstrDeviceId, &pDevice);
+   }
+   if (hr == S_OK) {
+      hr = pDevice->OpenPropertyStore(STGM_READ, &pProps);
+   }
+   if (hr == S_OK){
+      // Get the endpoint device's friendly-name property.
+      hr = pProps->GetValue(PKEY_Device_FriendlyName, &varString);
+   }
+   std::wstring deviceName = L"Unknown device";
+   if (hr == S_OK) {
+      deviceName = varString.pwszVal;
+   }
+
+   PropVariantClear(&varString);
+
+   SafeRelease(&pProps);
+   SafeRelease(&pDevice);
+   return deviceName;
+}

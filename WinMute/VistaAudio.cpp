@@ -261,6 +261,9 @@ bool VistaAudio::RestoreMuteStatus()
    bool success = true;
    WMLog& log = WMLog::GetInstance();
 
+   if (!CheckForReInit()) {
+      return false;
+   }
    for (auto& e : endpoints_) {
       if (!IsEndpointManaged(e->deviceName)) {
          log.Write(L"Skipping Endpoint %s", e->deviceName);
@@ -318,7 +321,7 @@ bool VistaAudio::IsEndpointManaged(const std::wstring &endpointName) const
       std::end(managedEndpointNames_),
       endpointName) != std::end(managedEndpointNames_);
 
-   // ----------------------------
+   // ------------+----------+-------------+
    //             | In List  | Not in List |
    // ------------+----------+-------------+
    //  Allow List | Mute     |  Not mute   |
