@@ -83,7 +83,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
       return FALSE;
    } else if (GetLastError() == ERROR_ALREADY_EXISTS) {
       ReleaseMutex(hMutex);
-      TaskDialog(nullptr,
+      TaskDialog(
+         nullptr,
          nullptr,
          PROGRAM_NAME,
          L"WinMute is already running",
@@ -101,31 +102,30 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
 
    HeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
 
-   // <Init Common Controls>
    INITCOMMONCONTROLSEX initComCtrl;
    initComCtrl.dwSize = sizeof(INITCOMMONCONTROLSEX);
    initComCtrl.dwICC = ICC_LINK_CLASS;
    if (InitCommonControlsEx(&initComCtrl) == FALSE) {
-      TaskDialog(nullptr,
+      TaskDialog(
+         nullptr,
          nullptr,
          PROGRAM_NAME,
-         L"Failed to register extended window controls.",
-         L"Please try to restart the program.",
+         L"Failed to start WinMute.",
+         L"WinMute encountered a critical error while initializing and must shut down.",
          TDCBF_OK_BUTTON,
          TD_ERROR_ICON,
          nullptr);
+      WMLog::GetInstance().WriteWindowsError(L"InitCommonControlsEx", GetLastError());
       ReleaseMutex(hMutex);
       return FALSE;
-   }
-   // </Init Common Controls>
-
-   // <Init COM>
-   if (CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED) != S_OK) {
-      TaskDialog(nullptr,
+   } else if (CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED) != S_OK) {
+      WMLog::GetInstance().WriteWindowsError(L"CoInitializeEx", GetLastError());
+      TaskDialog(
+         nullptr,
          nullptr,
          PROGRAM_NAME,
-         L"Failed to initialize COM library.",
-         L"Please try to restart the program.",
+         L"Failed to start WinMute.",
+         L"WinMute encountered a critical error while initializing and must shut down.",
          TDCBF_OK_BUTTON,
          TD_ERROR_ICON,
          nullptr);
