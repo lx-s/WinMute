@@ -36,9 +36,11 @@ POSSIBILITY OF SUCH DAMAGE.
 namespace fs = std::filesystem;
 
 struct SettingsGeneralData {
-   WMSettings *settings;
+   WMSettings *settings = nullptr;
    std::vector<LanguageModule> langModules;
 };
+
+extern HINSTANCE hglobInstance;
 
 static void FillLanguageList(HWND hLanguageList, const SettingsGeneralData& dlgData)
 {
@@ -136,6 +138,24 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       int enableLog = Button_GetCheck(hLogging) == BST_CHECKED;
       dlgData->settings->SetValue(SettingsKey::LOGGING_ENABLED, enableLog);
       WMLog::GetInstance().SetEnabled(enableLog);
+
+      HWND hLanguageSelector = GetDlgItem(hDlg, IDC_LANGUAGE);
+      const auto curLangSel = ComboBox_GetCurSel(hDlg);
+      if (curLangSel != CB_ERR) {
+         const wchar_t *selectedLang = reinterpret_cast<const wchar_t *>(ComboBox_GetItemData(hLanguageSelector, curLangSel));
+         if (selectedLang != nullptr) {
+            if (!WMi18n::GetInstance().LoadLanguage(selectedLang)) {
+               TaskDialog(hDlg,
+                          hglobInstance,
+                          PROGRAM_NAME,
+                          L"Failed to load selected language.",
+                          L"Please report this error to the WinMute issue tracker.",
+                          TDCBF_OK_BUTTON,
+                          TD_ERROR_ICON,
+                          nullptr);
+            }
+         }
+      }
 
       if (Button_GetCheck(hAutostart) == BST_CHECKED) {
          dlgData->settings->EnableAutostart(true);
