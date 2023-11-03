@@ -55,7 +55,7 @@ static void FillLanguageList(HWND hLanguageList, const SettingsGeneralData& dlgD
          ComboBox_SetItemData(hLanguageList, itemId, lang.fileName.c_str());
       }
    }
-   ComboBox_SelectString(hLanguageList, 0, WMi18n::GetInstance().GetcurrentLanguageName().c_str());
+   ComboBox_SelectString(hLanguageList, 0, WMi18n::GetInstance().GetCurrentLanguageName().c_str());
 }
 
 INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -145,14 +145,17 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
          const wchar_t *selectedLang = reinterpret_cast<const wchar_t *>(ComboBox_GetItemData(hLanguageSelector, curLangSel));
          if (selectedLang != nullptr) {
             if (!WMi18n::GetInstance().LoadLanguage(selectedLang)) {
-               TaskDialog(hDlg,
-                          hglobInstance,
-                          PROGRAM_NAME,
-                          L"Failed to load selected language.",
-                          L"Please report this error to the WinMute issue tracker.",
-                          TDCBF_OK_BUTTON,
-                          TD_ERROR_ICON,
-                          nullptr);
+               TaskDialog(
+                  hDlg,
+                  hglobInstance,
+                  PROGRAM_NAME,
+                  L"Failed to load selected language.",
+                  L"Please report this error to the WinMute issue tracker.",
+                  TDCBF_OK_BUTTON,
+                  TD_ERROR_ICON,
+                  nullptr);
+            } else {
+               dlgData->settings->SetValue(SettingsKey::APP_LANGUAGE, selectedLang);
             }
          }
       }

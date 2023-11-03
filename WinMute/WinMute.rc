@@ -524,6 +524,16 @@ BEGIN
     END
 END
 
+#endif    // German (Germany) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United Kingdom) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+#pragma code_page(1252)
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -532,10 +542,19 @@ END
 
 STRINGTABLE
 BEGIN
-    IDI_LANG_NAME           "English"
+    IDS_LANG_NAME           "English"
+    IDS_MAIN_ERROR_SETTINGS_INIT_TITLE "Failed to initialize settings"
+    IDS_MAIN_ERROR_SETTINGS_INIT_TEXT 
+                            "Critical error while initializing WinMute"
+    IDS_MAIN_ERROR_WINMUTE_ALREADY_RUNNING_TITLE "WinMute is already running"
+    IDS_MAIN_ERROR_WINMUTE_ALREADY_RUNNING_TEXT 
+                            "Please look for a white speaker icon in your Windows taskbar notification area."
+    IDS_MAIN_ERROR_INIT_WINMUTE_TITLE "Failed to start WinMute."
+    IDS_MAIN_ERROR_INIT_WINMUTE_TEXT 
+                            "WinMute encountered a critical error while initializing and must shut down."
 END
 
-#endif    // German (Germany) resources
+#endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

@@ -57,28 +57,46 @@ static void LoadLanguage(WMSettings &settings, WMi18n &i18n)
    }
 }
 
-int WINAPI wWinMain(_In_ HINSTANCE hInstance,
+static bool InitWindowsComponents()
+{
+   INITCOMMONCONTROLSEX initComCtrl;
+   initComCtrl.dwSize = sizeof(INITCOMMONCONTROLSEX);
+   initComCtrl.dwICC = ICC_LINK_CLASS;
+   if (InitCommonControlsEx(&initComCtrl) == FALSE) {
+      WMLog::GetInstance().WriteWindowsError(L"InitCommonControlsEx", GetLastError());
+      return FALSE;
+   } else if (CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED) != S_OK) {
+      WMLog::GetInstance().WriteWindowsError(L"CoInitializeEx", GetLastError());
+      return FALSE;
+   }
+   return TRUE;
+}
+
+int WINAPI wWinMain(
+   _In_ HINSTANCE hInstance,
    _In_opt_ HINSTANCE,
    _In_ PWSTR,
    _In_ int)
 {
+   hglobInstance = hInstance;
    WMSettings settings;
    WMi18n& i18n = WMi18n::GetInstance();
    if (!settings.Init()) {
-      TaskDialog(nullptr,
-                 nullptr,
-                 PROGRAM_NAME,
-                 L"Failed to initialize settings",
-                 L"Critical error while initializing WinMute",
-                 TDCBF_OK_BUTTON,
-                 TD_ERROR_ICON,
-                 nullptr);
+      TaskDialog(
+         nullptr,
+         nullptr,
+         PROGRAM_NAME,
+         i18n.GetString(IDS_MAIN_ERROR_SETTINGS_INIT_TITLE).c_str(),
+         i18n.GetString(IDS_MAIN_ERROR_SETTINGS_INIT_TEXT).c_str(),
+         TDCBF_OK_BUTTON,
+         TD_ERROR_ICON,
+         nullptr);
       return FALSE;
    }
 
    LoadLanguage(settings, i18n);
 
-   HANDLE hMutex = CreateMutexW(nullptr, TRUE, L"LxSystemsWinMute");
+   HANDLE hMutex = CreateMutexW(nullptr, TRUE, L"LxSystemsWinMuteMtx");
    if (hMutex == nullptr) {
       return FALSE;
    } else if (GetLastError() == ERROR_ALREADY_EXISTS) {
@@ -87,9 +105,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
          nullptr,
          nullptr,
          PROGRAM_NAME,
-         L"WinMute is already running",
-         L"Please look for a white speaker icon in your Windows "
-         L" taskbar notification area.",
+         i18n.GetString(IDS_MAIN_ERROR_WINMUTE_ALREADY_RUNNING_TITLE).c_str(),
+         i18n.GetString(IDS_MAIN_ERROR_WINMUTE_ALREADY_RUNNING_TEXT).c_str(),
          TDCBF_OK_BUTTON,
          TD_INFORMATION_ICON,
          nullptr);
@@ -98,34 +115,16 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
 
    SetWorkingDirectory();
 
-   hglobInstance = hInstance;
 
    HeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
 
-   INITCOMMONCONTROLSEX initComCtrl;
-   initComCtrl.dwSize = sizeof(INITCOMMONCONTROLSEX);
-   initComCtrl.dwICC = ICC_LINK_CLASS;
-   if (InitCommonControlsEx(&initComCtrl) == FALSE) {
+   if (!InitWindowsComponents()) {
       TaskDialog(
          nullptr,
          nullptr,
          PROGRAM_NAME,
-         L"Failed to start WinMute.",
-         L"WinMute encountered a critical error while initializing and must shut down.",
-         TDCBF_OK_BUTTON,
-         TD_ERROR_ICON,
-         nullptr);
-      WMLog::GetInstance().WriteWindowsError(L"InitCommonControlsEx", GetLastError());
-      ReleaseMutex(hMutex);
-      return FALSE;
-   } else if (CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED) != S_OK) {
-      WMLog::GetInstance().WriteWindowsError(L"CoInitializeEx", GetLastError());
-      TaskDialog(
-         nullptr,
-         nullptr,
-         PROGRAM_NAME,
-         L"Failed to start WinMute.",
-         L"WinMute encountered a critical error while initializing and must shut down.",
+         i18n.GetString(IDS_MAIN_ERROR_INIT_WINMUTE_TITLE).c_str(),
+         i18n.GetString(IDS_MAIN_ERROR_INIT_WINMUTE_TEXT).c_str(),
          TDCBF_OK_BUTTON,
          TD_ERROR_ICON,
          nullptr);

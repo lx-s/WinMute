@@ -4,10 +4,16 @@
 //
 #define IDI_APP                         5
 #define IDD_ABOUT                       9
-#define IDI_LANG_NAME                   101
+#define IDS_LANG_NAME                   101
+#define IDS_MAIN_ERROR_SETTINGS_INIT_TITLE 102
+#define IDS_MAIN_ERROR_SETTINGS_INIT_TEXT 103
 #define IDI_TRAY_BRIGHT                 104
+#define IDS_MAIN_ERROR_WINMUTE_ALREADY_RUNNING_TITLE 104
 #define IDI_TRAY_DARK                   105
+#define IDS_MAIN_ERROR_WINMUTE_ALREADY_RUNNING_TEXT 105
 #define IDR_TRAYMENU                    106
+#define IDS_MAIN_ERROR_INIT_WINMUTE_TITLE 106
+#define IDS_MAIN_ERROR_INIT_WINMUTE_TEXT 107
 #define IDD_SETTINGS                    109
 #define IDD_SETTINGS_GENERAL            114
 #define IDD_SETTINGS_QUIETHOURS         116

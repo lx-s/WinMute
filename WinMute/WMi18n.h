@@ -49,7 +49,7 @@ public:
 
    std::optional<fs::path> GetLanguageModulesPath() const;
    std::wstring GetCurrentLanguageModule() const;
-   std::wstring GetcurrentLanguageName() const;
+   std::wstring GetCurrentLanguageName() const;
 
    std::wstring GetString(UINT id) const;
 

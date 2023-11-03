@@ -11,6 +11,7 @@ Debug/
 *.exp
 *.pdb
 *.lib
+*.ods#
 
 *.dll
 *.exe

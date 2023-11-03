@@ -88,7 +88,7 @@ std::vector<LanguageModule> WMi18n::GetAvailableLanguages() const
                continue;
             }
             wchar_t langName[255 + 1];
-            if (LoadStringW(hLangFile, IDI_LANG_NAME, langName, ARRAY_SIZE(langName)) <= 0) {
+            if (LoadStringW(hLangFile, IDS_LANG_NAME, langName, ARRAY_SIZE(langName)) <= 0) {
                WMLog &log = WMLog::GetInstance();
                log.WriteWindowsError(L"LoadStringW", GetLastError());
                log.Write(L"Failed to load language %ls", wfd.cFileName);
@@ -108,9 +108,9 @@ std::wstring WMi18n::GetCurrentLanguageModule() const
    return curModuleName_;
 }
 
-std::wstring WMi18n::GetcurrentLanguageName() const
+std::wstring WMi18n::GetCurrentLanguageName() const
 {
-   return GetString(IDI_LANG_NAME);
+   return GetString(IDS_LANG_NAME);
 }
 
 // https://learn.microsoft.com/en-us/windows/win32/intl/creating-a-multilingual-user-interface-application
@@ -125,16 +125,16 @@ bool WMi18n::LoadLanguage(const std::wstring &dllName)
       if (!langModPath.has_value()) {
          return false;
       }
-      fs::path pathDllName{ dllName };
+      const fs::path pathDllName{ dllName };
       *langModPath /= pathDllName.filename(); // Sanitize
       if (!fs::exists(*langModPath)) {
-         // TODO: Error
+         WMLog::GetInstance().Write(L"Language module \"%s\" does not exist", langModPath->c_str());
       } else {
          auto newLangModule = LoadLibraryExW(
             langModPath->c_str(), nullptr,
             LOAD_LIBRARY_AS_IMAGE_RESOURCE | LOAD_LIBRARY_AS_DATAFILE);
          if (newLangModule == nullptr) {
-            // TODO: Error
+            WMLog::GetInstance().WriteWindowsError(L"LoadLibraryW", GetLastError());
          } else {
             UnloadLanguage();
             langModule_ = newLangModule;
