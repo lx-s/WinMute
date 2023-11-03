@@ -86,8 +86,8 @@ int WINAPI wWinMain(
          nullptr,
          nullptr,
          PROGRAM_NAME,
-         i18n.GetString(IDS_MAIN_ERROR_SETTINGS_INIT_TITLE).c_str(),
-         i18n.GetString(IDS_MAIN_ERROR_SETTINGS_INIT_TEXT).c_str(),
+         i18n.GetTextW(IDS_MAIN_ERROR_SETTINGS_INIT_TITLE).c_str(),
+         i18n.GetTextW(IDS_MAIN_ERROR_SETTINGS_INIT_TEXT).c_str(),
          TDCBF_OK_BUTTON,
          TD_ERROR_ICON,
          nullptr);
@@ -96,7 +96,7 @@ int WINAPI wWinMain(
 
    LoadLanguage(settings, i18n);
 
-   HANDLE hMutex = CreateMutexW(nullptr, TRUE, L"LxSystemsWinMuteMtx");
+   HANDLE hMutex = CreateMutexW(nullptr, TRUE, L"LxSystemsWinMuteRunOnce");
    if (hMutex == nullptr) {
       return FALSE;
    } else if (GetLastError() == ERROR_ALREADY_EXISTS) {
@@ -105,8 +105,8 @@ int WINAPI wWinMain(
          nullptr,
          nullptr,
          PROGRAM_NAME,
-         i18n.GetString(IDS_MAIN_ERROR_WINMUTE_ALREADY_RUNNING_TITLE).c_str(),
-         i18n.GetString(IDS_MAIN_ERROR_WINMUTE_ALREADY_RUNNING_TEXT).c_str(),
+         i18n.GetTextW(IDS_MAIN_ERROR_WINMUTE_ALREADY_RUNNING_TITLE).c_str(),
+         i18n.GetTextW(IDS_MAIN_ERROR_WINMUTE_ALREADY_RUNNING_TEXT).c_str(),
          TDCBF_OK_BUTTON,
          TD_INFORMATION_ICON,
          nullptr);
@@ -115,7 +115,6 @@ int WINAPI wWinMain(
 
    SetWorkingDirectory();
 
-
    HeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
 
    if (!InitWindowsComponents()) {
@@ -123,8 +122,8 @@ int WINAPI wWinMain(
          nullptr,
          nullptr,
          PROGRAM_NAME,
-         i18n.GetString(IDS_MAIN_ERROR_INIT_WINMUTE_TITLE).c_str(),
-         i18n.GetString(IDS_MAIN_ERROR_INIT_WINMUTE_TEXT).c_str(),
+         i18n.GetTextW(IDS_MAIN_ERROR_INIT_WINMUTE_TITLE).c_str(),
+         i18n.GetTextW(IDS_MAIN_ERROR_INIT_WINMUTE_TEXT).c_str(),
          TDCBF_OK_BUTTON,
          TD_ERROR_ICON,
          nullptr);

@@ -30,6 +30,9 @@
 #define IDD_MANAGE_ENDPOINTS            135
 #define IDD_DIALOG2                     137
 #define IDD_MANAGE_ENDPOINTS_ADD        137
+#define IDS_WM_ERROR_WINDOWS_SUPPORT_TITLE 201
+#define IDS_STRING202                   202
+#define IDS_WM_ERROR_WINDOWS_SUPPORT_TEXT 202
 #define IDC_LINK_HOMEPAGE               1001
 #define IDC_LINK_SUPPORT                1002
 #define IDC_LINK_PROJECT                1002

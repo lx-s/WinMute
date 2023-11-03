@@ -51,7 +51,8 @@ public:
    std::wstring GetCurrentLanguageModule() const;
    std::wstring GetCurrentLanguageName() const;
 
-   std::wstring GetString(UINT id) const;
+   std::wstring GetTextW(UINT id) const;
+   std::string GetTextA(UINT id) const;
 
 private:
    WMi18n() noexcept;

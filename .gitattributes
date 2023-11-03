@@ -19,7 +19,7 @@
 *.vcxproj text eol=crlf
 *.vcxproj.filters text eol=crlf
 *.vcxproj.users text eol=crlf
-*.rc text eol=crlf
+*.rc text eol=auto
 *.props eol=crlf
 resource.h text eol=crlf
 

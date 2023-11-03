@@ -110,7 +110,7 @@ std::wstring WMi18n::GetCurrentLanguageModule() const
 
 std::wstring WMi18n::GetCurrentLanguageName() const
 {
-   return GetString(IDS_LANG_NAME);
+   return GetTextW(IDS_LANG_NAME);
 }
 
 // https://learn.microsoft.com/en-us/windows/win32/intl/creating-a-multilingual-user-interface-application
@@ -155,7 +155,7 @@ void WMi18n::UnloadLanguage() noexcept
    }
 }
 
-std::wstring WMi18n::GetString(UINT strId) const
+std::wstring WMi18n::GetTextW(UINT strId) const
 {
    HMODULE hMod = (langModule_ == nullptr) ? hglobInstance : langModule_;
    constexpr size_t strBufferSize = 2048 + 1;
@@ -175,6 +175,30 @@ std::wstring WMi18n::GetString(UINT strId) const
    } else {
       WMLog::GetInstance().WriteWindowsError(L"LoadStringW", GetLastError());
       std::wstring err = L"String resource " + std::to_wstring(strId) + L" not found";
+      return err;
+   }
+}
+
+std::string WMi18n::GetTextA(UINT strId) const
+{
+   HMODULE hMod = (langModule_ == nullptr) ? hglobInstance : langModule_;
+   constexpr size_t strBufferSize = 2048 + 1;
+   char strBuffer[strBufferSize]{ 0 };
+   const int strLength = LoadStringA(hMod, strId, strBuffer, 0);
+   if (strLength == 0) {
+      return "";
+   } else if (strLength < strBufferSize) {
+      LoadStringA(hMod, strId, strBuffer, ARRAY_SIZE(strBuffer));
+      return std::string(strBuffer, strBuffer + strLength);
+   } else if (strLength > 0) {
+      char *largeBuffer = new char[strLength + 1];
+      LoadStringA(hMod, strId, largeBuffer, strLength + 1);
+      std::string ret(strBuffer, largeBuffer + strLength);
+      delete[] largeBuffer;
+      return ret;
+   } else {
+      WMLog::GetInstance().WriteWindowsError(L"LoadStringA", GetLastError());
+      std::string err = "String resource " + std::to_string(strId) + " not found";
       return err;
    }
 }

@@ -67,6 +67,7 @@ private:
    TrayIcon trayIcon_;
    WifiDetector wifiDetector_;
    WMSettings& settings_;
+   WMi18n &i18n;
    MuteControl muteCtrl_;
    QuietHoursTimer quietHours_;
    BluetoothDetector btDetector_;

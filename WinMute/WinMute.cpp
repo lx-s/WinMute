@@ -148,7 +148,8 @@ WinMute::WinMute(WMSettings& settings) :
    hTrayMenu_(nullptr),
    hAppIcon_(nullptr),
    hTrayIcon_(nullptr),
-   settings_(settings)
+   settings_(settings),
+   i18n(WMi18n::GetInstance())
 {
 }
 
@@ -191,10 +192,10 @@ bool WinMute::InitAudio()
       // Nothing to do
    } else if (IsWindowsXPOrGreater()) {
       TaskDialog(
-         nullptr, nullptr, PROGRAM_NAME,
-         L"Only Windows Vista and newer is supported",
-         L"For Windows XP support, please download WinMute "
-         L" version 1.4.2 or older",
+         nullptr, nullptr,
+         PROGRAM_NAME,
+         i18n.GetTextW(IDS_WM_ERROR_WINDOWS_SUPPORT_TITLE).c_str(),
+         i18n.GetTextW(IDS_WM_ERROR_WINDOWS_SUPPORT_TEXT).c_str(),
          TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
       return false;
    }
