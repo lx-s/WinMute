@@ -2,7 +2,13 @@
 // Microsoft Visual C++ generated include file.
 // Used by wm_de.rc
 //
-#define IDI_LANG_NAME                   101
+#define IDS_LANG_NAME                   101
+#define IDS_MAIN_ERROR_SETTINGS_INIT_TITLE 102
+#define IDS_MAIN_ERROR_SETTINGS_INIT_TEXT 103
+#define IDS_MAIN_ERROR_WINMUTE_ALREADY_RUNNING_TITLE 104
+#define IDS_MAIN_ERROR_WINMUTE_ALREADY_RUNNING_TEXT 105
+#define IDS_MAIN_ERROR_INIT_WINMUTE_TITLE 106
+#define IDS_MAIN_ERROR_INIT_WINMUTE_TEXT 107
 
 // Next default values for new objects
 // 

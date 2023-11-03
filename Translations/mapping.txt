@@ -1,0 +1,4 @@
+ä = \x00E4
+ß = \x00DF
+
+https://www.compart.com/unicode/U+00E4
