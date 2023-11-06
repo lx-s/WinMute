@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "WinMute.h"
 #include "WinAudio.h"
 
-
 extern HINSTANCE hglobInstance;
 extern INT_PTR CALLBACK AboutDlgProc(HWND, UINT, WPARAM, LPARAM);
 extern INT_PTR CALLBACK SettingsDlgProc(HWND, UINT, WPARAM, LPARAM);
