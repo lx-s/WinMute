@@ -81,4 +81,14 @@ private:
    void Unload() noexcept;
 
    void ToggleMenuCheck(UINT item, bool* setting) noexcept;
+
+   // Windows Callback
+   LRESULT OnCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+   LRESULT OnTrayIcon(HWND hWnd, WPARAM wParam, LPARAM lParam);
+   LRESULT OnSettingChange(HWND hWnd, WPARAM wParam, LPARAM lParam);
+   LRESULT OnPowerBroadcast(HWND hWnd, WPARAM wParam, LPARAM lParam);
+   LRESULT OnWifiStatusChange(HWND hWnd, WPARAM wParam, LPARAM lParam);
+   
+   LRESULT OnDeviceChange(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+   LRESULT OnQuietHours(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 };

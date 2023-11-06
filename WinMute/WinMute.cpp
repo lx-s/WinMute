@@ -387,6 +387,228 @@ void WinMute::ToggleMenuCheck(UINT item, bool* setting) noexcept
    }
 }
 
+LRESULT WinMute::OnCommand(HWND hWnd, WPARAM wParam, LPARAM)
+{
+   switch (LOWORD(wParam)) {
+   case ID_TRAYMENU_INFO:
+   {
+      static bool dialogOpen = false;
+      if (!dialogOpen) {
+         dialogOpen = true;
+         DialogBox(
+            hglobInstance,
+            MAKEINTRESOURCE(IDD_ABOUT),
+            hWnd_,
+            AboutDlgProc);
+         dialogOpen = false;
+      }
+      break;
+   }
+   case ID_TRAYMENU_EXIT:
+      SendMessage(hWnd, WM_CLOSE, 0, 0);
+      break;
+   case ID_TRAYMENU_SETTINGS: {
+      static bool dialogOpen = false;
+      if (!dialogOpen) {
+         dialogOpen = true;
+         if (DialogBoxParamW(
+            hglobInstance,
+            MAKEINTRESOURCE(IDD_SETTINGS),
+            hWnd_,
+            SettingsDlgProc,
+            reinterpret_cast<LPARAM>(&settings_)) == 0) {
+            LoadSettings();
+            InitTrayMenu();
+            quietHours_.Reset(settings_);
+         }
+         dialogOpen = false;
+      }
+      break;
+   }
+   case ID_TRAYMENU_MUTE: {
+      bool state = false;
+      ToggleMenuCheck(ID_TRAYMENU_MUTE, &state);
+      muteCtrl_.SetMute(state);
+      break;
+   }
+   case ID_TRAYMENU_MUTEONLOCK: {
+      bool checked = false;
+      ToggleMenuCheck(ID_TRAYMENU_MUTEONLOCK, &checked);
+      muteCtrl_.SetMuteOnWorkstationLock(checked);
+      settings_.SetValue(SettingsKey::MUTE_ON_LOCK, checked);
+      break;
+   }
+   case ID_TRAYMENU_RESTOREAUDIO: {
+      bool checked = false;
+      ToggleMenuCheck(ID_TRAYMENU_RESTOREAUDIO, &checked);
+      muteCtrl_.SetRestoreVolume(checked);
+      settings_.SetValue(SettingsKey::RESTORE_AUDIO, checked);
+      break;
+   }
+   case ID_TRAYMENU_MUTEONSCREENSUSPEND: {
+      bool checked = false;
+      ToggleMenuCheck(ID_TRAYMENU_SCREENSUSPEND, &checked);
+      muteCtrl_.SetMuteOnDisplayStandby(checked);
+      settings_.SetValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY, checked);
+      break;
+   }
+   case ID_TRAYMENU_MUTEONSHUTDOWN: {
+      bool checked = false;
+      ToggleMenuCheck(ID_TRAYMENU_MUTEONSHUTDOWN, &checked);
+      muteCtrl_.SetMuteOnShutdown(checked);
+      settings_.SetValue(SettingsKey::MUTE_ON_SHUTDOWN, checked);
+      break;
+   }
+   case ID_TRAYMENU_MUTEONSUSPEND: {
+      bool checked = false;
+      ToggleMenuCheck(ID_TRAYMENU_MUTEONSUSPEND, &checked);
+      muteCtrl_.SetMuteOnSuspend(checked);
+      settings_.SetValue(SettingsKey::MUTE_ON_SUSPEND, checked);
+      break;
+   }
+   case ID_TRAYMENU_MUTEONLOGOUT: {
+      bool checked = false;
+      ToggleMenuCheck(ID_TRAYMENU_MUTEONBLUETOOTH, &checked);
+      muteCtrl_.SetMuteOnLogout(checked);
+      settings_.SetValue(SettingsKey::MUTE_ON_LOGOUT, checked);
+      break;
+   }
+   default:
+      break;
+   }
+   return 0;
+}
+
+LRESULT WinMute::OnTrayIcon(HWND hWnd, WPARAM, LPARAM lParam)
+{
+   switch (lParam) {
+   case WM_LBUTTONUP:
+   case WM_RBUTTONUP:
+   {
+      POINT p = { 0 };
+      GetCursorPos(&p);
+      SetForegroundWindow(hWnd);
+      TrackPopupMenuEx(
+         GetSubMenu(hTrayMenu_, 0),
+         TPM_NONOTIFY | TPM_TOPALIGN | TPM_LEFTALIGN,
+         p.x, p.y, hWnd_, nullptr);
+      break;
+   }
+   default:
+      break;
+   }
+   return TRUE;
+}
+
+LRESULT WinMute::OnSettingChange(HWND, WPARAM, LPARAM lParam)
+{
+   const wchar_t *changeParam = reinterpret_cast<const wchar_t *>(lParam);
+   if (changeParam != nullptr && wcscmp(changeParam, L"ImmersiveColorSet") == 0) {
+      bool isDarkMode = true;
+      IsDarkMode(isDarkMode);
+      hTrayIcon_ = LoadIconW(
+         hglobInstance,
+         isDarkMode ? MAKEINTRESOURCE(IDI_TRAY_DARK)
+         : MAKEINTRESOURCE(IDI_TRAY_BRIGHT));
+      if (hTrayIcon_ == nullptr) {
+         PrintWindowsError(L"LoadIcon");
+      } else {
+         trayIcon_.ChangeIcon(hTrayIcon_);
+      }
+   }
+   return 0;
+}
+
+LRESULT WinMute::OnPowerBroadcast(HWND, WPARAM wParam, LPARAM lParam)
+{
+   if (wParam == PBT_APMSUSPEND) {
+      muteCtrl_.NotifySuspend(true);
+   } else if (wParam == PBT_POWERSETTINGCHANGE) {
+      const PPOWERBROADCAST_SETTING bs =
+         reinterpret_cast<PPOWERBROADCAST_SETTING>(lParam);
+      if (IsEqualGUID(bs->PowerSetting, GUID_CONSOLE_DISPLAY_STATE)) {
+         const DWORD state = bs->Data[0];
+         if (state == 0x0) { // Display off
+            muteCtrl_.NotifyDisplayStandby(true);
+         } else if (state == 0x1) { // Display on
+            muteCtrl_.NotifyDisplayStandby(false);
+         } else if (state == 0x2) { // Display dimmed
+         }
+      }
+   }
+   return TRUE;
+}
+
+LRESULT WinMute::OnQuietHours(HWND, UINT msg, WPARAM, LPARAM)
+{
+   if (msg == WM_WINMUTE_QUIETHOURS_START) {
+      muteCtrl_.NotifyQuietHours(true);
+      if (settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS)) {
+         trayIcon_.ShowPopup(
+            i18n.GetTextW(IDS_POPUP_QUIET_HOURS_STARTED_TITLE),
+            i18n.GetTextW(IDS_POPUP_QUIET_HOURS_STARTED_TEXT));
+      }
+      quietHours_.SetEnd();
+      return 0;
+   } else if (msg == WM_WINMUTE_QUIETHOURS_END) {
+      muteCtrl_.NotifyQuietHours(false);
+      if (settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS)) {
+         trayIcon_.ShowPopup(
+            i18n.GetTextW(IDS_POPUP_QUIET_HOURS_ENDED_TITLE),
+            i18n.GetTextW(IDS_POPUP_QUIET_HOURS_ENDED_TEXT));
+      }
+      if (settings_.QueryValue(SettingsKey::QUIETHOURS_FORCEUNMUTE)) {
+         muteCtrl_.SetMute(false);
+      }
+      quietHours_.SetStart();
+   }
+   return 0;
+}
+
+LRESULT WinMute::OnDeviceChange(HWND, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+   if (muteConfig_.muteOnBluetooth) {
+      const auto btStatus = btDetector_.GetBluetoothStatus(msg, wParam, lParam);
+      if (btStatus == BluetoothDetector::BluetoothStatus::Connected) {
+         muteCtrl_.NotifyBluetoothConnected(true);
+      } else if (btStatus == BluetoothDetector::BluetoothStatus::Disconnected) {
+         muteCtrl_.NotifyBluetoothConnected(false);
+      }
+   }
+   return TRUE;
+}
+
+LRESULT WinMute::OnWifiStatusChange(HWND, WPARAM wParam, LPARAM lParam)
+{
+   if (!muteConfig_.muteOnWlan) {
+      return 0;
+   }
+   if (wParam != 1) { // Not Connected
+      return 0;
+   }
+
+   if (settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED)) {
+      std::wstring popupMsg;
+      wchar_t *wifiName = reinterpret_cast<wchar_t *>(lParam);
+      if (settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST)) {
+         popupMsg = std::vformat(
+            i18n.GetTextW(IDS_POPUP_WLAN_NOT_ON_MUTE_LIST_TEXT),
+            std::make_wformat_args(wifiName));
+      } else {
+         popupMsg = std::vformat(
+            i18n.GetTextW(IDS_POPUP_WLAN_IS_ON_MUTE_LIST_TEXT),
+            std::make_wformat_args(wifiName));
+      }
+      trayIcon_.ShowPopup(
+         i18n.GetTextW(IDS_POPUP_WORKSTATION_MUTED_TITLE),
+         popupMsg);
+      delete[] wifiName;
+   }
+   muteCtrl_.SetMute(true);
+
+   return 0;
+}
+
 LRESULT CALLBACK WinMute::WindowProc(
    HWND hWnd,
    UINT msg,
@@ -395,122 +617,16 @@ LRESULT CALLBACK WinMute::WindowProc(
 {
    static UINT uTaskbarRestart = 0;
    switch (msg) {
-   case WM_CREATE: {
+   case WM_CREATE:
       uTaskbarRestart = RegisterWindowMessageW(L"TaskbarCreated");
       return TRUE;
-   }
-   case WM_COMMAND: {
-      switch (LOWORD(wParam)) {
-      case ID_TRAYMENU_INFO: {
-         static bool dialogOpen = false;
-         if (!dialogOpen) {
-            dialogOpen = true;
-            DialogBox(
-               hglobInstance,
-               MAKEINTRESOURCE(IDD_ABOUT),
-               hWnd_,
-               AboutDlgProc);
-            dialogOpen = false;
-         }
-         break;
-      }
-      case ID_TRAYMENU_EXIT:
-         SendMessage(hWnd, WM_CLOSE, 0, 0);
-         break;
-      case ID_TRAYMENU_SETTINGS: {
-         static bool dialogOpen = false;
-         if (!dialogOpen) {
-            dialogOpen = true;
-            if (DialogBoxParamW(
-                  hglobInstance,
-                  MAKEINTRESOURCE(IDD_SETTINGS),
-                  hWnd_,
-                  SettingsDlgProc,
-                  reinterpret_cast<LPARAM>(&settings_)) == 0) {
-               LoadSettings();
-               InitTrayMenu();
-               quietHours_.Reset(settings_);
-            }
-            dialogOpen = false;
-         }
-         break;
-      }
-      case ID_TRAYMENU_MUTE: {
-         bool state = false;
-         ToggleMenuCheck(ID_TRAYMENU_MUTE, &state);
-         muteCtrl_.SetMute(state);
-         break;
-      }
-      case ID_TRAYMENU_MUTEONLOCK: {
-         bool checked = false;
-         ToggleMenuCheck(ID_TRAYMENU_MUTEONLOCK, &checked);
-         muteCtrl_.SetMuteOnWorkstationLock(checked);
-         settings_.SetValue(SettingsKey::MUTE_ON_LOCK, checked);
-         break;
-      }
-      case ID_TRAYMENU_RESTOREAUDIO:{
-         bool checked = false;
-         ToggleMenuCheck(ID_TRAYMENU_RESTOREAUDIO, &checked);
-         muteCtrl_.SetRestoreVolume(checked);
-         settings_.SetValue(SettingsKey::RESTORE_AUDIO, checked);
-         break;
-      }
-      case ID_TRAYMENU_MUTEONSCREENSUSPEND: {
-         bool checked = false;
-         ToggleMenuCheck(ID_TRAYMENU_SCREENSUSPEND, &checked);
-         muteCtrl_.SetMuteOnDisplayStandby(checked);
-         settings_.SetValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY, checked);
-         break;
-      }
-      case ID_TRAYMENU_MUTEONSHUTDOWN: {
-         bool checked = false;
-         ToggleMenuCheck(ID_TRAYMENU_MUTEONSHUTDOWN, &checked);
-         muteCtrl_.SetMuteOnShutdown(checked);
-         settings_.SetValue(SettingsKey::MUTE_ON_SHUTDOWN, checked);
-         break;
-      }
-      case ID_TRAYMENU_MUTEONSUSPEND: {
-         bool checked = false;
-         ToggleMenuCheck(ID_TRAYMENU_MUTEONSUSPEND, &checked);
-         muteCtrl_.SetMuteOnSuspend(checked);
-         settings_.SetValue(SettingsKey::MUTE_ON_SUSPEND, checked);
-         break;
-      }
-      case ID_TRAYMENU_MUTEONLOGOUT: {
-         bool checked = false;
-         ToggleMenuCheck(ID_TRAYMENU_MUTEONBLUETOOTH, &checked);
-         muteCtrl_.SetMuteOnLogout(checked);
-         settings_.SetValue(SettingsKey::MUTE_ON_LOGOUT, checked);
-         break;
-      }
-      default:
-         break;
-      }
-      return 0;
-   }
+   case WM_COMMAND:
+      return OnCommand(hWnd, wParam, lParam);
    case WM_TRAYICON:
-   {
-      switch (lParam) {
-      case WM_LBUTTONUP:
-      case WM_RBUTTONUP: {
-         POINT p = { 0 };
-         GetCursorPos(&p);
-         SetForegroundWindow(hWnd);
-         TrackPopupMenuEx(
-            GetSubMenu(hTrayMenu_, 0),
-            TPM_NONOTIFY | TPM_TOPALIGN | TPM_LEFTALIGN,
-            p.x, p.y, hWnd_, nullptr);
-         break;
-      }
-      default:
-         break;
-      }
-      return TRUE;
-   }
-   case WM_CLOSE: {
+      return OnTrayIcon(hWnd, wParam, lParam);
+   case WM_CLOSE:
       Close();
       return 0;
-   }
    case WM_WTSSESSION_CHANGE: {
       if (wParam == WTS_SESSION_LOCK) {
          muteCtrl_.NotifyWorkstationLock(true);
@@ -520,22 +636,7 @@ LRESULT CALLBACK WinMute::WindowProc(
       return 0;
    }
    case WM_POWERBROADCAST:
-      if (wParam == PBT_APMSUSPEND) {
-         muteCtrl_.NotifySuspend(true);
-      } else if (wParam == PBT_POWERSETTINGCHANGE) {
-         const PPOWERBROADCAST_SETTING bs =
-            reinterpret_cast<PPOWERBROADCAST_SETTING>(lParam);
-         if (IsEqualGUID(bs->PowerSetting, GUID_CONSOLE_DISPLAY_STATE)) {
-            const DWORD state = bs->Data[0];
-            if (state == 0x0) { // Display off
-               muteCtrl_.NotifyDisplayStandby(true);
-            } else if (state == 0x1) { // Display on
-               muteCtrl_.NotifyDisplayStandby(false);
-            } else if (state == 0x2) { // Display dimmed
-            }
-         }
-      }
-      return TRUE;
+      return OnPowerBroadcast(hWnd, wParam, lParam);
    case WM_QUERYENDSESSION:
       return TRUE;
    case WM_ENDSESSION:
@@ -547,79 +648,15 @@ LRESULT CALLBACK WinMute::WindowProc(
          }
       }
       break;
-   case WM_WINMUTE_QUIETHOURS_START:
-      muteCtrl_.NotifyQuietHours(true);
-      if (settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS)) {
-         trayIcon_.ShowPopup(
-            i18n.GetTextW(IDS_POPUP_QUIET_HOURS_STARTED_TITLE),
-            i18n.GetTextW(IDS_POPUP_QUIET_HOURS_STARTED_TEXT));
-      }
-      quietHours_.SetEnd();
-      return 0;
+   case WM_WINMUTE_QUIETHOURS_START: // fall through
    case WM_WINMUTE_QUIETHOURS_END:
-      muteCtrl_.NotifyQuietHours(false);
-      if (settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS)) {
-         trayIcon_.ShowPopup(
-            i18n.GetTextW(IDS_POPUP_QUIET_HOURS_ENDED_TITLE),
-            i18n.GetTextW(IDS_POPUP_QUIET_HOURS_ENDED_TEXT));
-      }
-      if (settings_.QueryValue(SettingsKey::QUIETHOURS_FORCEUNMUTE)) {
-         muteCtrl_.SetMute(false);
-      }
-      quietHours_.SetStart();
-      return 0;
-   case WM_DEVICECHANGE: {
-      if (muteConfig_.muteOnBluetooth) {
-         const auto btStatus = btDetector_.GetBluetoothStatus(msg, wParam, lParam);
-         if (btStatus == BluetoothDetector::BluetoothStatus::Connected) {
-            muteCtrl_.NotifyBluetoothConnected(true);
-         } else if (btStatus == BluetoothDetector::BluetoothStatus::Disconnected) {
-            muteCtrl_.NotifyBluetoothConnected(false);
-         }
-      }
-      return TRUE;
-   }
+      return OnQuietHours(hWnd, msg, wParam, lParam);
+   case WM_DEVICECHANGE:
+      return OnDeviceChange(hWnd, msg, wParam, lParam);
    case WM_WIFISTATUSCHANGED:
-      if (muteConfig_.muteOnWlan) {
-         if (wParam == 1) { // Connected
-            if (settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED)) {
-               std::wstring popupMsg;
-               wchar_t *wifiName = reinterpret_cast<wchar_t*>(lParam);
-               if (settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST)) {
-                  popupMsg = std::vformat(
-                     i18n.GetTextW(IDS_POPUP_WLAN_NOT_ON_MUTE_LIST_TEXT),
-                     std::make_wformat_args(wifiName));
-               }  else {
-                  popupMsg = std::vformat(
-                     i18n.GetTextW(IDS_POPUP_WLAN_IS_ON_MUTE_LIST_TEXT),
-                     std::make_wformat_args(wifiName));
-               }
-               trayIcon_.ShowPopup(
-                  i18n.GetTextW(IDS_POPUP_WORKSTATION_MUTED_TITLE),
-                  popupMsg);
-               delete [] wifiName;
-            }
-            muteCtrl_.SetMute(true);
-         }
-      }
-      return 0;
-   case WM_SETTINGCHANGE: {
-      const wchar_t *changeParam = reinterpret_cast<const wchar_t *>(lParam);
-      if (changeParam != nullptr && wcscmp(changeParam, L"ImmersiveColorSet") == 0) {
-         bool isDarkMode = true;
-         IsDarkMode(isDarkMode);
-         hTrayIcon_ = LoadIconW(
-            hglobInstance,
-            isDarkMode ? MAKEINTRESOURCE(IDI_TRAY_DARK)
-            : MAKEINTRESOURCE(IDI_TRAY_BRIGHT));
-         if (hTrayIcon_ == nullptr) {
-            PrintWindowsError(L"LoadIcon");
-         } else {
-            trayIcon_.ChangeIcon(hTrayIcon_);
-         }
-      }
-      return 0;
-   }
+      return OnWifiStatusChange(hWnd, wParam, lParam);
+   case WM_SETTINGCHANGE:
+      return OnSettingChange(hWnd, wParam, lParam);
    default:
       if (msg == uTaskbarRestart) { // Restore trayicon if explorer.exe crashes
          trayIcon_.Hide();
