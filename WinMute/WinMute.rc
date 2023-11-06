@@ -455,13 +455,13 @@ BEGIN
     BEGIN
         MENUITEM "About",                       ID_TRAYMENU_INFO
         MENUITEM SEPARATOR
-        MENUITEM "Mute when...",                40003, INACTIVE
+        MENUITEM "Mute when...",                ID_TRAYMENU_LABEL_MUTEWHEN, INACTIVE
         MENUITEM "... Workstation is locked",   ID_TRAYMENU_MUTEONLOCK, CHECKED
         MENUITEM "... Screen turns off",        ID_TRAYMENU_MUTEONSCREENSUSPEND, CHECKED
         MENUITEM SEPARATOR
         MENUITEM "Restore volume afterwards",   ID_TRAYMENU_RESTOREAUDIO, CHECKED
         MENUITEM SEPARATOR
-        MENUITEM "Mute on (no volume restore)", ID_TRAYMENU_AFTERWARDS, INACTIVE
+        MENUITEM "Mute on (no volume restore)", ID_TRAYMENU_LABEL_MUTEON_NO_RESTORE, INACTIVE
         MENUITEM "... Shutdown",                ID_TRAYMENU_MUTEONSHUTDOWN
         MENUITEM "... Sleep",                   ID_TRAYMENU_MUTEONSUSPEND
         MENUITEM "... Logout",                  ID_TRAYMENU_MUTEONLOGOUT
@@ -598,6 +598,32 @@ BEGIN
                             "All endpoints have been restored to their previous configuration"
     IDS_POPUP_MUTING_WORKSTATION_TITLE "Muting workstation after delay"
     IDS_POPUP_MUTING_WORKSTATION_TEXT "All endpoints have been muted"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_POPUP_QUIET_HOURS_START_ERROR_TITLE "Quiet Hours Start"
+    IDS_POPUP_QUIET_HOURS_START_ERROR_TEXT 
+                            "Failed to register quiet hours start with windows timer system"
+    IDS_POPUP_QUIET_HOURS_STOP_ERROR_TITLE "Quiet Hours Stop"
+    IDS_POPUP_QUIET_HOURS_STOP_ERROR_TEXT 
+                            "Failed to register end of quiet hours with windows timer system"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TRAYMENU_INFO       "About"
+    IDS_TRAYMENU_MUTEWHEN   "Mute when..."
+    IDS_TRAYMENU_MUTEONLOCK "... Workstation is locked"
+    IDS_TRAYMENU_MUTEONSCREENSUSPEND "... Screen turns off"
+    IDS_TRAYMENU_RESTOREVOLUME "Restore volume afterwards"
+    IDS_TRAYMENU_MUTEON_NO_RESTORE "Mute on (no volume restore)"
+    IDS_TRAYMENU_MUTEON_SHUTDOWN "... Shutdown"
+    IDS_TRAYMENU_MUTEON_SLEEP "... Sleep"
+    IDS_TRAYMENU_MUTEON_LOGOUT "... Logout"
+    IDS_TRAYMENU_MUTE_ALL_DEVICES "Mute all devices"
+    IDS_TRAYMENU_SETTINGS   "Settings..."
+    IDS_TRAYMENU_EXIT       "Exit"
 END
 
 #endif    // English (United Kingdom) resources
