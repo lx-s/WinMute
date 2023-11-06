@@ -54,21 +54,24 @@ inline bool IsWindowsVersionOrGreater(
    osvi.dwMinorVersion = wMinorVersion;
    osvi.wServicePackMajor = wServicePackMajor;
 
-   return VerifyVersionInfoW(&osvi,
+   return VerifyVersionInfoW(
+      &osvi,
       VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR,
       dwlConditionMask) != FALSE;
 }
 
 inline bool IsWindowsXPOrGreater()
 {
-   return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WINXP),
+   return IsWindowsVersionOrGreater(
+      HIBYTE(_WIN32_WINNT_WINXP),
       LOBYTE(_WIN32_WINNT_WINXP),
       0);
 }
 
 inline bool IsWindowsVistaOrGreater()
 {
-   return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_VISTA),
+   return IsWindowsVersionOrGreater(
+      HIBYTE(_WIN32_WINNT_VISTA),
       LOBYTE(_WIN32_WINNT_VISTA),
       0);
 }

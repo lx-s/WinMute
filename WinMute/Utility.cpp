@@ -45,34 +45,26 @@ void PrintWindowsError(const wchar_t *functionName, DWORD lastError)
          FORMAT_MESSAGE_ALLOCATE_BUFFER |
          FORMAT_MESSAGE_FROM_SYSTEM |
          FORMAT_MESSAGE_IGNORE_INSERTS,
-         nullptr, lastError,
+         nullptr,
+         lastError,
          MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
          reinterpret_cast<wchar_t*>(&lpMsgBuf), 0, nullptr) != 0) {
-      size_t displayBufSize =
-         (wcslen(static_cast<const wchar_t*>(lpMsgBuf))
-          + wcslen(static_cast<const wchar_t*>(functionName))
-          + 40) * sizeof(wchar_t);
       // Display the error message and exit the process
-      LPVOID lpDisplayBuf = reinterpret_cast<LPVOID>(
-         LocalAlloc(LMEM_ZEROINIT, displayBufSize));
-      if (lpDisplayBuf) {
-         StringCchPrintfW((LPTSTR)lpDisplayBuf,
-            LocalSize(lpDisplayBuf),
-            L"%s failed with error %u: %s",
+      const std::wstring errorMsg = std::vformat(
+         WMi18n::GetInstance().GetTextW(IDS_MAIN_ERROR_WINAPI_FAILURE_TEXT),
+         std::make_wformat_args(
             functionName,
             lastError,
-            reinterpret_cast<wchar_t*>(lpMsgBuf));
-         TaskDialog(
-            nullptr,
-            nullptr,
-            PROGRAM_NAME,
-            static_cast<LPCTSTR>(lpDisplayBuf),
-            nullptr,
-            TDCBF_OK_BUTTON,
-            TD_ERROR_ICON,
-            nullptr);
-         LocalFree(lpDisplayBuf);
-      }
+            reinterpret_cast<wchar_t *>(lpMsgBuf)));
+      TaskDialog(
+         nullptr,
+         nullptr,
+         PROGRAM_NAME,
+         errorMsg.c_str(),
+         nullptr,
+         TDCBF_OK_BUTTON,
+         TD_ERROR_ICON,
+         nullptr);
       LocalFree(lpMsgBuf);
    }
 }

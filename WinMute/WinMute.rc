@@ -552,6 +552,7 @@ BEGIN
     IDS_MAIN_ERROR_INIT_WINMUTE_TITLE "Failed to start WinMute."
     IDS_MAIN_ERROR_INIT_WINMUTE_TEXT 
                             "WinMute encountered a critical error while initializing and must shut down."
+    IDS_MAIN_ERROR_WINAPI_FAILURE_TEXT "{} failed with error {}: {}"
 END
 
 STRINGTABLE
@@ -588,6 +589,15 @@ BEGIN
                             "WLAN network ""{}"" is not on allowed list."
     IDS_POPUP_WLAN_IS_ON_MUTE_LIST_TEXT 
                             "WLAN network ""{}"" is configured for AutoMute."
+    IDS_POPUP_MUTING_WORKSTATION_AFTER_DELAY_TITLE 
+                            "Muting workstation after delay"
+    IDS_POPUP_MUTING_WORKSTATION_AFTER_DELAY_TEXT 
+                            "All endpoints have been muted"
+    IDS_POPUP_VOLUME_RESTORED_TITLE "Volume restored"
+    IDS_POPUP_VOLUME_RESTORED_TEXT 
+                            "All endpoints have been restored to their previous configuration"
+    IDS_POPUP_MUTING_WORKSTATION_TITLE "Muting workstation after delay"
+    IDS_POPUP_MUTING_WORKSTATION_TEXT "All endpoints have been muted"
 END
 
 #endif    // English (United Kingdom) resources
