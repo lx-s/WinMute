@@ -82,6 +82,8 @@ private:
 
    void ToggleMenuCheck(UINT item, bool* setting) noexcept;
 
+   void LoadMainMenuText();
+
    // Windows Callback
    LRESULT OnCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
    LRESULT OnTrayIcon(HWND hWnd, WPARAM wParam, LPARAM lParam);

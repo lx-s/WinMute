@@ -226,6 +226,8 @@ bool WinMute::InitTrayMenu()
        !CHECK_MENU_ITEM(MUTEONLOGOUT, muteCtrl_.GetMuteOnLogout())) {
       return false;
    }
+
+   LoadMainMenuText();
    return true;
 }
 #undef CHECK_MENU_ITEM
@@ -384,6 +386,37 @@ void WinMute::ToggleMenuCheck(UINT item, bool* setting) noexcept
    } else {
       *setting = true;
       CheckMenuItem(hTrayMenu_, item, MF_CHECKED);
+   }
+}
+
+void WinMute::LoadMainMenuText()
+{
+   std::map<UINT, std::wstring> menuText;
+   menuText[ID_TRAYMENU_INFO] = i18n.GetTextW(IDS_TRAYMENU_INFO);
+   menuText[ID_TRAYMENU_LABEL_MUTEWHEN] = i18n.GetTextW(IDS_TRAYMENU_MUTEWHEN);
+   menuText[ID_TRAYMENU_MUTEONLOCK] = i18n.GetTextW(IDS_TRAYMENU_MUTEONLOCK);
+   menuText[ID_TRAYMENU_MUTEONSCREENSUSPEND] = i18n.GetTextW(IDS_TRAYMENU_MUTEONSCREENSUSPEND);
+   menuText[ID_TRAYMENU_RESTOREAUDIO] = i18n.GetTextW(IDS_TRAYMENU_RESTOREVOLUME);
+   menuText[ID_TRAYMENU_LABEL_MUTEON_NO_RESTORE] = i18n.GetTextW(IDS_TRAYMENU_MUTEON_NO_RESTORE);
+   menuText[ID_TRAYMENU_MUTEONSHUTDOWN] = i18n.GetTextW(IDS_TRAYMENU_MUTEON_SHUTDOWN);
+   menuText[ID_TRAYMENU_MUTEONSUSPEND] = i18n.GetTextW(IDS_TRAYMENU_MUTEON_SLEEP);
+   menuText[ID_TRAYMENU_MUTEONLOGOUT] = i18n.GetTextW(IDS_TRAYMENU_MUTEON_LOGOUT);
+   menuText[ID_TRAYMENU_MUTE] = i18n.GetTextW(IDS_TRAYMENU_MUTE_ALL_DEVICES);
+   menuText[ID_TRAYMENU_SETTINGS] = i18n.GetTextW(IDS_TRAYMENU_SETTINGS);
+   menuText[ID_TRAYMENU_EXIT] = i18n.GetTextW(IDS_TRAYMENU_EXIT);
+
+   for (const auto& mt : menuText) {
+      MENUITEMINFO mii{ sizeof(MENUITEMINFO) };
+      if (!GetMenuItemInfo(hTrayMenu_, mt.first, false, &mii)) {
+         continue;
+      }
+      mii.fMask = MIIM_TYPE;
+      mii.fType = MFT_STRING;
+      mii.dwTypeData = const_cast<LPWSTR>(mt.second.c_str());
+      mii.cch = static_cast<UINT>(mt.second.length());
+      if (!SetMenuItemInfo(hTrayMenu_, mt.first, false, &mii)) {
+         continue;
+      }
    }
 }
 
