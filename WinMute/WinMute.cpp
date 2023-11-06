@@ -289,8 +289,8 @@ bool WinMute::Init()
    if (settings_.QueryValue(SettingsKey::MUTE_ON_RDP)
        && IsCurrentSessionRemoteable()) {
       trayIcon_.ShowPopup(
-         L"Remote Session detected",
-         L"All audio endpoints have been muted");
+         i18n.GetTextW(IDS_POPUP_REMOTE_SESSION_DETECTED_TITLE),
+         i18n.GetTextW(IDS_POPUP_REMOTE_SESSION_DETECTED_TEXT));
       muteCtrl_.SetMute(true);
    }
 
@@ -347,9 +347,8 @@ bool WinMute::LoadSettings()
    } else {
       if (!btDetector_.Init(hWnd_)) {
          trayIcon_.ShowPopup(
-            L"Bluetooth muting disabled",
-            L"Bluetooth is not available or disabled. "
-            L"Bluetooth muting will be disabled on this computer");
+            i18n.GetTextW(IDS_POPUP_BLUETOOTH_MUTING_DISABLED_TITLE),
+            i18n.GetTextW(IDS_POPUP_BLUETOOTH_MUTING_DISABLED_TEXT));
          settings_.SetValue(SettingsKey::MUTE_ON_BLUETOOTH, FALSE);
       } else {
          muteCtrl_.SetMuteOnBluetoothDisconnect(true);
@@ -364,9 +363,8 @@ bool WinMute::LoadSettings()
    } else {
       if (!wifiDetector_.Init(hWnd_)) {
          trayIcon_.ShowPopup(
-            L"WLAN muting disabled",
-            L"WLAN is not available or disabled. "
-            L"WLAN muting will be disabled on this computer");
+            i18n.GetTextW(IDS_POPUP_WLAN_MUTING_DISABLED_TITLE),
+            i18n.GetTextW(IDS_POPUP_WLAN_MUTING_DISABLED_TEXT));
          settings_.SetValue(SettingsKey::MUTE_ON_WLAN, FALSE);
       } else {
          const bool isMuteList = !settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST);
@@ -554,8 +552,8 @@ LRESULT CALLBACK WinMute::WindowProc(
       muteCtrl_.NotifyQuietHours(true);
       if (settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS)) {
          trayIcon_.ShowPopup(
-            L"WinMute: Quiet hours started",
-            L"Your workstation audio will now be muted.");
+            i18n.GetTextW(IDS_POPUP_QUIET_HOURS_STARTED_TITLE),
+            i18n.GetTextW(IDS_POPUP_QUIET_HOURS_STARTED_TEXT));
       }
       quietHours_.SetEnd();
       return 0;
@@ -563,8 +561,8 @@ LRESULT CALLBACK WinMute::WindowProc(
       muteCtrl_.NotifyQuietHours(false);
       if (settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS)) {
          trayIcon_.ShowPopup(
-            L"WinMute: Quiet Hours ended",
-            L"Your workstation audio has been restored.");
+            i18n.GetTextW(IDS_POPUP_QUIET_HOURS_ENDED_TITLE),
+            i18n.GetTextW(IDS_POPUP_QUIET_HOURS_ENDED_TEXT));
       }
       if (settings_.QueryValue(SettingsKey::QUIETHOURS_FORCEUNMUTE)) {
          muteCtrl_.SetMute(false);
@@ -586,20 +584,20 @@ LRESULT CALLBACK WinMute::WindowProc(
       if (muteConfig_.muteOnWlan) {
          if (wParam == 1) { // Connected
             if (settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED)) {
-               wchar_t msgBuf[260] = { 0 };
+               std::wstring popupMsg;
                wchar_t *wifiName = reinterpret_cast<wchar_t*>(lParam);
                if (settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST)) {
-                  StringCchPrintfW(
-                     msgBuf, ARRAY_SIZE(msgBuf),
-                     L"WLAN \"%s\"network is not on allowed list.\n",
-                     wifiName);
+                  popupMsg = std::vformat(
+                     i18n.GetTextW(IDS_POPUP_WLAN_NOT_ON_MUTE_LIST_TEXT),
+                     std::make_wformat_args(wifiName));
                }  else {
-                  StringCchPrintfW(
-                     msgBuf, ARRAY_SIZE(msgBuf),
-                     L"WLAN network \"%s\" is configured for AutoMute.",
-                     wifiName);
+                  popupMsg = std::vformat(
+                     i18n.GetTextW(IDS_POPUP_WLAN_IS_ON_MUTE_LIST_TEXT),
+                     std::make_wformat_args(wifiName));
                }
-               trayIcon_.ShowPopup(L"Workstation muted", msgBuf);
+               trayIcon_.ShowPopup(
+                  i18n.GetTextW(IDS_POPUP_WORKSTATION_MUTED_TITLE),
+                  popupMsg);
                delete [] wifiName;
             }
             muteCtrl_.SetMute(true);

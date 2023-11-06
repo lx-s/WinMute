@@ -558,6 +558,36 @@ STRINGTABLE
 BEGIN
     IDS_WM_ERROR_WINDOWS_SUPPORT_TITLE 
                             "Only Windows Vista and newer is supported"
+    IDS_WM_ERROR_WINDOWS_SUPPORT_TEXT 
+                            "If you need support for Windows XP, please download WinMute version 1.4.2 or lower."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_POPUP_REMOTE_SESSION_DETECTED_TITLE "Remote Session detected"
+    IDS_POPUP_REMOTE_SESSION_DETECTED_TEXT 
+                            "All audio endpoints have been muted"
+    IDS_POPUP_BLUETOOTH_MUTING_DISABLED_TITLE "Bluetooth muting disabled"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_POPUP_BLUETOOTH_MUTING_DISABLED_TEXT 
+                            "Bluetooth is not available or disabled. Bluetooth muting will be disabled on this computer."
+    IDS_POPUP_WLAN_MUTING_DISABLED_TITLE "WLAN muting disabled"
+    IDS_POPUP_WLAN_MUTING_DISABLED_TEXT 
+                            "WLAN is not available or disabled. WLAN muting will be disabled on this computer"
+    IDS_POPUP_QUIET_HOURS_STARTED_TITLE "WinMute: Quiet hours started"
+    IDS_POPUP_QUIET_HOURS_STARTED_TEXT 
+                            "Your workstation audio will now be muted."
+    IDS_POPUP_QUIET_HOURS_ENDED_TITLE "WinMute: Quiet Hours ended"
+    IDS_POPUP_QUIET_HOURS_ENDED_TEXT 
+                            "Your workstation audio has been restored."
+    IDS_POPUP_WORKSTATION_MUTED_TITLE "Workstation muted"
+    IDS_POPUP_WLAN_NOT_ON_MUTE_LIST_TEXT 
+                            "WLAN network ""{}"" is not on allowed list."
+    IDS_POPUP_WLAN_IS_ON_MUTE_LIST_TEXT 
+                            "WLAN network ""{}"" is configured for AutoMute."
 END
 
 #endif    // English (United Kingdom) resources
