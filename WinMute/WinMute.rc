@@ -205,7 +205,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Save",IDOK,91,41,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,144,41,50,14
-    LTEXT           "Bluetooth device name:",IDC_STATIC,7,7,187,14
+    LTEXT           "Bluetooth device name:",IDC_LABEL_BT_DEVICE_NAME,7,7,187,14
     COMBOBOX        IDC_BT_DEVICE_NAME,7,22,187,17,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
 END
 
@@ -624,6 +624,19 @@ BEGIN
     IDS_TRAYMENU_MUTE_ALL_DEVICES "Mute all devices"
     IDS_TRAYMENU_SETTINGS   "Settings..."
     IDS_TRAYMENU_EXIT       "Exit"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SETTINGS_BLUETOOTH_ADD_DLG_TITLE "Add bluetooth device"
+    IDS_SETTINGS_BLUETOOTH_EDIT_DLG_TITLE "Edit bluetooth device"
+    IDS_SETTINGS_BLUETOOTH_ADD_DLG_DEVICE_NAME_LABEL "Bluetooth device name:"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SETTINGS_BTN_SAVE   "Save"
+    IDS_SETTINGS_BTN_CANCEL "Cancel"
 END
 
 #endif    // English (United Kingdom) resources

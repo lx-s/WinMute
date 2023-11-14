@@ -52,7 +52,6 @@ static bool GetPairedBtAudioDevices(std::vector<std::wstring>& devices)
    btdi.dwSize = sizeof(btdi);
    HBLUETOOTH_DEVICE_FIND hBtDevFind = BluetoothFindFirstDevice(&bfrp, &btdi);
    if (hBtDevFind == nullptr) {
-      PrintWindowsError(L"BluetoothFindFirstDevice");
       log.WriteWindowsError(L"BluetoothFindFirstDevice", GetLastError());
    } else {
       do {
@@ -66,6 +65,19 @@ static bool GetPairedBtAudioDevices(std::vector<std::wstring>& devices)
    return false;
 }
 
+static void LoadBluetoothAddDlgTranslation(HWND hDlg, bool isEdit)
+{
+   WMi18n &i18n = WMi18n::GetInstance();
+   if (isEdit) {
+      i18n.SetItemText(hDlg, IDS_SETTINGS_BLUETOOTH_EDIT_DLG_TITLE);
+   } else {
+      i18n.SetItemText(hDlg, IDS_SETTINGS_BLUETOOTH_ADD_DLG_TITLE);
+   }
+   i18n.SetItemText(hDlg, IDC_LABEL_BT_DEVICE_NAME, IDS_SETTINGS_BLUETOOTH_ADD_DLG_DEVICE_NAME_LABEL);
+   i18n.SetItemText(hDlg, IDOK, IDS_SETTINGS_BTN_SAVE);
+   i18n.SetItemText(hDlg, IDCANCEL, IDS_SETTINGS_BTN_CANCEL);
+}
+
 static INT_PTR CALLBACK Settings_BluetoothAddDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    switch (msg) {
@@ -76,20 +88,8 @@ static INT_PTR CALLBACK Settings_BluetoothAddDlgProc(HWND hDlg, UINT msg, WPARAM
          return FALSE;
       }
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(btDeviceData));
+      LoadBluetoothAddDlgTranslation(hDlg, btDeviceData->devName.length() == 0);
 
-      if (btDeviceData->devName.length() == 0) {
-         if (!SetWindowTextW(hDlg, L"Add Bluetooth device")) {
-             PrintWindowsError(L"SetWindowText", GetLastError());
-            return FALSE;
-         }
-      } else {
-         if (!SetWindowTextW(hDlg, L"Edit Bluetooth device")
-             || !SetWindowTextW(GetDlgItem(hDlg, IDC_BT_DEVICE_NAME),
-                               btDeviceData->devName.c_str())) {
-            PrintWindowsError(L"SetWindowText", GetLastError());
-            return FALSE;
-         }
-      }
       // Fill Combobox
       std::vector<std::wstring> registeredBtDevices;
       if (GetPairedBtAudioDevices(registeredBtDevices)) {
