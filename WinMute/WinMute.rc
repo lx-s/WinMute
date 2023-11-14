@@ -639,6 +639,30 @@ BEGIN
     IDS_SETTINGS_BTN_CANCEL "Cancel"
 END
 
+STRINGTABLE
+BEGIN
+    IDS_SETTINGS_TAB_GENERAL "General"
+    IDS_SETTINGS_TAB_MUTE   "Mute"
+    IDS_SETTINGS_TAB_QUIETHOURS "Quiet Hours"
+    IDS_SETTINGS_TAB_BLUETOOTH "Bluetooth"
+    IDS_SETTINGS_TAB_WIFI   "WLAN"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SETTINGS_GENERAL_RUN_ON_STARTUP "Start WinMute on system startup"
+    IDS_SETTINGS_GENERAL_ENABLE_LOGGING "Enable logging"
+    IDS_SETTINGS_GENERAL_OPEN_LOG_FILE "Open log file..."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SETTINGS_BLUETOOTH_ADD_POPUP_ENTER_DEVICE_NAME_TITLE 
+                            "Bluetooth Device Name"
+    IDS_SETTINGS_BLUETOOTH_ADD_POPUP_ENTER_DEVICE_NAME_TEXT 
+                            "Please enter a bluetooth device name"
+END
+
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////
 
