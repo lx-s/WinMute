@@ -51,8 +51,11 @@ public:
    std::wstring GetCurrentLanguageModule() const;
    std::wstring GetCurrentLanguageName() const;
 
-   std::wstring GetTextW(UINT id) const;
-   std::string GetTextA(UINT id) const;
+   std::wstring GetTextW(UINT textId) const;
+   std::string GetTextA(UINT textId) const;
+
+   bool SetItemText(HWND hWnd, int dlgItem, UINT textId);
+   bool SetItemText(HWND hItem, UINT textId);
 
 private:
    WMi18n() noexcept;

@@ -155,50 +155,56 @@ void WMi18n::UnloadLanguage() noexcept
    }
 }
 
-std::wstring WMi18n::GetTextW(UINT strId) const
+std::wstring WMi18n::GetTextW(UINT textId) const
 {
    HMODULE hMod = (langModule_ == nullptr) ? hglobInstance : langModule_;
-   constexpr size_t strBufferSize = 2048 + 1;
-   wchar_t strBuffer[strBufferSize]{ 0 };
-   const int strLength = LoadStringW(hMod, strId, strBuffer, 0);
+   const wchar_t *strBuffer = nullptr;
+   int strLength = LoadStringW(hMod, textId, reinterpret_cast<LPWSTR>(&strBuffer), 0);
+   if (strLength == 0 && langModule_ != nullptr) {
+      // Try to fall back to standard language
+      strLength = LoadStringW(hglobInstance, textId, reinterpret_cast<LPWSTR>(&strBuffer), 0);
+   }
    if (strLength == 0) {
-      return L"";
-   } else if (strLength < strBufferSize) {
-      LoadStringW(hMod, strId, strBuffer, ARRAY_SIZE(strBuffer));
-      return std::wstring(strBuffer, strBuffer + strLength);
-   } else if (strLength > 0) {
-      wchar_t *largeBuffer = new wchar_t[strLength + 1];
-      LoadStringW(hMod, strId, largeBuffer, strLength + 1);
-      std::wstring ret(strBuffer, largeBuffer + strLength);
-      delete[] largeBuffer;
-      return ret;
-   } else {
       WMLog::GetInstance().WriteWindowsError(L"LoadStringW", GetLastError());
-      std::wstring err = L"String resource " + std::to_wstring(strId) + L" not found";
+      std::wstring err = L"String resource " + std::to_wstring(textId) + L" not found";
       return err;
    }
+   return std::wstring(strBuffer, strBuffer + strLength);
 }
 
-std::string WMi18n::GetTextA(UINT strId) const
+std::string WMi18n::GetTextA(UINT textId) const
 {
    HMODULE hMod = (langModule_ == nullptr) ? hglobInstance : langModule_;
-   constexpr size_t strBufferSize = 2048 + 1;
-   char strBuffer[strBufferSize]{ 0 };
-   const int strLength = LoadStringA(hMod, strId, strBuffer, 0);
+   const char *strBuffer = nullptr;
+   int strLength = LoadStringA(hMod, textId, reinterpret_cast<LPSTR>(&strBuffer), 0);
+   if (strLength == 0 && langModule_ != nullptr) {
+      // Try to fall back to standard language
+      strLength = LoadStringA(hglobInstance, textId, reinterpret_cast<LPSTR>(&strBuffer), 0);
+   }
    if (strLength == 0) {
-      return "";
-   } else if (strLength < strBufferSize) {
-      LoadStringA(hMod, strId, strBuffer, ARRAY_SIZE(strBuffer));
-      return std::string(strBuffer, strBuffer + strLength);
-   } else if (strLength > 0) {
-      char *largeBuffer = new char[strLength + 1];
-      LoadStringA(hMod, strId, largeBuffer, strLength + 1);
-      std::string ret(strBuffer, largeBuffer + strLength);
-      delete[] largeBuffer;
-      return ret;
-   } else {
       WMLog::GetInstance().WriteWindowsError(L"LoadStringA", GetLastError());
-      std::string err = "String resource " + std::to_string(strId) + " not found";
+      std::string err = "String resource " + std::to_string(textId) + " not found";
       return err;
    }
+   return std::string(strBuffer, strBuffer + strLength);
+}
+
+bool WMi18n::SetItemText(HWND hWnd, int dlgItem, UINT textId)
+{
+   const auto text = GetTextW(textId);
+   if (!SetDlgItemTextW(hWnd, dlgItem, text.c_str())) {
+      WMLog::GetInstance().WriteWindowsError(L"SetDlgItemTextW", GetLastError());
+      return false;
+   }
+   return true;
+}
+
+bool WMi18n::SetItemText(HWND hItem, UINT textId)
+{
+   const auto text = GetTextW(textId);
+   if (!SetWindowTextW(hItem, text.c_str())) {
+      WMLog::GetInstance().WriteWindowsError(L"SetDlgItemTextW", GetLastError());
+      return false;
+   }
+   return true;
 }
