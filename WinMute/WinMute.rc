@@ -81,9 +81,9 @@ BEGIN
     CONTROL         "Start WinMute on system startup",IDC_RUNONSTARTUP,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,219,17
     CONTROL         "Enable logging",IDC_ENABLELOGGING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,52,219,15
-    PUSHBUTTON      "Open log file...",IDC_OPENLOG,22,71,58,15
-    LTEXT           "[log file path]",IDC_LOGFILEPATH,23,88,203,27
-    LTEXT           "Language",IDC_STATIC,7,14,41,10
+    PUSHBUTTON      "Open log file...",IDC_OPENLOG,22,71,104,16
+    LTEXT           "[log file path]",IDC_LOGFILEPATH,23,89,203,27
+    LTEXT           "Language",IDC_SELECT_LANGUAGE_LABEL,7,14,41,10
     COMBOBOX        IDC_LANGUAGE,51,12,87,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
 END
 
@@ -656,6 +656,7 @@ BEGIN
     IDS_SETTINGS_GENERAL_RUN_ON_STARTUP "Start WinMute on system startup"
     IDS_SETTINGS_GENERAL_ENABLE_LOGGING "Enable logging"
     IDS_SETTINGS_GENERAL_OPEN_LOG_FILE "Open log file..."
+    IDS_SETTINGS_GENERAL_LANGUAGE_LABEL "Language"
 END
 
 STRINGTABLE

@@ -58,6 +58,15 @@ static void FillLanguageList(HWND hLanguageList, const SettingsGeneralData& dlgD
    ComboBox_SelectString(hLanguageList, 0, WMi18n::GetInstance().GetCurrentLanguageName().c_str());
 }
 
+static void LoadSettingsGeneralDlgTranslation(HWND hDlg)
+{
+   WMi18n &i18n = WMi18n::GetInstance();
+   i18n.SetItemText(hDlg, IDC_SELECT_LANGUAGE_LABEL, IDS_SETTINGS_GENERAL_LANGUAGE_LABEL);
+   i18n.SetItemText(hDlg, IDC_RUNONSTARTUP, IDS_SETTINGS_GENERAL_RUN_ON_STARTUP);
+   i18n.SetItemText(hDlg, IDC_ENABLELOGGING, IDS_SETTINGS_GENERAL_ENABLE_LOGGING);
+   i18n.SetItemText(hDlg, IDC_OPENLOG, IDS_SETTINGS_GENERAL_OPEN_LOG_FILE);
+}
+
 INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    switch (msg) {
@@ -69,6 +78,7 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       if (IsAppThemed()) {
          EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
       }
+      LoadSettingsGeneralDlgTranslation(hDlg);
 
       SettingsGeneralData *dlgData = new SettingsGeneralData;
       memset(dlgData, 0, sizeof(*dlgData));
