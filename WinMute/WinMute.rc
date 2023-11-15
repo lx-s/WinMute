@@ -657,9 +657,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_SETTINGS_BLUETOOTH_ADD_POPUP_ENTER_DEVICE_NAME_TITLE 
-                            "Bluetooth Device Name"
-    IDS_SETTINGS_BLUETOOTH_ADD_POPUP_ENTER_DEVICE_NAME_TEXT 
+    IDS_SETTINGS_BLUETOOTH_ADD_DLG_ENTER_DEVICE_NAME_TEXT 
                             "Please enter a bluetooth device name"
 END
 

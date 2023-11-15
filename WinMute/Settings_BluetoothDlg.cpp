@@ -76,6 +76,10 @@ static void LoadBluetoothAddDlgTranslation(HWND hDlg, bool isEdit)
    i18n.SetItemText(hDlg, IDC_LABEL_BT_DEVICE_NAME, IDS_SETTINGS_BLUETOOTH_ADD_DLG_DEVICE_NAME_LABEL);
    i18n.SetItemText(hDlg, IDOK, IDS_SETTINGS_BTN_SAVE);
    i18n.SetItemText(hDlg, IDCANCEL, IDS_SETTINGS_BTN_CANCEL);
+
+   ComboBox_SetCueBannerText(
+      GetDlgItem(hDlg, IDC_BT_DEVICE_NAME),
+      i18n.GetTextW(IDS_SETTINGS_BLUETOOTH_ADD_DLG_ENTER_DEVICE_NAME_TEXT).c_str());
 }
 
 static INT_PTR CALLBACK Settings_BluetoothAddDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -88,7 +92,11 @@ static INT_PTR CALLBACK Settings_BluetoothAddDlgProc(HWND hDlg, UINT msg, WPARAM
          return FALSE;
       }
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(btDeviceData));
-      LoadBluetoothAddDlgTranslation(hDlg, btDeviceData->devName.length() == 0);
+      LoadBluetoothAddDlgTranslation(hDlg, btDeviceData->devName.length() != 0);
+
+      // Disable save button until at least one string change is made
+      EnableWindow(GetDlgItem(hDlg, IDOK), FALSE);
+
       // Fill Combobox
       std::vector<std::wstring> registeredBtDevices;
       if (GetPairedBtAudioDevices(registeredBtDevices)) {
@@ -96,32 +104,25 @@ static INT_PTR CALLBACK Settings_BluetoothAddDlgProc(HWND hDlg, UINT msg, WPARAM
             ComboBox_AddString(hBtDevName, devName.c_str());
          }
       }
+      ComboBox_SetExtendedUI(hBtDevName, TRUE);
 
       Edit_LimitText(hBtDevName, BT_DEV_NAME_MAX_LEN);
       if (GetDlgCtrlID(reinterpret_cast<HWND>(wParam)) != IDC_BT_DEVICE_NAME) {
          SetFocus(hBtDevName);
          return FALSE;
       }
-      ComboBox_SetCueBannerText(GetDlgItem(hDlg, IDC_BT_DEVICE_NAME), L"Test");
-
       return TRUE;
    }
-   case WM_COMMAND:
-      if (LOWORD(wParam) == IDOK) {
+   case WM_COMMAND: {
+      
+      if (LOWORD(wParam) == IDC_BT_DEVICE_NAME && HIWORD(wParam) == CBN_EDITUPDATE) {
          HWND hDevName = GetDlgItem(hDlg, IDC_BT_DEVICE_NAME);
          const int textLen = Edit_GetTextLength(hDevName);
-         if (textLen == 0) {
-            WMi18n &i18n = WMi18n::GetInstance();
-            EDITBALLOONTIP ebt;
-            const auto popupTitle = i18n.GetTextW(IDS_SETTINGS_BLUETOOTH_ADD_POPUP_ENTER_DEVICE_NAME_TITLE);
-            const auto popupText = i18n.GetTextW(IDS_SETTINGS_BLUETOOTH_ADD_POPUP_ENTER_DEVICE_NAME_TEXT);
-            ZeroMemory(&ebt, sizeof(ebt));
-            ebt.cbStruct = sizeof(ebt);
-            ebt.pszTitle = L"Test"; //popupTitle.c_str();
-            ebt.pszText = L"Test"; //popupText.c_str();
-            ebt.ttiIcon = TTI_INFO;
-            Edit_ShowBalloonTip(hDevName, &ebt);
-         } else {
+         EnableWindow(GetDlgItem(hDlg, IDOK), textLen > 0);
+      } else if (LOWORD(wParam) == IDOK) {
+         HWND hDevName = GetDlgItem(hDlg, IDC_BT_DEVICE_NAME);
+         const int textLen = Edit_GetTextLength(hDevName);
+         if (textLen != 0) {
             wchar_t devNameBuf[BT_DEV_NAME_MAX_LEN + 1] = { 'L\0' };
             BtDeviceData* btDevName = reinterpret_cast<BtDeviceData*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
             if (btDevName != nullptr) {
@@ -137,6 +138,7 @@ static INT_PTR CALLBACK Settings_BluetoothAddDlgProc(HWND hDlg, UINT msg, WPARAM
          EndDialog(hDlg, 1);
       }
       return FALSE;
+   }
    case WM_CLOSE:
       EndDialog(hDlg, 1);
       return TRUE;
