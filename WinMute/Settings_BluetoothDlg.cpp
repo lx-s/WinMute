@@ -181,6 +181,20 @@ static BOOL CALLBACK ShowChildWindow(HWND hWnd, LPARAM lParam) noexcept
    return TRUE;
 }
 
+static void LoadBluetoothDlgTranslation(HWND hDlg)
+{
+   WMi18n &i18n = WMi18n::GetInstance();
+
+   i18n.SetItemText(hDlg, IDC_BLUETOOTH_DESCRIPTION_LABEL, IDS_SETTINGS_BLUETOOTH_DESCRIPTION);
+   i18n.SetItemText(hDlg, IDC_ENABLE_BLUETOOTH_MUTE, IDS_SETTINGS_BLUETOOTH_ENABLE_MUTING);
+   i18n.SetItemText(hDlg, IDC_ENABLE_BLUETOOTH_MUTE_DEVICE_LIST, IDS_SETTINGS_BLUETOOTH_ENABLE_MUTING_FILTER);
+   i18n.SetItemText(hDlg, IDC_BLUETOOTH_ADD, IDS_SETTINGS_BTN_ADD);
+   i18n.SetItemText(hDlg, IDC_BLUETOOTH_EDIT, IDS_SETTINGS_BTN_EDIT);
+   i18n.SetItemText(hDlg, IDC_BLUETOOTH_REMOVE, IDS_SETTINGS_BTN_REMOVE);
+   i18n.SetItemText(hDlg, IDC_BLUETOOTH_REMOVEALL, IDS_SETTINGS_BTN_REMOVE_ALL);
+   i18n.SetItemText(hDlg, IDC_STATIC_BLUETOOTH_NOT_AVAILABLE, IDS_SETTINGS_BLUETOOTH_DISABLED_INFO);
+}
+
 INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    switch (msg) {
@@ -189,6 +203,8 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
       if (IsAppThemed()) {
          EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
       }
+      LoadBluetoothDlgTranslation(hDlg);
+
       WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
       assert(settings != nullptr);
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(settings));
