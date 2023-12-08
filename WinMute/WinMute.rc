@@ -155,16 +155,16 @@ IDD_SETTINGS_WIFI DIALOGEX 0, 0, 242, 204
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LISTBOX         IDC_WIFI_LIST,7,66,170,110,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Add",IDC_WIFI_ADD,179,65,56,16
-    PUSHBUTTON      "Edit",IDC_WIFI_EDIT,179,84,56,16
-    PUSHBUTTON      "Remove",IDC_WIFI_REMOVE,179,103,56,16
-    PUSHBUTTON      "Remove all",IDC_WIFI_REMOVEALL,179,123,56,16
+    LISTBOX         IDC_WIFI_LIST,7,81,170,95,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Add",IDC_WIFI_ADD,179,80,56,16
+    PUSHBUTTON      "Edit",IDC_WIFI_EDIT,179,99,56,16
+    PUSHBUTTON      "Remove",IDC_WIFI_REMOVE,179,118,56,16
+    PUSHBUTTON      "Remove all",IDC_WIFI_REMOVEALL,179,138,56,16
     LTEXT           "Note: WLAN is not available on your device, so some options have been disabled.",IDC_STATIC_WLAN_NOT_AVAILABLE,7,179,228,18
-    CONTROL         "Enable WLAN based muting",IDC_ENABLE_WIFI_MUTE,"Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,26,228,14
+    CONTROL         "Enable WLAN based muting",IDC_ENABLE_WIFI_MUTE,"Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,44,228,14
     CONTROL         "Mute workstation if the WLAN network name is NOT in the list\n(default: mute if it is on the list)",IDC_IS_PERMITLIST,
-                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,20,41,215,18
-    LTEXT           """WLAN Mute"" allows you to mute your workstation based on the name of the connected wireless network.",IDC_STATIC,7,7,228,19
+                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,20,59,215,18
+    LTEXT           """WLAN Mute"" allows you to mute your workstation based on the name of the connected wireless network.",IDC_WIFI_INTRO,7,7,228,35
 END
 
 IDD_SETTINGS_WIFI_ADD DIALOGEX 0, 0, 201, 62
@@ -174,7 +174,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Save",IDOK,91,41,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,144,41,50,14
-    LTEXT           "SSID/WiFi Name:",IDC_STATIC,7,7,62,14
+    LTEXT           "SSID/WiFi Name:",IDC_WIFI_NAME_LABEL,7,7,62,14
     EDITTEXT        IDC_WIFI_NAME,7,20,187,16,ES_AUTOHSCROLL
 END
 
@@ -709,6 +709,25 @@ BEGIN
                             "If force unmute is enabled, WinMute will unmute your audio endpoints when quiet hours and and not take into account if they were already muted before quiet hours started."
     IDS_SETTINGS_QUIETHOURS_SHOW_NOTIFICATIONS 
                             "Show Quiet Hours notifications"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SETTINGS_WIFI_INTRO """WLAN Mute"" allows you to mute your workstation based on the name of the connected wireless network."
+    IDS_SETTINGS_WIFI_ENABLE "Enable WLAN based muting"
+    IDS_SETTINGS_WIFI_MUTE_WHEN_NOT_IN_LIST 
+                            "Mute workstation if the WLAN network name is NOT in the list\n(default: mute if it is on the list)"
+    IDS_SETTINGS_WIFI_DISABLED_INFO 
+                            "Note: WLAN is not available on your device, so some options have been disabled."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SETTINGS_WIFI_ADD_DLG_TITLE "Add WiFi network"
+    IDS_SETTINGS_WIFI_EDIT_DLG_TITLE "Edit WiFi network"
+    IDS_SETTINGS_WIFI_ADD_DLG_SSID_NAME_LABEL "SSID/WiFi Name:"
+    IDS_SETTINGS_WIFI_ADD_DLG_ENTER_DEVICE_NAME_TEXT 
+                            "Please enter a SSID/WiFi name"
 END
 
 #endif    // English (United Kingdom) resources

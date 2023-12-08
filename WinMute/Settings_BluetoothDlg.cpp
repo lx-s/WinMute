@@ -93,6 +93,10 @@ static INT_PTR CALLBACK Settings_BluetoothAddDlgProc(HWND hDlg, UINT msg, WPARAM
       }
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(btDeviceData));
       LoadBluetoothAddDlgTranslation(hDlg, btDeviceData->devName.length() != 0);
+      if (btDeviceData->devName.length() != 0) {
+         SetWindowTextW(GetDlgItem(hDlg, IDC_BT_DEVICE_NAME),
+                        btDeviceData->devName.c_str());
+      }
 
       // Disable save button until at least one string change is made
       EnableWindow(GetDlgItem(hDlg, IDOK), FALSE);
