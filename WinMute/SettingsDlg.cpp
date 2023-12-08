@@ -142,6 +142,8 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
       
       dlgData->hTabCtrl = GetDlgItem(hDlg, IDC_SETTINGS_TAB);
 
+      SetWindowText(hDlg, i18n.GetTextW(IDS_SETTINGS_TITLE).c_str());
+
       i18n.SetItemText(hDlg, IDOK, IDS_SETTINGS_BTN_SAVE);
       i18n.SetItemText(hDlg, IDCANCEL, IDS_SETTINGS_BTN_CANCEL);
 

@@ -223,8 +223,8 @@ BEGIN
                     "Button",BS_AUTORADIOBUTTON,13,19,99,10
     CONTROL         "Mute all but the listed endpoints",IDC_ENDPOINT_LIST_IS_BLOCKLIST,
                     "Button",BS_AUTORADIOBUTTON,13,32,118,10
-    GROUPBOX        "List behaviour",IDC_STATIC,7,7,227,41
-    GROUPBOX        "Endpoints",IDC_STATIC,7,48,227,128
+    GROUPBOX        "List behaviour",IDC_GROUP_LIST_BEHAVIOUR,7,7,227,41
+    GROUPBOX        "Endpoints",IDC_GROUP_ENDPOINTS,7,48,227,128
 END
 
 IDD_MANAGE_ENDPOINTS_ADD DIALOGEX 0, 0, 201, 62
@@ -648,6 +648,7 @@ BEGIN
     IDS_SETTINGS_TAB_QUIETHOURS "Quiet Hours"
     IDS_SETTINGS_TAB_BLUETOOTH "Bluetooth"
     IDS_SETTINGS_TAB_WIFI   "WLAN"
+    IDS_SETTINGS_TITLE      "Settings"
 END
 
 STRINGTABLE
@@ -741,6 +742,17 @@ BEGIN
     IDS_ABOUT_TAB_WINMUTE   "WinMute"
     IDS_ABOUT_TAB_LICENSE   "License"
     IDS_ABOUT_CLOSE_BTN     "OK"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_TITLE "Manage audio endpoints"
+    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_LIST_BEHAVIOUR_TITLE "List behaviour"
+    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_MUTE_ONLY_LISTED 
+                            "Mute only listed endpoints"
+    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_MUTE_ALL_BUT_LISTED 
+                            "Mute all but listed endpoints"
+    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_ENDPOINTS_TITLE "Endpoints"
 END
 
 #endif    // English (United Kingdom) resources
