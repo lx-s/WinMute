@@ -120,7 +120,7 @@ BEGIN
                     "SysLink",WS_TABSTOP,197,32,94,14
     CONTROL         "<a href=""https://github.com/lx-s/WinMute/issues/"">Support</a>",IDC_LINK_TICKETS,
                     "SysLink",WS_TABSTOP,197,49,94,14
-    EDITTEXT        IDC_ABOUTTEXT,7,14,182,155,ES_MULTILINE | ES_AUTOHSCROLL | ES_NOHIDESEL | ES_READONLY | NOT WS_BORDER
+    EDITTEXT        IDC_ABOUTTEXT,7,14,182,144,ES_MULTILINE | ES_AUTOVSCROLL | ES_NOHIDESEL | ES_READONLY | NOT WS_BORDER
 END
 
 IDD_SETTINGS_MUTE DIALOGEX 0, 0, 242, 222
@@ -728,6 +728,19 @@ BEGIN
     IDS_SETTINGS_WIFI_ADD_DLG_SSID_NAME_LABEL "SSID/WiFi Name:"
     IDS_SETTINGS_WIFI_ADD_DLG_ENTER_DEVICE_NAME_TEXT 
                             "Please enter a SSID/WiFi name"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUT_TITLE         "About WinMute"
+    IDS_ABOUT_GENERAL_AUTHOR_SITE_LABEL "Author: www.lx-s.de"
+    IDS_ABOUT_GENERAL_PROJECT_SITE_LABEL "Project Site && Code"
+    IDS_ABOUT_GENERAL_SUPPORT_LABEL "Support"
+    IDS_ABOUT_GENERAL_DESCRIPTION 
+                            "WinMute is developed by Alexander Steinhoefer his spare time. The code as well as new releases for this tool can be found on GitHub. Contributions in the form of code, tickets or feature requests are very welcome. Thank your for using this little tool!"
+    IDS_ABOUT_TAB_WINMUTE   "WinMute"
+    IDS_ABOUT_TAB_LICENSE   "License"
+    IDS_ABOUT_CLOSE_BTN     "OK"
 END
 
 #endif    // English (United Kingdom) resources
