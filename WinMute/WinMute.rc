@@ -127,29 +127,28 @@ IDD_SETTINGS_MUTE DIALOGEX 0, 0, 242, 222
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    GROUPBOX        "General",IDC_STATIC,7,7,228,61
+    GROUPBOX        "General",IDC_GROUP_GENERAL,7,7,228,61
     CONTROL         "Show mute event notifications",IDC_SHOWNOTIFICATIONS,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,15,219,18
-    GROUPBOX        "Mute with volume restore, when...",IDC_STATIC,7,71,228,71
+    GROUPBOX        "Mute with volume restore, when...",IDC_GROUP_MUTE_WITH_RESTORE,7,71,228,71
     CONTROL         "... the workstation is locked.",IDC_MUTE_WHEN_WS_LOCKED,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,83,107,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,83,207,10
     CONTROL         "... the screen turns off.",IDC_MUTE_WHEN_SCREEN_OFF,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,97,93,10
-    CONTROL         "Restore volume afterwards.",IDC_RESTOREVOLUME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,112,106,10
-    GROUPBOX        "Mute without volume restore, when...",IDC_STATIC,7,145,228,67
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,97,205,10
+    CONTROL         "Restore volume afterwards.",IDC_RESTOREVOLUME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,112,210,10
+    GROUPBOX        "Mute without volume restore, when...",IDC_GROUP_MUTE_WITHOUT_RESTORE,7,145,228,67
     CONTROL         "... the computer shuts down.",IDC_MUTE_WHEN_SHUTDOWN,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,156,110,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,156,207,10
     CONTROL         "... the computer goes into sleep/hibernate.",IDC_MUTE_WHEN_SLEEP,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,170,155,10
-    CONTROL         "... you log out.",IDC_MUTE_WHEN_LOGOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,184,65,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,170,206,10
+    CONTROL         "... you log out.",IDC_MUTE_WHEN_LOGOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,184,207,10
     CONTROL         "... when WinMute is started within a RDP session.",IDC_MUTE_WHEN_RDP_SESSION,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,198,175,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,198,208,10
     CONTROL         "Manage audio endpoints individually",IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,28,219,18
-    PUSHBUTTON      "Manage endpoints...",IDC_MANAGE_ENDPOINTS,26,46,74,15
-    LTEXT           "Delay muting for ",IDC_STATIC,14,127,56,8
-    EDITTEXT        IDC_MUTEDELAY,70,125,39,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "seconds (0 for no delay)",IDC_STATIC,113,127,79,8
+    PUSHBUTTON      "Manage endpoints...",IDC_MANAGE_ENDPOINTS,26,46,97,15
+    LTEXT           "seconds delay before muting.",IDC_DELAY_MUTING_LABEL,47,127,169,8
+    EDITTEXT        IDC_MUTEDELAY,13,124,30,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
 END
 
 IDD_SETTINGS_WIFI DIALOGEX 0, 0, 242, 204
@@ -670,6 +669,32 @@ BEGIN
                             "Only mute when one of the following devices connect to or disconnect from your PC."
     IDS_SETTINGS_BLUETOOTH_DISABLED_INFO 
                             "Note: Bluetooth is not available on your device, so some options have been disabled."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SETTINGS_MUTE_TITLE_GENERAL "General"
+    IDS_SETTINGS_MUTE_SHOW_MUTE_EVENT_NOTIFICATIONS 
+                            "Show mute event notifications"
+    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_INDIVIDUALLY 
+                            "Manage audio endpoints individually"
+    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_BTN "Manage endpoints..."
+    IDS_SETTINGS_MUTE_MUTE_WITH_RESTORE_TITLE 
+                            "Mute with volume restore, when..."
+    IDS_SETTINGS_MUTE_WHEN_WORKSTATION_IS_LOCKED 
+                            "... the workstation is locked"
+    IDS_SETTINGS_MUTE_WHEN_SCREEN_TURNS_OFF "... the screen turns off."
+    IDS_SETTINGS_MUTE_RESTORE_VOLUME "Restore volume afterwards"
+    IDS_SETTINGS_MUTE_RESTORE_VOLUME_DELAY_LABEL 
+                            "seconds delay before muting."
+    IDS_SETTINGS_MUTE_MUTE_WITHOUT_RESTORE_TITLE 
+                            "Mute without volume restore, when..."
+    IDS_SETTINGS_MUTE_WHEN_COMPUTER_SHUTS_DOWN "... the computer shuts down."
+    IDS_SETTINGS_MUTE_WHEN_COMPUTER_GOES_TO_SLEEP 
+                            "... the computer goes into sleep/hibernate."
+    IDS_SETTINGS_MUTE_WHEN_USER_LOGS_OUT "... you log out."
+    IDS_SETTINGS_MUTE_WHEN_RDP_SESSION_STARTS 
+                            "... when WinMute is started within a RDP session."
 END
 
 #endif    // English (United Kingdom) resources
