@@ -93,6 +93,19 @@ static bool SaveQuietHours(
    return true;
 }
 
+static void LoadQuietHoursDlgTranslation(HWND hDlg)
+{
+   WMi18n &i18n = WMi18n::GetInstance();
+
+   i18n.SetItemText(hDlg, IDC_QUIET_HOURS_DESCRIPTION, IDS_SETTINGS_QUIETHOURS_INTRO);
+   i18n.SetItemText(hDlg, IDC_ENABLEQUIETHOURS, IDS_SETTINGS_QUIETHOURS_ENABLE);
+   i18n.SetItemText(hDlg, IDC_QUIET_HOURS_START_LABEL, IDS_SETTINGS_QUIETHOURS_START_TIME_LABEL);
+   i18n.SetItemText(hDlg, IDC_QUIET_HOURS_END_LABEL, IDS_SETTINGS_QUIETHOURS_END_TIME_LABEL);
+   i18n.SetItemText(hDlg, IDC_FORCEUNMUTE, IDS_SETTINGS_QUIETHOURS_FORCE_UNMUTE);
+   i18n.SetItemText(hDlg, IDC_QUIET_HOURS_FORCE_UNMUTE_DESCRIPTION, IDS_SETTINGS_QUIETHOURS_FORCE_UNMUTE_DESCRIPTION);
+   i18n.SetItemText(hDlg, IDC_SHOWNOTIFICATIONS, IDS_SETTINGS_QUIETHOURS_SHOW_NOTIFICATIONS);
+}
+
 INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    UNREFERENCED_PARAMETER(lParam);
@@ -112,6 +125,7 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
       if (IsAppThemed()) {
          EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
       }
+      LoadQuietHoursDlgTranslation(hDlg);
 
       DWORD qhEnabled = !!settings->QueryValue(SettingsKey::QUIETHOURS_ENABLE);
       Button_SetCheck(hEnable, qhEnabled ? BST_CHECKED : BST_UNCHECKED);

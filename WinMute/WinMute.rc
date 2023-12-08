@@ -91,14 +91,14 @@ IDD_SETTINGS_QUIETHOURS DIALOGEX 0, 0, 246, 198
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "During Quiet Hours WinMute automatically mutes your PC volumes and unmutes it afterwards.",IDC_STATIC,7,9,232,22
+    LTEXT           "During Quiet Hours WinMute automatically mutes your PC volumes and unmutes it afterwards.",IDC_QUIET_HOURS_DESCRIPTION,7,9,232,22
     CONTROL         "Enable Quiet Hours",IDC_ENABLEQUIETHOURS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,31,120,15
-    LTEXT           "Start time:",IDC_STATIC,23,50,43,13
+    LTEXT           "Start time:",IDC_QUIET_HOURS_START_LABEL,23,50,43,13
     CONTROL         "",IDC_QUIETHOURS_START,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,73,47,65,18
-    LTEXT           "End time:",IDC_STATIC,24,73,32,16
+    LTEXT           "End time:",IDC_QUIET_HOURS_END_LABEL,24,73,32,16
     CONTROL         "",IDC_QUIETHOURS_END,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,72,71,67,19
     CONTROL         "Force unmute",IDC_FORCEUNMUTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,94,86,16
-    LTEXT           "If force unmute is enabled, WinMute will unmute your workstation when quiet hours end and not take into account if your workstation was already muted before quiet hours started.",IDC_STATIC,33,111,204,37
+    LTEXT           "If force unmute is enabled, WinMute will unmute your workstation when quiet hours end and not take into account if your workstation was already muted before quiet hours started.",IDC_QUIET_HOURS_FORCE_UNMUTE_DESCRIPTION,33,111,204,37
     CONTROL         "Show quiet hours notifications",IDC_SHOWNOTIFICATIONS,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,146,180,21
 END
@@ -695,6 +695,20 @@ BEGIN
     IDS_SETTINGS_MUTE_WHEN_USER_LOGS_OUT "... you log out."
     IDS_SETTINGS_MUTE_WHEN_RDP_SESSION_STARTS 
                             "... when WinMute is started within a RDP session."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SETTINGS_QUIETHOURS_INTRO 
+                            "During Quiet Hours WinMute automatically mutes your PCs audio endpoints and unmutes them afterwards."
+    IDS_SETTINGS_QUIETHOURS_ENABLE "Enable Quiet Hours"
+    IDS_SETTINGS_QUIETHOURS_START_TIME_LABEL "Start time:"
+    IDS_SETTINGS_QUIETHOURS_END_TIME_LABEL "End time:"
+    IDS_SETTINGS_QUIETHOURS_FORCE_UNMUTE "Force unmute"
+    IDS_SETTINGS_QUIETHOURS_FORCE_UNMUTE_DESCRIPTION 
+                            "If force unmute is enabled, WinMute will unmute your audio endpoints when quiet hours and and not take into account if they were already muted before quiet hours started."
+    IDS_SETTINGS_QUIETHOURS_SHOW_NOTIFICATIONS 
+                            "Show Quiet Hours notifications"
 END
 
 #endif    // English (United Kingdom) resources
