@@ -116,6 +116,8 @@ void PrintWindowsError(const wchar_t *functionName, DWORD lastError = -1);
 bool GetWinMuteVersion(std::wstring &versNumber);
 
 static const wchar_t *PROGRAM_NAME = L"WinMute";
+static const wchar_t *LOG_FILE_NAME = L"WinMute.log";
+
 constexpr int WM_SAVESETTINGS = WM_USER + 300;
 
 template<class Interface>
