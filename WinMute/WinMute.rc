@@ -551,6 +551,10 @@ BEGIN
     IDS_MAIN_ERROR_INIT_WINMUTE_TEXT 
                             "WinMute encountered a critical error while initializing and must shut down."
     IDS_MAIN_ERROR_WINAPI_FAILURE_TEXT "{} failed with error {}: {}"
+    IDS_MAIN_ERROR_AUDIO_SERVICE_SHUTDOWN_TITLE 
+                            "The audio service has been shut down."
+    IDS_MAIN_ERROR_AUDIO_SERVICE_SHUTDOWN_TEXT 
+                            "WinMute is not able to recover from that condition.\nPlease try to restart the program."
 END
 
 STRINGTABLE
@@ -710,6 +714,13 @@ BEGIN
                             "If force unmute is enabled, WinMute will unmute your audio endpoints when quiet hours and and not take into account if they were already muted before quiet hours started."
     IDS_SETTINGS_QUIETHOURS_SHOW_NOTIFICATIONS 
                             "Show Quiet Hours notifications"
+    IDS_SETTINGS_QUIETHOURS_INVALID_TIME_RANGE_TITLE "Invalid time range"
+    IDS_SETTINGS_QUIETHOURS_INVALID_TIME_RANGE_TEXT 
+                            "Can't start and stop at the same time.\nPlease correct your time range."
+    IDS_SETTINGS_QUIETHOURS_ERROR_WHILE_SAVING_TITLE 
+                            "Failed to save quiet hours settings"
+    IDS_SETTINGS_QUIETHOURS_ERROR_WHILE_SAVING_TEXT 
+                            "Something went wrong while saving your settings"
 END
 
 STRINGTABLE

@@ -56,13 +56,13 @@ static bool SaveQuietHours(
 {
    if (enabled) {
       if (!IsValidTimeRange(start, end)) {
+         WMi18n &i18n = WMi18n::GetInstance();
          TaskDialog(
             nullptr,
             nullptr,
             PROGRAM_NAME,
-            L"Invalid time range",
-            L"Can't start and stop at the same time.\n"
-            L"Please correct your time range.\n",
+            i18n.GetTextW(IDS_SETTINGS_QUIETHOURS_INVALID_TIME_RANGE_TITLE).c_str(),
+            i18n.GetTextW(IDS_SETTINGS_QUIETHOURS_INVALID_TIME_RANGE_TEXT).c_str(),
             TDCBF_OK_BUTTON,
             TD_WARNING_ICON,
             nullptr);
@@ -78,12 +78,14 @@ static bool SaveQuietHours(
        || !settings->SetValue(SettingsKey::QUIETHOURS_NOTIFICATIONS, showNotifications)
        || !settings->SetValue(SettingsKey::QUIETHOURS_START, setStart)
        || !settings->SetValue(SettingsKey::QUIETHOURS_END, setEnd)) {
+      WMi18n &i18n = WMi18n::GetInstance();
+
       TaskDialog(
          nullptr,
          nullptr,
          PROGRAM_NAME,
-         L"Failed to save quiet hours settings",
-         L"Something went wrong while saving your settings.",
+         i18n.GetTextW(IDS_SETTINGS_QUIETHOURS_ERROR_WHILE_SAVING_TITLE).c_str(),
+         i18n.GetTextW(IDS_SETTINGS_QUIETHOURS_ERROR_WHILE_SAVING_TEXT).c_str(),
          TDCBF_OK_BUTTON,
          TD_ERROR_ICON,
          nullptr);
