@@ -35,62 +35,37 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
-class WinAudio;
-
-class WinMute {
-public:
-   explicit WinMute(WMSettings& settings);
-   WinMute(const WinMute&) = delete;
-   WinMute(WinMute&&) = delete;
-   WinMute& operator=(const WinMute &) = delete;
-   WinMute& operator=(WinMute&&) = delete;
-   ~WinMute() noexcept;
-
-   bool Init();
-   void Close();
-
-   // for internal use
-   LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-private:
-   HWND hWnd_;
-   HMENU hTrayMenu_;
-   HICON hAppIcon_;
-   HICON hTrayIcon_;
-
-   struct MuteConfig {
-      MuteConfig();
-      bool showNotifications;
-      bool muteOnWlan;
-      bool muteOnBluetooth;
-   } muteConfig_;
-
-   TrayIcon trayIcon_;
-   WifiDetector wifiDetector_;
-   WMSettings& settings_;
-   WMi18n &i18n;
-   MuteControl muteCtrl_;
-   QuietHoursTimer quietHours_;
-   BluetoothDetector btDetector_;
-
-   bool RegisterWindowClass();
-   bool InitWindow();
-   bool InitAudio();
-   bool InitTrayMenu();
-   bool LoadSettings();
-
-   void Unload() noexcept;
-
-   void ToggleMenuCheck(UINT item, bool* setting) noexcept;
-
-   void LoadMainMenuText();
-
-   // Windows Callback
-   LRESULT OnCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-   LRESULT OnTrayIcon(HWND hWnd, WPARAM wParam, LPARAM lParam);
-   LRESULT OnSettingChange(HWND hWnd, WPARAM wParam, LPARAM lParam);
-   LRESULT OnPowerBroadcast(HWND hWnd, WPARAM wParam, LPARAM lParam);
-   LRESULT OnWifiStatusChange(HWND hWnd, WPARAM wParam, LPARAM lParam);
-   
-   LRESULT OnDeviceChange(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-   LRESULT OnQuietHours(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+struct LanguageModule {
+   std::wstring langName;
+   std::wstring fileName;
 };
+
+class WMi18n {
+public:
+   static WMi18n& GetInstance();
+
+   bool LoadLanguage(const std::wstring &dllName);
+   std::vector<LanguageModule> GetAvailableLanguages() const;
+
+   std::optional<fs::path> GetLanguageModulesPath() const;
+   std::wstring GetCurrentLanguageModule() const;
+   std::wstring GetCurrentLanguageName() const;
+
+   std::wstring GetTextW(UINT textId) const;
+   std::string GetTextA(UINT textId) const;
+
+   bool SetItemText(HWND hWnd, int dlgItem, UINT textId);
+   bool SetItemText(HWND hItem, UINT textId);
+
+private:
+   WMi18n() noexcept;
+   ~WMi18n() noexcept;
+   WMi18n(const WMi18n &) = delete;
+   WMi18n &operator=(const WMi18n &) = delete;
+
+   HMODULE langModule_ = nullptr;
+   std::wstring curModuleName_;
+
+   void UnloadLanguage() noexcept;
+};
+

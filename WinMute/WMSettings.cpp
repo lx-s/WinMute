@@ -47,6 +47,8 @@ static const wchar_t *LX_SYSTEMS_AUDIO_ENDPOINTS_SUBKEY
 static const wchar_t* LX_SYSTEMS_AUTOSTART_KEY
    = L"LX-Systems WinMute";
 
+extern HINSTANCE hglobInstance;
+
 static const wchar_t* KeyToStr(SettingsKey key)
 {
    const wchar_t* keyStr = nullptr;
@@ -117,6 +119,9 @@ static const wchar_t* KeyToStr(SettingsKey key)
    case SettingsKey::NOTIFICATIONS_ENABLED:
       keyStr = L"ShowNotifications";
       break;
+   case SettingsKey::APP_LANGUAGE:
+      keyStr = L"AppLanguage";
+      break;
    }
    return keyStr;
 }
@@ -164,10 +169,11 @@ static DWORD GetDefaultSetting(SettingsKey key)
       return 0;
    case SettingsKey::NOTIFICATIONS_ENABLED:
       return 0;
+   case SettingsKey::APP_LANGUAGE:
+      return 0;
    }
    return 0;
 }
-
 
 template<typename T>
 static void NormalizeStringList(std::vector<std::basic_string<T>> &items)
@@ -421,6 +427,17 @@ DWORD WMSettings::QueryValue(SettingsKey key) const
    return value;
 }
 
+std::optional<std::wstring> WMSettings::QueryStrValue(SettingsKey key) const
+{
+   std::wstring val;
+   auto keyStr = KeyToStr(key);
+   assert(keyStr != nullptr);
+   if (!ReadStringFromRegistry(hSettingsKey_, keyStr, val)) {
+      return std::nullopt;
+   }
+   return val;
+}
+
 bool WMSettings::SetValue(SettingsKey key, DWORD value)
 {
    auto keyStr = KeyToStr(key);
@@ -433,6 +450,28 @@ bool WMSettings::SetValue(SettingsKey key, DWORD value)
       REG_DWORD,
       reinterpret_cast<BYTE*>(&value),
       sizeof(DWORD));
+   if (regError != ERROR_SUCCESS) {
+      PrintWindowsError(L"RegSetValueExW", regError);
+      return false;
+   }
+
+   return true;
+}
+
+bool WMSettings::SetValue(SettingsKey key, const std::wstring &value)
+{
+   auto keyStr = KeyToStr(key);
+   assert(keyStr != nullptr);
+
+   BYTE *strValue = reinterpret_cast<BYTE *>(const_cast<wchar_t *>(value.c_str()));
+   DWORD strLen = static_cast<DWORD>((value.length() + 1) * sizeof(wchar_t));
+   DWORD regError = RegSetValueExW(
+      hSettingsKey_,
+      keyStr,
+      0,
+      REG_SZ,
+      strValue,
+      strLen);
    if (regError != ERROR_SUCCESS) {
       PrintWindowsError(L"RegSetValueExW", regError);
       return false;
@@ -728,3 +767,4 @@ std::vector<std::wstring> WMSettings::GetManagedAudioEndpoints() const
    NormalizeStringList(devices);
    return devices;
 }
+

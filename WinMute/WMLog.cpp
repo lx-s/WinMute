@@ -62,7 +62,7 @@ std::wstring WMLog::GetLogFilePath()
    wchar_t tempPath[MAX_PATH + 1];
    if (GetTempPathW(ARRAY_SIZE(tempPath), tempPath)) {
       std::wstring path{ tempPath };
-      path += L"WinMute.log";
+      path += LOG_FILE_NAME;
       return path;
    }
    return std::wstring();
@@ -148,25 +148,15 @@ void WMLog::WriteWindowsError(const wchar_t *functionName, DWORD lastError)
          | FORMAT_MESSAGE_IGNORE_INSERTS,
          nullptr, lastError,
          MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-         reinterpret_cast<wchar_t*>(&lpMsgBuf), 0, nullptr) != 0) {
-      size_t displayBufSize =
-         (wcslen(static_cast<const wchar_t*>(lpMsgBuf))
-          + wcslen(static_cast<const wchar_t*>(functionName))
-          + 40) * sizeof(wchar_t);
-      // Display the error message and exit the process
-      LPVOID lpDisplayBuf = reinterpret_cast<LPVOID>(
-         LocalAlloc(LMEM_ZEROINIT, displayBufSize));
-      if (lpDisplayBuf) {
-         StringCchPrintfW(
-            reinterpret_cast<wchar_t*>(lpDisplayBuf),
-            LocalSize(lpDisplayBuf),
-            L"%s failed with error %u: %s",
-            functionName,
-            lastError,
-            reinterpret_cast<wchar_t*>(lpMsgBuf));
-         WriteMessage(static_cast<const wchar_t*>(lpMsgBuf));
-         LocalFree(lpDisplayBuf);
-      }
-      LocalFree(lpMsgBuf);
+         reinterpret_cast<wchar_t*>(&lpMsgBuf), 0, nullptr) == 0) {
+      return;
    }
+   const std::wstring errorMsg = std::vformat(
+      WMi18n::GetInstance().GetTextW(IDS_MAIN_ERROR_WINAPI_FAILURE_TEXT),
+      std::make_wformat_args(
+         functionName,
+         lastError,
+         reinterpret_cast<wchar_t *>(lpMsgBuf)));
+   WriteMessage(static_cast<const wchar_t*>(lpMsgBuf));
+   LocalFree(lpMsgBuf);
 }

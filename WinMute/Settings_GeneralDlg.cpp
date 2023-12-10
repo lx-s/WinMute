@@ -33,6 +33,40 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
+namespace fs = std::filesystem;
+
+struct SettingsGeneralData {
+   WMSettings *settings = nullptr;
+   std::vector<LanguageModule> langModules;
+};
+
+extern HINSTANCE hglobInstance;
+
+static void FillLanguageList(HWND hLanguageList, const SettingsGeneralData& dlgData)
+{
+   SendMessage(hLanguageList,
+               CB_INITSTORAGE,
+               static_cast<WPARAM>(dlgData.langModules.size()), 200);
+   for (const auto &lang : dlgData.langModules) {
+      int itemId = ComboBox_AddString(hLanguageList, lang.langName.c_str());
+      if (itemId == CB_ERR || itemId == CB_ERRSPACE) {
+         WMLog::GetInstance().Write(L"Failed to add language %ls to language selector", lang.langName.c_str());
+      } else {
+         ComboBox_SetItemData(hLanguageList, itemId, lang.fileName.c_str());
+      }
+   }
+   ComboBox_SelectString(hLanguageList, 0, WMi18n::GetInstance().GetCurrentLanguageName().c_str());
+}
+
+static void LoadSettingsGeneralDlgTranslation(HWND hDlg)
+{
+   WMi18n &i18n = WMi18n::GetInstance();
+   i18n.SetItemText(hDlg, IDC_SELECT_LANGUAGE_LABEL, IDS_SETTINGS_GENERAL_LANGUAGE_LABEL);
+   i18n.SetItemText(hDlg, IDC_RUNONSTARTUP, IDS_SETTINGS_GENERAL_RUN_ON_STARTUP);
+   i18n.SetItemText(hDlg, IDC_ENABLELOGGING, IDS_SETTINGS_GENERAL_ENABLE_LOGGING);
+   i18n.SetItemText(hDlg, IDC_OPENLOG, IDS_SETTINGS_GENERAL_OPEN_LOG_FILE);
+}
+
 INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    switch (msg) {
@@ -44,15 +78,22 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       if (IsAppThemed()) {
          EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
       }
+      LoadSettingsGeneralDlgTranslation(hDlg);
 
-      WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
-      assert(settings != nullptr);
-      SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(settings));
+      SettingsGeneralData *dlgData = new SettingsGeneralData;
+      memset(dlgData, 0, sizeof(*dlgData));
+      dlgData->langModules = WMi18n::GetInstance().GetAvailableLanguages();
+      dlgData->settings = reinterpret_cast<WMSettings *>(lParam);
+      assert(dlgData->settings != nullptr);
 
-      DWORD enabled = settings->IsAutostartEnabled();
+      SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(dlgData));
+     
+      FillLanguageList(GetDlgItem(hDlg, IDC_LANGUAGE), *dlgData);
+
+      DWORD enabled = dlgData->settings->IsAutostartEnabled();
       Button_SetCheck(hAutostart, enabled ? BST_CHECKED : BST_UNCHECKED);
 
-      enabled = !!settings->QueryValue(SettingsKey::LOGGING_ENABLED);
+      enabled = !!dlgData->settings->QueryValue(SettingsKey::LOGGING_ENABLED);
       Button_SetCheck(hLogging, enabled ? BST_CHECKED : BST_UNCHECKED);
       Button_Enable(hOpenLog, enabled);
       if (enabled) {
@@ -67,6 +108,14 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       }
 
       return TRUE;
+   }
+   case WM_DESTROY: {
+      SettingsGeneralData *dlgData = reinterpret_cast<SettingsGeneralData *>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+      if (dlgData != nullptr) {
+         delete dlgData;
+         SetWindowLongPtr(hDlg, GWLP_USERDATA, 0);
+      }
+      return FALSE;
    }
    case WM_COMMAND: {
       if (LOWORD(wParam) == IDC_ENABLELOGGING) {
@@ -90,19 +139,41 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       return 0;
    }
    case WM_SAVESETTINGS: {
-      WMSettings* settings = reinterpret_cast<WMSettings*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+      SettingsGeneralData *dlgData = reinterpret_cast<SettingsGeneralData *>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+      assert(dlgData != nullptr);
 
       HWND hAutostart = GetDlgItem(hDlg, IDC_RUNONSTARTUP);
       HWND hLogging = GetDlgItem(hDlg, IDC_ENABLELOGGING);
 
       int enableLog = Button_GetCheck(hLogging) == BST_CHECKED;
-      settings->SetValue(SettingsKey::LOGGING_ENABLED, enableLog);
+      dlgData->settings->SetValue(SettingsKey::LOGGING_ENABLED, enableLog);
       WMLog::GetInstance().SetEnabled(enableLog);
 
+      HWND hLanguageSelector = GetDlgItem(hDlg, IDC_LANGUAGE);
+      const auto curLangSel = ComboBox_GetCurSel(hDlg);
+      if (curLangSel != CB_ERR) {
+         const wchar_t *selectedLang = reinterpret_cast<const wchar_t *>(ComboBox_GetItemData(hLanguageSelector, curLangSel));
+         if (selectedLang != nullptr) {
+            if (!WMi18n::GetInstance().LoadLanguage(selectedLang)) {
+               TaskDialog(
+                  hDlg,
+                  hglobInstance,
+                  PROGRAM_NAME,
+                  L"Failed to load selected language.",
+                  L"Please report this error to the WinMute issue tracker.",
+                  TDCBF_OK_BUTTON,
+                  TD_ERROR_ICON,
+                  nullptr);
+            } else {
+               dlgData->settings->SetValue(SettingsKey::APP_LANGUAGE, selectedLang);
+            }
+         }
+      }
+
       if (Button_GetCheck(hAutostart) == BST_CHECKED) {
-         settings->EnableAutostart(true);
+         dlgData->settings->EnableAutostart(true);
       } else {
-         settings->EnableAutostart(false);
+         dlgData->settings->EnableAutostart(false);
       }
 
       return 0;

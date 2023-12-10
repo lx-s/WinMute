@@ -56,13 +56,13 @@ static bool SaveQuietHours(
 {
    if (enabled) {
       if (!IsValidTimeRange(start, end)) {
+         WMi18n &i18n = WMi18n::GetInstance();
          TaskDialog(
             nullptr,
             nullptr,
             PROGRAM_NAME,
-            L"Invalid time range",
-            L"Can't start and stop at the same time.\n"
-            L"Please correct your time range.\n",
+            i18n.GetTextW(IDS_SETTINGS_QUIETHOURS_INVALID_TIME_RANGE_TITLE).c_str(),
+            i18n.GetTextW(IDS_SETTINGS_QUIETHOURS_INVALID_TIME_RANGE_TEXT).c_str(),
             TDCBF_OK_BUTTON,
             TD_WARNING_ICON,
             nullptr);
@@ -78,12 +78,14 @@ static bool SaveQuietHours(
        || !settings->SetValue(SettingsKey::QUIETHOURS_NOTIFICATIONS, showNotifications)
        || !settings->SetValue(SettingsKey::QUIETHOURS_START, setStart)
        || !settings->SetValue(SettingsKey::QUIETHOURS_END, setEnd)) {
+      WMi18n &i18n = WMi18n::GetInstance();
+
       TaskDialog(
          nullptr,
          nullptr,
          PROGRAM_NAME,
-         L"Failed to save quiet hours settings",
-         L"Something went wrong while saving your settings.",
+         i18n.GetTextW(IDS_SETTINGS_QUIETHOURS_ERROR_WHILE_SAVING_TITLE).c_str(),
+         i18n.GetTextW(IDS_SETTINGS_QUIETHOURS_ERROR_WHILE_SAVING_TEXT).c_str(),
          TDCBF_OK_BUTTON,
          TD_ERROR_ICON,
          nullptr);
@@ -91,6 +93,19 @@ static bool SaveQuietHours(
    }
 
    return true;
+}
+
+static void LoadQuietHoursDlgTranslation(HWND hDlg)
+{
+   WMi18n &i18n = WMi18n::GetInstance();
+
+   i18n.SetItemText(hDlg, IDC_QUIET_HOURS_DESCRIPTION, IDS_SETTINGS_QUIETHOURS_INTRO);
+   i18n.SetItemText(hDlg, IDC_ENABLEQUIETHOURS, IDS_SETTINGS_QUIETHOURS_ENABLE);
+   i18n.SetItemText(hDlg, IDC_QUIET_HOURS_START_LABEL, IDS_SETTINGS_QUIETHOURS_START_TIME_LABEL);
+   i18n.SetItemText(hDlg, IDC_QUIET_HOURS_END_LABEL, IDS_SETTINGS_QUIETHOURS_END_TIME_LABEL);
+   i18n.SetItemText(hDlg, IDC_FORCEUNMUTE, IDS_SETTINGS_QUIETHOURS_FORCE_UNMUTE);
+   i18n.SetItemText(hDlg, IDC_QUIET_HOURS_FORCE_UNMUTE_DESCRIPTION, IDS_SETTINGS_QUIETHOURS_FORCE_UNMUTE_DESCRIPTION);
+   i18n.SetItemText(hDlg, IDC_SHOWNOTIFICATIONS, IDS_SETTINGS_QUIETHOURS_SHOW_NOTIFICATIONS);
 }
 
 INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -112,6 +127,7 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
       if (IsAppThemed()) {
          EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
       }
+      LoadQuietHoursDlgTranslation(hDlg);
 
       DWORD qhEnabled = !!settings->QueryValue(SettingsKey::QUIETHOURS_ENABLE);
       Button_SetCheck(hEnable, qhEnabled ? BST_CHECKED : BST_UNCHECKED);

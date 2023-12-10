@@ -62,6 +62,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <chrono>
 #include <cstdarg>
 #include <filesystem>
+#include <optional>
 #include <fstream>
 #include <iterator>
 #include <locale>
@@ -69,7 +70,10 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <string_view>
 #include <string>
 #include <unordered_map>
+#include <map>
 #include <vector>
+
+namespace fs = std::filesystem;
 
 #include <windows.h>
 #include <windowsx.h>
@@ -94,6 +98,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "resource.h"
 
+#include "WMi18n.h"
 #include "WMSettings.h"
 #include "WMLog.h"
 #include "TrayIcon.h"
@@ -105,11 +110,14 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "WinMute.h"
 #include "VersionHelper.h"
 
+
 // Utility
 void PrintWindowsError(const wchar_t *functionName, DWORD lastError = -1);
 bool GetWinMuteVersion(std::wstring &versNumber);
 
 static const wchar_t *PROGRAM_NAME = L"WinMute";
+static const wchar_t *LOG_FILE_NAME = L"WinMute.log";
+
 constexpr int WM_SAVESETTINGS = WM_USER + 300;
 
 template<class Interface>

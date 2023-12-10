@@ -133,6 +133,8 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
       reinterpret_cast<SettingsDlgData*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
    switch (msg) {
    case WM_INITDIALOG: {
+      WMi18n &i18n = WMi18n::GetInstance();
+
       assert(dlgData == nullptr);
       WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
       dlgData = new SettingsDlgData(settings);
@@ -140,11 +142,21 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
       
       dlgData->hTabCtrl = GetDlgItem(hDlg, IDC_SETTINGS_TAB);
 
-      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_GENERAL, L"General");
-      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_MUTE, L"Mute");
-      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_QUIETHOURS, L"Quiet Hours");
-      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_BLUETOOTH, L"Bluetooth");
-      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_WIFI, L"WLAN");
+      SetWindowText(hDlg, i18n.GetTextW(IDS_SETTINGS_TITLE).c_str());
+
+      i18n.SetItemText(hDlg, IDOK, IDS_SETTINGS_BTN_SAVE);
+      i18n.SetItemText(hDlg, IDCANCEL, IDS_SETTINGS_BTN_CANCEL);
+
+      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_GENERAL,
+                    i18n.GetTextW(IDS_SETTINGS_TAB_GENERAL).c_str());
+      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_MUTE,
+                    i18n.GetTextW(IDS_SETTINGS_TAB_MUTE).c_str());
+      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_QUIETHOURS,
+                    i18n.GetTextW(IDS_SETTINGS_TAB_QUIETHOURS).c_str());
+      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_BLUETOOTH,
+                    i18n.GetTextW(IDS_SETTINGS_TAB_BLUETOOTH).c_str());
+      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_WIFI,
+                    i18n.GetTextW(IDS_SETTINGS_TAB_WIFI).c_str());
 
       dlgData->hTabs[SETTINGS_TAB_GENERAL] = CreateDialogParam(
          hglobInstance,

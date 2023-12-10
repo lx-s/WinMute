@@ -162,8 +162,8 @@ bool QuietHoursTimer::LoadFromSettings(const WMSettings& settings)
             hParent_,
             hglobInstance,
             PROGRAM_NAME,
-            L"Quiet Hours Start",
-            L"Failed to register quiet hours start with windows timer system",
+            WMi18n::GetInstance().GetTextW(IDS_POPUP_QUIET_HOURS_START_ERROR_TITLE).c_str(),
+            WMi18n::GetInstance().GetTextW(IDS_POPUP_QUIET_HOURS_START_ERROR_TEXT).c_str(),
             TDCBF_OK_BUTTON,
             TD_ERROR_ICON,
             nullptr);
@@ -195,8 +195,8 @@ bool QuietHoursTimer::SetStart()
          hParent_,
          hglobInstance,
          PROGRAM_NAME,
-         L"Quiet Hours Start",
-         L"Failed to register quiet hours start with windows timer system",
+         WMi18n::GetInstance().GetTextW(IDS_POPUP_QUIET_HOURS_START_ERROR_TITLE).c_str(),
+         WMi18n::GetInstance().GetTextW(IDS_POPUP_QUIET_HOURS_START_ERROR_TEXT).c_str(),
          TDCBF_OK_BUTTON,
          TD_ERROR_ICON,
          nullptr);
@@ -229,8 +229,8 @@ bool QuietHoursTimer::SetEnd()
          hParent_,
          hglobInstance,
          PROGRAM_NAME,
-         L"Quiet Hours Stop",
-         L"Failed to register end of quiet hours with windows timer system",
+         WMi18n::GetInstance().GetTextW(IDS_POPUP_QUIET_HOURS_STOP_ERROR_TITLE).c_str(),
+         WMi18n::GetInstance().GetTextW(IDS_POPUP_QUIET_HOURS_STOP_ERROR_TEXT).c_str(),
          TDCBF_OK_BUTTON,
          TD_ERROR_ICON,
          nullptr);

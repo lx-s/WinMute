@@ -101,6 +101,23 @@ static bool GetAudioEndpoints(std::vector<std::wstring>& endpoints)
    return true;
 }
 
+static void LoadManageEndpointsAddDlgTranslation(HWND hDlg, bool isEdit)
+{
+   WMi18n &i18n = WMi18n::GetInstance();
+   if (isEdit) {
+      i18n.SetItemText(hDlg, IDS_SETTINGS_MANAGE_ENDPOINTS_EDIT_TITLE);
+   } else {
+      i18n.SetItemText(hDlg, IDS_SETTINGS_MANAGE_ENDPOINTS_ADD_TITLE);
+   }
+   i18n.SetItemText(hDlg, IDC_ENDPOINT_NAME_LABEL, IDS_SETTINGS_BLUETOOTH_ADD_DLG_DEVICE_NAME_LABEL);
+   i18n.SetItemText(hDlg, IDOK, IDS_SETTINGS_BTN_SAVE);
+   i18n.SetItemText(hDlg, IDCANCEL, IDS_SETTINGS_BTN_CANCEL);
+
+   ComboBox_SetCueBannerText(
+      GetDlgItem(hDlg, IDC_ENDPOINT_NAME),
+      i18n.GetTextW(IDS_SETTINGS_MANAGE_ENDPOINTS_ADD_ENDPOINT_NAME_TEXT).c_str());
+}
+
 static INT_PTR CALLBACK Settings_EndpointAddDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    switch (msg) {
@@ -113,19 +130,15 @@ static INT_PTR CALLBACK Settings_EndpointAddDlgProc(HWND hDlg, UINT msg, WPARAM 
       }
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(endpointData));
 
-      if (endpointData->name.length() == 0) {
-         if (!SetWindowTextW(hDlg, L"Add endpoint")) {
-            PrintWindowsError(L"SetWindowText", GetLastError());
-            return FALSE;
-         }
-      } else {
-         if (!SetWindowTextW(hDlg, L"Edit endpoint") ||
-             !SetWindowTextW(GetDlgItem(hDlg, IDC_ENDPOINT_NAME),
-                             endpointData->name.c_str())) {
-            PrintWindowsError(L"SetWindowText", GetLastError());
-            return FALSE;
-         }
+      LoadManageEndpointsAddDlgTranslation(hDlg, endpointData->name.length() != 0);
+      if (endpointData->name.length() != 0) {
+         SetWindowTextW(GetDlgItem(hDlg, IDC_ENDPOINT_NAME),
+                        endpointData->name.c_str());
       }
+
+      // Disable save button until at least one string change is made
+      EnableWindow(GetDlgItem(hDlg, IDOK), FALSE);
+
       // Fill Combobox
       std::vector<std::wstring> audioEndpoints;
       if (GetAudioEndpoints(audioEndpoints)) {
@@ -142,18 +155,14 @@ static INT_PTR CALLBACK Settings_EndpointAddDlgProc(HWND hDlg, UINT msg, WPARAM 
       return TRUE;
    }
    case WM_COMMAND:
-      if (LOWORD(wParam) == IDOK) {
+      if (LOWORD(wParam) == IDC_ENDPOINT_NAME && HIWORD(wParam) == CBN_EDITUPDATE) {
+         HWND hDevName = GetDlgItem(hDlg, IDC_ENDPOINT_NAME);
+         const int textLen = Edit_GetTextLength(hDevName);
+         EnableWindow(GetDlgItem(hDlg, IDOK), textLen > 0);
+      } else if (LOWORD(wParam) == IDOK) {
          HWND hEpName = GetDlgItem(hDlg, IDC_ENDPOINT_NAME);
          const int textLen = Edit_GetTextLength(hEpName);
-         if (textLen == 0) {
-            EDITBALLOONTIP ebt;
-            ZeroMemory(&ebt, sizeof(ebt));
-            ebt.cbStruct = sizeof(ebt);
-            ebt.pszText = L"Please enter a endpoint name";
-            ebt.pszTitle = L"Endpoint Name";
-            ebt.ttiIcon = TTI_INFO;
-            Edit_ShowBalloonTip(hEpName, &ebt);
-         } else {
+         if (textLen != 0) {
             wchar_t epNameBuf[ENDPOINT_NAME_MAX_LEN + 1] = { 'L\0' };
             EndpointData *epData = reinterpret_cast<EndpointData*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
             if (epData != nullptr) {
@@ -192,6 +201,24 @@ static std::vector<std::wstring> ExportEndpointNameList(HWND hList)
    return items;
 }
 
+static void LoadManageEndpointsDlgTranslation(HWND hDlg)
+{
+   WMi18n &i18n = WMi18n::GetInstance();
+
+   SetWindowText(hDlg, i18n.GetTextW(IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_TITLE).c_str());
+   i18n.SetItemText(hDlg, IDC_GROUP_LIST_BEHAVIOUR, IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_LIST_BEHAVIOUR_TITLE);
+   i18n.SetItemText(hDlg, IDC_ENDPOINT_LIST_IS_ALLOWLIST, IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_MUTE_ONLY_LISTED);
+   i18n.SetItemText(hDlg, IDC_ENDPOINT_LIST_IS_BLOCKLIST, IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_MUTE_ALL_BUT_LISTED);
+   i18n.SetItemText(hDlg, IDC_GROUP_ENDPOINTS, IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_ENDPOINTS_TITLE);
+
+   i18n.SetItemText(hDlg, IDC_ENDPOINT_ADD, IDS_SETTINGS_BTN_ADD);
+   i18n.SetItemText(hDlg, IDC_ENDPOINT_EDIT, IDS_SETTINGS_BTN_EDIT);
+   i18n.SetItemText(hDlg, IDC_ENDPOINT_REMOVE, IDS_SETTINGS_BTN_REMOVE);
+   i18n.SetItemText(hDlg, IDC_ENDPOINT_REMOVEALL, IDS_SETTINGS_BTN_REMOVE_ALL);
+   i18n.SetItemText(hDlg, IDOK, IDS_SETTINGS_BTN_SAVE);
+   i18n.SetItemText(hDlg, IDCANCEL, IDS_SETTINGS_BTN_CANCEL);
+}
+
 INT_PTR CALLBACK Settings_ManageEndpointsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    switch (msg) {
@@ -200,6 +227,8 @@ INT_PTR CALLBACK Settings_ManageEndpointsDlgProc(HWND hDlg, UINT msg, WPARAM wPa
       if (IsAppThemed()) {
          EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
       }
+      LoadManageEndpointsDlgTranslation(hDlg);
+
       WMSettings *settings = reinterpret_cast<WMSettings *>(lParam);
       assert(settings != nullptr);
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(settings));

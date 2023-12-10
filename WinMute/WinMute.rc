@@ -79,24 +79,26 @@ EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "Start WinMute on system startup",IDC_RUNONSTARTUP,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,9,219,17
-    CONTROL         "Enable logging",IDC_ENABLELOGGING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,31,219,15
-    PUSHBUTTON      "Open log file...",IDC_OPENLOG,22,50,58,15
-    LTEXT           "[log file path]",IDC_LOGFILEPATH,23,67,203,27
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,219,17
+    CONTROL         "Enable logging",IDC_ENABLELOGGING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,52,219,15
+    PUSHBUTTON      "Open log file...",IDC_OPENLOG,22,71,104,16
+    LTEXT           "[log file path]",IDC_LOGFILEPATH,23,89,203,27
+    LTEXT           "Language",IDC_SELECT_LANGUAGE_LABEL,7,14,41,10
+    COMBOBOX        IDC_LANGUAGE,51,12,87,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
 END
 
 IDD_SETTINGS_QUIETHOURS DIALOGEX 0, 0, 246, 198
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "During Quiet Hours WinMute automatically mutes your PC volumes and unmutes it afterwards.",IDC_STATIC,7,9,232,22
+    LTEXT           "During Quiet Hours WinMute automatically mutes your PC volumes and unmutes it afterwards.",IDC_QUIET_HOURS_DESCRIPTION,7,9,232,22
     CONTROL         "Enable Quiet Hours",IDC_ENABLEQUIETHOURS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,31,120,15
-    LTEXT           "Start time:",IDC_STATIC,23,50,43,13
+    LTEXT           "Start time:",IDC_QUIET_HOURS_START_LABEL,23,50,43,13
     CONTROL         "",IDC_QUIETHOURS_START,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,73,47,65,18
-    LTEXT           "End time:",IDC_STATIC,24,73,32,16
+    LTEXT           "End time:",IDC_QUIET_HOURS_END_LABEL,24,73,32,16
     CONTROL         "",IDC_QUIETHOURS_END,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,72,71,67,19
     CONTROL         "Force unmute",IDC_FORCEUNMUTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,94,86,16
-    LTEXT           "If force unmute is enabled, WinMute will unmute your workstation when quiet hours end and not take into account if your workstation was already muted before quiet hours started.",IDC_STATIC,33,111,204,37
+    LTEXT           "If force unmute is enabled, WinMute will unmute your workstation when quiet hours end and not take into account if your workstation was already muted before quiet hours started.",IDC_QUIET_HOURS_FORCE_UNMUTE_DESCRIPTION,33,111,204,37
     CONTROL         "Show quiet hours notifications",IDC_SHOWNOTIFICATIONS,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,146,180,21
 END
@@ -118,52 +120,51 @@ BEGIN
                     "SysLink",WS_TABSTOP,197,32,94,14
     CONTROL         "<a href=""https://github.com/lx-s/WinMute/issues/"">Support</a>",IDC_LINK_TICKETS,
                     "SysLink",WS_TABSTOP,197,49,94,14
-    EDITTEXT        IDC_ABOUTTEXT,7,14,182,155,ES_MULTILINE | ES_AUTOHSCROLL | ES_NOHIDESEL | ES_READONLY | NOT WS_BORDER
+    EDITTEXT        IDC_ABOUTTEXT,7,14,182,144,ES_MULTILINE | ES_AUTOVSCROLL | ES_NOHIDESEL | ES_READONLY | NOT WS_BORDER
 END
 
 IDD_SETTINGS_MUTE DIALOGEX 0, 0, 242, 222
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    GROUPBOX        "General",IDC_STATIC,7,7,228,61
+    GROUPBOX        "General",IDC_GROUP_GENERAL,7,7,228,61
     CONTROL         "Show mute event notifications",IDC_SHOWNOTIFICATIONS,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,15,219,18
-    GROUPBOX        "Mute with volume restore, when...",IDC_STATIC,7,71,228,71
+    GROUPBOX        "Mute with volume restore, when...",IDC_GROUP_MUTE_WITH_RESTORE,7,71,228,71
     CONTROL         "... the workstation is locked.",IDC_MUTE_WHEN_WS_LOCKED,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,83,107,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,83,207,10
     CONTROL         "... the screen turns off.",IDC_MUTE_WHEN_SCREEN_OFF,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,97,93,10
-    CONTROL         "Restore volume afterwards.",IDC_RESTOREVOLUME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,112,106,10
-    GROUPBOX        "Mute without volume restore, when...",IDC_STATIC,7,145,228,67
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,97,205,10
+    CONTROL         "Restore volume afterwards.",IDC_RESTOREVOLUME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,112,210,10
+    GROUPBOX        "Mute without volume restore, when...",IDC_GROUP_MUTE_WITHOUT_RESTORE,7,145,228,67
     CONTROL         "... the computer shuts down.",IDC_MUTE_WHEN_SHUTDOWN,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,156,110,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,156,207,10
     CONTROL         "... the computer goes into sleep/hibernate.",IDC_MUTE_WHEN_SLEEP,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,170,155,10
-    CONTROL         "... you log out.",IDC_MUTE_WHEN_LOGOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,184,65,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,170,206,10
+    CONTROL         "... you log out.",IDC_MUTE_WHEN_LOGOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,184,207,10
     CONTROL         "... when WinMute is started within a RDP session.",IDC_MUTE_WHEN_RDP_SESSION,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,198,175,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,198,208,10
     CONTROL         "Manage audio endpoints individually",IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,28,219,18
-    PUSHBUTTON      "Manage endpoints...",IDC_MANAGE_ENDPOINTS,26,46,74,15
-    LTEXT           "Delay muting for ",IDC_STATIC,14,127,56,8
-    EDITTEXT        IDC_MUTEDELAY,70,125,39,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "seconds (0 for no delay)",IDC_STATIC,113,127,79,8
+    PUSHBUTTON      "Manage endpoints...",IDC_MANAGE_ENDPOINTS,26,46,97,15
+    LTEXT           "seconds delay before muting.",IDC_DELAY_MUTING_LABEL,47,127,169,8
+    EDITTEXT        IDC_MUTEDELAY,13,124,30,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
 END
 
 IDD_SETTINGS_WIFI DIALOGEX 0, 0, 242, 204
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LISTBOX         IDC_WIFI_LIST,7,66,170,110,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Add",IDC_WIFI_ADD,179,65,56,16
-    PUSHBUTTON      "Edit",IDC_WIFI_EDIT,179,84,56,16
-    PUSHBUTTON      "Remove",IDC_WIFI_REMOVE,179,103,56,16
-    PUSHBUTTON      "Remove all",IDC_WIFI_REMOVEALL,179,123,56,16
+    LISTBOX         IDC_WIFI_LIST,7,81,170,95,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Add",IDC_WIFI_ADD,179,80,56,16
+    PUSHBUTTON      "Edit",IDC_WIFI_EDIT,179,99,56,16
+    PUSHBUTTON      "Remove",IDC_WIFI_REMOVE,179,118,56,16
+    PUSHBUTTON      "Remove all",IDC_WIFI_REMOVEALL,179,138,56,16
     LTEXT           "Note: WLAN is not available on your device, so some options have been disabled.",IDC_STATIC_WLAN_NOT_AVAILABLE,7,179,228,18
-    CONTROL         "Enable WLAN based muting",IDC_ENABLE_WIFI_MUTE,"Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,26,228,14
+    CONTROL         "Enable WLAN based muting",IDC_ENABLE_WIFI_MUTE,"Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,44,228,14
     CONTROL         "Mute workstation if the WLAN network name is NOT in the list\n(default: mute if it is on the list)",IDC_IS_PERMITLIST,
-                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,20,41,215,18
-    LTEXT           """WLAN Mute"" allows you to mute your workstation based on the name of the connected wireless network.",IDC_STATIC,7,7,228,19
+                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,20,59,215,18
+    LTEXT           """WLAN Mute"" allows you to mute your workstation based on the name of the connected wireless network.",IDC_WIFI_INTRO,7,7,228,35
 END
 
 IDD_SETTINGS_WIFI_ADD DIALOGEX 0, 0, 201, 62
@@ -173,7 +174,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Save",IDOK,91,41,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,144,41,50,14
-    LTEXT           "SSID/WiFi Name:",IDC_STATIC,7,7,62,14
+    LTEXT           "SSID/WiFi Name:",IDC_WIFI_NAME_LABEL,7,7,62,14
     EDITTEXT        IDC_WIFI_NAME,7,20,187,16,ES_AUTOHSCROLL
 END
 
@@ -182,18 +183,17 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LISTBOX         IDC_BLUETOOTH_LIST,7,90,170,79,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Add",IDC_BLUETOOTH_ADD,179,89,56,16
-    PUSHBUTTON      "Edit",IDC_BLUETOOTH_EDIT,179,109,56,16
-    PUSHBUTTON      "Remove",IDC_BLUETOOTH_REMOVE,179,127,56,16
-    PUSHBUTTON      "Remove all",IDC_BLUETOOTH_REMOVEALL,179,147,56,16
-    LTEXT           "Note: Bluetooth is not available on your device, so some options have been disabled.",IDC_STATIC_BLUETOOTH_NOT_AVAILABLE,7,172,228,18
+    LISTBOX         IDC_BLUETOOTH_LIST,7,93,170,79,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Add",IDC_BLUETOOTH_ADD,179,92,56,16
+    PUSHBUTTON      "Edit",IDC_BLUETOOTH_EDIT,179,112,56,16
+    PUSHBUTTON      "Remove",IDC_BLUETOOTH_REMOVE,179,130,56,16
+    PUSHBUTTON      "Remove all",IDC_BLUETOOTH_REMOVEALL,179,150,56,16
+    LTEXT           "Note: Bluetooth is not available on your device, so some options have been disabled.",IDC_STATIC_BLUETOOTH_NOT_AVAILABLE,7,175,228,18
     CONTROL         "Enable Bluetooth based muting",IDC_ENABLE_BLUETOOTH_MUTE,
-                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,52,228,14
+                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,60,228,14
     CONTROL         "Only mute when one of the following devices connect to or disconnect from your PC.",IDC_ENABLE_BLUETOOTH_MUTE_DEVICE_LIST,
-                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,20,66,215,18
-    LTEXT           """Bluetooth Muting"" allows disabling your PC-audio if an audio-class bluetooth device is disconnected, and re-enables your PC-audio if a device is reconnected to your computer.",IDC_STATIC,7,7,228,30
-    LTEXT           "You can enable this behaviour for all audio bluetooth devices or only for a specific set of devices.",IDC_STATIC,7,32,230,21
+                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,20,74,215,18
+    LTEXT           "Description\nDescription\nDescription\nDescription\nDescription",IDC_BLUETOOTH_DESCRIPTION_LABEL,7,7,230,53
 END
 
 IDD_SETTINGS_BLUETOOTH_ADD DIALOGEX 0, 0, 201, 62
@@ -203,7 +203,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Save",IDOK,91,41,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,144,41,50,14
-    LTEXT           "Bluetooth device name:",IDC_STATIC,7,7,187,14
+    LTEXT           "Bluetooth device name:",IDC_LABEL_BT_DEVICE_NAME,7,7,187,14
     COMBOBOX        IDC_BT_DEVICE_NAME,7,22,187,17,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
 END
 
@@ -212,7 +212,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "Manage Endpoints"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,133,179,50,14
+    DEFPUSHBUTTON   "Save",IDOK,133,179,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,184,179,50,14
     LISTBOX         IDC_ENDPOINT_LIST,13,60,159,110,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "Add",IDC_ENDPOINT_ADD,175,60,56,16
@@ -220,11 +220,11 @@ BEGIN
     PUSHBUTTON      "Remove",IDC_ENDPOINT_REMOVE,175,97,56,16
     PUSHBUTTON      "Remove all",IDC_ENDPOINT_REMOVEALL,175,120,56,16
     CONTROL         "Mute only listed endpoints",IDC_ENDPOINT_LIST_IS_ALLOWLIST,
-                    "Button",BS_AUTORADIOBUTTON,13,19,99,10
+                    "Button",BS_AUTORADIOBUTTON,13,19,209,10
     CONTROL         "Mute all but the listed endpoints",IDC_ENDPOINT_LIST_IS_BLOCKLIST,
-                    "Button",BS_AUTORADIOBUTTON,13,32,118,10
-    GROUPBOX        "List behaviour",IDC_STATIC,7,7,227,41
-    GROUPBOX        "Endpoints",IDC_STATIC,7,48,227,128
+                    "Button",BS_AUTORADIOBUTTON,13,32,207,10
+    GROUPBOX        "List behaviour",IDC_GROUP_LIST_BEHAVIOUR,7,7,227,41
+    GROUPBOX        "Endpoints",IDC_GROUP_ENDPOINTS,7,48,227,128
 END
 
 IDD_MANAGE_ENDPOINTS_ADD DIALOGEX 0, 0, 201, 62
@@ -234,7 +234,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Save",IDOK,91,41,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,144,41,50,14
-    LTEXT           "Endpoint name:",IDC_STATIC,7,7,187,14
+    LTEXT           "Endpoint name:",IDC_ENDPOINT_NAME_LABEL,7,7,187,14
     COMBOBOX        IDC_ENDPOINT_NAME,7,22,187,17,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
 END
 
@@ -453,13 +453,13 @@ BEGIN
     BEGIN
         MENUITEM "About",                       ID_TRAYMENU_INFO
         MENUITEM SEPARATOR
-        MENUITEM "Mute when...",                40003, INACTIVE
+        MENUITEM "Mute when...",                ID_TRAYMENU_LABEL_MUTEWHEN, INACTIVE
         MENUITEM "... Workstation is locked",   ID_TRAYMENU_MUTEONLOCK, CHECKED
         MENUITEM "... Screen turns off",        ID_TRAYMENU_MUTEONSCREENSUSPEND, CHECKED
         MENUITEM SEPARATOR
         MENUITEM "Restore volume afterwards",   ID_TRAYMENU_RESTOREAUDIO, CHECKED
         MENUITEM SEPARATOR
-        MENUITEM "Mute on (no volume restore)", ID_TRAYMENU_AFTERWARDS, INACTIVE
+        MENUITEM "Mute on (no volume restore)", ID_TRAYMENU_LABEL_MUTEON_NO_RESTORE, INACTIVE
         MENUITEM "... Shutdown",                ID_TRAYMENU_MUTEONSHUTDOWN
         MENUITEM "... Sleep",                   ID_TRAYMENU_MUTEONSUSPEND
         MENUITEM "... Logout",                  ID_TRAYMENU_MUTEONLOGOUT
@@ -523,6 +523,255 @@ BEGIN
 END
 
 #endif    // German (Germany) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United Kingdom) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_LANG_NAME           "English"
+    IDS_MAIN_ERROR_SETTINGS_INIT_TITLE "Failed to initialize settings"
+    IDS_MAIN_ERROR_SETTINGS_INIT_TEXT 
+                            "Critical error while initializing WinMute"
+    IDS_MAIN_ERROR_WINMUTE_ALREADY_RUNNING_TITLE "WinMute is already running"
+    IDS_MAIN_ERROR_WINMUTE_ALREADY_RUNNING_TEXT 
+                            "Please look for a white speaker icon in your Windows taskbar notification area."
+    IDS_MAIN_ERROR_INIT_WINMUTE_TITLE "Failed to start WinMute."
+    IDS_MAIN_ERROR_INIT_WINMUTE_TEXT 
+                            "WinMute encountered a critical error while initializing and must shut down."
+    IDS_MAIN_ERROR_WINAPI_FAILURE_TEXT "{} failed with error {}: {}"
+    IDS_MAIN_ERROR_AUDIO_SERVICE_SHUTDOWN_TITLE 
+                            "The audio service has been shut down."
+    IDS_MAIN_ERROR_AUDIO_SERVICE_SHUTDOWN_TEXT 
+                            "WinMute is not able to recover from that condition.\nPlease try to restart the program."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_WM_ERROR_WINDOWS_SUPPORT_TITLE 
+                            "Only Windows Vista and newer is supported"
+    IDS_WM_ERROR_WINDOWS_SUPPORT_TEXT 
+                            "If you need support for Windows XP, please download WinMute version 1.4.2 or lower."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_POPUP_REMOTE_SESSION_DETECTED_TITLE "Remote Session detected"
+    IDS_POPUP_REMOTE_SESSION_DETECTED_TEXT 
+                            "All audio endpoints have been muted"
+    IDS_POPUP_BLUETOOTH_MUTING_DISABLED_TITLE "Bluetooth muting disabled"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_POPUP_BLUETOOTH_MUTING_DISABLED_TEXT 
+                            "Bluetooth is not available or disabled. Bluetooth muting will be disabled on this computer."
+    IDS_POPUP_WLAN_MUTING_DISABLED_TITLE "WLAN muting disabled"
+    IDS_POPUP_WLAN_MUTING_DISABLED_TEXT 
+                            "WLAN is not available or disabled. WLAN muting will be disabled on this computer"
+    IDS_POPUP_QUIET_HOURS_STARTED_TITLE "WinMute: Quiet hours started"
+    IDS_POPUP_QUIET_HOURS_STARTED_TEXT 
+                            "Your workstation audio will now be muted."
+    IDS_POPUP_QUIET_HOURS_ENDED_TITLE "WinMute: Quiet Hours ended"
+    IDS_POPUP_QUIET_HOURS_ENDED_TEXT 
+                            "Your workstation audio has been restored."
+    IDS_POPUP_WORKSTATION_MUTED_TITLE "Workstation muted"
+    IDS_POPUP_WLAN_NOT_ON_MUTE_LIST_TEXT 
+                            "WLAN network ""{}"" is not on allowed list."
+    IDS_POPUP_WLAN_IS_ON_MUTE_LIST_TEXT 
+                            "WLAN network ""{}"" is configured for AutoMute."
+    IDS_POPUP_MUTING_WORKSTATION_AFTER_DELAY_TITLE 
+                            "Muting workstation after delay"
+    IDS_POPUP_MUTING_WORKSTATION_AFTER_DELAY_TEXT 
+                            "All endpoints have been muted"
+    IDS_POPUP_VOLUME_RESTORED_TITLE "Volume restored"
+    IDS_POPUP_VOLUME_RESTORED_TEXT 
+                            "All endpoints have been restored to their previous configuration"
+    IDS_POPUP_MUTING_WORKSTATION_TITLE "Muting workstation after delay"
+    IDS_POPUP_MUTING_WORKSTATION_TEXT "All endpoints have been muted"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_POPUP_QUIET_HOURS_START_ERROR_TITLE "Quiet Hours Start"
+    IDS_POPUP_QUIET_HOURS_START_ERROR_TEXT 
+                            "Failed to register quiet hours start with windows timer system"
+    IDS_POPUP_QUIET_HOURS_STOP_ERROR_TITLE "Quiet Hours Stop"
+    IDS_POPUP_QUIET_HOURS_STOP_ERROR_TEXT 
+                            "Failed to register end of quiet hours with windows timer system"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TRAYMENU_INFO       "About"
+    IDS_TRAYMENU_MUTEWHEN   "Mute when..."
+    IDS_TRAYMENU_MUTEONLOCK "... Workstation is locked"
+    IDS_TRAYMENU_MUTEONSCREENSUSPEND "... Screen turns off"
+    IDS_TRAYMENU_RESTOREVOLUME "Restore volume afterwards"
+    IDS_TRAYMENU_MUTEON_NO_RESTORE "Mute on (no volume restore)"
+    IDS_TRAYMENU_MUTEON_SHUTDOWN "... Shutdown"
+    IDS_TRAYMENU_MUTEON_SLEEP "... Sleep"
+    IDS_TRAYMENU_MUTEON_LOGOUT "... Logout"
+    IDS_TRAYMENU_MUTE_ALL_DEVICES "Mute all devices"
+    IDS_TRAYMENU_SETTINGS   "Settings..."
+    IDS_TRAYMENU_EXIT       "Exit"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SETTINGS_BLUETOOTH_ADD_DLG_TITLE "Add bluetooth device"
+    IDS_SETTINGS_BLUETOOTH_EDIT_DLG_TITLE "Edit bluetooth device"
+    IDS_SETTINGS_BLUETOOTH_ADD_DLG_DEVICE_NAME_LABEL "Bluetooth device name:"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SETTINGS_BTN_SAVE   "Save"
+    IDS_SETTINGS_BTN_CANCEL "Cancel"
+    IDS_SETTINGS_BTN_ADD    "Add"
+    IDS_SETTINGS_BTN_EDIT   "Edit"
+    IDS_SETTINGS_BTN_REMOVE "Remove"
+    IDS_SETTINGS_BTN_REMOVE_ALL "Remove all"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SETTINGS_TAB_GENERAL "General"
+    IDS_SETTINGS_TAB_MUTE   "Mute"
+    IDS_SETTINGS_TAB_QUIETHOURS "Quiet Hours"
+    IDS_SETTINGS_TAB_BLUETOOTH "Bluetooth"
+    IDS_SETTINGS_TAB_WIFI   "WLAN"
+    IDS_SETTINGS_TITLE      "Settings"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SETTINGS_GENERAL_RUN_ON_STARTUP "Start WinMute on system startup"
+    IDS_SETTINGS_GENERAL_ENABLE_LOGGING "Enable logging"
+    IDS_SETTINGS_GENERAL_OPEN_LOG_FILE "Open log file..."
+    IDS_SETTINGS_GENERAL_LANGUAGE_LABEL "Language"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SETTINGS_BLUETOOTH_ADD_DLG_ENTER_DEVICE_NAME_TEXT 
+                            "Please enter a bluetooth device name"
+    IDS_SETTINGS_BLUETOOTH_DESCRIPTION 
+                            """Bluetooth Muting"" allows disabling your PC-audio if an audio-class bluetooth device is disconnected, and re-enables your PC-audio if a device is reconnected to your computer.\n\nYou can enable this behaviour for all audio bluetooth devices or only for a specific set of devices."
+    IDS_SETTINGS_BLUETOOTH_ENABLE_MUTING "Enable Bluetooth-based muting."
+    IDS_SETTINGS_BLUETOOTH_ENABLE_MUTING_FILTER 
+                            "Only mute when one of the following devices connect to or disconnect from your PC."
+    IDS_SETTINGS_BLUETOOTH_DISABLED_INFO 
+                            "Note: Bluetooth is not available on your device, so some options have been disabled."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SETTINGS_MUTE_TITLE_GENERAL "General"
+    IDS_SETTINGS_MUTE_SHOW_MUTE_EVENT_NOTIFICATIONS 
+                            "Show mute event notifications"
+    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_INDIVIDUALLY 
+                            "Manage audio endpoints individually"
+    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_BTN "Manage endpoints..."
+    IDS_SETTINGS_MUTE_MUTE_WITH_RESTORE_TITLE 
+                            "Mute with volume restore, when..."
+    IDS_SETTINGS_MUTE_WHEN_WORKSTATION_IS_LOCKED 
+                            "... the workstation is locked"
+    IDS_SETTINGS_MUTE_WHEN_SCREEN_TURNS_OFF "... the screen turns off."
+    IDS_SETTINGS_MUTE_RESTORE_VOLUME "Restore volume afterwards"
+    IDS_SETTINGS_MUTE_RESTORE_VOLUME_DELAY_LABEL 
+                            "seconds delay before muting."
+    IDS_SETTINGS_MUTE_MUTE_WITHOUT_RESTORE_TITLE 
+                            "Mute without volume restore, when..."
+    IDS_SETTINGS_MUTE_WHEN_COMPUTER_SHUTS_DOWN "... the computer shuts down."
+    IDS_SETTINGS_MUTE_WHEN_COMPUTER_GOES_TO_SLEEP 
+                            "... the computer goes into sleep/hibernate."
+    IDS_SETTINGS_MUTE_WHEN_USER_LOGS_OUT "... you log out."
+    IDS_SETTINGS_MUTE_WHEN_RDP_SESSION_STARTS 
+                            "... when WinMute is started within a RDP session."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SETTINGS_QUIETHOURS_INTRO 
+                            "During Quiet Hours WinMute automatically mutes your PCs audio endpoints and unmutes them afterwards."
+    IDS_SETTINGS_QUIETHOURS_ENABLE "Enable Quiet Hours"
+    IDS_SETTINGS_QUIETHOURS_START_TIME_LABEL "Start time:"
+    IDS_SETTINGS_QUIETHOURS_END_TIME_LABEL "End time:"
+    IDS_SETTINGS_QUIETHOURS_FORCE_UNMUTE "Force unmute"
+    IDS_SETTINGS_QUIETHOURS_FORCE_UNMUTE_DESCRIPTION 
+                            "If force unmute is enabled, WinMute will unmute your audio endpoints when quiet hours and and not take into account if they were already muted before quiet hours started."
+    IDS_SETTINGS_QUIETHOURS_SHOW_NOTIFICATIONS 
+                            "Show Quiet Hours notifications"
+    IDS_SETTINGS_QUIETHOURS_INVALID_TIME_RANGE_TITLE "Invalid time range"
+    IDS_SETTINGS_QUIETHOURS_INVALID_TIME_RANGE_TEXT 
+                            "Can't start and stop at the same time.\nPlease correct your time range."
+    IDS_SETTINGS_QUIETHOURS_ERROR_WHILE_SAVING_TITLE 
+                            "Failed to save quiet hours settings"
+    IDS_SETTINGS_QUIETHOURS_ERROR_WHILE_SAVING_TEXT 
+                            "Something went wrong while saving your settings"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SETTINGS_WIFI_INTRO """WLAN Mute"" allows you to mute your workstation based on the name of the connected wireless network."
+    IDS_SETTINGS_WIFI_ENABLE "Enable WLAN based muting"
+    IDS_SETTINGS_WIFI_MUTE_WHEN_NOT_IN_LIST 
+                            "Mute workstation if the WLAN network name is NOT in the list\n(default: mute if it is on the list)"
+    IDS_SETTINGS_WIFI_DISABLED_INFO 
+                            "Note: WLAN is not available on your device, so some options have been disabled."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SETTINGS_WIFI_ADD_DLG_TITLE "Add WiFi network"
+    IDS_SETTINGS_WIFI_EDIT_DLG_TITLE "Edit WiFi network"
+    IDS_SETTINGS_WIFI_ADD_DLG_SSID_NAME_LABEL "SSID/WiFi Name:"
+    IDS_SETTINGS_WIFI_ADD_DLG_ENTER_DEVICE_NAME_TEXT 
+                            "Please enter a SSID/WiFi name"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUT_TITLE         "About WinMute"
+    IDS_ABOUT_GENERAL_AUTHOR_SITE_LABEL "Author: www.lx-s.de"
+    IDS_ABOUT_GENERAL_PROJECT_SITE_LABEL "Project Site && Code"
+    IDS_ABOUT_GENERAL_SUPPORT_LABEL "Support"
+    IDS_ABOUT_GENERAL_DESCRIPTION 
+                            "WinMute is developed by Alexander Steinhoefer his spare time. The code as well as new releases for this tool can be found on GitHub. Contributions in the form of code, tickets or feature requests are very welcome. Thank your for using this little tool!"
+    IDS_ABOUT_TAB_WINMUTE   "WinMute"
+    IDS_ABOUT_TAB_LICENSE   "License"
+    IDS_ABOUT_CLOSE_BTN     "OK"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_TITLE "Manage audio endpoints"
+    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_LIST_BEHAVIOUR_TITLE "List behaviour"
+    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_MUTE_ONLY_LISTED 
+                            "Mute only listed endpoints"
+    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_MUTE_ALL_BUT_LISTED 
+                            "Mute all but listed endpoints"
+    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_ENDPOINTS_TITLE "Endpoints"
+    IDS_SETTINGS_MANAGE_ENDPOINTS_ADD_TITLE "Add Endpoint"
+    IDS_SETTINGS_MANAGE_ENDPOINTS_EDIT_TITLE "Edit Endpoint"
+    IDS_SETTINGS_MANAGE_ENDPOINTS_ADD_ENDPOINT_NAME_TEXT 
+                            "Please enter a endpoint name"
+    IDS_SETTINGS_MANAGE_ENDPOINTS_ADD_ENDPOINT_NAME_LABEL "Endpoint name:"
+END
+
+#endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

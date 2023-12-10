@@ -39,6 +39,23 @@ struct WiFiData {
    std::wstring ssidName;
 };
 
+static void LoadWifiAddDlgTranslation(HWND hDlg, bool isEdit)
+{
+   WMi18n &i18n = WMi18n::GetInstance();
+   if (isEdit) {
+      i18n.SetItemText(hDlg, IDS_SETTINGS_WIFI_EDIT_DLG_TITLE);
+   } else {
+      i18n.SetItemText(hDlg, IDS_SETTINGS_WIFI_ADD_DLG_TITLE);
+   }
+   i18n.SetItemText(hDlg, IDC_WIFI_NAME_LABEL, IDS_SETTINGS_WIFI_ADD_DLG_SSID_NAME_LABEL);
+   i18n.SetItemText(hDlg, IDOK, IDS_SETTINGS_BTN_SAVE);
+   i18n.SetItemText(hDlg, IDCANCEL, IDS_SETTINGS_BTN_CANCEL);
+
+   Edit_SetCueBannerText(
+      GetDlgItem(hDlg, IDC_WIFI_NAME),
+      i18n.GetTextW(IDS_SETTINGS_WIFI_ADD_DLG_ENTER_DEVICE_NAME_TEXT).c_str());
+}
+
 INT_PTR CALLBACK Settings_WifiAddDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    switch (msg) {
@@ -50,18 +67,13 @@ INT_PTR CALLBACK Settings_WifiAddDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       }
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(wifiData));
 
-      if (wifiData->ssidName.length() == 0) {
-         if (!SetWindowTextW(hDlg, L"Add WiFi network")) {
-            PrintWindowsError(L"SetWindowText", GetLastError());
-            return FALSE;
-         }
-      } else {
-         if (!SetWindowTextW(hDlg, L"Edit WiFi network")
-             || !SetWindowTextW(GetDlgItem(hDlg, IDC_WIFI_NAME), wifiData->ssidName.c_str())) {
-            PrintWindowsError(L"SetWindowText", GetLastError());
-            return FALSE;
-         }
+      LoadWifiAddDlgTranslation(hDlg, wifiData->ssidName.length() != 0);
+
+      if (wifiData->ssidName.length() != 0) {
+         SetWindowTextW(GetDlgItem(hDlg, IDC_WIFI_NAME), wifiData->ssidName.c_str());
       }
+      // Disable save button until at least one string change is made
+      EnableWindow(GetDlgItem(hDlg, IDOK), FALSE);
       Edit_LimitText(hSsid, SSID_MAX_LEN);
       if (GetDlgCtrlID(reinterpret_cast<HWND>(wParam)) != IDC_WIFI_NAME) {
          SetFocus(hSsid);
@@ -70,18 +82,14 @@ INT_PTR CALLBACK Settings_WifiAddDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       return TRUE;
    }
    case WM_COMMAND:
-      if (LOWORD(wParam) == IDOK) {
+      if (LOWORD(wParam) == IDC_WIFI_NAME && HIWORD(wParam) == CBN_EDITUPDATE) {
          HWND hSsid = GetDlgItem(hDlg, IDC_WIFI_NAME);
-         int textLen = Edit_GetTextLength(hSsid);
-         if (textLen == 0) {
-            EDITBALLOONTIP ebt;
-            ZeroMemory(&ebt, sizeof(ebt));
-            ebt.cbStruct = sizeof(ebt);
-            ebt.pszText = L"Please enter a SSID/WIFI name";
-            ebt.pszTitle = L"SSID Name";
-            ebt.ttiIcon = TTI_INFO;
-            Edit_ShowBalloonTip(hSsid, &ebt);
-         } else {
+         const int textLen = Edit_GetTextLength(hSsid);
+         EnableWindow(GetDlgItem(hDlg, IDOK), textLen > 0);
+      } else if (LOWORD(wParam) == IDOK) {
+         HWND hSsid = GetDlgItem(hDlg, IDC_WIFI_NAME);
+         const int textLen = Edit_GetTextLength(hSsid);
+         if (textLen != 0) {
             wchar_t ssidBuf[SSID_MAX_LEN + 1];
             WiFiData* wifiData = reinterpret_cast<WiFiData*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
             if (wifiData != nullptr) {
@@ -137,6 +145,21 @@ static BOOL CALLBACK ShowChildWindow(HWND hWnd, LPARAM lParam)
    return TRUE;
 }
 
+
+static void LoadWifiDlgTranslation(HWND hDlg)
+{
+   WMi18n &i18n = WMi18n::GetInstance();
+
+   i18n.SetItemText(hDlg, IDC_WIFI_INTRO, IDS_SETTINGS_WIFI_INTRO);
+   i18n.SetItemText(hDlg, IDC_ENABLE_WIFI_MUTE, IDS_SETTINGS_WIFI_ENABLE);
+   i18n.SetItemText(hDlg, IDC_IS_PERMITLIST, IDS_SETTINGS_WIFI_MUTE_WHEN_NOT_IN_LIST);
+   i18n.SetItemText(hDlg, IDC_WIFI_ADD, IDS_SETTINGS_BTN_ADD);
+   i18n.SetItemText(hDlg, IDC_WIFI_EDIT, IDS_SETTINGS_BTN_EDIT);
+   i18n.SetItemText(hDlg, IDC_WIFI_REMOVE, IDS_SETTINGS_BTN_REMOVE);
+   i18n.SetItemText(hDlg, IDC_WIFI_REMOVEALL, IDS_SETTINGS_BTN_REMOVE_ALL);
+   i18n.SetItemText(hDlg, IDC_STATIC_WLAN_NOT_AVAILABLE, IDS_SETTINGS_WIFI_DISABLED_INFO);
+}
+
 INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    switch (msg) {
@@ -145,6 +168,7 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       if (IsAppThemed()) {
          EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
       }
+      LoadWifiDlgTranslation(hDlg);
       WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
       assert(settings != nullptr);
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(settings));

@@ -49,23 +49,64 @@ static bool SetWorkingDirectory()
    return false;
 }
 
-int WINAPI wWinMain(_In_ HINSTANCE hInstance,
+static void LoadLanguage(WMSettings &settings, WMi18n &i18n)
+{
+   const auto langModule = settings.QueryStrValue(SettingsKey::APP_LANGUAGE);
+   if (langModule.has_value()) {
+      i18n.LoadLanguage(*langModule);
+   }
+}
+
+static bool InitWindowsComponents()
+{
+   INITCOMMONCONTROLSEX initComCtrl;
+   initComCtrl.dwSize = sizeof(INITCOMMONCONTROLSEX);
+   initComCtrl.dwICC = ICC_LINK_CLASS;
+   if (InitCommonControlsEx(&initComCtrl) == FALSE) {
+      WMLog::GetInstance().WriteWindowsError(L"InitCommonControlsEx", GetLastError());
+      return FALSE;
+   } else if (CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED) != S_OK) {
+      WMLog::GetInstance().WriteWindowsError(L"CoInitializeEx", GetLastError());
+      return FALSE;
+   }
+   return TRUE;
+}
+
+int WINAPI wWinMain(
+   _In_ HINSTANCE hInstance,
    _In_opt_ HINSTANCE,
    _In_ PWSTR,
    _In_ int)
 {
-   HANDLE hMutex = CreateMutexW(nullptr, TRUE, L"LxSystemsWinMute");
-   if (hMutex == nullptr) {
-      return FALSE;
-   }
-   if (GetLastError() == ERROR_ALREADY_EXISTS) {
-      ReleaseMutex(hMutex);
-      TaskDialog(nullptr,
+   hglobInstance = hInstance;
+   WMSettings settings;
+   WMi18n& i18n = WMi18n::GetInstance();
+   if (!settings.Init()) {
+      TaskDialog(
+         nullptr,
          nullptr,
          PROGRAM_NAME,
-         L"WinMute is already running",
-         L"Please look for a white speaker icon in your Windows "
-         L" taskbar notification area.",
+         i18n.GetTextW(IDS_MAIN_ERROR_SETTINGS_INIT_TITLE).c_str(),
+         i18n.GetTextW(IDS_MAIN_ERROR_SETTINGS_INIT_TEXT).c_str(),
+         TDCBF_OK_BUTTON,
+         TD_ERROR_ICON,
+         nullptr);
+      return FALSE;
+   }
+
+   LoadLanguage(settings, i18n);
+
+   HANDLE hMutex = CreateMutexW(nullptr, TRUE, L"LxSystemsWinMuteRunOnce");
+   if (hMutex == nullptr) {
+      return FALSE;
+   } else if (GetLastError() == ERROR_ALREADY_EXISTS) {
+      ReleaseMutex(hMutex);
+      TaskDialog(
+         nullptr,
+         nullptr,
+         PROGRAM_NAME,
+         i18n.GetTextW(IDS_MAIN_ERROR_WINMUTE_ALREADY_RUNNING_TITLE).c_str(),
+         i18n.GetTextW(IDS_MAIN_ERROR_WINMUTE_ALREADY_RUNNING_TEXT).c_str(),
          TDCBF_OK_BUTTON,
          TD_INFORMATION_ICON,
          nullptr);
@@ -74,35 +115,15 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
 
    SetWorkingDirectory();
 
-   hglobInstance = hInstance;
-
    HeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
 
-   // <Init Common Controls>
-   INITCOMMONCONTROLSEX initComCtrl;
-   initComCtrl.dwSize = sizeof(INITCOMMONCONTROLSEX);
-   initComCtrl.dwICC = ICC_LINK_CLASS;
-   if (InitCommonControlsEx(&initComCtrl) == FALSE) {
-      TaskDialog(nullptr,
+   if (!InitWindowsComponents()) {
+      TaskDialog(
+         nullptr,
          nullptr,
          PROGRAM_NAME,
-         L"Failed to register extended window controls.",
-         L"Please try to restart the program.",
-         TDCBF_OK_BUTTON,
-         TD_ERROR_ICON,
-         nullptr);
-      ReleaseMutex(hMutex);
-      return FALSE;
-   }
-   // </Init Common Controls>
-
-   // <Init COM>
-   if (CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED) != S_OK) {
-      TaskDialog(nullptr,
-         nullptr,
-         PROGRAM_NAME,
-         L"Failed to initialize COM library.",
-         L"Please try to restart the program.",
+         i18n.GetTextW(IDS_MAIN_ERROR_INIT_WINMUTE_TITLE).c_str(),
+         i18n.GetTextW(IDS_MAIN_ERROR_INIT_WINMUTE_TEXT).c_str(),
          TDCBF_OK_BUTTON,
          TD_ERROR_ICON,
          nullptr);
@@ -111,7 +132,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
    }
 
    MSG msg = { nullptr };
-   WinMute program;
+   WinMute program(settings);
    if (program.Init()) {
       while (GetMessage(&msg, nullptr, 0, 0)) {
          HWND hwnd = GetForegroundWindow();

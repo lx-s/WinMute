@@ -64,6 +64,7 @@ enum class SettingsKey {
    , QUIETHOURS_END
    , NOTIFICATIONS_ENABLED
    , LOGGING_ENABLED
+   , APP_LANGUAGE
 };
 
 class WMSettings {
@@ -92,6 +93,9 @@ public:
 
    DWORD QueryValue(SettingsKey key) const;
    bool  SetValue(SettingsKey key, DWORD value);
+
+   std::optional<std::wstring> QueryStrValue(SettingsKey key) const;
+   bool SetValue(SettingsKey key, const std::wstring &value);
 
 private:
    HKEY hSettingsKey_;

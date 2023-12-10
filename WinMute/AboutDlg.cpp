@@ -66,18 +66,6 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE\r\n\
 POSSIBILITY OF SUCH DAMAGE.\r\n\
 ";
 
-static const std::wstring aboutText = L"\
-WinMute is developed by Alexander Steinhoefer\r\n\
-in his spare time.\r\n\
-\r\n\
-The code as well as new releases for this tool\r\n\
-can be found on GitHub.\r\n\
-Contributions in the form of code, tickets or\r\n\
-feature requests are very welcome.\r\n\
-\r\n\
-Thank your for using this little tool!\r\n\
-";
-
 enum AboutTabsIDs {
    ABOUT_TAB_GENERAL = 0,
    ABOUT_TAB_LICENSE,
@@ -158,6 +146,29 @@ static void ResizeTabs(HWND hTabCtrl, std::span<HWND> tabs)
    }
 }
 
+static void TranslateAboutGeneralDlgProc(HWND hDlg)
+{
+   WMi18n &i18n = WMi18n::GetInstance();
+
+   const auto hpLink = std::vformat(
+      L"<a href=\"https://www.lx-s.de\">{}</a>",
+      std::make_wformat_args(i18n.GetTextW(IDS_ABOUT_GENERAL_AUTHOR_SITE_LABEL)));
+
+   const auto projLink = std::vformat(
+      L"<a href=\"https://github.com/lx-s/WinMute/\">{}</a>",
+      std::make_wformat_args(i18n.GetTextW(IDS_ABOUT_GENERAL_PROJECT_SITE_LABEL)));
+
+   const auto supportLink = std::vformat(
+      L"<a href=\"https://github.com/lx-s/WinMute/issues/\">{}</a>",
+      std::make_wformat_args(i18n.GetTextW(IDS_ABOUT_GENERAL_SUPPORT_LABEL)));
+
+   SetDlgItemTextW(hDlg, IDC_LINK_HOMEPAGE, hpLink.c_str());
+   SetDlgItemTextW(hDlg, IDC_LINK_PROJECT, projLink.c_str());
+   SetDlgItemTextW(hDlg, IDC_LINK_TICKETS, supportLink.c_str());
+
+   i18n.SetItemText(hDlg, IDC_ABOUTTEXT, IDS_ABOUT_GENERAL_DESCRIPTION);
+}
+
 static INT_PTR CALLBACK About_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM lParam) noexcept
 {
    switch (msg) {
@@ -165,7 +176,7 @@ static INT_PTR CALLBACK About_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM
       if (IsAppThemed()) {
          EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
       }
-      Edit_SetText(GetDlgItem(hDlg, IDC_ABOUTTEXT), aboutText.c_str());
+      TranslateAboutGeneralDlgProc(hDlg);
       return TRUE;
    case WM_NOTIFY: {
       const PNMLINK pNmLink = reinterpret_cast<PNMLINK>(lParam);
@@ -202,6 +213,13 @@ static INT_PTR CALLBACK About_LicenseDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM
    return FALSE;
 }
 
+static void TranslateAboutDlgProc(HWND hDlg)
+{
+   WMi18n &i18n = WMi18n::GetInstance();
+   SetWindowText(hDlg, i18n.GetTextW(IDS_ABOUT_TITLE).c_str());
+   i18n.SetItemText(hDlg, IDOK, IDS_ABOUT_CLOSE_BTN);
+}
+
 INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    AboutDlgData* dlgData =
@@ -213,8 +231,11 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
       dlgData->hTabCtrl = GetDlgItem(hDlg, IDC_ABOUT_TAB);
 
-      InsertTabItem(dlgData->hTabCtrl, ABOUT_TAB_GENERAL, L"WinMute");
-      InsertTabItem(dlgData->hTabCtrl, ABOUT_TAB_LICENSE, L"License");
+      WMi18n &i18n = WMi18n::GetInstance();
+      InsertTabItem(dlgData->hTabCtrl, ABOUT_TAB_GENERAL, i18n.GetTextW(IDS_ABOUT_TAB_WINMUTE));
+      InsertTabItem(dlgData->hTabCtrl, ABOUT_TAB_LICENSE, i18n.GetTextW(IDS_ABOUT_TAB_LICENSE));
+
+      TranslateAboutDlgProc(hDlg);
 
       dlgData->hTabs[ABOUT_TAB_GENERAL] = CreateDialog(
          nullptr,

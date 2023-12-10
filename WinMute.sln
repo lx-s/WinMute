@@ -5,6 +5,10 @@ VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinMute", "WinMute\WinMute.vcxproj", "{479D2958-3FFC-43F8-8217-44D0FF9C11B1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Translations", "Translations", "{9BEEAB0E-3410-4796-A33C-8065E4EC98E7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wm_de", "Translations\wm_de\wm_de.vcxproj", "{811A5072-C682-46A8-9864-5E4057C2C8CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,9 +25,20 @@ Global
 		{479D2958-3FFC-43F8-8217-44D0FF9C11B1}.Release|x64.Build.0 = Release|x64
 		{479D2958-3FFC-43F8-8217-44D0FF9C11B1}.Release|x86.ActiveCfg = Release|Win32
 		{479D2958-3FFC-43F8-8217-44D0FF9C11B1}.Release|x86.Build.0 = Release|Win32
+		{811A5072-C682-46A8-9864-5E4057C2C8CA}.Debug|x64.ActiveCfg = Debug|x64
+		{811A5072-C682-46A8-9864-5E4057C2C8CA}.Debug|x64.Build.0 = Debug|x64
+		{811A5072-C682-46A8-9864-5E4057C2C8CA}.Debug|x86.ActiveCfg = Debug|Win32
+		{811A5072-C682-46A8-9864-5E4057C2C8CA}.Debug|x86.Build.0 = Debug|Win32
+		{811A5072-C682-46A8-9864-5E4057C2C8CA}.Release|x64.ActiveCfg = Release|x64
+		{811A5072-C682-46A8-9864-5E4057C2C8CA}.Release|x64.Build.0 = Release|x64
+		{811A5072-C682-46A8-9864-5E4057C2C8CA}.Release|x86.ActiveCfg = Release|Win32
+		{811A5072-C682-46A8-9864-5E4057C2C8CA}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{811A5072-C682-46A8-9864-5E4057C2C8CA} = {9BEEAB0E-3410-4796-A33C-8065E4EC98E7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {302C5470-9998-4A12-A027-07D24C9FC8FA}
