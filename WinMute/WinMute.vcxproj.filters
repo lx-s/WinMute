@@ -83,9 +83,6 @@
     <ClInclude Include="common.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="TrayIcon.h">
       <Filter>Source Files\UI\TrayIcon</Filter>
     </ClInclude>
@@ -104,13 +101,15 @@
     <ClInclude Include="WMi18n.h">
       <Filter>Source Files\Base\Settings</Filter>
     </ClInclude>
-    <ClInclude Include="resource_en.h" />
+    <ClInclude Include="resource_winmute.h" />
+    <ClInclude Include="../translations/wm_en/resource.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinMute.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
-    <ResourceCompile Include="en.rc">
+    <ResourceCompile Include="../translations/wm_en/wm_en.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

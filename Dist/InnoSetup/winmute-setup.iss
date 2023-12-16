@@ -36,7 +36,6 @@ LanguageDetectionMethod=uilanguage
 DefaultDirName={autopf}\{#MyAppPublisher}\{#MyAppName}
 DisableProgramGroupPage=yes
 LicenseFile=..\bin\license.rtf
-InfoBeforeFile=translations\info-before.en-us.txt
 AppMutex={#MyAppMutex}
 SetupMutex={#MyAppMutex}Setup
 ;PrivilegesRequiredOverridesAllowed=dialog
