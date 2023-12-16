@@ -67,43 +67,6 @@ static LRESULT CALLBACK WinMuteWndProc(
       : DefWindowProcW(hWnd, msg, wParam, lParam);
 }
 
-static int IsDarkMode(bool& isDarkMode)
-{
-   WMLog &log = WMLog::GetInstance();
-   HKEY hKey;
-   int rc = 1;
-   //RegOpenCurrentUser
-   const std::wstring regKey =
-      L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize";
-   LSTATUS error = RegOpenKeyW(
-      HKEY_CURRENT_USER,
-      regKey.c_str(),
-      &hKey);
-   if (error != ERROR_SUCCESS) {
-      PrintWindowsError(L"RegOpenKey", error);
-      log.Write(L"[Registry] Failed to open registry key \"%s\"", regKey.c_str());
-   } else {
-      DWORD isLightTheme = 0;
-      DWORD bufSize = sizeof(isLightTheme);
-      DWORD valType = 0;
-      error = RegQueryValueExW(
-         hKey,
-         L"SystemUsesLightTheme",
-         nullptr,
-         &valType,
-         reinterpret_cast<LPBYTE>(&isLightTheme),
-         &bufSize);
-      if (error != ERROR_SUCCESS) {
-         log.Write(L"[Registry] Failed to query value for key \"SystemUsesLightTheme\"");
-      } else {
-         isDarkMode = !isLightTheme;
-         rc = 0;
-      }
-      RegCloseKey(hKey);
-   }
-   return rc;
-}
-
 static bool IsCurrentSessionRemoteable() noexcept
 {
    bool isRemoteable = false;
@@ -271,12 +234,7 @@ bool WinMute::Init()
       return false;
    }
 
-   bool isDarkMode = true;
-   IsDarkMode(isDarkMode);
-   hTrayIcon_ = LoadIconW(
-      hglobInstance,
-      isDarkMode ? MAKEINTRESOURCE(IDI_TRAY_DARK)
-                 : MAKEINTRESOURCE(IDI_TRAY_BRIGHT));
+   hTrayIcon_ = LoadIconW(hglobInstance, MAKEINTRESOURCE(IDI_APP));
    if (hTrayIcon_ == nullptr) {
       PrintWindowsError(_T("LoadIcon"));
       return false;
@@ -533,22 +491,8 @@ LRESULT WinMute::OnTrayIcon(HWND hWnd, WPARAM, LPARAM lParam)
    return TRUE;
 }
 
-LRESULT WinMute::OnSettingChange(HWND, WPARAM, LPARAM lParam)
+LRESULT WinMute::OnSettingChange(HWND, WPARAM, LPARAM)
 {
-   const wchar_t *changeParam = reinterpret_cast<const wchar_t *>(lParam);
-   if (changeParam != nullptr && wcscmp(changeParam, L"ImmersiveColorSet") == 0) {
-      bool isDarkMode = true;
-      IsDarkMode(isDarkMode);
-      hTrayIcon_ = LoadIconW(
-         hglobInstance,
-         isDarkMode ? MAKEINTRESOURCE(IDI_TRAY_DARK)
-         : MAKEINTRESOURCE(IDI_TRAY_BRIGHT));
-      if (hTrayIcon_ == nullptr) {
-         PrintWindowsError(L"LoadIcon");
-      } else {
-         trayIcon_.ChangeIcon(hTrayIcon_);
-      }
-   }
    return 0;
 }
 

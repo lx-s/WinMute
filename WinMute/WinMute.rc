@@ -435,10 +435,6 @@ END
 // remains consistent on all systems.
 IDI_APP                 ICON                    "icons\\app.ico"
 
-IDI_TRAY_BRIGHT         ICON                    "icons\\tray_bright.ico"
-
-IDI_TRAY_DARK           ICON                    "icons\\tray_dark.ico"
-
 IDI_SETTINGS            ICON                    "icons\\settings.ico"
 
 

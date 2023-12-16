@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="512"
+   height="512"
+   viewBox="0 0 512 512"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   sodipodi:docname="settings.svg"
+   inkscape:export-filename="settings-512.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="px"
+     inkscape:zoom="1.5878906"
+     inkscape:cx="255.68512"
+     inkscape:cy="256"
+     inkscape:window-width="2560"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1"
+     showgrid="false" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1" />
+  <g
+     inkscape:label="Rendered Gears"
+     transform="translate(255.685, 256)"
+     id="g25"
+     style="stroke:#494949;stroke-opacity:1;stroke-width:10;stroke-dasharray:none;stroke-linejoin:round;fill:#ffffff;fill-opacity:0.99640286">
+    <path
+       id="path24"
+       style="fill:#ffffff;stroke:#494949;stroke-width:10;stroke-opacity:1;stroke-dasharray:none;stroke-linejoin:round;fill-opacity:0.99640286"
+       d="M -14.118594 -222.36914 L -24.929141 -189.35156 L -24.884219 -186.43164 L -21.056094 -157.75586 L -60.642031 -147.14844 L -71.665469 -173.89648 L -73.087344 -176.44727 L -98.958438 -199.63672 L -123.41156 -185.51758 L -116.26508 -151.51953 L -114.76508 -149.01172 L -97.114688 -126.0918 L -126.09125 -97.113281 L -149.01117 -114.76562 L -151.51898 -116.26562 L -185.51703 -123.41016 L -199.63617 -98.957031 L -176.44867 -73.087891 L -173.89594 -71.664062 L -147.14984 -60.642578 L -157.75531 -21.056641 L -186.43109 -24.884766 L -189.35297 -24.927734 L -222.36859 -14.119141 L -222.36859 14.119141 L -189.35297 24.927734 L -186.43109 24.884766 L -157.75531 21.056641 L -147.14984 60.642578 L -173.89594 71.664062 L -176.44867 73.087891 L -199.63617 98.957031 L -185.51703 123.41016 L -151.51898 116.26562 L -149.01117 114.76562 L -126.09125 97.113281 L -97.114688 126.0918 L -114.76508 149.01172 L -116.26508 151.51953 L -123.41156 185.51758 L -98.958438 199.63672 L -73.087344 176.44727 L -71.665469 173.89648 L -60.642031 147.14844 L -21.056094 157.75586 L -24.884219 186.43164 L -24.929141 189.35156 L -14.118594 222.36914 L 14.117734 222.36914 L 24.928281 189.35156 L 24.885312 186.43164 L 21.057187 157.75586 L 60.641172 147.14844 L 71.664609 173.89648 L 73.086484 176.44727 L 98.957578 199.63672 L 123.4107 185.51758 L 116.26422 151.51953 L 114.76617 149.01172 L 97.113828 126.0918 L 126.09234 97.113281 L 149.01227 114.76562 L 151.51812 116.26562 L 185.51812 123.41016 L 199.63727 98.957031 L 176.44781 73.087891 L 173.89508 71.664062 L 147.14898 60.642578 L 157.75641 21.056641 L 186.43023 24.884766 L 189.35211 24.927734 L 222.36969 14.119141 L 222.36969 -14.119141 L 189.35211 -24.927734 L 186.43023 -24.884766 L 157.75641 -21.056641 L 147.14898 -60.642578 L 173.89508 -71.664062 L 176.44781 -73.087891 L 199.63727 -98.957031 L 185.51812 -123.41016 L 151.51812 -116.26562 L 149.01227 -114.76562 L 126.09234 -97.113281 L 97.113828 -126.0918 L 114.76617 -149.01172 L 116.26422 -151.51953 L 123.4107 -185.51758 L 98.957578 -199.63672 L 73.086484 -176.44727 L 71.664609 -173.89648 L 60.641172 -147.14844 L 21.057187 -157.75586 L 24.885312 -186.43164 L 24.928281 -189.35156 L 14.117734 -222.36914 L -14.118594 -222.36914 z M 0.000546875 -75 A 75 75 0 0 1 75.000547 0 A 75 75 0 0 1 0.000546875 75 A 75 75 0 0 1 -74.999453 0 A 75 75 0 0 1 0.000546875 -75 z " />
+  </g>
+</svg>

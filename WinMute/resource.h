@@ -4,8 +4,6 @@
 //
 #define IDI_APP                         5
 #define IDD_ABOUT                       9
-#define IDI_TRAY_BRIGHT                 104
-#define IDI_TRAY_DARK                   105
 #define IDR_TRAYMENU                    106
 #define IDD_SETTINGS                    109
 #define IDD_SETTINGS_GENERAL            114
