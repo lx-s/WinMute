@@ -1,0 +1,6 @@
+﻿﻿WinMute benötigt eine installierte Microsoft Visual C++ Laufzeitumgebung.
+
+Diese kann hier unter den folgenden Links heruntergeladen werden:
+
+* https://docs.microsoft.com/cpp/windows/latest-supported-vc-redist 
+* https://aka.ms/vs/17/release/vc_redist.x64.exe
