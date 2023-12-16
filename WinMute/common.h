@@ -96,7 +96,8 @@ namespace fs = std::filesystem;
 #  include <endpointvolume.h>
 #pragma warning(default : 4201)
 
-#include "resource.h"
+#include "resource_winmute.h"
+#include "../Translations/wm_en/resource.h"
 
 #include "WMi18n.h"
 #include "WMSettings.h"

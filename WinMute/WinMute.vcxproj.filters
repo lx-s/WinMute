@@ -104,9 +104,13 @@
     <ClInclude Include="WMi18n.h">
       <Filter>Source Files\Base\Settings</Filter>
     </ClInclude>
+    <ClInclude Include="resource_en.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinMute.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="en.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

@@ -1,6 +1,6 @@
 // Microsoft Visual C++ generated resource script.
 //
-#include "resource.h"
+#include "resource_winmute.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -25,18 +25,18 @@ LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE 
+1 TEXTINCLUDE
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE 
+2 TEXTINCLUDE
 BEGIN
     "#include ""winres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE 
+3 TEXTINCLUDE
 BEGIN
     "\r\n"
     "\0"
@@ -525,257 +525,6 @@ END
 #endif    // German (Germany) resources
 /////////////////////////////////////////////////////////////////////////////
 
-
-/////////////////////////////////////////////////////////////////////////////
-// English (United Kingdom) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
-#pragma code_page(1252)
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// String Table
-//
-
-STRINGTABLE
-BEGIN
-    IDS_LANG_NAME           "English"
-    IDS_MAIN_ERROR_SETTINGS_INIT_TITLE "Failed to initialize settings"
-    IDS_MAIN_ERROR_SETTINGS_INIT_TEXT 
-                            "Critical error while initializing WinMute"
-    IDS_MAIN_ERROR_WINMUTE_ALREADY_RUNNING_TITLE "WinMute is already running"
-    IDS_MAIN_ERROR_WINMUTE_ALREADY_RUNNING_TEXT 
-                            "Please look for a white speaker icon in your Windows taskbar notification area."
-    IDS_MAIN_ERROR_INIT_WINMUTE_TITLE "Failed to start WinMute."
-    IDS_MAIN_ERROR_INIT_WINMUTE_TEXT 
-                            "WinMute encountered a critical error while initializing and must shut down."
-    IDS_MAIN_ERROR_WINAPI_FAILURE_TEXT "{} failed with error {}: {}"
-    IDS_MAIN_ERROR_AUDIO_SERVICE_SHUTDOWN_TITLE 
-                            "The audio service has been shut down."
-    IDS_MAIN_ERROR_AUDIO_SERVICE_SHUTDOWN_TEXT 
-                            "WinMute is not able to recover from that condition.\nPlease try to restart the program."
-END
-
-STRINGTABLE
-BEGIN
-    IDS_WM_ERROR_WINDOWS_SUPPORT_TITLE 
-                            "Only Windows Vista and newer is supported"
-    IDS_WM_ERROR_WINDOWS_SUPPORT_TEXT 
-                            "If you need support for Windows XP, please download WinMute version 1.4.2 or lower."
-END
-
-STRINGTABLE
-BEGIN
-    IDS_POPUP_REMOTE_SESSION_DETECTED_TITLE "Remote Session detected"
-    IDS_POPUP_REMOTE_SESSION_DETECTED_TEXT 
-                            "All audio endpoints have been muted"
-    IDS_POPUP_BLUETOOTH_MUTING_DISABLED_TITLE "Bluetooth muting disabled"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_POPUP_BLUETOOTH_MUTING_DISABLED_TEXT 
-                            "Bluetooth is not available or disabled. Bluetooth muting will be disabled on this computer."
-    IDS_POPUP_WLAN_MUTING_DISABLED_TITLE "WLAN muting disabled"
-    IDS_POPUP_WLAN_MUTING_DISABLED_TEXT 
-                            "WLAN is not available or disabled. WLAN muting will be disabled on this computer"
-    IDS_POPUP_QUIET_HOURS_STARTED_TITLE "WinMute: Quiet hours started"
-    IDS_POPUP_QUIET_HOURS_STARTED_TEXT 
-                            "Your workstation audio will now be muted."
-    IDS_POPUP_QUIET_HOURS_ENDED_TITLE "WinMute: Quiet Hours ended"
-    IDS_POPUP_QUIET_HOURS_ENDED_TEXT 
-                            "Your workstation audio has been restored."
-    IDS_POPUP_WORKSTATION_MUTED_TITLE "Workstation muted"
-    IDS_POPUP_WLAN_NOT_ON_MUTE_LIST_TEXT 
-                            "WLAN network ""{}"" is not on allowed list."
-    IDS_POPUP_WLAN_IS_ON_MUTE_LIST_TEXT 
-                            "WLAN network ""{}"" is configured for AutoMute."
-    IDS_POPUP_MUTING_WORKSTATION_AFTER_DELAY_TITLE 
-                            "Muting workstation after delay"
-    IDS_POPUP_MUTING_WORKSTATION_AFTER_DELAY_TEXT 
-                            "All endpoints have been muted"
-    IDS_POPUP_VOLUME_RESTORED_TITLE "Volume restored"
-    IDS_POPUP_VOLUME_RESTORED_TEXT 
-                            "All endpoints have been restored to their previous configuration"
-    IDS_POPUP_MUTING_WORKSTATION_TITLE "Muting workstation after delay"
-    IDS_POPUP_MUTING_WORKSTATION_TEXT "All endpoints have been muted"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_POPUP_QUIET_HOURS_START_ERROR_TITLE "Quiet Hours Start"
-    IDS_POPUP_QUIET_HOURS_START_ERROR_TEXT 
-                            "Failed to register quiet hours start with windows timer system"
-    IDS_POPUP_QUIET_HOURS_STOP_ERROR_TITLE "Quiet Hours Stop"
-    IDS_POPUP_QUIET_HOURS_STOP_ERROR_TEXT 
-                            "Failed to register end of quiet hours with windows timer system"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_TRAYMENU_INFO       "About"
-    IDS_TRAYMENU_MUTEWHEN   "Mute when..."
-    IDS_TRAYMENU_MUTEONLOCK "... Workstation is locked"
-    IDS_TRAYMENU_MUTEONSCREENSUSPEND "... Screen turns off"
-    IDS_TRAYMENU_RESTOREVOLUME "Restore volume afterwards"
-    IDS_TRAYMENU_MUTEON_NO_RESTORE "Mute on (no volume restore)"
-    IDS_TRAYMENU_MUTEON_SHUTDOWN "... Shutdown"
-    IDS_TRAYMENU_MUTEON_SLEEP "... Sleep"
-    IDS_TRAYMENU_MUTEON_LOGOUT "... Logout"
-    IDS_TRAYMENU_MUTE_ALL_DEVICES "Mute all devices"
-    IDS_TRAYMENU_SETTINGS   "Settings..."
-    IDS_TRAYMENU_EXIT       "Exit"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_SETTINGS_BLUETOOTH_ADD_DLG_TITLE "Add bluetooth device"
-    IDS_SETTINGS_BLUETOOTH_EDIT_DLG_TITLE "Edit bluetooth device"
-    IDS_SETTINGS_BLUETOOTH_ADD_DLG_DEVICE_NAME_LABEL "Bluetooth device name:"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_SETTINGS_BTN_SAVE   "Save"
-    IDS_SETTINGS_BTN_CANCEL "Cancel"
-    IDS_SETTINGS_BTN_ADD    "Add"
-    IDS_SETTINGS_BTN_EDIT   "Edit"
-    IDS_SETTINGS_BTN_REMOVE "Remove"
-    IDS_SETTINGS_BTN_REMOVE_ALL "Remove all"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_SETTINGS_TAB_GENERAL "General"
-    IDS_SETTINGS_TAB_MUTE   "Mute"
-    IDS_SETTINGS_TAB_QUIETHOURS "Quiet Hours"
-    IDS_SETTINGS_TAB_BLUETOOTH "Bluetooth"
-    IDS_SETTINGS_TAB_WIFI   "WLAN"
-    IDS_SETTINGS_TITLE      "Settings"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_SETTINGS_GENERAL_RUN_ON_STARTUP "Start WinMute on system startup"
-    IDS_SETTINGS_GENERAL_ENABLE_LOGGING "Enable logging"
-    IDS_SETTINGS_GENERAL_OPEN_LOG_FILE "Open log file..."
-    IDS_SETTINGS_GENERAL_LANGUAGE_LABEL "Language"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_SETTINGS_BLUETOOTH_ADD_DLG_ENTER_DEVICE_NAME_TEXT 
-                            "Please enter a bluetooth device name"
-    IDS_SETTINGS_BLUETOOTH_DESCRIPTION 
-                            """Bluetooth Muting"" allows disabling your PC-audio if an audio-class bluetooth device is disconnected, and re-enables your PC-audio if a device is reconnected to your computer.\n\nYou can enable this behaviour for all audio bluetooth devices or only for a specific set of devices."
-    IDS_SETTINGS_BLUETOOTH_ENABLE_MUTING "Enable Bluetooth-based muting."
-    IDS_SETTINGS_BLUETOOTH_ENABLE_MUTING_FILTER 
-                            "Only mute when one of the following devices connect to or disconnect from your PC."
-    IDS_SETTINGS_BLUETOOTH_DISABLED_INFO 
-                            "Note: Bluetooth is not available on your device, so some options have been disabled."
-END
-
-STRINGTABLE
-BEGIN
-    IDS_SETTINGS_MUTE_TITLE_GENERAL "General"
-    IDS_SETTINGS_MUTE_SHOW_MUTE_EVENT_NOTIFICATIONS 
-                            "Show mute event notifications"
-    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_INDIVIDUALLY 
-                            "Manage audio endpoints individually"
-    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_BTN "Manage endpoints..."
-    IDS_SETTINGS_MUTE_MUTE_WITH_RESTORE_TITLE 
-                            "Mute with volume restore, when..."
-    IDS_SETTINGS_MUTE_WHEN_WORKSTATION_IS_LOCKED 
-                            "... the workstation is locked"
-    IDS_SETTINGS_MUTE_WHEN_SCREEN_TURNS_OFF "... the screen turns off."
-    IDS_SETTINGS_MUTE_RESTORE_VOLUME "Restore volume afterwards"
-    IDS_SETTINGS_MUTE_RESTORE_VOLUME_DELAY_LABEL 
-                            "seconds delay before muting."
-    IDS_SETTINGS_MUTE_MUTE_WITHOUT_RESTORE_TITLE 
-                            "Mute without volume restore, when..."
-    IDS_SETTINGS_MUTE_WHEN_COMPUTER_SHUTS_DOWN "... the computer shuts down."
-    IDS_SETTINGS_MUTE_WHEN_COMPUTER_GOES_TO_SLEEP 
-                            "... the computer goes into sleep/hibernate."
-    IDS_SETTINGS_MUTE_WHEN_USER_LOGS_OUT "... you log out."
-    IDS_SETTINGS_MUTE_WHEN_RDP_SESSION_STARTS 
-                            "... when WinMute is started within a RDP session."
-END
-
-STRINGTABLE
-BEGIN
-    IDS_SETTINGS_QUIETHOURS_INTRO 
-                            "During Quiet Hours WinMute automatically mutes your PCs audio endpoints and unmutes them afterwards."
-    IDS_SETTINGS_QUIETHOURS_ENABLE "Enable Quiet Hours"
-    IDS_SETTINGS_QUIETHOURS_START_TIME_LABEL "Start time:"
-    IDS_SETTINGS_QUIETHOURS_END_TIME_LABEL "End time:"
-    IDS_SETTINGS_QUIETHOURS_FORCE_UNMUTE "Force unmute"
-    IDS_SETTINGS_QUIETHOURS_FORCE_UNMUTE_DESCRIPTION 
-                            "If force unmute is enabled, WinMute will unmute your audio endpoints when quiet hours and and not take into account if they were already muted before quiet hours started."
-    IDS_SETTINGS_QUIETHOURS_SHOW_NOTIFICATIONS 
-                            "Show Quiet Hours notifications"
-    IDS_SETTINGS_QUIETHOURS_INVALID_TIME_RANGE_TITLE "Invalid time range"
-    IDS_SETTINGS_QUIETHOURS_INVALID_TIME_RANGE_TEXT 
-                            "Can't start and stop at the same time.\nPlease correct your time range."
-    IDS_SETTINGS_QUIETHOURS_ERROR_WHILE_SAVING_TITLE 
-                            "Failed to save quiet hours settings"
-    IDS_SETTINGS_QUIETHOURS_ERROR_WHILE_SAVING_TEXT 
-                            "Something went wrong while saving your settings"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_SETTINGS_WIFI_INTRO """WLAN Mute"" allows you to mute your workstation based on the name of the connected wireless network."
-    IDS_SETTINGS_WIFI_ENABLE "Enable WLAN based muting"
-    IDS_SETTINGS_WIFI_MUTE_WHEN_NOT_IN_LIST 
-                            "Mute workstation if the WLAN network name is NOT in the list\n(default: mute if it is on the list)"
-    IDS_SETTINGS_WIFI_DISABLED_INFO 
-                            "Note: WLAN is not available on your device, so some options have been disabled."
-END
-
-STRINGTABLE
-BEGIN
-    IDS_SETTINGS_WIFI_ADD_DLG_TITLE "Add WiFi network"
-    IDS_SETTINGS_WIFI_EDIT_DLG_TITLE "Edit WiFi network"
-    IDS_SETTINGS_WIFI_ADD_DLG_SSID_NAME_LABEL "SSID/WiFi Name:"
-    IDS_SETTINGS_WIFI_ADD_DLG_ENTER_DEVICE_NAME_TEXT 
-                            "Please enter a SSID/WiFi name"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_ABOUT_TITLE         "About WinMute"
-    IDS_ABOUT_GENERAL_AUTHOR_SITE_LABEL "Author: www.lx-s.de"
-    IDS_ABOUT_GENERAL_PROJECT_SITE_LABEL "Project Site && Code"
-    IDS_ABOUT_GENERAL_SUPPORT_LABEL "Support"
-    IDS_ABOUT_GENERAL_DESCRIPTION 
-                            "WinMute is developed by Alexander Steinhoefer his spare time. The code as well as new releases for this tool can be found on GitHub. Contributions in the form of code, tickets or feature requests are very welcome. Thank your for using this little tool!"
-    IDS_ABOUT_TAB_WINMUTE   "WinMute"
-    IDS_ABOUT_TAB_LICENSE   "License"
-    IDS_ABOUT_CLOSE_BTN     "OK"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_TITLE "Manage audio endpoints"
-    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_LIST_BEHAVIOUR_TITLE "List behaviour"
-    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_MUTE_ONLY_LISTED 
-                            "Mute only listed endpoints"
-    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_MUTE_ALL_BUT_LISTED 
-                            "Mute all but listed endpoints"
-    IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_ENDPOINTS_TITLE "Endpoints"
-    IDS_SETTINGS_MANAGE_ENDPOINTS_ADD_TITLE "Add Endpoint"
-    IDS_SETTINGS_MANAGE_ENDPOINTS_EDIT_TITLE "Edit Endpoint"
-    IDS_SETTINGS_MANAGE_ENDPOINTS_ADD_ENDPOINT_NAME_TEXT 
-                            "Please enter a endpoint name"
-    IDS_SETTINGS_MANAGE_ENDPOINTS_ADD_ENDPOINT_NAME_LABEL "Endpoint name:"
-END
-
-#endif    // English (United Kingdom) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-
 #ifndef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -785,4 +534,3 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-

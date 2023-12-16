@@ -210,7 +210,8 @@
     <ClInclude Include="MMNotificationClient.h" />
     <ClInclude Include="MuteControl.h" />
     <ClInclude Include="QuietHoursTimer.h" />
-    <ClInclude Include="resource.h" />
+    <ClInclude Include="resource_winmute.h" />
+    <ClInclude Include="../translations/wm_en/resource.h" />
     <ClInclude Include="WMSettings.h" />
     <ClInclude Include="TrayIcon.h" />
     <ClInclude Include="VersionHelper.h" />
@@ -219,6 +220,7 @@
     <ClInclude Include="WinMute.h" />
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="../translations/wm_en/wm_en.rc" />
     <ResourceCompile Include="WinMute.rc" />
   </ItemGroup>
   <ItemGroup>

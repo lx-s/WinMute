@@ -46,9 +46,10 @@ static void FillLanguageList(HWND hLanguageList, const SettingsGeneralData& dlgD
 {
    SendMessage(hLanguageList,
                CB_INITSTORAGE,
-               static_cast<WPARAM>(dlgData.langModules.size()), 200);
+               static_cast<WPARAM>(dlgData.langModules.size() + 1),
+               (MAX_PATH + 1) * sizeof(wchar_t));
    for (const auto &lang : dlgData.langModules) {
-      int itemId = ComboBox_AddString(hLanguageList, lang.langName.c_str());
+      const auto itemId = SendMessage(hLanguageList, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(lang.langName.c_str()));
       if (itemId == CB_ERR || itemId == CB_ERRSPACE) {
          WMLog::GetInstance().Write(L"Failed to add language %ls to language selector", lang.langName.c_str());
       } else {
@@ -150,7 +151,7 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       WMLog::GetInstance().SetEnabled(enableLog);
 
       HWND hLanguageSelector = GetDlgItem(hDlg, IDC_LANGUAGE);
-      const auto curLangSel = ComboBox_GetCurSel(hDlg);
+      const auto curLangSel = ComboBox_GetCurSel(hLanguageSelector);
       if (curLangSel != CB_ERR) {
          const wchar_t *selectedLang = reinterpret_cast<const wchar_t *>(ComboBox_GetItemData(hLanguageSelector, curLangSel));
          if (selectedLang != nullptr) {
