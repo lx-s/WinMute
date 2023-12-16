@@ -1,8 +1,9 @@
 [CustomMessages]
-english.StartpAppLogon=Start WinMute when you log on
-;italian.StartpAppLogon=Esegui WinMute all'accesso
+en.StartpAppLogon=Start WinMute when you log on
+de.StartpAppLogon=WinMute mit Windows starten
+it.StartpAppLogon=Esegui WinMute all'accesso
 
 [Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl";           InfoBeforeFile: "info-before.txt";
-Name: "german";  MessagesFile: "compiler:Languages\German.isl";  InfoBeforeFile: "info-before.txt";
-;Name: "italian";  MessagesFile: "compiler:Languages\Italian.isl";  InfoBeforeFile: "info-before.ita.txt";
+Name: "en"; MessagesFile: "compiler:Default.isl";           InfoBeforeFile: "translations/info-before.en-us.txt";
+Name: "de";  MessagesFile: "compiler:Languages\German.isl";  InfoBeforeFile: "translations/info-before.de-de.txt";
+Name: "it";  MessagesFile: "compiler:Languages\Italian.isl";  InfoBeforeFile: "translations/info-before.it-it.txt";

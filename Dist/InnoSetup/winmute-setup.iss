@@ -1,4 +1,3 @@
-
 #include               ".\winmute-setup-languages.iss"
 
 #define MyAppName      "WinMute"
@@ -37,7 +36,7 @@ LanguageDetectionMethod=uilanguage
 DefaultDirName={autopf}\{#MyAppPublisher}\{#MyAppName}
 DisableProgramGroupPage=yes
 LicenseFile=..\bin\license.rtf
-InfoBeforeFile=info-before.txt
+InfoBeforeFile=translations\info-before.en-us.txt
 AppMutex={#MyAppMutex}
 SetupMutex={#MyAppMutex}Setup
 ;PrivilegesRequiredOverridesAllowed=dialog
@@ -76,4 +75,3 @@ Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: 
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
-
