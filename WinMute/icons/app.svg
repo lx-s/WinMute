@@ -131,11 +131,11 @@
      id="layer1">
     <path
        d="m 298.6558,51.763601 -159.39296,100.351939 -89.814619,0.60253 0.728548,195.59663 88.693091,1.65266 158.8987,122.40086 z"
-       style="display:inline;fill:url(#radialGradient22);stroke:#e7e7e7;stroke-width:3.14458;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+       style="display:inline;fill:url(#radialGradient22);stroke:#e7e7e7;stroke-width:15;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
        id="path26"
        sodipodi:nodetypes="ccccccc" />
     <path
-       style="display:inline;fill:#132e3f;fill-opacity:1;stroke:#c0ccf8;stroke-width:3.48859;stroke-dasharray:none;stroke-opacity:1"
+       style="display:inline;fill:#132e3f;fill-opacity:1;stroke:#c0ccf8;stroke-width:8;stroke-dasharray:none;stroke-opacity:1"
        d="M 447.89768,421.69014 C 235.70893,209.26395 63.39014,45.098196 65.227745,44.931141 L 43.147019,66.306118 421.91096,445.64954 Z"
        id="path19"
        inkscape:label="slash"
@@ -143,7 +143,7 @@
     <text
        xml:space="preserve"
        id="text26"
-       style="font-size:43.5785px;white-space:pre;shape-inside:url(#rect26);display:inline;fill:#122e3f;fill-opacity:1;stroke:#ffffff;stroke-width:0.181478;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+       style="font-size:43.5785px;white-space:pre;shape-inside:url(#rect26);display:inline;fill:#122e3f;fill-opacity:1;stroke:#ffffff;stroke-width:1.16262333;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
        inkscape:label="Exclamation Mark"
        transform="matrix(6.992757,0,0,6.7710102,-2420.2895,-308.68022)"><tspan
          x="391.875"
