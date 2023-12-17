@@ -105,17 +105,18 @@ static void LoadManageEndpointsAddDlgTranslation(HWND hDlg, bool isEdit)
 {
    WMi18n &i18n = WMi18n::GetInstance();
    if (isEdit) {
-      i18n.SetItemText(hDlg, IDS_SETTINGS_MANAGE_ENDPOINTS_EDIT_TITLE);
+      i18n.SetItemText(hDlg, "settings.mute.manage-endpoints.add-edit.edit-title");
    } else {
-      i18n.SetItemText(hDlg, IDS_SETTINGS_MANAGE_ENDPOINTS_ADD_TITLE);
+      i18n.SetItemText(hDlg, "settings.mute.manage-endpoints.add-edit.add-title");
    }
-   i18n.SetItemText(hDlg, IDC_ENDPOINT_NAME_LABEL, IDS_SETTINGS_BLUETOOTH_ADD_DLG_DEVICE_NAME_LABEL);
-   i18n.SetItemText(hDlg, IDOK, IDS_SETTINGS_BTN_SAVE);
-   i18n.SetItemText(hDlg, IDCANCEL, IDS_SETTINGS_BTN_CANCEL);
+   i18n.SetItemText(hDlg, IDC_ENDPOINT_NAME_LABEL, "settings.bluetooth.add-edit.device-name-label");
+   i18n.SetItemText(hDlg, IDOK, "settings.btn-save");
+   i18n.SetItemText(hDlg, IDCANCEL, "settings.btn-cancel");
 
+   const auto placeholder = i18n.GetTranslationW("settings.mute.manage-endpoints.add-edit.endpoint-name-placeholder");
    ComboBox_SetCueBannerText(
       GetDlgItem(hDlg, IDC_ENDPOINT_NAME),
-      i18n.GetTextW(IDS_SETTINGS_MANAGE_ENDPOINTS_ADD_ENDPOINT_NAME_TEXT).c_str());
+      placeholder.c_str());
 }
 
 static INT_PTR CALLBACK Settings_EndpointAddDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -205,18 +206,18 @@ static void LoadManageEndpointsDlgTranslation(HWND hDlg)
 {
    WMi18n &i18n = WMi18n::GetInstance();
 
-   SetWindowText(hDlg, i18n.GetTextW(IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_TITLE).c_str());
-   i18n.SetItemText(hDlg, IDC_GROUP_LIST_BEHAVIOUR, IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_LIST_BEHAVIOUR_TITLE);
-   i18n.SetItemText(hDlg, IDC_ENDPOINT_LIST_IS_ALLOWLIST, IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_MUTE_ONLY_LISTED);
-   i18n.SetItemText(hDlg, IDC_ENDPOINT_LIST_IS_BLOCKLIST, IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_MUTE_ALL_BUT_LISTED);
-   i18n.SetItemText(hDlg, IDC_GROUP_ENDPOINTS, IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_ENDPOINTS_TITLE);
+   SetWindowText(hDlg, i18n.GetTranslationW("settings.mute.manage-endpoints.title").c_str());
+   i18n.SetItemText(hDlg, IDC_GROUP_LIST_BEHAVIOUR, "settings.mute.manage-endpoints.list-behaviour.title");
+   i18n.SetItemText(hDlg, IDC_ENDPOINT_LIST_IS_ALLOWLIST, "settings.mute.manage-endpoints.list-behaviour.mute-only-listed");
+   i18n.SetItemText(hDlg, IDC_ENDPOINT_LIST_IS_BLOCKLIST, "settings.mute.manage-endpoints.list-behaviour.mute-all-but-listed");
+   i18n.SetItemText(hDlg, IDC_GROUP_ENDPOINTS, "settings.mute.manage-endpoints.endpoints.title");
 
-   i18n.SetItemText(hDlg, IDC_ENDPOINT_ADD, IDS_SETTINGS_BTN_ADD);
-   i18n.SetItemText(hDlg, IDC_ENDPOINT_EDIT, IDS_SETTINGS_BTN_EDIT);
-   i18n.SetItemText(hDlg, IDC_ENDPOINT_REMOVE, IDS_SETTINGS_BTN_REMOVE);
-   i18n.SetItemText(hDlg, IDC_ENDPOINT_REMOVEALL, IDS_SETTINGS_BTN_REMOVE_ALL);
-   i18n.SetItemText(hDlg, IDOK, IDS_SETTINGS_BTN_SAVE);
-   i18n.SetItemText(hDlg, IDCANCEL, IDS_SETTINGS_BTN_CANCEL);
+   i18n.SetItemText(hDlg, IDC_ENDPOINT_ADD, "settings.btn-add");
+   i18n.SetItemText(hDlg, IDC_ENDPOINT_EDIT, "settings.btn-edit");
+   i18n.SetItemText(hDlg, IDC_ENDPOINT_REMOVE, "settings.btn-remove");
+   i18n.SetItemText(hDlg, IDC_ENDPOINT_REMOVEALL, "settings.btn-remove-all");
+   i18n.SetItemText(hDlg, IDOK, "settings.btn-save");
+   i18n.SetItemText(hDlg, IDCANCEL, "settings.btn-cancel");
 }
 
 INT_PTR CALLBACK Settings_ManageEndpointsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)

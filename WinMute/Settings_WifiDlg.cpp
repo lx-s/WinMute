@@ -43,17 +43,18 @@ static void LoadWifiAddDlgTranslation(HWND hDlg, bool isEdit)
 {
    WMi18n &i18n = WMi18n::GetInstance();
    if (isEdit) {
-      i18n.SetItemText(hDlg, IDS_SETTINGS_WIFI_EDIT_DLG_TITLE);
+      i18n.SetItemText(hDlg, "settings.wifi.add-edit.edit-title");
    } else {
-      i18n.SetItemText(hDlg, IDS_SETTINGS_WIFI_ADD_DLG_TITLE);
+      i18n.SetItemText(hDlg, "settings.wifi.add-edit.add-title");
    }
-   i18n.SetItemText(hDlg, IDC_WIFI_NAME_LABEL, IDS_SETTINGS_WIFI_ADD_DLG_SSID_NAME_LABEL);
-   i18n.SetItemText(hDlg, IDOK, IDS_SETTINGS_BTN_SAVE);
-   i18n.SetItemText(hDlg, IDCANCEL, IDS_SETTINGS_BTN_CANCEL);
+   i18n.SetItemText(hDlg, IDC_WIFI_NAME_LABEL, "settings.wifi.add-edit.ssid-name-label");
+   i18n.SetItemText(hDlg, IDOK, "settings.btn-save");
+   i18n.SetItemText(hDlg, IDCANCEL, "settings.btn-cancel");
 
+   const auto placeholder = i18n.GetTranslationW("settings.wifi.add-edit.enter-device-name-placeholder");
    Edit_SetCueBannerText(
       GetDlgItem(hDlg, IDC_WIFI_NAME),
-      i18n.GetTextW(IDS_SETTINGS_WIFI_ADD_DLG_ENTER_DEVICE_NAME_TEXT).c_str());
+      placeholder.c_str());
 }
 
 INT_PTR CALLBACK Settings_WifiAddDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -150,14 +151,14 @@ static void LoadWifiDlgTranslation(HWND hDlg)
 {
    WMi18n &i18n = WMi18n::GetInstance();
 
-   i18n.SetItemText(hDlg, IDC_WIFI_INTRO, IDS_SETTINGS_WIFI_INTRO);
-   i18n.SetItemText(hDlg, IDC_ENABLE_WIFI_MUTE, IDS_SETTINGS_WIFI_ENABLE);
-   i18n.SetItemText(hDlg, IDC_IS_PERMITLIST, IDS_SETTINGS_WIFI_MUTE_WHEN_NOT_IN_LIST);
-   i18n.SetItemText(hDlg, IDC_WIFI_ADD, IDS_SETTINGS_BTN_ADD);
-   i18n.SetItemText(hDlg, IDC_WIFI_EDIT, IDS_SETTINGS_BTN_EDIT);
-   i18n.SetItemText(hDlg, IDC_WIFI_REMOVE, IDS_SETTINGS_BTN_REMOVE);
-   i18n.SetItemText(hDlg, IDC_WIFI_REMOVEALL, IDS_SETTINGS_BTN_REMOVE_ALL);
-   i18n.SetItemText(hDlg, IDC_STATIC_WLAN_NOT_AVAILABLE, IDS_SETTINGS_WIFI_DISABLED_INFO);
+   i18n.SetItemText(hDlg, IDC_WIFI_INTRO, "settings.wifi.intro");
+   i18n.SetItemText(hDlg, IDC_ENABLE_WIFI_MUTE, "settings.wifi.enable");
+   i18n.SetItemText(hDlg, IDC_IS_PERMITLIST, "settings.wifi.mute-when-not-in-list");
+   i18n.SetItemText(hDlg, IDC_WIFI_ADD, "settings.btn-add");
+   i18n.SetItemText(hDlg, IDC_WIFI_EDIT, "settings.btn-edit");
+   i18n.SetItemText(hDlg, IDC_WIFI_REMOVE, "settings.btn-remove");
+   i18n.SetItemText(hDlg, IDC_WIFI_REMOVEALL, "settings.btn-remove-all");
+   i18n.SetItemText(hDlg, IDC_STATIC_WLAN_NOT_AVAILABLE, "settings.wifi.wifi-disabled-info");
 }
 
 INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)

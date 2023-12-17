@@ -190,8 +190,8 @@ void MuteControl::MuteDelayed(int magic)
    }
    WMLog::GetInstance().Write(L"Muting workstation after delay");
    ShowNotification(
-      WMi18n::GetInstance().GetTextW(IDS_POPUP_MUTING_WORKSTATION_AFTER_DELAY_TITLE),
-      WMi18n::GetInstance().GetTextW(IDS_POPUP_MUTING_WORKSTATION_AFTER_DELAY_TEXT));
+      WMi18n::GetInstance().GetTranslationW("popup.muting-workstation-after-delay.title"),
+      WMi18n::GetInstance().GetTranslationW("popup.muting-workstation-after-delay.text"));
    winAudio_->SetMute(true);
    KillTimer(hMuteCtrlWnd_, delayedMuteTimerId_);
    delayedMuteTimerId_ = 0;
@@ -233,8 +233,8 @@ void MuteControl::RestoreVolume(bool withDelay)
    } else {
       log.Write(L"Restoring previous mute state");
       ShowNotification(
-         WMi18n::GetInstance().GetTextW(IDS_POPUP_VOLUME_RESTORED_TITLE),
-         WMi18n::GetInstance().GetTextW(IDS_POPUP_VOLUME_RESTORED_TEXT));
+         WMi18n::GetInstance().GetTranslationW("popup.volume-restored.title"),
+         WMi18n::GetInstance().GetTranslationW("popup.volume-restored.text"));
       if (withDelay) {
          Sleep(BLUETOOTH_RECONNECT_UNMUTE_DELAY);
       }
@@ -336,8 +336,8 @@ void MuteControl::NotifyRestoreCondition(int type, bool active, bool withDelay)
          if (muteDelaySeconds_ == 0) {
             WMLog::GetInstance().Write(L"Muting workstation");
             ShowNotification(
-               WMi18n::GetInstance().GetTextW(IDS_POPUP_MUTING_WORKSTATION_TITLE),
-               WMi18n::GetInstance().GetTextW(IDS_POPUP_MUTING_WORKSTATION_TEXT));
+               WMi18n::GetInstance().GetTranslationW("popup.muting-workstation.title"),
+               WMi18n::GetInstance().GetTranslationW("popup.muting-workstation.text"));
             winAudio_->SetMute(true);
          } else {
             WMLog::GetInstance().Write(L"Starting delayed mute timer...");

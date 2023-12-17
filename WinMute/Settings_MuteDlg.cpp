@@ -51,22 +51,22 @@ static void LoadMuteDlgTranslation(HWND hDlg)
 {
    WMi18n &i18n = WMi18n::GetInstance();
 
-   i18n.SetItemText(hDlg, IDC_GROUP_GENERAL, IDS_SETTINGS_MUTE_TITLE_GENERAL);
-   i18n.SetItemText(hDlg, IDC_SHOWNOTIFICATIONS, IDS_SETTINGS_MUTE_SHOW_MUTE_EVENT_NOTIFICATIONS);
-   i18n.SetItemText(hDlg, IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY, IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_INDIVIDUALLY);
-   i18n.SetItemText(hDlg, IDC_MANAGE_ENDPOINTS, IDS_SETTINGS_MUTE_MANAGE_ENDPOINTS_BTN);
+   i18n.SetItemText(hDlg, IDC_GROUP_GENERAL, "settings.mute.general-title");
+   i18n.SetItemText(hDlg, IDC_SHOWNOTIFICATIONS, "settings.mute.show-mute-event-notifications");
+   i18n.SetItemText(hDlg, IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY, "settings.mute.manage-endpoints-individually");
+   i18n.SetItemText(hDlg, IDC_MANAGE_ENDPOINTS, "settings.mute.btn-manage-endpoints");
 
-   i18n.SetItemText(hDlg, IDC_GROUP_MUTE_WITH_RESTORE, IDS_SETTINGS_MUTE_MUTE_WITH_RESTORE_TITLE);
-   i18n.SetItemText(hDlg, IDC_MUTE_WHEN_WS_LOCKED, IDS_SETTINGS_MUTE_WHEN_WORKSTATION_IS_LOCKED);
-   i18n.SetItemText(hDlg, IDC_MUTE_WHEN_SCREEN_OFF, IDS_SETTINGS_MUTE_WHEN_SCREEN_TURNS_OFF);
-   i18n.SetItemText(hDlg, IDC_RESTOREVOLUME, IDS_SETTINGS_MUTE_RESTORE_VOLUME);
-   i18n.SetItemText(hDlg, IDC_DELAY_MUTING_LABEL, IDS_SETTINGS_MUTE_RESTORE_VOLUME_DELAY_LABEL);
+   i18n.SetItemText(hDlg, IDC_GROUP_MUTE_WITH_RESTORE, "settings.mute.mute-with-restore.title");
+   i18n.SetItemText(hDlg, IDC_MUTE_WHEN_WS_LOCKED, "settings.mute.mute-with-restore.when-workstation-is-locked");
+   i18n.SetItemText(hDlg, IDC_MUTE_WHEN_SCREEN_OFF, "settings.mute.mute-with-restore.when-screen-turns-off");
+   i18n.SetItemText(hDlg, IDC_RESTOREVOLUME, "settings.mute.mute-with-restore.restore-volume");
+   i18n.SetItemText(hDlg, IDC_DELAY_MUTING_LABEL, "settings.mute.mute-with-restore.restore-volume-delay-label");
 
-   i18n.SetItemText(hDlg, IDC_GROUP_MUTE_WITHOUT_RESTORE, IDS_SETTINGS_MUTE_MUTE_WITHOUT_RESTORE_TITLE);
-   i18n.SetItemText(hDlg, IDC_MUTE_WHEN_SHUTDOWN, IDS_SETTINGS_MUTE_WHEN_COMPUTER_SHUTS_DOWN);
-   i18n.SetItemText(hDlg, IDC_MUTE_WHEN_SLEEP, IDS_SETTINGS_MUTE_WHEN_COMPUTER_GOES_TO_SLEEP);
-   i18n.SetItemText(hDlg, IDC_MUTE_WHEN_LOGOUT, IDS_SETTINGS_MUTE_WHEN_USER_LOGS_OUT);
-   i18n.SetItemText(hDlg, IDC_MUTE_WHEN_RDP_SESSION, IDS_SETTINGS_MUTE_WHEN_RDP_SESSION_STARTS);
+   i18n.SetItemText(hDlg, IDC_GROUP_MUTE_WITHOUT_RESTORE, "settings.mute.mute-without-restore.title");
+   i18n.SetItemText(hDlg, IDC_MUTE_WHEN_SHUTDOWN, "settings.mute.mute-without-restore.when-computer-shuts-down");
+   i18n.SetItemText(hDlg, IDC_MUTE_WHEN_SLEEP, "settings.mute.mute-without-restore.when-computer-goes-to-sleep");
+   i18n.SetItemText(hDlg, IDC_MUTE_WHEN_LOGOUT, "settings.mute.mute-without-restore.when-user-logs-out");
+   i18n.SetItemText(hDlg, IDC_MUTE_WHEN_RDP_SESSION, "settings.mute.mute-without-restore.when-rdp-session-starts");
 }
 
 INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)

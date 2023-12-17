@@ -142,21 +142,21 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
       
       dlgData->hTabCtrl = GetDlgItem(hDlg, IDC_SETTINGS_TAB);
 
-      SetWindowText(hDlg, i18n.GetTextW(IDS_SETTINGS_TITLE).c_str());
+      SetWindowText(hDlg, i18n.GetTranslationW("settings.title").c_str());
 
-      i18n.SetItemText(hDlg, IDOK, IDS_SETTINGS_BTN_SAVE);
-      i18n.SetItemText(hDlg, IDCANCEL, IDS_SETTINGS_BTN_CANCEL);
+      i18n.SetItemText(hDlg, IDOK, "settings.btn-save");
+      i18n.SetItemText(hDlg, IDCANCEL, "settings.btn-cancel");
 
       InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_GENERAL,
-                    i18n.GetTextW(IDS_SETTINGS_TAB_GENERAL).c_str());
+                    i18n.GetTranslationW("settings.tab.general").c_str());
       InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_MUTE,
-                    i18n.GetTextW(IDS_SETTINGS_TAB_MUTE).c_str());
+                    i18n.GetTranslationW("settings.tab.mute").c_str());
       InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_QUIETHOURS,
-                    i18n.GetTextW(IDS_SETTINGS_TAB_QUIETHOURS).c_str());
+                    i18n.GetTranslationW("settings.tab.quiet-hours").c_str());
       InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_BLUETOOTH,
-                    i18n.GetTextW(IDS_SETTINGS_TAB_BLUETOOTH).c_str());
+                    i18n.GetTranslationW("settings.tab.bluetooth").c_str());
       InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_WIFI,
-                    i18n.GetTextW(IDS_SETTINGS_TAB_WIFI).c_str());
+                    i18n.GetTranslationW("settings.tab.wifi").c_str());
 
       dlgData->hTabs[SETTINGS_TAB_GENERAL] = CreateDialogParam(
          hglobInstance,

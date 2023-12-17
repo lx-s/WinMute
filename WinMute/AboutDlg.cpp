@@ -152,21 +152,21 @@ static void TranslateAboutGeneralDlgProc(HWND hDlg)
 
    const auto hpLink = std::vformat(
       L"<a href=\"https://www.lx-s.de\">{}</a>",
-      std::make_wformat_args(i18n.GetTextW(IDS_ABOUT_GENERAL_AUTHOR_SITE_LABEL)));
+      std::make_wformat_args(i18n.GetTranslationW("about.general.author-site-label")));
 
    const auto projLink = std::vformat(
       L"<a href=\"https://github.com/lx-s/WinMute/\">{}</a>",
-      std::make_wformat_args(i18n.GetTextW(IDS_ABOUT_GENERAL_PROJECT_SITE_LABEL)));
+      std::make_wformat_args(i18n.GetTranslationW("about.general.project-site-label")));
 
    const auto supportLink = std::vformat(
       L"<a href=\"https://github.com/lx-s/WinMute/issues/\">{}</a>",
-      std::make_wformat_args(i18n.GetTextW(IDS_ABOUT_GENERAL_SUPPORT_LABEL)));
+      std::make_wformat_args(i18n.GetTranslationW("about.general.support-label")));
 
    SetDlgItemTextW(hDlg, IDC_LINK_HOMEPAGE, hpLink.c_str());
    SetDlgItemTextW(hDlg, IDC_LINK_PROJECT, projLink.c_str());
    SetDlgItemTextW(hDlg, IDC_LINK_TICKETS, supportLink.c_str());
 
-   i18n.SetItemText(hDlg, IDC_ABOUTTEXT, IDS_ABOUT_GENERAL_DESCRIPTION);
+   i18n.SetItemText(hDlg, IDC_ABOUTTEXT, "about.general.description");
 }
 
 static INT_PTR CALLBACK About_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM lParam) noexcept
@@ -216,8 +216,8 @@ static INT_PTR CALLBACK About_LicenseDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM
 static void TranslateAboutDlgProc(HWND hDlg)
 {
    WMi18n &i18n = WMi18n::GetInstance();
-   SetWindowText(hDlg, i18n.GetTextW(IDS_ABOUT_TITLE).c_str());
-   i18n.SetItemText(hDlg, IDOK, IDS_ABOUT_CLOSE_BTN);
+   SetWindowText(hDlg, i18n.GetTranslationW("about.title").c_str());
+   i18n.SetItemText(hDlg, IDOK, "about.btn-close");
 }
 
 INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -232,8 +232,8 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
       dlgData->hTabCtrl = GetDlgItem(hDlg, IDC_ABOUT_TAB);
 
       WMi18n &i18n = WMi18n::GetInstance();
-      InsertTabItem(dlgData->hTabCtrl, ABOUT_TAB_GENERAL, i18n.GetTextW(IDS_ABOUT_TAB_WINMUTE));
-      InsertTabItem(dlgData->hTabCtrl, ABOUT_TAB_LICENSE, i18n.GetTextW(IDS_ABOUT_TAB_LICENSE));
+      InsertTabItem(dlgData->hTabCtrl, ABOUT_TAB_GENERAL, i18n.GetTranslationW("about.tab.winmute"));
+      InsertTabItem(dlgData->hTabCtrl, ABOUT_TAB_LICENSE, i18n.GetTranslationW("about.tab.license"));
 
       TranslateAboutDlgProc(hDlg);
 

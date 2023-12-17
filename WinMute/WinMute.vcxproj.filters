@@ -57,6 +57,9 @@
     <Filter Include="Source Files\Controllers\Bluetooth">
       <UniqueIdentifier>{5cab523c-1a5a-4429-b495-b630124865d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Translations">
+      <UniqueIdentifier>{959a5f00-8238-460f-aaba-1b1d9e9ea7ca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinAudio.h">
@@ -101,15 +104,12 @@
     <ClInclude Include="WMi18n.h">
       <Filter>Source Files\Base\Settings</Filter>
     </ClInclude>
-    <ClInclude Include="resource_winmute.h" />
-    <ClInclude Include="../translations/wm_en/resource.h" />
-    <ClInclude Include="resource.h" />
+    <ClInclude Include="resource_winmute.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinMute.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-    <ResourceCompile Include="../translations/wm_en/wm_en.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
@@ -197,5 +197,13 @@
     <ClCompile Include="WMi18n.cpp">
       <Filter>Source Files\Base\Settings</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\Translations\lang-de.json">
+      <Filter>Translations</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\Translations\lang-en.json">
+      <Filter>Translations</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

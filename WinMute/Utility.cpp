@@ -55,7 +55,7 @@ void PrintWindowsError(const wchar_t *functionName, DWORD lastError)
    }
    // Display the error message and exit the process
    const std::wstring errorMsg = std::vformat(
-      WMi18n::GetInstance().GetTextW(IDS_MAIN_ERROR_WINAPI_FAILURE_TEXT),
+      WMi18n::GetInstance().GetTranslationW("general.error.winapi.text"),
       std::make_wformat_args(
          functionName,
          lastError,

@@ -81,13 +81,16 @@ int WINAPI wWinMain(
    hglobInstance = hInstance;
    WMSettings settings;
    WMi18n& i18n = WMi18n::GetInstance();
+   if (!i18n.Init()) {
+      return FALSE;
+   }
    if (!settings.Init()) {
       TaskDialog(
          nullptr,
          nullptr,
          PROGRAM_NAME,
-         i18n.GetTextW(IDS_MAIN_ERROR_SETTINGS_INIT_TITLE).c_str(),
-         i18n.GetTextW(IDS_MAIN_ERROR_SETTINGS_INIT_TEXT).c_str(),
+         i18n.GetTranslationW("init.error.settings.title").c_str(),
+         i18n.GetTranslationW("init.error.settings.text").c_str(),
          TDCBF_OK_BUTTON,
          TD_ERROR_ICON,
          nullptr);
@@ -105,8 +108,8 @@ int WINAPI wWinMain(
          nullptr,
          nullptr,
          PROGRAM_NAME,
-         i18n.GetTextW(IDS_MAIN_ERROR_WINMUTE_ALREADY_RUNNING_TITLE).c_str(),
-         i18n.GetTextW(IDS_MAIN_ERROR_WINMUTE_ALREADY_RUNNING_TEXT).c_str(),
+         i18n.GetTranslationW("init.error.already-running.title").c_str(),
+         i18n.GetTranslationW("init.error.already-running.text").c_str(),
          TDCBF_OK_BUTTON,
          TD_INFORMATION_ICON,
          nullptr);
@@ -122,8 +125,8 @@ int WINAPI wWinMain(
          nullptr,
          nullptr,
          PROGRAM_NAME,
-         i18n.GetTextW(IDS_MAIN_ERROR_INIT_WINMUTE_TITLE).c_str(),
-         i18n.GetTextW(IDS_MAIN_ERROR_INIT_WINMUTE_TEXT).c_str(),
+         i18n.GetTranslationW("init.error.winmute.title").c_str(),
+         i18n.GetTranslationW("init.error.winmute.text").c_str(),
          TDCBF_OK_BUTTON,
          TD_ERROR_ICON,
          nullptr);

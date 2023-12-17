@@ -130,8 +130,8 @@ HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnSessionDisconnected(
       TaskDialog(nullptr,
          nullptr,
          PROGRAM_NAME,
-         i18n.GetTextW(IDS_MAIN_ERROR_AUDIO_SERVICE_SHUTDOWN_TITLE).c_str(),
-         i18n.GetTextW(IDS_MAIN_ERROR_AUDIO_SERVICE_SHUTDOWN_TEXT).c_str(),
+         i18n.GetTranslationW("general.error.audio-service-shutdown.title").c_str(),
+         i18n.GetTranslationW("general.error.audio-service-shutdown.text").c_str(),
          TDCBF_OK_BUTTON,
          TD_WARNING_ICON,
          nullptr);

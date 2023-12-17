@@ -40,22 +40,27 @@ struct LanguageModule {
    std::wstring fileName;
 };
 
+using TranslationMap = std::map<std::string, std::wstring>;
+
 class WMi18n {
 public:
    static WMi18n& GetInstance();
 
-   bool LoadLanguage(const std::wstring &dllName);
+   bool Init();
+
+   bool LoadLanguage(const std::wstring &fileName);
    std::vector<LanguageModule> GetAvailableLanguages() const;
 
-   std::optional<fs::path> GetLanguageModulesPath() const;
+   std::optional<fs::path> GetLanguageFilesPath() const;
    std::wstring GetCurrentLanguageModule() const;
    std::wstring GetCurrentLanguageName() const;
 
-   std::wstring GetTextW(UINT textId) const;
-   std::string GetTextA(UINT textId) const;
+   std::wstring GetTranslationW(const std::string& textId) const;
+   std::string GetTranslationA(const std::string& textId) const;
 
-   bool SetItemText(HWND hWnd, int dlgItem, UINT textId);
-   bool SetItemText(HWND hItem, UINT textId);
+   bool SetItemText(HWND hWnd, int dlgItem, const std::string &textId);
+   bool SetItemText(HWND hItem, const std::string &textId);
+
 
 private:
    WMi18n() noexcept;
@@ -63,9 +68,16 @@ private:
    WMi18n(const WMi18n &) = delete;
    WMi18n &operator=(const WMi18n &) = delete;
 
-   HMODULE langModule_ = nullptr;
+   const std::wstring defaultLangName_ = L"lang-en.json";
    std::wstring curModuleName_;
+   TranslationMap loadedLang_;
+   TranslationMap defaultLang_;
+
+   std::wstring ConvertStringToWideString(const std::string &ansiString) const;
+   std::string ConvertWideStringToString(const std::wstring &wideString) const;
 
    void UnloadLanguage() noexcept;
+   bool LoadDefaultLanguage();
+   bool LoadLanguage(const std::wstring &fileName, TranslationMap &strings);
 };
 

@@ -61,8 +61,8 @@ static bool SaveQuietHours(
             nullptr,
             nullptr,
             PROGRAM_NAME,
-            i18n.GetTextW(IDS_SETTINGS_QUIETHOURS_INVALID_TIME_RANGE_TITLE).c_str(),
-            i18n.GetTextW(IDS_SETTINGS_QUIETHOURS_INVALID_TIME_RANGE_TEXT).c_str(),
+            i18n.GetTranslationW("settings.quiet-hours.error.invalid-time-range.title").c_str(),
+            i18n.GetTranslationW("settings.quiet-hours.error.invalid-time-range.text").c_str(),
             TDCBF_OK_BUTTON,
             TD_WARNING_ICON,
             nullptr);
@@ -84,8 +84,8 @@ static bool SaveQuietHours(
          nullptr,
          nullptr,
          PROGRAM_NAME,
-         i18n.GetTextW(IDS_SETTINGS_QUIETHOURS_ERROR_WHILE_SAVING_TITLE).c_str(),
-         i18n.GetTextW(IDS_SETTINGS_QUIETHOURS_ERROR_WHILE_SAVING_TEXT).c_str(),
+         i18n.GetTranslationW("settings.quiet-hours.error.error-while-saving.title").c_str(),
+         i18n.GetTranslationW("settings.quiet-hours.error.error-while-saving.text").c_str(),
          TDCBF_OK_BUTTON,
          TD_ERROR_ICON,
          nullptr);
@@ -99,13 +99,13 @@ static void LoadQuietHoursDlgTranslation(HWND hDlg)
 {
    WMi18n &i18n = WMi18n::GetInstance();
 
-   i18n.SetItemText(hDlg, IDC_QUIET_HOURS_DESCRIPTION, IDS_SETTINGS_QUIETHOURS_INTRO);
-   i18n.SetItemText(hDlg, IDC_ENABLEQUIETHOURS, IDS_SETTINGS_QUIETHOURS_ENABLE);
-   i18n.SetItemText(hDlg, IDC_QUIET_HOURS_START_LABEL, IDS_SETTINGS_QUIETHOURS_START_TIME_LABEL);
-   i18n.SetItemText(hDlg, IDC_QUIET_HOURS_END_LABEL, IDS_SETTINGS_QUIETHOURS_END_TIME_LABEL);
-   i18n.SetItemText(hDlg, IDC_FORCEUNMUTE, IDS_SETTINGS_QUIETHOURS_FORCE_UNMUTE);
-   i18n.SetItemText(hDlg, IDC_QUIET_HOURS_FORCE_UNMUTE_DESCRIPTION, IDS_SETTINGS_QUIETHOURS_FORCE_UNMUTE_DESCRIPTION);
-   i18n.SetItemText(hDlg, IDC_SHOWNOTIFICATIONS, IDS_SETTINGS_QUIETHOURS_SHOW_NOTIFICATIONS);
+   i18n.SetItemText(hDlg, IDC_QUIET_HOURS_DESCRIPTION, "settings.quiet-hours.intro");
+   i18n.SetItemText(hDlg, IDC_ENABLEQUIETHOURS, "settings.quiet-hours.enable");
+   i18n.SetItemText(hDlg, IDC_QUIET_HOURS_START_LABEL, "settings.quiet-hours.start-time-label");
+   i18n.SetItemText(hDlg, IDC_QUIET_HOURS_END_LABEL, "settings.quiet-hours.end-time-label");
+   i18n.SetItemText(hDlg, IDC_FORCEUNMUTE, "settings.quiet-hours.force-unmute");
+   i18n.SetItemText(hDlg, IDC_QUIET_HOURS_FORCE_UNMUTE_DESCRIPTION, "settings.quiet-hours.force-unmute-description");
+   i18n.SetItemText(hDlg, IDC_SHOWNOTIFICATIONS, "settings.quiet-hours.show-notifications");
 }
 
 INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
