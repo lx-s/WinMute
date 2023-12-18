@@ -98,7 +98,7 @@
     "settings.quiet-hours.error.error-while-saving.text": "Während dem Speichern der Ruhezeiteinstellungen trat ein Fehler auf",
     "settings.wifi.intro": "Das WLAN basiert Stummschalten ermöglicht es die PC-Lautstärke abhängig von dem Namen des verbundenen WLAN Netzwerks zu steuern.",
     "settings.wifi.enable": "Aktiviere WLAN-basiertes Stummschalten",
-    "settings.wifi.mute-when-not-in-list": "Schalte den PC stumm, wenn das verbundene WLAN Netzwerk nicht in der Liste ist (andernfalls, wenn es in der Liste ist)",
+    "settings.wifi.mute-when-not-in-list": "Stummschalten, wenn das WLAN nicht in der Liste ist",
     "settings.wifi.wifi-disabled-info": "Info: WLAN ist auf diesem Gerät nicht verfügbar.\nEinige Optionen wurden deaktiviert.",
     "settings.wifi.add-edit.add-title": "WLAN Netzwerk hinzufügen",
     "settings.wifi.add-edit.edit-title": "WLAN Netzwerk bearbeiten",
@@ -120,5 +120,6 @@
     "about.general.description": "WinMute wird von Alexander Steinhöfer in seiner Freizeit entwickelt. Der Quelltext sowie neue Programmversionen können auf GitHub heruntergeladen werden. Beiträge in Form von Code, Tickets oder Featurewünsche werden gerne gesehen! Vielen Dank dass Sie dieses kleine Tool verwenden!",
     "about.tab.winmute": "WinMute",
     "about.tab.license": "Lizenz",
-    "about.btn-close": "OK"
+    "about.btn-close": "OK",
+    "settings.wifi.mute-when-in-list": "Stummschalten, wenn das WLAN in der Liste ist"
 }
