@@ -1,7 +1,14 @@
 # WinMute
+<!-- badges --> 
+<div style="text-align:right">
+  <a href="https://translate.codeberg.org/engage/winmute/">
+    <img src="https://translate.codeberg.org/widget/winmute/winmute/svg-badge.svg" alt="Translation status" />
+  </a>
+</div>
 
-<div align="center"><img alt="WinMute's logo" title="WinMute" src="WinMute/icons/app-512.png" style="height:128px; margin-bottom: 20px"></div>
-
+<div style="text-align:center">
+  <img alt="WinMute's logo" title="WinMute" src="WinMute/icons/app.svg" style="height:128px; margin-bottom: 20px">
+</div>
 
 **WinMute** is a small and simple tool, that automatically mutes (and unmutes) your workstation
 based on triggers, e.g. the screensaver starts, or your bluetooth headphone disconnects.
