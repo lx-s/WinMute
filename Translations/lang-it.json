@@ -98,7 +98,7 @@
     "settings.quiet-hours.error.error-while-saving.text": "Si è verificato un errore durante il salvataggio delle impostazioni",
     "settings.wifi.intro": "'Audio OFF in base a nome rete WLAN' consente di disattivare l'audio del computer in base al nome della rete wireless connessa.",
     "settings.wifi.enable": "Abilita audio OFF basato su nome WLAN",
-    "settings.wifi.mute-when-not-in-list": "Disattiva audio computer se il nome rete WLAN NON è in elenco\n(predefinito: disattivato se è nell'elenco)",
+    "settings.wifi.mute-when-not-in-list": "Disattiva audio se il rete WLAN NON è in elenco",
     "settings.wifi.wifi-disabled-info": "Nota: la WLAN non è disponibile nel dispositivo, quindi alcune opzioni sono state disabilitate.",
     "settings.wifi.add-edit.add-title": "Aggiungi rete WiFi",
     "settings.wifi.add-edit.edit-title": "Modifica rete WiFi",
@@ -120,5 +120,6 @@
     "about.general.description": "WinMute è sviluppato da Alexander Steinhoefer nel suo tempo libero.\nIl codice e le nuove versioni di questo strumento sono disponibili su GitHub.\nI contributi sotto forma di codice, ticket o richieste di funzionalità sono molto graditi.\nGrazie per l'uso di questo piccolo strumento!",
     "about.tab.winmute": "WinMute",
     "about.tab.license": "Licenza",
-    "about.btn-close": "OK"
+    "about.btn-close": "OK",
+    "settings.wifi.mute-when-in-list": "Disattiva audio se il rete WLAN è in elenco"
 }
