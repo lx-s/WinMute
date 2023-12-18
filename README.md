@@ -1,12 +1,12 @@
 # WinMute
 <!-- badges --> 
-<div style="text-align:right">
+<div align="right">
   <a href="https://translate.codeberg.org/engage/winmute/">
     <img src="https://translate.codeberg.org/widget/winmute/winmute/svg-badge.svg" alt="Translation status" />
   </a>
 </div>
 
-<div style="text-align:center">
+<div align="center">
   <img alt="WinMute's logo" title="WinMute" src="WinMute/icons/app.svg" style="height:128px; margin-bottom: 20px">
 </div>
 
