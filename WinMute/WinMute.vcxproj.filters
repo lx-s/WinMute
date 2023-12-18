@@ -107,6 +107,7 @@
     <ClInclude Include="resource_winmute.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinMute.rc">
@@ -115,12 +116,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="icons\app.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="icons\tray_bright.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="icons\tray_dark.ico">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="icons\settings.ico">
@@ -203,6 +198,9 @@
       <Filter>Translations</Filter>
     </CustomBuild>
     <CustomBuild Include="..\Translations\lang-en.json">
+      <Filter>Translations</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\Translations\lang-it.json">
       <Filter>Translations</Filter>
     </CustomBuild>
   </ItemGroup>
