@@ -246,7 +246,7 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
          // Hide all child windows, except the notice
          EnumChildWindows(hDlg, ShowChildWindow, SW_HIDE);
 
-         HWND hDescription = GetDlgItem(hDlg, IDC_STATIC_BLUETOOTH_NOT_AVAILABLE);
+         HWND hDescription = GetDlgItem(hDlg, IDC_BLUETOOTH_DESCRIPTION_LABEL);
          WMi18n::GetInstance().SetItemText(hDescription, "settings.bluetooth-disabled-info");
          RECT r;
          GetClientRect(hDescription, &r);
