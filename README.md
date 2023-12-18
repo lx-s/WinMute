@@ -22,16 +22,21 @@ computer whenever I left the room and forgot to mute my computer.
 * WinMute is small and only needs a few kilobytes of disk space
 * WinMute is ad-free, telemetry-free and generally does not send any data whatsoever
 
-
 ## Screenshots
 
 ![Screenshot of WinMute](Dist/screenshots/app.png? "Screenshot of WinMute")
 ![Screenshot of the Settings](Dist/screenshots/settings.gif? "Settings dialog")
 
+## Languages
 
-## Development
+WinMute is currently available in the following languages:
 
-Check out [CONTRIBUTING.md](CONTRIBUTING.md), if you are interested in participating.
+[![Translation Status](https://translate.codeberg.org/widget/winmute/winmute/multi-auto.svg)](https://translate.codeberg.org/engage/winmute/)
+
+## Contributions
+
+If you want are fluent in another language, want to fix some bugs or pitch some new ideas,
+please take a look at [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Usage
 
