@@ -69,7 +69,7 @@
     "settings.bluetooth.add-edit.enter-device-name-placeholder": "Bitte geben Sie einen Gerätenamen an",
     "settings.bluetooth.description": "\"Bluetooth Muting\" aktiviert das Stummschalten des PCs sobald ein Bluetooth-Audiogerät vom PC getrennt wird und hebt die Stummschaltung auf, sobald es wieder verbunden wird.\n\nDieses Verhalten kann für alle oder nur bestimmte Bluetooth-Geräte aktiviert werden.",
     "settings.bluetooth.enable-muting": "\"Bluetooth Stummschalten\" aktivieren",
-    "settings.bluetooth.enable-muting-filter": "Nur Stummschalten, wenn einer der nachfolgenden Geräte mit dem PC verbunden oder vom PC getrennt wird.",
+    "settings.bluetooth.enable-muting-filter": "Nur für die folgenden Geräte aktivieren:",
     "settings.bluetooth-disabled-info": "Info: Bluetooth ist auf diesem Gerät nicht verfügbar.\nEinige Optionen wurden deaktiviert.",
     "settings.mute.general-title": "Allgemein",
     "settings.mute.show-mute-event-notifications": "Zeige Benachrichtigungen an",
