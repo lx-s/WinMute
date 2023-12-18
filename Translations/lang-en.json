@@ -69,7 +69,7 @@
     "settings.bluetooth.add-edit.enter-device-name-placeholder": "Please enter a Bluetooth device name",
     "settings.bluetooth.description": "\"Bluetooth Muting\" allows disabling the audio if an audio-class bluetooth device is disconnected, and re-enables it if a device is reconnected to the computer.\n\nThis behaviour can be enabled for all bluetooth audio-devices or only for a specific set.",
     "settings.bluetooth.enable-muting": "Enable Bluetooth-based muting",
-    "settings.bluetooth.enable-muting-filter": "Only mute when one of the following devices connect to or disconnect from the PC.",
+    "settings.bluetooth.enable-muting-filter": "Enable only for these devices:",
     "settings.bluetooth-disabled-info": "Note: Bluetooth is not available on this device.\nSome options have been disabled.",
     "settings.mute.general-title": "General",
     "settings.mute.show-mute-event-notifications": "Show mute event notifications",
