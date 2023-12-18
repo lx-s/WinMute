@@ -68,7 +68,7 @@
     "settings.general.select-language-label": "Lingua",
     "settings.bluetooth.add-edit.enter-device-name-placeholder": "Inserisci il nome di un dispositivo Bluetooth",
     "settings.bluetooth.description": "\"Audio OFF Bluetooth\" consente di disattivare l'audio se un dispositivo Bluetooth di classe audio viene disconnesso e di riattivare l'audio se un dispositivo Bluetooth viene ricollegato al computer.\n\nPuoi abilitare questo comportamento per tutti i dispositivi audio Bluetooth o solo per un set specifico di dispositivi.",
-    "settings.bluetooth.enable-muting": "Abilita audio OFF basato su hardware Bluetooth",
+    "settings.bluetooth.enable-muting": "Abilita disabilitazione audio basata su hardware Bluetooth",
     "settings.bluetooth.enable-muting-filter": "Abilita solo per questi dispositivi:",
     "settings.bluetooth-disabled-info": "Nota: il Bluetooth non è disponibile nel dispositivo, quindi alcune opzioni sono state disabilitate.",
     "settings.mute.general-title": "Generale",
@@ -97,8 +97,8 @@
     "settings.quiet-hours.error.error-while-saving.title": "Impossibile salvare le impostazioni delle ore di silenzio",
     "settings.quiet-hours.error.error-while-saving.text": "Si è verificato un errore durante il salvataggio delle impostazioni",
     "settings.wifi.intro": "'Audio OFF in base a nome rete WLAN' consente di disattivare l'audio del computer in base al nome della rete wireless connessa.",
-    "settings.wifi.enable": "Abilita audio OFF basato su nome WLAN",
-    "settings.wifi.mute-when-not-in-list": "Disattiva audio se il rete WLAN NON è in elenco",
+    "settings.wifi.enable": "Abilita disabilitazione audio basata su nome rete WLAN",
+    "settings.wifi.mute-when-not-in-list": "Disattiva audio se la rete WLAN NON è in elenco",
     "settings.wifi.wifi-disabled-info": "Nota: la WLAN non è disponibile nel dispositivo, quindi alcune opzioni sono state disabilitate.",
     "settings.wifi.add-edit.add-title": "Aggiungi rete WiFi",
     "settings.wifi.add-edit.edit-title": "Modifica rete WiFi",
@@ -121,5 +121,5 @@
     "about.tab.winmute": "WinMute",
     "about.tab.license": "Licenza",
     "about.btn-close": "OK",
-    "settings.wifi.mute-when-in-list": "Disattiva audio se il rete WLAN è in elenco"
+    "settings.wifi.mute-when-in-list": "Disattiva audio se la rete WLAN è in elenco"
 }
