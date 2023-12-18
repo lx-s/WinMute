@@ -12,7 +12,7 @@ if you have the time to provide the code yourself.
 ## Bug fixes
 
 You're welcome at any time to provide pull requests with fixes for bugs you discovered.
-Try to keep it in the current coding style as much as possible. Otherwise I won't
+Try to keep it in the current coding style as much as possible. Apart from that I won't
 dictate any strict rules.
 
 ## Art
@@ -20,9 +20,11 @@ dictate any strict rules.
 Since my artistic competence is hovering right around the skill level of "programmer art",
 a new program icon suitable for Windows' light and dark theme (or GitHubs README) would be greatly appreciated 🙂
 
-## Internationalization
+## Translations
 
-WinMute would greatly benefit from transalation. As of now WinMute does not support
-any form of i18n.
-If you know how to best implement i18n in a simple WinAPI app, I'd be happy if you
-could help out with implementing the basic infrastructure for it.
+You are invited to provide translations for the app. But there are some rules.
+
+1. Please only translate if you are fluid with the language you provide the translation and also if you are familiar with the nomenclature of the Android system. If in doubt about a specific string, check out other Apps of big companies, like WhatsApp, Facebook, Google, etc., and see how they did it.
+2. Only contribute, if you are committed to translate the majority of strings. No one wants an app, which is a mix of English and the native language. I might remove translations again, if they won't receive updates on new string resources.
+
+Translations can be provided via [Weblate](https://translate.codeberg.org/engage/winmute/).
