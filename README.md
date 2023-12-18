@@ -35,7 +35,7 @@ WinMute is currently available in the following languages:
 
 ## Contributions
 
-If you want are fluent in another language, want to fix some bugs or pitch some new ideas,
+If you are fluent in another language, want to fix some bugs or pitch some new ideas,
 please take a look at [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Usage
