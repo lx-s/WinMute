@@ -1,6 +1,6 @@
 # WinMute
 
-<div align="center"><img alt="WinMute's logo" title="WinMute" src="WinMute/icons/app.png"></div>
+<div align="center"><img alt="WinMute's logo" title="WinMute" src="WinMute/icons/app-512.png" style="height:128; margin-bottom: 20px"></div>
 
 
 **WinMute** is a small and simple tool, that automatically mutes (and unmutes) your workstation
