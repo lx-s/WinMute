@@ -103,6 +103,9 @@
 #define IDC_GROUP_LIST_BEHAVIOUR        1066
 #define IDC_GROUP_ENDPOINTS             1067
 #define IDC_ENDPOINT_NAME_LABEL         1068
+#define IDC_WLAN_LIST_IS_ALLOWLIST      1069
+#define IDC_WLAN_LIST_IS_BLOCKLIST      1070
+#define IDC_RADIO1                      1071
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_                    40002
 #define ID_TRAYMENU_MUTEON              40003
@@ -150,7 +153,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        141
 #define _APS_NEXT_COMMAND_VALUE         40041
-#define _APS_NEXT_CONTROL_VALUE         1069
+#define _APS_NEXT_CONTROL_VALUE         1072
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

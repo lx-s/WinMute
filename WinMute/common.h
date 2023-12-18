@@ -98,7 +98,7 @@ namespace fs = std::filesystem;
 
 #include "libs/json.hpp"
 
-#include "resource_winmute.h"
+#include "resource.h"
 
 #include "WMi18n.h"
 #include "WMSettings.h"

@@ -158,7 +158,8 @@ static void LoadWifiDlgTranslation(HWND hDlg)
    i18n.SetItemText(hDlg, IDC_WIFI_EDIT, "settings.btn-edit");
    i18n.SetItemText(hDlg, IDC_WIFI_REMOVE, "settings.btn-remove");
    i18n.SetItemText(hDlg, IDC_WIFI_REMOVEALL, "settings.btn-remove-all");
-   i18n.SetItemText(hDlg, IDC_STATIC_WLAN_NOT_AVAILABLE, "settings.wifi.wifi-disabled-info");
+   i18n.SetItemText(hDlg, IDC_WLAN_LIST_IS_ALLOWLIST, "settings.wifi.mute-when-in-list");
+   i18n.SetItemText(hDlg, IDC_WLAN_LIST_IS_BLOCKLIST, "settings.wifi.mute-when-not-in-list");
 }
 
 INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -177,10 +178,13 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       DWORD enabled = settings->QueryValue(SettingsKey::MUTE_ON_WLAN);
       Button_SetCheck(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE),
                       enabled ? BST_CHECKED : BST_UNCHECKED);
-      Button_Enable(GetDlgItem(hDlg, IDC_IS_PERMITLIST), enabled);
+      Button_Enable(GetDlgItem(hDlg, IDC_WLAN_LIST_IS_ALLOWLIST), enabled == BST_CHECKED);
+      Button_Enable(GetDlgItem(hDlg, IDC_WLAN_LIST_IS_BLOCKLIST), enabled == BST_CHECKED);
       enabled = settings->QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST);
-      Button_SetCheck(GetDlgItem(hDlg, IDC_IS_PERMITLIST),
+      Button_SetCheck(GetDlgItem(hDlg, IDC_WLAN_LIST_IS_ALLOWLIST),
                       enabled ? BST_CHECKED : BST_UNCHECKED);
+      Button_SetCheck(GetDlgItem(hDlg, IDC_WLAN_LIST_IS_BLOCKLIST),
+                      !enabled ? BST_CHECKED : BST_UNCHECKED);
 
       Button_Enable(GetDlgItem(hDlg, IDC_WIFI_EDIT), FALSE);
       Button_Enable(GetDlgItem(hDlg, IDC_WIFI_REMOVE), FALSE);
@@ -197,30 +201,32 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
          // Set defaults
          Button_SetCheck(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE), BST_UNCHECKED);
          Button_Enable(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE), FALSE);
-         Button_SetCheck(GetDlgItem(hDlg, IDC_IS_PERMITLIST), BST_UNCHECKED);
-         Button_Enable(GetDlgItem(hDlg, IDC_IS_PERMITLIST), FALSE);
+         Button_SetCheck(GetDlgItem(hDlg, IDC_WLAN_LIST_IS_ALLOWLIST), BST_CHECKED);
+         Button_Enable(GetDlgItem(hDlg, IDC_WLAN_LIST_IS_ALLOWLIST), FALSE);
+         Button_SetCheck(GetDlgItem(hDlg, IDC_WLAN_LIST_IS_BLOCKLIST), BST_UNCHECKED);
+         Button_Enable(GetDlgItem(hDlg, IDC_WLAN_LIST_IS_BLOCKLIST), FALSE);
 
          // Hide all child windows, except the notice
          EnumChildWindows(hDlg, ShowChildWindow, SW_HIDE);
 
-         HWND hWifiNotAvail = GetDlgItem(hDlg, IDC_STATIC_WLAN_NOT_AVAILABLE);
+         HWND hDescription = GetDlgItem(hDlg, IDC_WIFI_INTRO);
+         WMi18n::GetInstance().SetItemText(hDescription, "settings.wifi.wifi-disabled-info");
          RECT r;
-         GetClientRect(hWifiNotAvail, &r);
+         GetClientRect(hDescription, &r);
          const int margin = 20;
          SetWindowPos(
-            hWifiNotAvail, HWND_TOP,
+            hDescription, HWND_TOP,
             margin, margin, r.right, r.bottom,
             SWP_SHOWWINDOW);
-      } else {
-         ShowWindow(GetDlgItem(hDlg, IDC_STATIC_WLAN_NOT_AVAILABLE), SW_HIDE);
       }
       return TRUE;
    }
    case WM_COMMAND:
    {
       if (LOWORD(wParam) == IDC_ENABLE_WIFI_MUTE) {
-         const DWORD checked = Button_GetCheck(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE));
-         Button_Enable(GetDlgItem(hDlg, IDC_IS_PERMITLIST), checked == BST_CHECKED);
+         const DWORD wlanEnabled = Button_GetCheck(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE));
+         Button_Enable(GetDlgItem(hDlg, IDC_WLAN_LIST_IS_ALLOWLIST), wlanEnabled == BST_CHECKED);
+         Button_Enable(GetDlgItem(hDlg, IDC_WLAN_LIST_IS_BLOCKLIST), wlanEnabled == BST_CHECKED);
       } else if (LOWORD(wParam) == IDC_WIFI_LIST) {
          HWND hList = GetDlgItem(hDlg, IDC_WIFI_LIST);
          if (HIWORD(wParam) == LBN_SELCHANGE || HIWORD(wParam) == LBN_SELCANCEL) {
@@ -309,7 +315,7 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       DWORD checked = Button_GetCheck(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE));
       settings->SetValue(SettingsKey::MUTE_ON_WLAN, checked == BST_CHECKED);
 
-      checked = Button_GetCheck(GetDlgItem(hDlg, IDC_IS_PERMITLIST));
+      checked = Button_GetCheck(GetDlgItem(hDlg, IDC_WLAN_LIST_IS_ALLOWLIST));
       settings->SetValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST, checked == BST_CHECKED);
       
       return 0;

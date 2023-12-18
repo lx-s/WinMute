@@ -155,16 +155,17 @@ IDD_SETTINGS_WIFI DIALOGEX 0, 0, 242, 216
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LISTBOX         IDC_WIFI_LIST,7,99,170,86,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Add",IDC_WIFI_ADD,179,97,56,16
-    PUSHBUTTON      "Edit",IDC_WIFI_EDIT,179,116,56,16
-    PUSHBUTTON      "Remove",IDC_WIFI_REMOVE,179,135,56,16
-    PUSHBUTTON      "Remove all",IDC_WIFI_REMOVEALL,179,155,56,16
-    LTEXT           "Note: WLAN is not available on your device, so some options have been disabled.",IDC_STATIC_WLAN_NOT_AVAILABLE,7,191,228,18
+    LISTBOX         IDC_WIFI_LIST,7,88,166,121,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Add",IDC_WIFI_ADD,179,87,56,16
+    PUSHBUTTON      "Edit",IDC_WIFI_EDIT,179,106,56,16
+    PUSHBUTTON      "Remove",IDC_WIFI_REMOVE,179,125,56,16
+    PUSHBUTTON      "Remove all",IDC_WIFI_REMOVEALL,179,193,56,16
     CONTROL         "Enable WLAN based muting",IDC_ENABLE_WIFI_MUTE,"Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,44,228,14
-    CONTROL         "Mute workstation if the WLAN network name is NOT in the list\n(default: mute if it is on the list)\nLine3",IDC_IS_PERMITLIST,
-                    "Button",BS_AUTOCHECKBOX | BS_LEFT | BS_TOP | BS_MULTILINE | WS_TABSTOP,20,59,215,31
-    LTEXT           """WLAN Mute"" allows you to mute your workstation based on the name of the connected wireless network.",IDC_WIFI_INTRO,7,7,228,35
+    LTEXT           "Description\nDescription\nDescription\nDescription",IDC_WIFI_INTRO,7,7,228,37
+    CONTROL         "Mute if connected WLAN is in list",IDC_WLAN_LIST_IS_ALLOWLIST,
+                    "Button",BS_AUTORADIOBUTTON,17,60,209,10
+    CONTROL         "Mute if connected WLAN is not in list",IDC_WLAN_LIST_IS_BLOCKLIST,
+                    "Button",BS_AUTORADIOBUTTON,17,73,207,10
 END
 
 IDD_SETTINGS_WIFI_ADD DIALOGEX 0, 0, 201, 62
@@ -183,17 +184,16 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LISTBOX         IDC_BLUETOOTH_LIST,7,121,170,73,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Add",IDC_BLUETOOTH_ADD,179,120,56,16
-    PUSHBUTTON      "Edit",IDC_BLUETOOTH_EDIT,179,140,56,16
-    PUSHBUTTON      "Remove",IDC_BLUETOOTH_REMOVE,179,158,56,16
-    PUSHBUTTON      "Remove all",IDC_BLUETOOTH_REMOVEALL,179,178,56,16
-    LTEXT           "Note: Bluetooth is not available on your device, so some options have been disabled.",IDC_STATIC_BLUETOOTH_NOT_AVAILABLE,7,197,228,18
+    LISTBOX         IDC_BLUETOOTH_LIST,7,95,168,120,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Add",IDC_BLUETOOTH_ADD,181,94,56,16
+    PUSHBUTTON      "Edit",IDC_BLUETOOTH_EDIT,181,113,56,16
+    PUSHBUTTON      "Remove",IDC_BLUETOOTH_REMOVE,181,132,56,16
+    PUSHBUTTON      "Remove all",IDC_BLUETOOTH_REMOVEALL,181,199,56,16
     CONTROL         "Enable Bluetooth based muting",IDC_ENABLE_BLUETOOTH_MUTE,
-                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,67,228,14
-    CONTROL         "Only mute when one of the following devices connect to or disconnect from your PC.",IDC_ENABLE_BLUETOOTH_MUTE_DEVICE_LIST,
-                    "Button",BS_AUTOCHECKBOX | BS_TOP | BS_MULTILINE | WS_TABSTOP,20,84,215,27
-    LTEXT           "Description\nDescription\nDescription\nDescription\nDescription",IDC_BLUETOOTH_DESCRIPTION_LABEL,7,7,230,53
+                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,62,228,14
+    CONTROL         "Enable only for these devices:",IDC_ENABLE_BLUETOOTH_MUTE_DEVICE_LIST,
+                    "Button",BS_AUTOCHECKBOX | BS_TOP | BS_MULTILINE | WS_TABSTOP,20,78,215,12
+    LTEXT           "Description\nDescription\nDescription\nDescription\nDescription\nDescription",IDC_BLUETOOTH_DESCRIPTION_LABEL,7,7,230,51
 END
 
 IDD_SETTINGS_BLUETOOTH_ADD DIALOGEX 0, 0, 201, 62
@@ -214,11 +214,11 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Save",IDOK,133,179,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,184,179,50,14
-    LISTBOX         IDC_ENDPOINT_LIST,13,60,159,110,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_ENDPOINT_LIST,13,60,156,110,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "Add",IDC_ENDPOINT_ADD,175,60,56,16
     PUSHBUTTON      "Edit",IDC_ENDPOINT_EDIT,175,78,56,16
     PUSHBUTTON      "Remove",IDC_ENDPOINT_REMOVE,175,97,56,16
-    PUSHBUTTON      "Remove all",IDC_ENDPOINT_REMOVEALL,175,120,56,16
+    PUSHBUTTON      "Remove all",IDC_ENDPOINT_REMOVEALL,178,155,56,16
     CONTROL         "Mute only listed endpoints",IDC_ENDPOINT_LIST_IS_ALLOWLIST,
                     "Button",BS_AUTORADIOBUTTON,13,19,209,10
     CONTROL         "Mute all but the listed endpoints",IDC_ENDPOINT_LIST_IS_BLOCKLIST,

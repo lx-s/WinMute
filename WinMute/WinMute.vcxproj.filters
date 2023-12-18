@@ -60,6 +60,9 @@
     <Filter Include="Translations">
       <UniqueIdentifier>{959a5f00-8238-460f-aaba-1b1d9e9ea7ca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\_External">
+      <UniqueIdentifier>{825b7134-b70c-4e13-a95a-0a72645b1ec4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinAudio.h">
@@ -104,10 +107,10 @@
     <ClInclude Include="WMi18n.h">
       <Filter>Source Files\Base\Settings</Filter>
     </ClInclude>
-    <ClInclude Include="resource_winmute.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="libs\json.hpp">
+      <Filter>Source Files\_External</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinMute.rc">

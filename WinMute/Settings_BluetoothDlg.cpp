@@ -197,7 +197,6 @@ static void LoadBluetoothDlgTranslation(HWND hDlg)
    i18n.SetItemText(hDlg, IDC_BLUETOOTH_EDIT, "settings.btn-edit");
    i18n.SetItemText(hDlg, IDC_BLUETOOTH_REMOVE, "settings.btn-remove");
    i18n.SetItemText(hDlg, IDC_BLUETOOTH_REMOVEALL, "settings.btn-remove-all");
-   i18n.SetItemText(hDlg, IDC_STATIC_BLUETOOTH_NOT_AVAILABLE, "settings.bluetooth-disabled-info");
 }
 
 INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -247,16 +246,15 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
          // Hide all child windows, except the notice
          EnumChildWindows(hDlg, ShowChildWindow, SW_HIDE);
 
-         HWND hBtNotAvail = GetDlgItem(hDlg, IDC_STATIC_BLUETOOTH_NOT_AVAILABLE);
+         HWND hDescription = GetDlgItem(hDlg, IDC_STATIC_BLUETOOTH_NOT_AVAILABLE);
+         WMi18n::GetInstance().SetItemText(hDescription, "settings.bluetooth-disabled-info");
          RECT r;
-         GetClientRect(hBtNotAvail, &r);
+         GetClientRect(hDescription, &r);
          constexpr int margin = 20;
          SetWindowPos(
-            hBtNotAvail, HWND_TOP,
+            hDescription, HWND_TOP,
             margin, margin, r.right, r.bottom,
             SWP_SHOWWINDOW);
-      } else {
-         ShowWindow(GetDlgItem(hDlg, IDC_STATIC_BLUETOOTH_NOT_AVAILABLE), SW_HIDE);
       }
       return TRUE;
    }
