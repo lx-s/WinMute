@@ -192,7 +192,7 @@ BEGIN
     CONTROL         "Enable Bluetooth based muting",IDC_ENABLE_BLUETOOTH_MUTE,
                     "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,62,228,14
     CONTROL         "Enable only for these devices:",IDC_ENABLE_BLUETOOTH_MUTE_DEVICE_LIST,
-                    "Button",BS_AUTOCHECKBOX | BS_TOP | BS_MULTILINE | WS_TABSTOP,20,78,215,12
+                    "Button",BS_AUTOCHECKBOX | BS_TOP | BS_MULTILINE | WS_TABSTOP,20,79,215,12
     LTEXT           "Description\nDescription\nDescription\nDescription\nDescription\nDescription",IDC_BLUETOOTH_DESCRIPTION_LABEL,7,7,230,51
 END
 
