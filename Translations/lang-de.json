@@ -11,7 +11,7 @@
     "init.error.winmute.platform-support.text": "Für Windows XP Unterstützung, kann WinMute in der Version 1.4.2 oder älter installiert werden.",
     "general.error.winapi.text": "{} fehlgeschlagen mit Fehler {}: {}",
     "general.error.audio-service-shutdown.title": "Der Audioservice wurde beendet.",
-    "general.error.audio-service-shutdown.text": "WinMute kann aus dieser Situation heraus nichts mehr tun. Bitte starten sie das Programm neu.",
+    "general.error.audio-service-shutdown.text": "WinMute kann diese Situation nicht Beheben. Bitte starten Sie das Programm neu.",
     "popup.remote-session-detected.title": "Remote Session festgestellt",
     "popup.remote-session-detected.text": "Alle Audio Endpunkte wurden stumm geschaltet",
     "popup.bluetooth-muting-disabled.title": "Bluetooth-Stummschalten deaktiviert",
