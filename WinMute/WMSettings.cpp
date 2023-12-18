@@ -122,6 +122,9 @@ static const wchar_t* KeyToStr(SettingsKey key)
    case SettingsKey::APP_LANGUAGE:
       keyStr = L"AppLanguage";
       break;
+   case SettingsKey::CHECK_FOR_UPDATE:
+      keyStr = L"CheckForUpdate";
+      break;
    }
    return keyStr;
 }
@@ -170,6 +173,8 @@ static DWORD GetDefaultSetting(SettingsKey key)
    case SettingsKey::NOTIFICATIONS_ENABLED:
       return 0;
    case SettingsKey::APP_LANGUAGE:
+      return 0;
+   case SettingsKey::CHECK_FOR_UPDATE:
       return 0;
    }
    return 0;

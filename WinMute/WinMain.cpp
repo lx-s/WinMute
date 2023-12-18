@@ -97,6 +97,10 @@ int WINAPI wWinMain(
       return FALSE;
    }
 
+   UpdateChecker updateChecker(settings);
+   std::wstring w1, w2;
+   updateChecker.ShouldUpdate(w1, w2);
+
    LoadLanguage(settings, i18n);
 
    HANDLE hMutex = CreateMutexW(nullptr, TRUE, L"LxSystemsWinMuteRunOnce");

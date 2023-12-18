@@ -65,6 +65,7 @@ enum class SettingsKey {
    , NOTIFICATIONS_ENABLED
    , LOGGING_ENABLED
    , APP_LANGUAGE
+   , CHECK_FOR_UPDATE
 };
 
 class WMSettings {

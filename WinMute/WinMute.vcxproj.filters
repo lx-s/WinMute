@@ -111,6 +111,9 @@
     <ClInclude Include="libs\json.hpp">
       <Filter>Source Files\_External</Filter>
     </ClInclude>
+    <ClInclude Include="UpdateChecker.h">
+      <Filter>Source Files\Base\Settings</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinMute.rc">
@@ -171,9 +174,6 @@
     <ClCompile Include="Settings_GeneralDlg.cpp">
       <Filter>Source Files\UI\Dialogs\Settings</Filter>
     </ClCompile>
-    <ClCompile Include="AboutDlg.cpp">
-      <Filter>Source Files\UI\Dialogs</Filter>
-    </ClCompile>
     <ClCompile Include="Settings_MuteDlg.cpp">
       <Filter>Source Files\UI\Dialogs\Settings</Filter>
     </ClCompile>
@@ -194,6 +194,12 @@
     </ClCompile>
     <ClCompile Include="WMi18n.cpp">
       <Filter>Source Files\Base\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="UpdateChecker.cpp">
+      <Filter>Source Files\Base\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="AboutDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\Settings</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

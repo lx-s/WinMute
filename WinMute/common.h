@@ -58,19 +58,20 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <algorithm>
 #include <array>
 #include <cassert>
-#include <span>
 #include <chrono>
 #include <cstdarg>
 #include <filesystem>
-#include <optional>
 #include <fstream>
 #include <iterator>
 #include <locale>
-#include <memory>
-#include <string_view>
-#include <string>
-#include <unordered_map>
 #include <map>
+#include <memory>
+#include <optional>
+#include <span>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <unordered_map>
 #include <vector>
 
 namespace fs = std::filesystem;
@@ -79,6 +80,7 @@ namespace fs = std::filesystem;
 #include <windowsx.h>
 #include <commctrl.h>
 #include <WtsApi32.h>
+#include <winhttp.h>
 #include <dbt.h>
 #include <Bthdef.h>
 #include <Bthsdpdef.h>
@@ -103,6 +105,7 @@ namespace fs = std::filesystem;
 #include "WMi18n.h"
 #include "WMSettings.h"
 #include "WMLog.h"
+#include "UpdateChecker.h"
 #include "TrayIcon.h"
 #include "WinAudio.h"
 #include "MuteControl.h"
@@ -111,7 +114,6 @@ namespace fs = std::filesystem;
 #include "QuietHoursTimer.h"
 #include "WinMute.h"
 #include "VersionHelper.h"
-
 
 // Utility
 void PrintWindowsError(const wchar_t *functionName, DWORD lastError = -1);
