@@ -1,6 +1,6 @@
 // Microsoft Visual C++ generated resource script.
 //
-#include "resource_winmute.h"
+#include "resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -93,10 +93,10 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LTEXT           "During Quiet Hours WinMute automatically mutes your PC volumes and unmutes it afterwards.",IDC_QUIET_HOURS_DESCRIPTION,7,9,232,22
     CONTROL         "Enable Quiet Hours",IDC_ENABLEQUIETHOURS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,31,120,15
-    LTEXT           "Start time:",IDC_QUIET_HOURS_START_LABEL,23,50,43,13
-    CONTROL         "",IDC_QUIETHOURS_START,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,73,47,65,18
-    LTEXT           "End time:",IDC_QUIET_HOURS_END_LABEL,24,73,32,16
-    CONTROL         "",IDC_QUIETHOURS_END,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,72,71,67,19
+    LTEXT           "Start time:",IDC_QUIET_HOURS_START_LABEL,23,50,64,13
+    CONTROL         "",IDC_QUIETHOURS_START,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,88,47,67,18
+    LTEXT           "End time:",IDC_QUIET_HOURS_END_LABEL,24,73,62,16
+    CONTROL         "",IDC_QUIETHOURS_END,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,87,71,68,19
     CONTROL         "Force unmute",IDC_FORCEUNMUTE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,94,86,16
     LTEXT           "If force unmute is enabled, WinMute will unmute your workstation when quiet hours end and not take into account if your workstation was already muted before quiet hours started.",IDC_QUIET_HOURS_FORCE_UNMUTE_DESCRIPTION,33,111,204,37
     CONTROL         "Show quiet hours notifications",IDC_SHOWNOTIFICATIONS,
@@ -151,19 +151,19 @@ BEGIN
     EDITTEXT        IDC_MUTEDELAY,13,124,30,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
 END
 
-IDD_SETTINGS_WIFI DIALOGEX 0, 0, 242, 204
+IDD_SETTINGS_WIFI DIALOGEX 0, 0, 242, 216
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LISTBOX         IDC_WIFI_LIST,7,81,170,95,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Add",IDC_WIFI_ADD,179,80,56,16
-    PUSHBUTTON      "Edit",IDC_WIFI_EDIT,179,99,56,16
-    PUSHBUTTON      "Remove",IDC_WIFI_REMOVE,179,118,56,16
-    PUSHBUTTON      "Remove all",IDC_WIFI_REMOVEALL,179,138,56,16
-    LTEXT           "Note: WLAN is not available on your device, so some options have been disabled.",IDC_STATIC_WLAN_NOT_AVAILABLE,7,179,228,18
+    LISTBOX         IDC_WIFI_LIST,7,99,170,86,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Add",IDC_WIFI_ADD,179,97,56,16
+    PUSHBUTTON      "Edit",IDC_WIFI_EDIT,179,116,56,16
+    PUSHBUTTON      "Remove",IDC_WIFI_REMOVE,179,135,56,16
+    PUSHBUTTON      "Remove all",IDC_WIFI_REMOVEALL,179,155,56,16
+    LTEXT           "Note: WLAN is not available on your device, so some options have been disabled.",IDC_STATIC_WLAN_NOT_AVAILABLE,7,191,228,18
     CONTROL         "Enable WLAN based muting",IDC_ENABLE_WIFI_MUTE,"Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,44,228,14
-    CONTROL         "Mute workstation if the WLAN network name is NOT in the list\n(default: mute if it is on the list)",IDC_IS_PERMITLIST,
-                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,20,59,215,18
+    CONTROL         "Mute workstation if the WLAN network name is NOT in the list\n(default: mute if it is on the list)\nLine3",IDC_IS_PERMITLIST,
+                    "Button",BS_AUTOCHECKBOX | BS_LEFT | BS_TOP | BS_MULTILINE | WS_TABSTOP,20,59,215,31
     LTEXT           """WLAN Mute"" allows you to mute your workstation based on the name of the connected wireless network.",IDC_WIFI_INTRO,7,7,228,35
 END
 
@@ -178,21 +178,21 @@ BEGIN
     EDITTEXT        IDC_WIFI_NAME,7,20,187,16,ES_AUTOHSCROLL
 END
 
-IDD_SETTINGS_BLUETOOTH DIALOGEX 0, 0, 244, 201
+IDD_SETTINGS_BLUETOOTH DIALOGEX 0, 0, 244, 222
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LISTBOX         IDC_BLUETOOTH_LIST,7,93,170,79,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Add",IDC_BLUETOOTH_ADD,179,92,56,16
-    PUSHBUTTON      "Edit",IDC_BLUETOOTH_EDIT,179,112,56,16
-    PUSHBUTTON      "Remove",IDC_BLUETOOTH_REMOVE,179,130,56,16
-    PUSHBUTTON      "Remove all",IDC_BLUETOOTH_REMOVEALL,179,150,56,16
-    LTEXT           "Note: Bluetooth is not available on your device, so some options have been disabled.",IDC_STATIC_BLUETOOTH_NOT_AVAILABLE,7,175,228,18
+    LISTBOX         IDC_BLUETOOTH_LIST,7,121,170,73,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Add",IDC_BLUETOOTH_ADD,179,120,56,16
+    PUSHBUTTON      "Edit",IDC_BLUETOOTH_EDIT,179,140,56,16
+    PUSHBUTTON      "Remove",IDC_BLUETOOTH_REMOVE,179,158,56,16
+    PUSHBUTTON      "Remove all",IDC_BLUETOOTH_REMOVEALL,179,178,56,16
+    LTEXT           "Note: Bluetooth is not available on your device, so some options have been disabled.",IDC_STATIC_BLUETOOTH_NOT_AVAILABLE,7,197,228,18
     CONTROL         "Enable Bluetooth based muting",IDC_ENABLE_BLUETOOTH_MUTE,
-                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,60,228,14
+                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,67,228,14
     CONTROL         "Only mute when one of the following devices connect to or disconnect from your PC.",IDC_ENABLE_BLUETOOTH_MUTE_DEVICE_LIST,
-                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,20,74,215,18
+                    "Button",BS_AUTOCHECKBOX | BS_TOP | BS_MULTILINE | WS_TABSTOP,20,84,215,27
     LTEXT           "Description\nDescription\nDescription\nDescription\nDescription",IDC_BLUETOOTH_DESCRIPTION_LABEL,7,7,230,53
 END
 
@@ -308,7 +308,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 235
         TOPMARGIN, 7
-        BOTTOMMARGIN, 197
+        BOTTOMMARGIN, 209
     END
 
     IDD_SETTINGS_WIFI_ADD, DIALOG
@@ -324,7 +324,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 237
         TOPMARGIN, 7
-        BOTTOMMARGIN, 194
+        BOTTOMMARGIN, 215
     END
 
     IDD_SETTINGS_BLUETOOTH_ADD, DIALOG
