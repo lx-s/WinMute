@@ -245,7 +245,7 @@ bool UpdateChecker::GetVersionFile(std::string &fileContents) const
       nullptr,
       WINHTTP_NO_REFERER,
       WINHTTP_DEFAULT_ACCEPT_TYPES,
-      WINHTTP_FLAG_BYPASS_PROXY_CACHE | WINHTTP_FLAG_SECURE);
+      WINHTTP_FLAG_SECURE);
 
    if (hRequest == nullptr) {
       log.LogWinError(L"WinHttpConnect", GetLastError());
