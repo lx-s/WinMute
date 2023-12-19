@@ -55,7 +55,8 @@ private:
 
    bool IsUpdateCheckEnabled() const;
 
-   bool ExtractVersion(HINTERNET hRequest) const;
+   bool GetVersionFile(std::string &fileContents) const;
+   bool ParseVersionFile(const std::string &fileContents) const;
 
    const WMSettings &settings_;
 };

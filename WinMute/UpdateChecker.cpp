@@ -33,6 +33,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
+#ifdef _DEBUG
+const wchar_t *UPDATE_FILE_URL = L"https://raw.githubusercontent.com/lx-s/WinMute/dev/CURRENT_VERSION";
+#else
+const wchar_t *UPDATE_FILE_URL = L"https://raw.githubusercontent.com/lx-s/WinMute/main/CURRENT_VERSION";
+#endif
+
 class HInternetHolder {
 public:
    HInternetHolder(HINTERNET hInternet)
@@ -64,13 +70,43 @@ UpdateChecker::~UpdateChecker()
 
 }
 
+bool UpdateChecker::ParseVersionFile(const std::string &fileContents) const
+{
+   try {
+      auto json = nlohmann::json::parse(fileContents);
+   } catch (const nlohmann::json::parse_error &pe) {
+      WMLog::GetInstance().Write(L"Failed to parse update: %S", pe.what());
+   }
+   return false;
+}
+
 bool UpdateChecker::ShouldUpdate(std::wstring& , std::wstring& ) const
 {
    //if (!IsUpdateCheckEnabled()) {
      // return false;
    //}
+   std::string versionFile;
+   if (!GetVersionFile(versionFile)) {
+      return false;
+   }
 
+
+   // Check contents of version file
+   return true;
+}
+
+bool UpdateChecker::GetVersionFile(std::string &fileContents) const
+{
    WMLog &log = WMLog::GetInstance();
+
+
+   URL_COMPONENTS updateUrl;
+   updateUrl.dwStructSize = sizeof(updateUrl);
+   if (!WinHttpCrackUrl(UPDATE_FILE_URL, 0, ICU_ESCAPE, &updateUrl)) {
+      log.WriteWindowsError(L"WinHttpCrackUrl", GetLastError());
+      return false;
+   }
+
    HInternetHolder hSession = WinHttpOpen(
       L"WinMute",
       WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY,
@@ -82,9 +118,12 @@ bool UpdateChecker::ShouldUpdate(std::wstring& , std::wstring& ) const
       return false;
    }
 
+   const std::wstring updateHost(
+      updateUrl.lpszHostName,
+      updateUrl.lpszHostName + updateUrl.dwHostNameLength);
    HInternetHolder hConnect = WinHttpConnect(
       hSession,
-      L"raw.githubusercontent.com",
+      updateHost.c_str(),
       INTERNET_DEFAULT_HTTPS_PORT,
       0);
    if (hConnect == nullptr) {
@@ -92,15 +131,13 @@ bool UpdateChecker::ShouldUpdate(std::wstring& , std::wstring& ) const
       return false;
    }
 
-#ifdef _DEBUG
-   const wchar_t *updateFileUrl = L"/lx-s/WinMute/dev/CURRENT_VERSION";
-#else
-   const wchar_t *updateFileUrl = L"/lx-s/WinMute/main/CURRENT_VERSION";
-#endif
+   const std::wstring updateFilePath(
+      updateUrl.lpszUrlPath,
+      updateUrl.lpszUrlPath + updateUrl.dwUrlPathLength);
    HInternetHolder hRequest = WinHttpOpenRequest(
       hConnect,
       L"GET",
-      updateFileUrl,
+      updateFilePath.c_str(),
       nullptr,
       WINHTTP_NO_REFERER,
       WINHTTP_DEFAULT_ACCEPT_TYPES,
@@ -112,13 +149,13 @@ bool UpdateChecker::ShouldUpdate(std::wstring& , std::wstring& ) const
    }
 
    bool result = WinHttpSendRequest(
-         hRequest,
-         WINHTTP_NO_ADDITIONAL_HEADERS,
-         0,
-         WINHTTP_NO_REQUEST_DATA,
-         0,
-         0,
-         0);
+      hRequest,
+      WINHTTP_NO_ADDITIONAL_HEADERS,
+      0,
+      WINHTTP_NO_REQUEST_DATA,
+      0,
+      0,
+      0);
 
    if (!result) {
       log.WriteWindowsError(L"WinHttpSendRequest", GetLastError());
@@ -148,7 +185,7 @@ bool UpdateChecker::ShouldUpdate(std::wstring& , std::wstring& ) const
       return false;
    }
 
-   std::string versionFileContents;
+   fileContents.clear();
    for (;;) {
       DWORD availBytes = 0;
       if (!WinHttpQueryDataAvailable(hRequest, &availBytes)) {
@@ -164,10 +201,9 @@ bool UpdateChecker::ShouldUpdate(std::wstring& , std::wstring& ) const
          log.WriteWindowsError(L"WinHttpReadData", GetLastError());
          return false;
       }
-      versionFileContents.append(chunk.begin(), chunk.begin() + byRead);
+      fileContents.append(chunk.begin(), chunk.begin() + byRead);
    }
 
-   // Check contents of version file
    return true;
 }
 
