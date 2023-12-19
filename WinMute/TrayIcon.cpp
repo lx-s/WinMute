@@ -132,7 +132,10 @@ void TrayIcon::ChangeText(const std::wstring& tooltip)
       ChangeText();
 }
 
-void TrayIcon::ShowPopup(const std::wstring& title, const std::wstring& text) const
+void TrayIcon::ShowPopup(
+   const std::wstring& title,
+   const std::wstring& text,
+   int callbackID) const
 {
    if (!initialized_) {
       TrayIconPopup popup;
@@ -141,13 +144,17 @@ void TrayIcon::ShowPopup(const std::wstring& title, const std::wstring& text) co
       popupQueue_.push_back(popup);
       return;
    } 
-   NOTIFYICONDATA tnid{0};
-   tnid.cbSize = sizeof(NOTIFYICONDATA);
+   NOTIFYICONDATAW tnid{0};
+   tnid.cbSize = sizeof(tnid);
    tnid.uVersion = NOTIFYICON_VERSION_4;
    tnid.hWnd = hWnd_;
    tnid.uID = trayID_;
-   tnid.uFlags = NIF_INFO;
+   tnid.uFlags = NIF_INFO | NIF_SHOWTIP;
    tnid.dwInfoFlags = NIIF_INFO | NIIF_NOSOUND | NIIF_LARGE_ICON | NIIF_RESPECT_QUIET_TIME;
+   if (callbackID != 0) {
+      tnid.uCallbackMessage = callbackID;
+      tnid.uFlags |= NIF_MESSAGE;
+   }
    tnid.uTimeout = 10 * 1000;
    StringCchCopy(tnid.szInfoTitle, ARRAY_SIZE(tnid.szInfoTitle), title.c_str());
    StringCchCopy(tnid.szInfo, ARRAY_SIZE(tnid.szInfo), text.c_str());
@@ -165,12 +172,12 @@ void TrayIcon::DestroyTrayIcon()
 
 bool TrayIcon::AddNotifyIcon()
 {
-   NOTIFYICONDATA tnid{ 0 };
-   tnid.cbSize = sizeof(NOTIFYICONDATA);
+   NOTIFYICONDATAW tnid{ 0 };
+   tnid.cbSize = sizeof(tnid);
    tnid.uVersion = NOTIFYICON_VERSION_4;
    tnid.hWnd = hWnd_;
    tnid.uID = trayID_;
-   tnid.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;
+   tnid.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE | NIF_SHOWTIP;
    tnid.hIcon = hIcon_;
    tnid.uCallbackMessage = WM_TRAYICON;
 
@@ -182,8 +189,8 @@ bool TrayIcon::AddNotifyIcon()
 
 bool TrayIcon::RemoveNotifyIcon()
 {
-   NOTIFYICONDATA tnid{0};
-   tnid.cbSize = sizeof(NOTIFYICONDATA);
+   NOTIFYICONDATAW tnid{0};
+   tnid.cbSize = sizeof(tnid);
    tnid.uVersion = NOTIFYICON_VERSION_4;
    tnid.hWnd = hWnd_;
    tnid.uID = trayID_;
@@ -193,8 +200,8 @@ bool TrayIcon::RemoveNotifyIcon()
 
 bool TrayIcon::ChangeText()
 {
-   NOTIFYICONDATA tnid{0};
-   tnid.cbSize = sizeof(NOTIFYICONDATA);
+   NOTIFYICONDATAW tnid{0};
+   tnid.cbSize = sizeof(tnid);
    tnid.uVersion = NOTIFYICON_VERSION_4;
    tnid.hWnd = hWnd_;
    tnid.uID = trayID_;

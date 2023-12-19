@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
-#define WM_TRAYICON (WM_APP + 700)
+constexpr int WM_TRAYICON = WM_APP + 700;
 
 struct TrayIconPopup {
    std::wstring title;
@@ -55,7 +55,10 @@ public:
    bool IsShown() const noexcept { return iconVisible_; }
    void ChangeIcon(HICON hNewIcon);
    void ChangeText(const std::wstring& tooltip);
-   void ShowPopup(const std::wstring& title, const std::wstring& text) const;
+   void ShowPopup(
+      const std::wstring& title,
+      const std::wstring& text,
+      int callbackID = 0) const;
 
 private:
    void DestroyTrayIcon();

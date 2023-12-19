@@ -63,5 +63,5 @@ private:
    bool GetVersionFile(std::string &fileContents) const;
    bool ParseVersionFile(const std::string &fileContents, UpdateInfo& updateInfo) const;
    std::optional<bool> IsVersionGreater(const std::wstring &newVers, const std::wstring &curVers) const;
-   bool ParseVersion(const std::wstring &vers, std::vector<int> parsedVers) const;
+   bool ParseVersion(const std::wstring &vers, std::vector<int>& parsedVers) const;
 };

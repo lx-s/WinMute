@@ -91,7 +91,7 @@ bool UpdateChecker::ParseVersionFile(
    return true;
 }
 
-bool UpdateChecker::ParseVersion(const std::wstring &vers, std::vector<int> parsedVers) const
+bool UpdateChecker::ParseVersion(const std::wstring &vers, std::vector<int>& parsedVers) const
 {
    size_t lastVersionPos = 0;
    size_t curPos = 0;
@@ -105,10 +105,6 @@ bool UpdateChecker::ParseVersion(const std::wstring &vers, std::vector<int> pars
          }
          lastVersionPos = curPos + 1;
       }
-   }
-   auto pos = vers.find('.');
-   if (pos != std::wstring::npos) {
-      parsedVers.push_back(std::stoi(vers));
    }
    return true;
 }
@@ -164,10 +160,12 @@ bool UpdateChecker::GetVersionFile(std::string &fileContents) const
 {
    WMLog &log = WMLog::GetInstance();
 
-
-   URL_COMPONENTS updateUrl;
+   URL_COMPONENTS updateUrl{0};
    updateUrl.dwStructSize = sizeof(updateUrl);
-   if (!WinHttpCrackUrl(UPDATE_FILE_URL, 0, ICU_ESCAPE, &updateUrl)) {
+   updateUrl.dwSchemeLength = (DWORD)-1;
+   updateUrl.dwHostNameLength = (DWORD)-1;
+   updateUrl.dwUrlPathLength = (DWORD)-1;
+   if (!WinHttpCrackUrl(UPDATE_FILE_URL, 0, 0, &updateUrl)) {
       log.WriteWindowsError(L"WinHttpCrackUrl", GetLastError());
       return false;
    }
@@ -189,7 +187,7 @@ bool UpdateChecker::GetVersionFile(std::string &fileContents) const
    HInternetHolder hConnect = WinHttpConnect(
       hSession,
       updateHost.c_str(),
-      INTERNET_DEFAULT_HTTPS_PORT,
+      (updateUrl.nScheme == INTERNET_SCHEME_HTTPS) ? INTERNET_DEFAULT_HTTPS_PORT : INTERNET_DEFAULT_HTTP_PORT,
       0);
    if (hConnect == nullptr) {
       log.WriteWindowsError(L"WinHttpConnect", GetLastError());

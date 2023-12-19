@@ -51,6 +51,7 @@ public:
 
    // for internal use
    LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+   void CheckForUpdatesAsync(std::unique_ptr<UpdateChecker> updateChecker);
 private:
    HWND hWnd_;
    HMENU hTrayMenu_;
@@ -67,11 +68,13 @@ private:
    TrayIcon trayIcon_;
    WifiDetector wifiDetector_;
    WMSettings& settings_;
-   WMi18n &i18n;
+   WMi18n &i18n_;
    MuteControl muteCtrl_;
    QuietHoursTimer quietHours_;
    BluetoothDetector btDetector_;
+   UpdateInfo updateInfo_;
 
+   void CheckForUpdates();
    bool RegisterWindowClass();
    bool InitWindow();
    bool InitAudio();
@@ -90,6 +93,7 @@ private:
    LRESULT OnSettingChange(HWND hWnd, WPARAM wParam, LPARAM lParam);
    LRESULT OnPowerBroadcast(HWND hWnd, WPARAM wParam, LPARAM lParam);
    LRESULT OnWifiStatusChange(HWND hWnd, WPARAM wParam, LPARAM lParam);
+   LRESULT OnUpdatePopup(HWND hWnd, WPARAM wParam, LPARAM lParam);
    
    LRESULT OnDeviceChange(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
    LRESULT OnQuietHours(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);

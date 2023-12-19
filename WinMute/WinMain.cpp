@@ -72,44 +72,6 @@ static bool InitWindowsComponents()
    return TRUE;
 }
 
-static DWORD CheckForUpdates_Thread(LPVOID param)
-{
-   auto updateChecker = reinterpret_cast<UpdateChecker *>(param);
-   if (updateChecker == nullptr) {
-      return 1;
-   }
-   UpdateInfo updateInfo;
-   if (!updateChecker->GetUpdateInfo(updateInfo)) {
-      // Print Error
-   } else {
-      // Print Update Message
-   }
-
-   delete updateChecker;
-   return 0;
-}
-
-static void CheckForUpdates(const WMSettings& settings)
-{
-   UpdateChecker *updateChecker = new UpdateChecker();
-   if (updateChecker == nullptr) {
-      return;
-   }
-   if (!updateChecker->IsUpdateCheckEnabled(settings)) {
-      delete updateChecker;
-      return;
-   }
-   auto updateThread = CreateThread(
-      nullptr, 0, CheckForUpdates_Thread,
-      reinterpret_cast<LPVOID>(updateChecker),
-      0, nullptr);
-   if (updateThread == nullptr) {
-      delete updateChecker;
-      return;
-   }
-
-}
-
 int WINAPI wWinMain(
    _In_ HINSTANCE hInstance,
    _In_opt_ HINSTANCE,
@@ -171,8 +133,6 @@ int WINAPI wWinMain(
       ReleaseMutex(hMutex);
       return FALSE;
    }
-
-   CheckForUpdates(settings);
 
    MSG msg = { nullptr };
    WinMute program(settings);

@@ -101,6 +101,7 @@ static bool IsCurrentSessionRemoteable() noexcept
    return isRemoteable;
 }
 
+
 WinMute::MuteConfig::MuteConfig()
    : muteOnWlan(false), muteOnBluetooth(false), showNotifications(false)
 {
@@ -112,7 +113,7 @@ WinMute::WinMute(WMSettings& settings) :
    hAppIcon_(nullptr),
    hTrayIcon_(nullptr),
    settings_(settings),
-   i18n(WMi18n::GetInstance())
+   i18n_(WMi18n::GetInstance())
 {
 }
 
@@ -157,8 +158,8 @@ bool WinMute::InitAudio()
       TaskDialog(
          nullptr, nullptr,
          PROGRAM_NAME,
-         i18n.GetTranslationW("init.error.winmute.platform-support.title").c_str(),
-         i18n.GetTranslationW("init.error.winmute.platform-support.text").c_str(),
+         i18n_.GetTranslationW("init.error.winmute.platform-support.title").c_str(),
+         i18n_.GetTranslationW("init.error.winmute.platform-support.text").c_str(),
          TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
       return false;
    }
@@ -249,10 +250,12 @@ bool WinMute::Init()
    if (settings_.QueryValue(SettingsKey::MUTE_ON_RDP)
        && IsCurrentSessionRemoteable()) {
       trayIcon_.ShowPopup(
-         i18n.GetTranslationW("popup.remote-session-detected.title"),
-         i18n.GetTranslationW("popup.remote-session-detected.text"));
+         i18n_.GetTranslationW("popup.remote-session-detected.title"),
+         i18n_.GetTranslationW("popup.remote-session-detected.text"));
       muteCtrl_.SetMute(true);
    }
+
+   CheckForUpdates();
 
    return true;
 }
@@ -307,8 +310,8 @@ bool WinMute::LoadSettings()
    } else {
       if (!btDetector_.Init(hWnd_)) {
          trayIcon_.ShowPopup(
-            i18n.GetTranslationW("popup.bluetooth-muting-disabled.title"),
-            i18n.GetTranslationW("popup.bluetooth-muting-disabled.text"));
+            i18n_.GetTranslationW("popup.bluetooth-muting-disabled.title"),
+            i18n_.GetTranslationW("popup.bluetooth-muting-disabled.text"));
          settings_.SetValue(SettingsKey::MUTE_ON_BLUETOOTH, FALSE);
       } else {
          muteCtrl_.SetMuteOnBluetoothDisconnect(true);
@@ -323,8 +326,8 @@ bool WinMute::LoadSettings()
    } else {
       if (!wifiDetector_.Init(hWnd_)) {
          trayIcon_.ShowPopup(
-            i18n.GetTranslationW("popup.wlan-muting-disabled.title"),
-            i18n.GetTranslationW("popup.wlan-muting-disabled.text"));
+            i18n_.GetTranslationW("popup.wlan-muting-disabled.title"),
+            i18n_.GetTranslationW("popup.wlan-muting-disabled.text"));
          settings_.SetValue(SettingsKey::MUTE_ON_WLAN, FALSE);
       } else {
          const bool isMuteList = !settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST);
@@ -351,18 +354,18 @@ void WinMute::ToggleMenuCheck(UINT item, bool* setting) noexcept
 void WinMute::LoadMainMenuText()
 {
    std::map<UINT, std::wstring> menuText;
-   menuText[ID_TRAYMENU_INFO] = i18n.GetTranslationW("traymenu.info");
-   menuText[ID_TRAYMENU_LABEL_MUTEWHEN] = i18n.GetTranslationW("traymenu.mute-when");
-   menuText[ID_TRAYMENU_MUTEONLOCK] = i18n.GetTranslationW("traymenu.mute-on-lock");
-   menuText[ID_TRAYMENU_MUTEONSCREENSUSPEND] = i18n.GetTranslationW("traymenu.mute-on-screen-suspend");
-   menuText[ID_TRAYMENU_RESTOREAUDIO] = i18n.GetTranslationW("traymenu.restore-volume");
-   menuText[ID_TRAYMENU_LABEL_MUTEON_NO_RESTORE] = i18n.GetTranslationW("traymenu.mute-no-restore");
-   menuText[ID_TRAYMENU_MUTEONSHUTDOWN] = i18n.GetTranslationW("traymenu.mute-on-shutdown");
-   menuText[ID_TRAYMENU_MUTEONSUSPEND] = i18n.GetTranslationW("traymenu.mute-on-sleep");
-   menuText[ID_TRAYMENU_MUTEONLOGOUT] = i18n.GetTranslationW("traymenu.mute-on-logout");
-   menuText[ID_TRAYMENU_MUTE] = i18n.GetTranslationW("traymenu.mute-all-devices");
-   menuText[ID_TRAYMENU_SETTINGS] = i18n.GetTranslationW("traymenu.settings");
-   menuText[ID_TRAYMENU_EXIT] = i18n.GetTranslationW("traymenu.exit");
+   menuText[ID_TRAYMENU_INFO] = i18n_.GetTranslationW("traymenu.info");
+   menuText[ID_TRAYMENU_LABEL_MUTEWHEN] = i18n_.GetTranslationW("traymenu.mute-when");
+   menuText[ID_TRAYMENU_MUTEONLOCK] = i18n_.GetTranslationW("traymenu.mute-on-lock");
+   menuText[ID_TRAYMENU_MUTEONSCREENSUSPEND] = i18n_.GetTranslationW("traymenu.mute-on-screen-suspend");
+   menuText[ID_TRAYMENU_RESTOREAUDIO] = i18n_.GetTranslationW("traymenu.restore-volume");
+   menuText[ID_TRAYMENU_LABEL_MUTEON_NO_RESTORE] = i18n_.GetTranslationW("traymenu.mute-no-restore");
+   menuText[ID_TRAYMENU_MUTEONSHUTDOWN] = i18n_.GetTranslationW("traymenu.mute-on-shutdown");
+   menuText[ID_TRAYMENU_MUTEONSUSPEND] = i18n_.GetTranslationW("traymenu.mute-on-sleep");
+   menuText[ID_TRAYMENU_MUTEONLOGOUT] = i18n_.GetTranslationW("traymenu.mute-on-logout");
+   menuText[ID_TRAYMENU_MUTE] = i18n_.GetTranslationW("traymenu.mute-all-devices");
+   menuText[ID_TRAYMENU_SETTINGS] = i18n_.GetTranslationW("traymenu.settings");
+   menuText[ID_TRAYMENU_EXIT] = i18n_.GetTranslationW("traymenu.exit");
 
    for (const auto& mt : menuText) {
       MENUITEMINFO mii{ sizeof(MENUITEMINFO) };
@@ -376,6 +379,37 @@ void WinMute::LoadMainMenuText()
       if (!SetMenuItemInfo(hTrayMenu_, mt.first, false, &mii)) {
          continue;
       }
+   }
+}
+
+void WinMute::CheckForUpdates()
+{
+   auto updateChecker = std::make_unique<UpdateChecker>();
+   if (!updateChecker ||
+       !updateChecker->IsUpdateCheckEnabled(settings_)) {
+      return;
+   }
+   std::thread updateThread(&WinMute::CheckForUpdatesAsync, this, std::move(updateChecker));
+   updateThread.detach();
+}
+
+void WinMute::CheckForUpdatesAsync(std::unique_ptr<UpdateChecker> updateChecker)
+{
+   if (!updateChecker) {
+      return;
+   }
+   if (!updateChecker->GetUpdateInfo(updateInfo_)) {
+      trayIcon_.ShowPopup(
+         i18n_.GetTranslationW("popup.error.update-check-failed.title"),
+         i18n_.GetTranslationW("popup.error.update-check-failed.text"));
+   } else if (updateInfo_.shouldUpdate) {
+      const std::wstring popupTitle = std::vformat(
+         i18n_.GetTranslationW("popup.update-available.title"),
+         std::make_wformat_args(updateInfo_.newVersion));
+      const std::wstring popupText = std::vformat(
+         i18n_.GetTranslationW("popup.update-available.text"),
+         std::make_wformat_args(updateInfo_.currentVersion));
+      trayIcon_.ShowPopup(popupTitle, popupText, WM_WINMUTE_UPDATE_POPUP);
    }
 }
 
@@ -523,8 +557,8 @@ LRESULT WinMute::OnQuietHours(HWND, UINT msg, WPARAM, LPARAM)
       muteCtrl_.NotifyQuietHours(true);
       if (settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS)) {
          trayIcon_.ShowPopup(
-            i18n.GetTranslationW("popup.quiet-hours-started.title"),
-            i18n.GetTranslationW("popup.quiet-hours-started.text"));
+            i18n_.GetTranslationW("popup.quiet-hours-started.title"),
+            i18n_.GetTranslationW("popup.quiet-hours-started.text"));
       }
       quietHours_.SetEnd();
       return 0;
@@ -532,8 +566,8 @@ LRESULT WinMute::OnQuietHours(HWND, UINT msg, WPARAM, LPARAM)
       muteCtrl_.NotifyQuietHours(false);
       if (settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS)) {
          trayIcon_.ShowPopup(
-            i18n.GetTranslationW("popup.quiet-hours-ended.title"),
-            i18n.GetTranslationW("popup.quiet-hours-ended.text"));
+            i18n_.GetTranslationW("popup.quiet-hours-ended.title"),
+            i18n_.GetTranslationW("popup.quiet-hours-ended.text"));
       }
       if (settings_.QueryValue(SettingsKey::QUIETHOURS_FORCEUNMUTE)) {
          muteCtrl_.SetMute(false);
@@ -570,20 +604,30 @@ LRESULT WinMute::OnWifiStatusChange(HWND, WPARAM wParam, LPARAM lParam)
       wchar_t *wifiName = reinterpret_cast<wchar_t *>(lParam);
       if (settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST)) {
          popupMsg = std::vformat(
-            i18n.GetTranslationW("popup.wlan-not-on-mute-list.text"),
+            i18n_.GetTranslationW("popup.wlan-not-on-mute-list.text"),
             std::make_wformat_args(wifiName));
       } else {
          popupMsg = std::vformat(
-            i18n.GetTranslationW("popup.wlan-is-on-mute-list.text"),
+            i18n_.GetTranslationW("popup.wlan-is-on-mute-list.text"),
             std::make_wformat_args(wifiName));
       }
       trayIcon_.ShowPopup(
-         i18n.GetTranslationW("popup.workstation-muted.title"),
+         i18n_.GetTranslationW("popup.workstation-muted.title"),
          popupMsg);
       delete[] wifiName;
    }
    muteCtrl_.SetMute(true);
 
+   return 0;
+}
+
+LRESULT WinMute::OnUpdatePopup(HWND hWnd, WPARAM, LPARAM lParam)
+{
+   if (lParam == NIN_BALLOONUSERCLICK) {
+      ShellExecuteW(
+         hWnd, L"open", updateInfo_.versionPageUrl.c_str(),
+         nullptr, nullptr, SW_SHOW);
+   }
    return 0;
 }
 
@@ -600,6 +644,8 @@ LRESULT CALLBACK WinMute::WindowProc(
       return TRUE;
    case WM_COMMAND:
       return OnCommand(hWnd, wParam, lParam);
+   case WM_WINMUTE_UPDATE_POPUP:
+      return OnUpdatePopup(hWnd, wParam, lParam);
    case WM_TRAYICON:
       return OnTrayIcon(hWnd, wParam, lParam);
    case WM_CLOSE:
