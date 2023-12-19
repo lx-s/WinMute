@@ -213,4 +213,12 @@
       <Filter>Translations</Filter>
     </CustomBuild>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Translations\lang-es.json">
+      <Filter>Translations</Filter>
+    </None>
+    <None Include="..\Translations\lang-nl.json">
+      <Filter>Translations</Filter>
+    </None>
+  </ItemGroup>
 </Project>
