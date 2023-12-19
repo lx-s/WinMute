@@ -306,13 +306,8 @@ bool UpdateChecker::GetVersionFile(std::string &fileContents) const
    return true;
 }
 
-bool UpdateChecker::IsUpdateCheckEnabled(const WMSettings &settings) const
+bool UpdateChecker::IsUpdateCheckDisabledViaFile() const
 {
-   const auto updateCheckSetting = settings.QueryValue(SettingsKey::CHECK_FOR_UPDATE);
-   if (updateCheckSetting == static_cast<int>(UpdateCheckInterval::DISABLED)) {
-      return false;
-   }
-
    wchar_t thisExePath[MAX_PATH * 2];
    const DWORD thisExePathSize = ARRAY_SIZE(thisExePath);
    const DWORD thisPathLen = GetModuleFileNameW(nullptr, thisExePath, thisExePathSize);
@@ -320,9 +315,24 @@ bool UpdateChecker::IsUpdateCheckEnabled(const WMSettings &settings) const
       WMLog::GetInstance().LogWinError(L"GetModuleFileNameW", ERROR_INSUFFICIENT_BUFFER);
       return false;
    }
+
    fs::path updateDisableFile{ thisExePath };
    updateDisableFile.replace_filename(L"update-check-disabled");
-   if (fs::exists(updateDisableFile)) {
+   if (!fs::exists(updateDisableFile)) {
+      return false;
+   }
+
+   return true;
+}
+
+bool UpdateChecker::IsUpdateCheckEnabled(const WMSettings &settings) const
+{
+   const auto updateCheckSetting = settings.QueryValue(SettingsKey::CHECK_FOR_UPDATE);
+   if (updateCheckSetting == static_cast<int>(UpdateCheckInterval::DISABLED)) {
+      return false;
+   }
+
+   if (IsUpdateCheckDisabledViaFile()) {
       return false;
    }
 

@@ -105,6 +105,15 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       enabled = !!dlgData->settings->QueryValue(SettingsKey::CHECK_FOR_BETA_UPDATE);
       Button_SetCheck(hBetaUpdateCheck, enabled ? BST_CHECKED : BST_UNCHECKED);
 
+      // If the disable-update file is present, then also hide all options
+      UpdateChecker updateChecker;
+      if (updateChecker.IsUpdateCheckDisabledViaFile()) {
+         EnableWindow(hUpdateCheck, FALSE);
+         EnableWindow(hBetaUpdateCheck, FALSE);
+         Button_SetCheck(hUpdateCheck, BST_UNCHECKED);
+         Button_SetCheck(hBetaUpdateCheck, BST_UNCHECKED);
+      }
+
       enabled = !!dlgData->settings->QueryValue(SettingsKey::LOGGING_ENABLED);
       Button_SetCheck(hLogging, enabled ? BST_CHECKED : BST_UNCHECKED);
       Button_Enable(hOpenLog, enabled);

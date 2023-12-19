@@ -57,6 +57,7 @@ public:
    UpdateChecker();
    ~UpdateChecker();
 
+   bool IsUpdateCheckDisabledViaFile() const;
    bool IsUpdateCheckEnabled(const WMSettings &settings) const;
    bool GetUpdateInfo(UpdateInfo& updateInfo) const;
 private:

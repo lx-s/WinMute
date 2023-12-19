@@ -1,0 +1,3 @@
+This file should be used, when WinMute is installed via a package manager.
+
+If this file is present, WinMute does not display update-check options.
