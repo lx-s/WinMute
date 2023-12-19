@@ -207,6 +207,7 @@
     <ClInclude Include="libs\json.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="UpdateChecker.h" />
+    <ClInclude Include="Utility.h" />
     <ClInclude Include="WiFiDetector.h" />
     <ClInclude Include="WMi18n.h" />
     <ClInclude Include="WMLog.h" />

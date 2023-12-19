@@ -114,6 +114,9 @@
     <ClInclude Include="UpdateChecker.h">
       <Filter>Source Files\Base\Settings</Filter>
     </ClInclude>
+    <ClInclude Include="Utility.h">
+      <Filter>Source Files\Base\Helper</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinMute.rc">
