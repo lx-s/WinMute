@@ -70,7 +70,7 @@
     "settings.bluetooth.description": "\"Audio OFF Bluetooth\" consente di disattivare l'audio se un dispositivo Bluetooth di classe audio viene disconnesso e di riattivare l'audio se un dispositivo Bluetooth viene ricollegato al computer.\n\nPuoi abilitare questo comportamento per tutti i dispositivi audio Bluetooth o solo per un set specifico di dispositivi.",
     "settings.bluetooth.enable-muting": "Abilita disabilitazione audio basata su hardware Bluetooth",
     "settings.bluetooth.enable-muting-filter": "Abilita solo per questi dispositivi:",
-    "settings.bluetooth-disabled-info": "Nota: il Bluetooth non è disponibile nel dispositivo, quindi alcune opzioni sono state disabilitate.",
+    "settings.bluetooth.bluetooth-disabled-info": "Nota: il Bluetooth non è disponibile nel dispositivo, quindi alcune opzioni sono state disabilitate.",
     "settings.mute.general-title": "Generale",
     "settings.mute.show-mute-event-notifications": "Visualizza notifiche eventi disattivazione",
     "settings.mute.manage-endpoints-individually": "Gestisci endpoint audio individualmente",

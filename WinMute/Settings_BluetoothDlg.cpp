@@ -247,7 +247,7 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
          EnumChildWindows(hDlg, ShowChildWindow, SW_HIDE);
 
          HWND hDescription = GetDlgItem(hDlg, IDC_BLUETOOTH_DESCRIPTION_LABEL);
-         WMi18n::GetInstance().SetItemText(hDescription, "settings.bluetooth-disabled-info");
+         WMi18n::GetInstance().SetItemText(hDescription, "settings.bluetooth.bluetooth-disabled-info");
          RECT r;
          GetClientRect(hDescription, &r);
          constexpr int margin = 20;
