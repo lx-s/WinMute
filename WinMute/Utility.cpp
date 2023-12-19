@@ -33,6 +33,19 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "Common.h"
 
+// =========================================================================
+//    Types
+// =========================================================================
+
+struct WINDOWPROCESSINFO {
+   DWORD pid;
+   HWND hWnd;
+};
+
+// =========================================================================
+//    ShowWindowsError
+// =========================================================================
+
 void ShowWindowsError(const wchar_t *functionName, DWORD lastError)
 {
    // Retrieve the system error message for the last-error code
@@ -66,6 +79,10 @@ void ShowWindowsError(const wchar_t *functionName, DWORD lastError)
    LocalFree(lpMsgBuf);
 }
 
+// =========================================================================
+//    GetWinMuteversion
+// =========================================================================
+
 bool GetWinMuteVersion(std::wstring &versNumber)
 {
    DWORD unused;
@@ -92,6 +109,10 @@ bool GetWinMuteVersion(std::wstring &versNumber)
    return true;
 }
 
+// =========================================================================
+//    String Conversion
+// =========================================================================
+
 std::wstring ConvertStringToWideString(const std::string &ansiString)
 {
    std::wstring unicodeString;
@@ -116,4 +137,23 @@ std::string ConvertWideStringToString(const std::wstring &wideString)
    ansiString.resize(ansiStringSize - 1);
    ansiStringSize = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, wideString.c_str(), -1, &ansiString[0], ansiStringSize, "?", nullptr);
    return ansiString;
+}
+
+// =========================================================================
+//    Launch Browser
+// =========================================================================
+
+bool LaunchBrowser(HWND hParent, const std::wstring &url)
+{
+   SHELLEXECUTEINFOW sxi = { 0 };
+   sxi.cbSize = sizeof(sxi);
+   sxi.nShow = SW_SHOWNORMAL;
+   sxi.hwnd = hParent;
+   sxi.lpVerb = L"open";
+   sxi.lpFile = url.c_str();
+   if (!ShellExecuteExW(&sxi)) {
+      WMLog::GetInstance().LogWinError(L"ShellExecuteEx", GetLastError());
+      return false;
+   }
+   return true;
 }

@@ -115,6 +115,7 @@ namespace fs = std::filesystem;
 #include "BluetoothDetector.h"
 #include "QuietHoursTimer.h"
 #include "WinMute.h"
+#include "Utility.h"
 #include "VersionHelper.h"
 
 // =============================================================================
@@ -130,23 +131,3 @@ static const wchar_t *LOG_FILE_NAME = L"WinMute.log";
 
 constexpr int WM_SAVESETTINGS = WM_USER + 300;
 constexpr int WM_WINMUTE_UPDATE_POPUP = WM_USER + 301;
-
-// =============================================================================
-// Utility
-
-void ShowWindowsError(const wchar_t *functionName, DWORD lastError = -1);
-bool GetWinMuteVersion(std::wstring &versNumber);
-
-std::wstring ConvertStringToWideString(const std::string &ansiString);
-std::string ConvertWideStringToString(const std::wstring &wideString);
-
-// =============================================================================
-// COM Helper
-template<class Interface>
-inline void SafeRelease(Interface * *ppInterfaceToRelease)
-{
-   if (*ppInterfaceToRelease) {
-      (*ppInterfaceToRelease)->Release();
-      (*ppInterfaceToRelease) = nullptr;
-   }
-}
