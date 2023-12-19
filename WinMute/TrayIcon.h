@@ -68,11 +68,11 @@ private:
 
    mutable std::vector<TrayIconPopup> popupQueue_;
 
-   int callbackId_;
-   bool initialized_;
-   bool iconVisible_;
-   UINT trayID_;
-   HICON hIcon_;
-   HWND hWnd_;
+   int callbackId_ = WM_TRAYICON;
+   bool initialized_ = false;
+   bool iconVisible_ = false;
+   UINT trayID_ = 0;
+   HICON hIcon_ = 0;
+   HWND hWnd_ = 0;
    std::wstring tooltip_;
 };

@@ -1,4 +1,4 @@
-Version 3.0.0 (2024-01-xx)
+Version 2.4.9 (2023-12-19)
  * WinMute now supports multiple languages!
    If your language is missing, and you want to contribute, please check
    the WinMute GitHub project.

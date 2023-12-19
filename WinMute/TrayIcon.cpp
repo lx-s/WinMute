@@ -33,8 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
-TrayIcon::TrayIcon() :
-   initialized_(false), iconVisible_(false), trayID_(0), hIcon_(0), hWnd_(0)
+TrayIcon::TrayIcon()
 {
 }
 
@@ -42,7 +41,7 @@ TrayIcon::TrayIcon(
    HWND hWnd, UINT trayID, HICON hIcon,
    const std::wstring& tooltip, bool show,
    int callbackId)
-   : initialized_(false), iconVisible_(false), callbackId_(callbackId)
+   : callbackId_(callbackId)
 {
    Init(hWnd, trayID, hIcon, tooltip, show);
 }

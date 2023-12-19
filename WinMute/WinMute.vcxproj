@@ -120,7 +120,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Advapi32.lib;Winhttp.lib;Bthprops.lib;comsuppwd.lib;comctl32.lib;strsafe.lib;UxTheme.lib;Winmm.lib;Wlanapi.lib;WtsApi32.lib;Shell32.lib;Version.lib;Gdi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>Winhttp.lib;Bthprops.lib;Winmm.lib;UxTheme.lib;Wlanapi.lib;comctl32.lib;WtsApi32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
@@ -147,7 +147,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Advapi32.lib;Winhttp.lib;Bthprops.lib;comsuppwd.lib;comctl32.lib;strsafe.lib;UxTheme.lib;Winmm.lib;Wlanapi.lib;WtsApi32.lib;Shell32.lib;Version.lib;Gdi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>Winhttp.lib;Bthprops.lib;Winmm.lib;UxTheme.lib;Wlanapi.lib;comctl32.lib;WtsApi32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
@@ -168,7 +168,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Advapi32.lib;Winhttp.lib;Bthprops.lib;comsuppwd.lib;comctl32.lib;strsafe.lib;UxTheme.lib;Winmm.lib;Wlanapi.lib;WtsApi32.lib;Shell32.lib;Version.lib;Gdi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>Winhttp.lib;Bthprops.lib;Winmm.lib;UxTheme.lib;Wlanapi.lib;comctl32.lib;WtsApi32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
@@ -195,7 +195,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Advapi32.lib;Winhttp.lib;Bthprops.lib;comsuppwd.lib;comctl32.lib;strsafe.lib;UxTheme.lib;Winmm.lib;Wlanapi.lib;WtsApi32.lib;Shell32.lib;Version.lib;Gdi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>Winhttp.lib;Bthprops.lib;Winmm.lib;UxTheme.lib;Wlanapi.lib;comctl32.lib;WtsApi32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
