@@ -122,5 +122,13 @@
     "about.tab.license": "Lizenz",
     "about.btn-close": "OK",
     "settings.wifi.mute-when-in-list": "Stummschalten, wenn das WLAN in der Liste ist",
-    "settings.general.check-for-updates-on-start": "Bei Programmstart nach Updates suchen"
+    "settings.general.check-for-updates-on-start": "Bei Programmstart nach Updates suchen",
+    "popup.update-available.text": "Die installierte Version ist {}.\nKlicken sie auf diese Nachricht zum Öffnen der Downloadseite.",
+    "popup.update-available-beta.title": "WinMute Beta {} ist verfügbar!",
+    "popup.update-available-beta.text": "Die installierte Version ist {}.\nKlicken sie auf diese Nachricht zum Öffnen der Beta-Downloadseite.",
+    "settings.bluetooth.bluetooth-disabled-info": "Info: Bluetooth ist auf diesem Gerät nicht verfügbar.\nEinige Optionen wurden deaktiviert.",
+    "popup.error.update-check-failed.title": "Updateprüfung fehlgeschlagen.",
+    "popup.update-available.title": "WinMute {} ist verfügbar!",
+    "pupup.error.update-check-failed.text": "Fehler beim Prüfen auf eine neue Version.\nBitte prüfen Sie die Protokolldateien.",
+    "settings.general.check-for-beta-updates-on-start": "Auf Vorabversionen überprüfen"
 }
