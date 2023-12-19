@@ -201,19 +201,17 @@ void WMi18n::UnloadLanguage()
 std::wstring WMi18n::GetTranslationW(const std::string& textId) const
 {
    std::wstring text;
-   {
-      const std::lock_guard lock(langMutex_);
-      if (!loadedLang_.empty() && loadedLang_.contains(textId)) {
-         auto it = loadedLang_.find(textId);
-         if (it != loadedLang_.end()) {
-            text = it->second;
-         }
+   const std::lock_guard lock(langMutex_);
+   if (!loadedLang_.empty() && loadedLang_.contains(textId)) {
+      auto it = loadedLang_.find(textId);
+      if (it != loadedLang_.end() && !it->second.empty()) {
+         text = it->second;
       }
-      if (text.empty() && defaultLang_.contains(textId)) {
-         auto it = defaultLang_.find(textId);
-         if (it != defaultLang_.cend()) {
-            text = it->second;
-         }
+   }
+   if (text.empty() && defaultLang_.contains(textId)) {
+      auto it = defaultLang_.find(textId);
+      if (it != defaultLang_.cend() && !it->second.empty()) {
+         text = it->second;
       }
    }
    if (text.empty()) {
