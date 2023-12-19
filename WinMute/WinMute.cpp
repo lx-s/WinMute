@@ -112,6 +112,7 @@ WinMute::WinMute(WMSettings& settings) :
    hTrayMenu_(nullptr),
    hAppIcon_(nullptr),
    hTrayIcon_(nullptr),
+   hUpdateIcon_(nullptr),
    settings_(settings),
    i18n_(WMi18n::GetInstance())
 {
@@ -227,12 +228,16 @@ bool WinMute::Init()
    }
 
    if (!WTSRegisterSessionNotification(hWnd_, NOTIFY_FOR_THIS_SESSION)) {
+      const DWORD lastError = GetLastError();
       ShowWindowsError(L"WTSRegisterSessionNotification");
+      log.LogWinError(L"WTSRegisterSessionNotification", lastError);
       return false;
    }
 
-   if (!RegisterPowerSettingNotification(hWnd_, &GUID_CONSOLE_DISPLAY_STATE, 0)) {
-      ShowWindowsError(L"RegisterPowerSettingNotification");
+   if (!RegisterPowerSettingNotification(hWnd_, &GUID_CONSOLE_DISPLAY_STATE, DEVICE_NOTIFY_WINDOW_HANDLE)) {
+      const DWORD lastError = GetLastError();
+      ShowWindowsError(L"RegisterPowerSettingNotification", lastError);
+      log.LogWinError(L"RegisterPowerSettingNotification", lastError);
       return false;
    }
 
@@ -344,6 +349,7 @@ bool WinMute::LoadSettings()
       }
    }
 
+   //GUID_MONITOR_POWER_ON
    return true;
 }
 
@@ -540,6 +546,23 @@ LRESULT WinMute::OnTrayIcon(HWND hWnd, WPARAM, LPARAM lParam)
    return TRUE;
 }
 
+LRESULT WinMute::OnUpdatePopup(HWND hWnd, WPARAM, LPARAM lParam)
+{
+   if (lParam == NIN_BALLOONUSERCLICK) {
+      const bool betaUpdates = settings_.QueryValue(SettingsKey::CHECK_FOR_BETA_UPDATE) != 0;
+      if (betaUpdates && updateInfo_.beta.shouldUpdate) {
+         LaunchBrowser(hWnd, updateInfo_.beta.downloadUrl);
+      } else if (updateInfo_.stable.shouldUpdate) {
+         LaunchBrowser(hWnd, updateInfo_.stable.downloadUrl);
+      }
+   }
+   if (lParam == NIN_BALLOONHIDE || lParam == NIN_BALLOONTIMEOUT || lParam == NIN_BALLOONUSERCLICK) {
+      updateTray_.Hide();
+   }
+   return 0;
+}
+
+
 LRESULT WinMute::OnSettingChange(HWND, WPARAM, LPARAM)
 {
    return 0;
@@ -554,7 +577,7 @@ LRESULT WinMute::OnPowerBroadcast(HWND, WPARAM wParam, LPARAM lParam)
          reinterpret_cast<PPOWERBROADCAST_SETTING>(lParam);
       if (IsEqualGUID(bs->PowerSetting, GUID_CONSOLE_DISPLAY_STATE)) {
          const DWORD state = bs->Data[0];
-         if (state == 0x0) { // Display off
+         if (state == 0x0) { // Display standby
             muteCtrl_.NotifyDisplayStandby(true);
          } else if (state == 0x1) { // Display on
             muteCtrl_.NotifyDisplayStandby(false);
@@ -632,22 +655,6 @@ LRESULT WinMute::OnWifiStatusChange(HWND, WPARAM wParam, LPARAM lParam)
    }
    muteCtrl_.SetMute(true);
 
-   return 0;
-}
-
-LRESULT WinMute::OnUpdatePopup(HWND hWnd, WPARAM, LPARAM lParam)
-{
-   if (lParam == NIN_BALLOONUSERCLICK) {
-      const bool betaUpdates = settings_.QueryValue(SettingsKey::CHECK_FOR_BETA_UPDATE) != 0;
-      if (betaUpdates && updateInfo_.beta.shouldUpdate) {
-         LaunchBrowser(hWnd, updateInfo_.beta.downloadUrl);
-      } else if (updateInfo_.stable.shouldUpdate) {
-         LaunchBrowser(hWnd, updateInfo_.stable.downloadUrl);
-      }
-   }
-   if (lParam == NIN_BALLOONHIDE || lParam == NIN_BALLOONTIMEOUT || lParam == NIN_BALLOONUSERCLICK) {
-      updateTray_.Hide();
-   }
    return 0;
 }
 
