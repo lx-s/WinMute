@@ -78,13 +78,15 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "Start WinMute on system startup",IDC_RUNONSTARTUP,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,219,17
-    CONTROL         "Enable logging",IDC_ENABLELOGGING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,52,219,15
-    PUSHBUTTON      "Open log file...",IDC_OPENLOG,22,71,104,16
-    LTEXT           "[log file path]",IDC_LOGFILEPATH,23,89,203,27
     LTEXT           "Language",IDC_SELECT_LANGUAGE_LABEL,7,14,41,10
     COMBOBOX        IDC_LANGUAGE,51,12,87,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Run WinMute when this user logs on",IDC_RUNONSTARTUP,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,34,219,17
+    CONTROL         "Check for updates on startup",IDC_CHECK_FOR_UPDATES_ON_STARTUP,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,50,219,17
+    CONTROL         "Enable logging",IDC_ENABLELOGGING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,74,219,15
+    PUSHBUTTON      "Open log file...",IDC_OPENLOG,22,90,104,16
+    LTEXT           "[log file path]",IDC_LOGFILEPATH,23,110,203,27
 END
 
 IDD_SETTINGS_QUIETHOURS DIALOGEX 0, 0, 246, 198

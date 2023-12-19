@@ -64,6 +64,7 @@ static void LoadSettingsGeneralDlgTranslation(HWND hDlg)
    WMi18n &i18n = WMi18n::GetInstance();
    i18n.SetItemText(hDlg, IDC_SELECT_LANGUAGE_LABEL, "settings.general.select-language-label");
    i18n.SetItemText(hDlg, IDC_RUNONSTARTUP, "settings.general.run-on-startup");
+   i18n.SetItemText(hDlg, IDC_CHECK_FOR_UPDATES_ON_STARTUP, "settings.general.check-for-updates-on-start");
    i18n.SetItemText(hDlg, IDC_ENABLELOGGING, "settings.general.enable-logging");
    i18n.SetItemText(hDlg, IDC_OPENLOG, "settings.general.btn-open-log-file");
 }
@@ -73,6 +74,7 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
    switch (msg) {
    case WM_INITDIALOG: {
       HWND hAutostart = GetDlgItem(hDlg, IDC_RUNONSTARTUP);
+      HWND hUpdateCheck = GetDlgItem(hDlg, IDC_CHECK_FOR_UPDATES_ON_STARTUP);
       HWND hLogging = GetDlgItem(hDlg, IDC_ENABLELOGGING);
       HWND hOpenLog = GetDlgItem(hDlg, IDC_OPENLOG);
 
@@ -93,6 +95,9 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
 
       DWORD enabled = dlgData->settings->IsAutostartEnabled();
       Button_SetCheck(hAutostart, enabled ? BST_CHECKED : BST_UNCHECKED);
+
+      enabled = !!dlgData->settings->QueryValue(SettingsKey::CHECK_FOR_UPDATE);
+      Button_SetCheck(hUpdateCheck, enabled ? BST_CHECKED : BST_UNCHECKED);
 
       enabled = !!dlgData->settings->QueryValue(SettingsKey::LOGGING_ENABLED);
       Button_SetCheck(hLogging, enabled ? BST_CHECKED : BST_UNCHECKED);
@@ -145,8 +150,9 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
 
       HWND hAutostart = GetDlgItem(hDlg, IDC_RUNONSTARTUP);
       HWND hLogging = GetDlgItem(hDlg, IDC_ENABLELOGGING);
+      HWND hUpdateCheck = GetDlgItem(hDlg, IDC_CHECK_FOR_UPDATES_ON_STARTUP);
 
-      int enableLog = Button_GetCheck(hLogging) == BST_CHECKED;
+      const int enableLog = Button_GetCheck(hLogging) == BST_CHECKED;
       dlgData->settings->SetValue(SettingsKey::LOGGING_ENABLED, enableLog);
       WMLog::GetInstance().SetEnabled(enableLog);
 
@@ -170,6 +176,9 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
             }
          }
       }
+
+      const int enableUpdateCheck = Button_GetCheck(hUpdateCheck) == BST_CHECKED;
+      dlgData->settings->SetValue(SettingsKey::CHECK_FOR_UPDATE, enableUpdateCheck);
 
       if (Button_GetCheck(hAutostart) == BST_CHECKED) {
          dlgData->settings->EnableAutostart(true);
