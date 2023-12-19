@@ -79,12 +79,14 @@ void WMLog::DeleteLogFile()
 
 void WMLog::SetEnabled(bool enable)
 {
+   const std::lock_guard lock(logMutex_);
    if (enable == enabled_) {
       if (!enable) {
          DeleteLogFile();
       }
       return;
    }
+   
    if (enable) {
       if (OpenLogFile(GetLogFilePath(), logFile_)) {
          enabled_ = true;
@@ -114,6 +116,7 @@ void WMLog::WriteMessage(const wchar_t* msg)
    ss << L"[" << std::put_time(&tm, L"%Y-%m-%d %X") << L"] "
       << msg << L"\n";
    const auto& logStr = ss.str();
+   const std::scoped_lock<std::mutex> lock(logMutex_);
    logFile_.write(logStr.c_str(), logStr.length());
    logFile_.flush();
 }

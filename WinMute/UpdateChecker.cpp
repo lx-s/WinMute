@@ -58,40 +58,105 @@ private:
    HINTERNET hInternet_;
 };
 
-
-UpdateChecker::UpdateChecker(const WMSettings &settings):
-   settings_(settings)
+UpdateChecker::UpdateChecker()
 {
-
 }
 
 UpdateChecker::~UpdateChecker()
 {
-
 }
 
-bool UpdateChecker::ParseVersionFile(const std::string &fileContents) const
+bool UpdateChecker::ParseVersionFile(
+   const std::string &fileContents,
+   UpdateInfo &updateInfo) const
 {
+   // Structure
+   // {
+   //    "version": "2.4.1.0",
+   //    "versionPage" : "https://github.com/lx-s/WinMute/releases/"
+   // }
+   WMLog &log = WMLog::GetInstance();
    try {
       auto json = nlohmann::json::parse(fileContents);
+      if (!json.contains("version") && !json.contains("versionPage")) {
+         log.Write(L"Missing json fields in update file");
+         return false;
+      }
+      updateInfo.newVersion = ConvertStringToWideString(json["version"]);
+      updateInfo.versionPageUrl = ConvertStringToWideString(json["versionPage"]);
    } catch (const nlohmann::json::parse_error &pe) {
-      WMLog::GetInstance().Write(L"Failed to parse update: %S", pe.what());
+      log.Write(L"Failed to parse update: %S", pe.what());
+      return false;
+   }
+   return true;
+}
+
+bool UpdateChecker::ParseVersion(const std::wstring &vers, std::vector<int> parsedVers) const
+{
+   size_t lastVersionPos = 0;
+   size_t curPos = 0;
+   for (; curPos <= vers.length(); ++curPos) {
+      if (vers[curPos] == L'.' || vers[curPos] == L'\0') {
+         try {
+            const std::wstring versPart = vers.substr(lastVersionPos, curPos - lastVersionPos);
+            parsedVers.push_back(std::stoi(versPart));
+         } catch (...) {
+            return false;
+         }
+         lastVersionPos = curPos + 1;
+      }
+   }
+   auto pos = vers.find('.');
+   if (pos != std::wstring::npos) {
+      parsedVers.push_back(std::stoi(vers));
+   }
+   return true;
+}
+
+std::optional<bool> UpdateChecker::IsVersionGreater(const std::wstring &newVers, const std::wstring &curVers) const
+{
+   std::vector<int> newVersParsed;
+   std::vector<int> curVersParsed;
+   WMLog &log = WMLog::GetInstance();
+   if (!ParseVersion(newVers, newVersParsed)) {
+      log.Write(L"Failed to parse new version string \"%s\"", newVers.c_str());
+      return std::nullopt;
+   } else if (!ParseVersion(curVers, curVersParsed)) {
+      log.Write(L"Failed to parse current version string \"%s\"", curVers.c_str());
+      return std::nullopt;
+   } else if (newVersParsed.size() != curVersParsed.size()) {
+      log.Write(L"Version format mismatch \"%s\" / \"%s\"", curVers.c_str(), newVers.c_str());
+      return std::nullopt;
+   }
+   for (size_t i = 0; i < newVersParsed.size(); ++i) {
+      if (curVersParsed[i] < newVersParsed[i]) {
+         return true;
+      }
    }
    return false;
 }
 
-bool UpdateChecker::ShouldUpdate(std::wstring& , std::wstring& ) const
+bool UpdateChecker::GetUpdateInfo(UpdateInfo &updateInfo) const
 {
-   //if (!IsUpdateCheckEnabled()) {
-     // return false;
-   //}
+   if (!GetWinMuteVersion(updateInfo.currentVersion)) {
+      return false;
+   }
+
    std::string versionFile;
    if (!GetVersionFile(versionFile)) {
       return false;
    }
 
+   if (!ParseVersionFile(versionFile, updateInfo)) {
+      return false;
+   }
 
-   // Check contents of version file
+   const auto shouldUpdate = IsVersionGreater(updateInfo.newVersion, updateInfo.currentVersion);
+   if (!shouldUpdate) {
+      return false;
+   }
+   updateInfo.shouldUpdate = *shouldUpdate;
+
    return true;
 }
 
@@ -207,9 +272,9 @@ bool UpdateChecker::GetVersionFile(std::string &fileContents) const
    return true;
 }
 
-bool UpdateChecker::IsUpdateCheckEnabled() const
+bool UpdateChecker::IsUpdateCheckEnabled(const WMSettings &settings) const
 {
-   const auto updateCheckSetting = settings_.QueryValue(SettingsKey::CHECK_FOR_UPDATE);
+   const auto updateCheckSetting = settings.QueryValue(SettingsKey::CHECK_FOR_UPDATE);
    if (updateCheckSetting == static_cast<int>(UpdateCheckInterval::DISABLED)) {
       return false;
    }

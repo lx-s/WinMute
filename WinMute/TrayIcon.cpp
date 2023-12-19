@@ -38,16 +38,17 @@ TrayIcon::TrayIcon() :
 {
 }
 
-TrayIcon::TrayIcon(HWND hWnd, UINT trayID, HICON hIcon,
-                   const std::wstring& tooltip, bool show) :
-   initialized_(false),
-   iconVisible_(false)
+TrayIcon::TrayIcon(
+   HWND hWnd, UINT trayID, HICON hIcon,
+   const std::wstring& tooltip, bool show)
+   : initialized_(false), iconVisible_(false)
 {
    Init(hWnd, trayID, hIcon, tooltip, show);
 }
 
-void TrayIcon::Init(HWND hWnd, UINT trayID, HICON hIcon,
-                    const std::wstring& tooltip, bool show)
+void TrayIcon::Init(
+   HWND hWnd, UINT trayID, HICON hIcon,
+   const std::wstring& tooltip, bool show)
 {
    if (!hIcon) {
       hIcon_ = LoadIcon(0, IDI_APPLICATION);
@@ -106,9 +107,9 @@ void TrayIcon::ChangeIcon(HICON hNewIcon)
    hIcon_ = hNewIcon;
 
    if (oldIconVisible) {
-      NOTIFYICONDATA tnid;
-
+      NOTIFYICONDATA tnid{0};
       tnid.cbSize = sizeof(NOTIFYICONDATA);
+      tnid.uVersion = NOTIFYICON_VERSION_4;
       tnid.hWnd = hWnd_;
       tnid.uID = trayID_;
       tnid.hIcon = hIcon_;
@@ -140,13 +141,13 @@ void TrayIcon::ShowPopup(const std::wstring& title, const std::wstring& text) co
       popupQueue_.push_back(popup);
       return;
    } 
-   NOTIFYICONDATA tnid;
+   NOTIFYICONDATA tnid{0};
    tnid.cbSize = sizeof(NOTIFYICONDATA);
+   tnid.uVersion = NOTIFYICON_VERSION_4;
    tnid.hWnd = hWnd_;
    tnid.uID = trayID_;
    tnid.uFlags = NIF_INFO;
-   tnid.dwInfoFlags = NIIF_INFO | NIIF_NOSOUND | NIIF_LARGE_ICON
-      | NIIF_RESPECT_QUIET_TIME;
+   tnid.dwInfoFlags = NIIF_INFO | NIIF_NOSOUND | NIIF_LARGE_ICON | NIIF_RESPECT_QUIET_TIME;
    tnid.uTimeout = 10 * 1000;
    StringCchCopy(tnid.szInfoTitle, ARRAY_SIZE(tnid.szInfoTitle), title.c_str());
    StringCchCopy(tnid.szInfo, ARRAY_SIZE(tnid.szInfo), text.c_str());
@@ -164,9 +165,9 @@ void TrayIcon::DestroyTrayIcon()
 
 bool TrayIcon::AddNotifyIcon()
 {
-   NOTIFYICONDATA tnid;
-
+   NOTIFYICONDATA tnid{ 0 };
    tnid.cbSize = sizeof(NOTIFYICONDATA);
+   tnid.uVersion = NOTIFYICON_VERSION_4;
    tnid.hWnd = hWnd_;
    tnid.uID = trayID_;
    tnid.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;
@@ -181,9 +182,9 @@ bool TrayIcon::AddNotifyIcon()
 
 bool TrayIcon::RemoveNotifyIcon()
 {
-   NOTIFYICONDATA tnid;
-
+   NOTIFYICONDATA tnid{0};
    tnid.cbSize = sizeof(NOTIFYICONDATA);
+   tnid.uVersion = NOTIFYICON_VERSION_4;
    tnid.hWnd = hWnd_;
    tnid.uID = trayID_;
 
@@ -192,9 +193,9 @@ bool TrayIcon::RemoveNotifyIcon()
 
 bool TrayIcon::ChangeText()
 {
-   NOTIFYICONDATA tnid;
-
+   NOTIFYICONDATA tnid{0};
    tnid.cbSize = sizeof(NOTIFYICONDATA);
+   tnid.uVersion = NOTIFYICON_VERSION_4;
    tnid.hWnd = hWnd_;
    tnid.uID = trayID_;
    tnid.uFlags = NIF_TIP;

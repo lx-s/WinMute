@@ -55,32 +55,6 @@ bool WMi18n::Init()
    return LoadDefaultLanguage();
 }
 
-std::wstring WMi18n::ConvertStringToWideString(const std::string& ansiString) const
-{
-   std::wstring unicodeString;
-   auto wideCharSize = MultiByteToWideChar(CP_UTF8, MB_PRECOMPOSED, ansiString.c_str(), -1, nullptr, 0);
-   if (wideCharSize == 0) {
-      return L"";
-   }
-   unicodeString.reserve(wideCharSize);
-   unicodeString.resize(wideCharSize - 1);
-   wideCharSize = MultiByteToWideChar(CP_UTF8, MB_PRECOMPOSED, ansiString.c_str(), -1, &unicodeString[0], wideCharSize);
-   return unicodeString;
-}
-
-std::string WMi18n::ConvertWideStringToString(const std::wstring &wideString) const
-{
-   std::string ansiString;
-   auto ansiStringSize = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, wideString.c_str(), -1, nullptr, 0, "?", nullptr);
-   if (ansiStringSize == 0) {
-      return "";
-   }
-   ansiString.reserve(ansiStringSize);
-   ansiString.resize(ansiStringSize - 1);
-   ansiStringSize = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, wideString.c_str(), -1, &ansiString[0], ansiStringSize, "?", nullptr);
-   return ansiString;
-}
-
 std::optional<fs::path> WMi18n::GetLanguageFilesPath() const
 {
    wchar_t wmPath[MAX_PATH + 1]{ 0 };
@@ -127,11 +101,6 @@ std::vector<LanguageModule> WMi18n::GetAvailableLanguages() const
    return langDlls;
 }
 
-std::wstring WMi18n::GetCurrentLanguageModule() const
-{
-   return curModuleName_;
-}
-
 std::wstring WMi18n::GetCurrentLanguageName() const
 {
    return GetTranslationW("meta.lang.name");
@@ -139,6 +108,7 @@ std::wstring WMi18n::GetCurrentLanguageName() const
 
 bool WMi18n::LoadDefaultLanguage()
 {
+   const std::lock_guard lock(langMutex_);
    if (!LoadLanguage(defaultLangName_, defaultLang_)) {
       const std::wstring error = std::format(L"Failed to load default language. Please make sure the langs-Folder exists and contains {}.", defaultLangName_);;
       TaskDialog(
@@ -201,6 +171,7 @@ bool WMi18n::LoadLanguage(const std::wstring &fileName, TranslationMap &strings)
 
 bool WMi18n::LoadLanguage(const std::wstring &fileName)
 {
+   const std::lock_guard lock(langMutex_);
    if (fileName.empty() || fileName == defaultLangName_) {
       UnloadLanguage();
       return true;
@@ -218,24 +189,31 @@ bool WMi18n::LoadLanguage(const std::wstring &fileName)
    return true;
 }
 
-void WMi18n::UnloadLanguage() noexcept
+void WMi18n::UnloadLanguage()
 {
+   if (langMutex_.try_lock()) {
+      langMutex_.unlock();
+      throw "Lock was not acquired before unloading the language";
+   }
    loadedLang_.clear();
 }
 
 std::wstring WMi18n::GetTranslationW(const std::string& textId) const
 {
    std::wstring text;
-   if (!loadedLang_.empty() && loadedLang_.contains(textId)) {
-      auto it = loadedLang_.find(textId);
-      if (it != loadedLang_.end()) {
-         text = it->second;
+   {
+      const std::lock_guard lock(langMutex_);
+      if (!loadedLang_.empty() && loadedLang_.contains(textId)) {
+         auto it = loadedLang_.find(textId);
+         if (it != loadedLang_.end()) {
+            text = it->second;
+         }
       }
-   }
-   if (text.empty() && defaultLang_.contains(textId)) {
-      auto it = defaultLang_.find(textId);
-      if (it != defaultLang_.cend()) {
-         text = it->second;
+      if (text.empty() && defaultLang_.contains(textId)) {
+         auto it = defaultLang_.find(textId);
+         if (it != defaultLang_.cend()) {
+            text = it->second;
+         }
       }
    }
    if (text.empty()) {

@@ -55,6 +55,7 @@ private:
    void WriteMessage(const wchar_t* msg);
    void DeleteLogFile();
 
+   std::mutex logMutex_;
    bool enabled_;
    std::wofstream logFile_;
 };

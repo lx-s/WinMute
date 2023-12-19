@@ -52,7 +52,6 @@ public:
    std::vector<LanguageModule> GetAvailableLanguages() const;
 
    std::optional<fs::path> GetLanguageFilesPath() const;
-   std::wstring GetCurrentLanguageModule() const;
    std::wstring GetCurrentLanguageName() const;
 
    std::wstring GetTranslationW(const std::string& textId) const;
@@ -61,22 +60,19 @@ public:
    bool SetItemText(HWND hWnd, int dlgItem, const std::string &textId);
    bool SetItemText(HWND hItem, const std::string &textId);
 
-
 private:
    WMi18n() noexcept;
    ~WMi18n() noexcept;
    WMi18n(const WMi18n &) = delete;
    WMi18n &operator=(const WMi18n &) = delete;
 
+   mutable std::mutex langMutex_;
    const std::wstring defaultLangName_ = L"lang-en.json";
    std::wstring curModuleName_;
    TranslationMap loadedLang_;
    TranslationMap defaultLang_;
 
-   std::wstring ConvertStringToWideString(const std::string &ansiString) const;
-   std::string ConvertWideStringToString(const std::wstring &wideString) const;
-
-   void UnloadLanguage() noexcept;
+   void UnloadLanguage();
    bool LoadDefaultLanguage();
    bool LoadLanguage(const std::wstring &fileName, TranslationMap &strings);
 };

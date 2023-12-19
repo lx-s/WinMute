@@ -91,3 +91,29 @@ bool GetWinMuteVersion(std::wstring &versNumber)
       pvi->dwFileVersionLS & 0xFFFF);
    return true;
 }
+
+std::wstring ConvertStringToWideString(const std::string &ansiString)
+{
+   std::wstring unicodeString;
+   auto wideCharSize = MultiByteToWideChar(CP_UTF8, MB_PRECOMPOSED, ansiString.c_str(), -1, nullptr, 0);
+   if (wideCharSize == 0) {
+      return L"";
+   }
+   unicodeString.reserve(wideCharSize);
+   unicodeString.resize(wideCharSize - 1);
+   wideCharSize = MultiByteToWideChar(CP_UTF8, MB_PRECOMPOSED, ansiString.c_str(), -1, &unicodeString[0], wideCharSize);
+   return unicodeString;
+}
+
+std::string ConvertWideStringToString(const std::wstring &wideString)
+{
+   std::string ansiString;
+   auto ansiStringSize = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, wideString.c_str(), -1, nullptr, 0, "?", nullptr);
+   if (ansiStringSize == 0) {
+      return "";
+   }
+   ansiString.reserve(ansiStringSize);
+   ansiString.resize(ansiStringSize - 1);
+   ansiStringSize = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, wideString.c_str(), -1, &ansiString[0], ansiStringSize, "?", nullptr);
+   return ansiString;
+}

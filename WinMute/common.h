@@ -66,6 +66,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <locale>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <span>
 #include <string>
@@ -116,15 +117,30 @@ namespace fs = std::filesystem;
 #include "WinMute.h"
 #include "VersionHelper.h"
 
-// Utility
-void PrintWindowsError(const wchar_t *functionName, DWORD lastError = -1);
-bool GetWinMuteVersion(std::wstring &versNumber);
+// =============================================================================
+// Macros
+
+#define ARRAY_SIZE(arr) ((sizeof(arr)) / (sizeof(arr[0])))
+
+// =============================================================================
+// Constants
 
 static const wchar_t *PROGRAM_NAME = L"WinMute";
 static const wchar_t *LOG_FILE_NAME = L"WinMute.log";
 
 constexpr int WM_SAVESETTINGS = WM_USER + 300;
 
+// =============================================================================
+// Utility
+
+void PrintWindowsError(const wchar_t *functionName, DWORD lastError = -1);
+bool GetWinMuteVersion(std::wstring &versNumber);
+
+std::wstring ConvertStringToWideString(const std::string &ansiString);
+std::string ConvertWideStringToString(const std::wstring &wideString);
+
+// =============================================================================
+// COM Helper
 template<class Interface>
 inline void SafeRelease(Interface * *ppInterfaceToRelease)
 {
@@ -133,5 +149,3 @@ inline void SafeRelease(Interface * *ppInterfaceToRelease)
       (*ppInterfaceToRelease) = nullptr;
    }
 }
-
-#define ARRAY_SIZE(arr) ((sizeof(arr)) / (sizeof(arr[0])))

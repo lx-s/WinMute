@@ -40,23 +40,28 @@ enum class UpdateCheckInterval : int {
    ON_STARTUP = 1,
 };
 
+struct UpdateInfo {
+   std::wstring currentVersion;
+   std::wstring newVersion;
+   std::wstring versionPageUrl;
+   bool shouldUpdate;
+};
+
 class UpdateChecker {
 public:
-   explicit UpdateChecker(const WMSettings& settings);
+   UpdateChecker();
    ~UpdateChecker();
 
-   bool ShouldUpdate(std::wstring& curVersion, std::wstring& newVersion) const;
-   std::wstring GetUpdateURL() const;
+   bool IsUpdateCheckEnabled(const WMSettings &settings) const;
+   bool GetUpdateInfo(UpdateInfo& updateInfo) const;
 private:
    UpdateChecker(const UpdateChecker &) = delete;
    UpdateChecker &operator=(const UpdateChecker &) = delete;
    UpdateChecker(const UpdateChecker &&) = delete;
    UpdateChecker &operator=(const UpdateChecker &&) = delete;
 
-   bool IsUpdateCheckEnabled() const;
-
    bool GetVersionFile(std::string &fileContents) const;
-   bool ParseVersionFile(const std::string &fileContents) const;
-
-   const WMSettings &settings_;
+   bool ParseVersionFile(const std::string &fileContents, UpdateInfo& updateInfo) const;
+   std::optional<bool> IsVersionGreater(const std::wstring &newVers, const std::wstring &curVers) const;
+   bool ParseVersion(const std::wstring &vers, std::vector<int> parsedVers) const;
 };
