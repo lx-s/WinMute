@@ -57,6 +57,7 @@ private:
    HMENU hTrayMenu_;
    HICON hAppIcon_;
    HICON hTrayIcon_;
+   HICON hUpdateIcon_;
 
    struct MuteConfig {
       MuteConfig();
@@ -65,7 +66,8 @@ private:
       bool muteOnBluetooth;
    } muteConfig_;
 
-   TrayIcon trayIcon_;
+   TrayIcon wmTray_;
+   TrayIcon updateTray_;
    WifiDetector wifiDetector_;
    WMSettings& settings_;
    WMi18n &i18n_;

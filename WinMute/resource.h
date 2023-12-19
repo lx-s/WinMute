@@ -23,6 +23,8 @@
 #define IDD_MANAGE_ENDPOINTS            135
 #define IDD_DIALOG2                     137
 #define IDD_MANAGE_ENDPOINTS_ADD        137
+#define IDI_APP_UPDATE                  141
+#define IDI_APPUPDATE                   141
 #define IDC_LINK_HOMEPAGE               1001
 #define IDC_LINK_SUPPORT                1002
 #define IDC_LINK_PROJECT                1002
@@ -45,7 +47,6 @@
 #define IDC_CHECK_FOR_UPDATES_ON_STARTUP 1013
 #define IDC_OPENLOG                     1014
 #define IDC_LICENSETEXT                 1015
-#define IDC_CHECK_FOR_UPDATES_ON_STARTUP2 1015
 #define IDC_CHECK_FOR_BETA_UPDATES      1015
 #define IDC_ABOUT_TAB                   1016
 #define IDC_ABOUTTEXT                   1019
@@ -154,7 +155,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        141
+#define _APS_NEXT_RESOURCE_VALUE        142
 #define _APS_NEXT_COMMAND_VALUE         40041
 #define _APS_NEXT_CONTROL_VALUE         1072
 #define _APS_NEXT_SYMED_VALUE           101

@@ -127,6 +127,9 @@
     <Image Include="icons\settings.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="icons\app-update.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VistaAudio.cpp">

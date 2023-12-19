@@ -46,10 +46,10 @@ class TrayIcon {
 public:
    TrayIcon();
    TrayIcon(HWND hWnd, UINT trayID, HICON hIcon, const std::wstring& tooltip,
-      bool show);
+      bool show, int callbackId = WM_TRAYICON);
    ~TrayIcon();
    void Init(HWND hWnd, UINT trayID, HICON hIcon, const std::wstring& tooltip,
-      bool show);
+      bool show, int callbackId = WM_TRAYICON);
    void Hide();
    void Show();
    bool IsShown() const noexcept { return iconVisible_; }
@@ -57,8 +57,7 @@ public:
    void ChangeText(const std::wstring& tooltip);
    void ShowPopup(
       const std::wstring& title,
-      const std::wstring& text,
-      int callbackID = 0) const;
+      const std::wstring& text) const;
 
 private:
    void DestroyTrayIcon();
@@ -66,8 +65,10 @@ private:
    bool RemoveNotifyIcon();
    bool ChangeText();
 
+
    mutable std::vector<TrayIconPopup> popupQueue_;
 
+   int callbackId_;
    bool initialized_;
    bool iconVisible_;
    UINT trayID_;

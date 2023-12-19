@@ -40,16 +40,19 @@ TrayIcon::TrayIcon() :
 
 TrayIcon::TrayIcon(
    HWND hWnd, UINT trayID, HICON hIcon,
-   const std::wstring& tooltip, bool show)
-   : initialized_(false), iconVisible_(false)
+   const std::wstring& tooltip, bool show,
+   int callbackId)
+   : initialized_(false), iconVisible_(false), callbackId_(callbackId)
 {
    Init(hWnd, trayID, hIcon, tooltip, show);
 }
 
 void TrayIcon::Init(
    HWND hWnd, UINT trayID, HICON hIcon,
-   const std::wstring& tooltip, bool show)
+   const std::wstring& tooltip, bool show,
+   int callbackId)
 {
+   callbackId_ = callbackId;
    if (!hIcon) {
       hIcon_ = LoadIcon(0, IDI_APPLICATION);
    } else {
@@ -134,8 +137,7 @@ void TrayIcon::ChangeText(const std::wstring& tooltip)
 
 void TrayIcon::ShowPopup(
    const std::wstring& title,
-   const std::wstring& text,
-   int callbackID) const
+   const std::wstring& text) const
 {
    if (!initialized_) {
       TrayIconPopup popup;
@@ -151,10 +153,6 @@ void TrayIcon::ShowPopup(
    tnid.uID = trayID_;
    tnid.uFlags = NIF_INFO | NIF_SHOWTIP;
    tnid.dwInfoFlags = NIIF_INFO | NIIF_NOSOUND | NIIF_LARGE_ICON | NIIF_RESPECT_QUIET_TIME;
-   if (callbackID != 0) {
-      tnid.uCallbackMessage = callbackID;
-      tnid.uFlags |= NIF_MESSAGE;
-   }
    tnid.uTimeout = 10 * 1000;
    StringCchCopy(tnid.szInfoTitle, ARRAY_SIZE(tnid.szInfoTitle), title.c_str());
    StringCchCopy(tnid.szInfo, ARRAY_SIZE(tnid.szInfo), text.c_str());
@@ -179,10 +177,10 @@ bool TrayIcon::AddNotifyIcon()
    tnid.uID = trayID_;
    tnid.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE | NIF_SHOWTIP;
    tnid.hIcon = hIcon_;
-   tnid.uCallbackMessage = WM_TRAYICON;
+   tnid.uCallbackMessage = callbackId_;
 
    if (SUCCEEDED(StringCchCopy(tnid.szTip, ARRAY_SIZE(tnid.szTip), tooltip_.c_str()))) {
-      return Shell_NotifyIcon(NIM_ADD, &tnid) != 0;
+      return Shell_NotifyIconW(NIM_ADD, &tnid) != 0;
    }
    return false;
 }

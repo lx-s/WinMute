@@ -224,6 +224,7 @@
     <ResourceCompile Include="WinMute.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="icons\app-update.ico" />
     <Image Include="icons\app.ico" />
     <Image Include="icons\settings.ico" />
   </ItemGroup>

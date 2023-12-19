@@ -164,7 +164,7 @@ bool WinMute::InitAudio()
       return false;
    }
 
-   if (!muteCtrl_.Init(hWnd_, &trayIcon_)) {
+   if (!muteCtrl_.Init(hWnd_, &wmTray_)) {
       return false;
    }
 
@@ -241,7 +241,13 @@ bool WinMute::Init()
       ShowWindowsError(_T("LoadIcon"));
       return false;
    }
-   trayIcon_.Init(hWnd_, 0, hTrayIcon_, L"WinMute", true);
+   hUpdateIcon_ = LoadIconW(hglobInstance, MAKEINTRESOURCE(IDI_APPUPDATE));
+   if (hUpdateIcon_ == nullptr) {
+      ShowWindowsError(_T("LoadIcon"));
+      return false;
+   }
+   wmTray_.Init(hWnd_, 0, hTrayIcon_, L"WinMute", true);
+   updateTray_.Init(hWnd_, 1, hUpdateIcon_, L"WinMute Update", false, WM_WINMUTE_UPDATE_POPUP);
 
    quietHours_.Init(hWnd_, settings_);
 
@@ -249,7 +255,7 @@ bool WinMute::Init()
 
    if (settings_.QueryValue(SettingsKey::MUTE_ON_RDP)
        && IsCurrentSessionRemoteable()) {
-      trayIcon_.ShowPopup(
+      wmTray_.ShowPopup(
          i18n_.GetTranslationW("popup.remote-session-detected.title"),
          i18n_.GetTranslationW("popup.remote-session-detected.text"));
       muteCtrl_.SetMute(true);
@@ -311,7 +317,7 @@ bool WinMute::LoadSettings()
       btDetector_.Unload();
    } else {
       if (!btDetector_.Init(hWnd_)) {
-         trayIcon_.ShowPopup(
+         wmTray_.ShowPopup(
             i18n_.GetTranslationW("popup.bluetooth-muting-disabled.title"),
             i18n_.GetTranslationW("popup.bluetooth-muting-disabled.text"));
          settings_.SetValue(SettingsKey::MUTE_ON_BLUETOOTH, FALSE);
@@ -327,7 +333,7 @@ bool WinMute::LoadSettings()
       wifiDetector_.Unload();
    } else {
       if (!wifiDetector_.Init(hWnd_)) {
-         trayIcon_.ShowPopup(
+         wmTray_.ShowPopup(
             i18n_.GetTranslationW("popup.wlan-muting-disabled.title"),
             i18n_.GetTranslationW("popup.wlan-muting-disabled.text"));
          settings_.SetValue(SettingsKey::MUTE_ON_WLAN, FALSE);
@@ -402,7 +408,7 @@ void WinMute::CheckForUpdatesAsync(std::unique_ptr<UpdateChecker> updateChecker)
       return;
    }
    if (!updateChecker->GetUpdateInfo(updateInfo_)) {
-      trayIcon_.ShowPopup(
+      wmTray_.ShowPopup(
          i18n_.GetTranslationW("popup.error.update-check-failed.title"),
          i18n_.GetTranslationW("popup.error.update-check-failed.text"));
    } else if (updateInfo_.beta.shouldUpdate && betaUpdates) {
@@ -412,7 +418,8 @@ void WinMute::CheckForUpdatesAsync(std::unique_ptr<UpdateChecker> updateChecker)
       const std::wstring popupText = std::vformat(
          i18n_.GetTranslationW("popup.update-available-beta.text"),
          std::make_wformat_args(updateInfo_.currentVersion));
-      trayIcon_.ShowPopup(popupTitle, popupText, WM_WINMUTE_UPDATE_POPUP);
+      updateTray_.Show();
+      updateTray_.ShowPopup(popupTitle, popupText);
    } else if (updateInfo_.beta.shouldUpdate) {
       const std::wstring popupTitle = std::vformat(
          i18n_.GetTranslationW("popup.update-available.title"),
@@ -420,7 +427,8 @@ void WinMute::CheckForUpdatesAsync(std::unique_ptr<UpdateChecker> updateChecker)
       const std::wstring popupText = std::vformat(
          i18n_.GetTranslationW("popup.update-available.text"),
          std::make_wformat_args(updateInfo_.currentVersion));
-      trayIcon_.ShowPopup(popupTitle, popupText, WM_WINMUTE_UPDATE_POPUP);
+      updateTray_.Show();
+      updateTray_.ShowPopup(popupTitle, popupText);
    }
 }
 
@@ -518,10 +526,9 @@ LRESULT WinMute::OnCommand(HWND hWnd, WPARAM wParam, LPARAM)
 
 LRESULT WinMute::OnTrayIcon(HWND hWnd, WPARAM, LPARAM lParam)
 {
-   switch (lParam) {
-   case WM_LBUTTONUP:
-   case WM_RBUTTONUP:
-   {
+   if (LOWORD(lParam) == WM_CONTEXTMENU ||
+       lParam == WM_LBUTTONUP ||
+       lParam == WM_RBUTTONUP) {
       POINT p = { 0 };
       GetCursorPos(&p);
       SetForegroundWindow(hWnd);
@@ -529,10 +536,6 @@ LRESULT WinMute::OnTrayIcon(HWND hWnd, WPARAM, LPARAM lParam)
          GetSubMenu(hTrayMenu_, 0),
          TPM_NONOTIFY | TPM_TOPALIGN | TPM_LEFTALIGN,
          p.x, p.y, hWnd_, nullptr);
-      break;
-   }
-   default:
-      break;
    }
    return TRUE;
 }
@@ -567,7 +570,7 @@ LRESULT WinMute::OnQuietHours(HWND, UINT msg, WPARAM, LPARAM)
    if (msg == WM_WINMUTE_QUIETHOURS_START) {
       muteCtrl_.NotifyQuietHours(true);
       if (settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS)) {
-         trayIcon_.ShowPopup(
+         wmTray_.ShowPopup(
             i18n_.GetTranslationW("popup.quiet-hours-started.title"),
             i18n_.GetTranslationW("popup.quiet-hours-started.text"));
       }
@@ -576,7 +579,7 @@ LRESULT WinMute::OnQuietHours(HWND, UINT msg, WPARAM, LPARAM)
    } else if (msg == WM_WINMUTE_QUIETHOURS_END) {
       muteCtrl_.NotifyQuietHours(false);
       if (settings_.QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS)) {
-         trayIcon_.ShowPopup(
+         wmTray_.ShowPopup(
             i18n_.GetTranslationW("popup.quiet-hours-ended.title"),
             i18n_.GetTranslationW("popup.quiet-hours-ended.text"));
       }
@@ -622,7 +625,7 @@ LRESULT WinMute::OnWifiStatusChange(HWND, WPARAM wParam, LPARAM lParam)
             i18n_.GetTranslationW("popup.wlan-is-on-mute-list.text"),
             std::make_wformat_args(wifiName));
       }
-      trayIcon_.ShowPopup(
+      wmTray_.ShowPopup(
          i18n_.GetTranslationW("popup.workstation-muted.title"),
          popupMsg);
       delete[] wifiName;
@@ -645,6 +648,9 @@ LRESULT WinMute::OnUpdatePopup(HWND hWnd, WPARAM, LPARAM lParam)
             hWnd, L"open", updateInfo_.stable.downloadUrl.c_str(),
             nullptr, nullptr, SW_SHOW);
       }
+   }
+   if (lParam == NIN_BALLOONHIDE || lParam == NIN_BALLOONTIMEOUT || lParam == NIN_BALLOONUSERCLICK) {
+      updateTray_.Hide();
    }
    return 0;
 }
@@ -701,8 +707,8 @@ LRESULT CALLBACK WinMute::WindowProc(
       return OnSettingChange(hWnd, wParam, lParam);
    default:
       if (msg == uTaskbarRestart) { // Restore trayicon if explorer.exe crashes
-         trayIcon_.Hide();
-         trayIcon_.Show();
+         wmTray_.Hide();
+         wmTray_.Show();
       }
       break;
    }
