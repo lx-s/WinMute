@@ -101,8 +101,8 @@ bool UpdateChecker::ParseVersionFile(
          log.LogError(L"Missing update-file version");
          return false;
       }
-      const auto file_version = json["version"];
-      if (!file_version.is_number() || file_version.get<int>() != 1) {
+      int version = json["version"].get<int>();
+      if (version != 1) {
          log.LogError(L"Update file has incompatible version number");
          return false;
       }
