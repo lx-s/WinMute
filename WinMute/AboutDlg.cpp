@@ -180,7 +180,11 @@ static INT_PTR CALLBACK About_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM
       return TRUE;
    case WM_NOTIFY: {
       const PNMLINK pNmLink = reinterpret_cast<PNMLINK>(lParam);
-      if (pNmLink->hdr.code == NM_CLICK || pNmLink->hdr.code == NM_RETURN) {
+#pragma warning(push)
+#pragma warning(disable : 26454) // Disable arithmetic overflow warning for NM_CLICK and NM_RETURN
+      if (pNmLink->hdr.code == NM_CLICK ||
+          pNmLink->hdr.code == NM_RETURN) {
+#pragma warning(pop)
          const UINT_PTR ctrlId = pNmLink->hdr.idFrom;
          const LITEM item = pNmLink->item;
          if ((ctrlId == IDC_LINK_HOMEPAGE
@@ -296,8 +300,10 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
    }
    case WM_NOTIFY: {
       const LPNMHDR lpnmhdr = reinterpret_cast<LPNMHDR>(lParam);
-      if (lpnmhdr->code == TCN_SELCHANGE
-         && lpnmhdr->hwndFrom == dlgData->hTabCtrl) {
+#pragma warning(push)
+#pragma warning(disable : 26454) // Disable arithmetic overflow for TCN_SELCHANGE
+      if (lpnmhdr->code == TCN_SELCHANGE && lpnmhdr->hwndFrom == dlgData->hTabCtrl) {
+#pragma warning(pop)
          const int curSel = TabCtrl_GetCurSel(dlgData->hTabCtrl);
          if (curSel >= 0 && curSel < ABOUT_TAB_COUNT) {
             SwitchTab(dlgData, dlgData->hTabs[curSel]);

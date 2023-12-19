@@ -158,7 +158,7 @@ BluetoothDetector::BluetoothStatus BluetoothDetector::GetBluetoothStatus(
    if (useDeviceList_) {
       auto pos = std::find(begin(deviceNames_), end(deviceNames_), inRangeInfo->deviceInfo.name);
       if (pos == end(deviceNames_)) {
-         log.Write(L"Bluetooth device \"S\" not in list.", inRangeInfo->deviceInfo.name);
+         log.Write(L"Bluetooth device \"%S\" not in list.", inRangeInfo->deviceInfo.name);
          return BluetoothStatus::Unknown;
       }
    }

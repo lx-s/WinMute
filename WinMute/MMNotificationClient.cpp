@@ -90,7 +90,7 @@ HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceAdded(LPCWSTR pwstrDevic
 {
    if (notifyParent_ && pwstrDeviceId != nullptr) {
       const auto deviceName = GetFriendlyDeviceName(pwstrDeviceId);
-      WMLog::GetInstance().GetInstance().Write(L"Device \"%S\" added", deviceName.c_str());
+      WMLog::GetInstance().GetInstance().Write(L"Device \"%s\" added", deviceName.c_str());
       notifyParent_->ShouldReInit();
    }
    return S_OK;
@@ -100,7 +100,7 @@ HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceRemoved(LPCWSTR pwstrDev
 {
    if (notifyParent_ && pwstrDeviceId != nullptr) {
       const auto deviceName = GetFriendlyDeviceName(pwstrDeviceId);
-      WMLog::GetInstance().GetInstance().Write(L"Device \"%S\" removed", deviceName.c_str());
+      WMLog::GetInstance().GetInstance().Write(L"Device \"%s\" removed", deviceName.c_str());
       notifyParent_->ShouldReInit();
    }
    return S_OK;

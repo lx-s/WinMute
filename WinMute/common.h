@@ -94,6 +94,7 @@ namespace fs = std::filesystem;
 #include <wlanapi.h>
 #include <Mmdeviceapi.h>
 #include <dwmapi.h>
+#include <sal.h>
 #pragma warning(disable : 4201)
 #  include <endpointvolume.h>
 #pragma warning(default : 4201)

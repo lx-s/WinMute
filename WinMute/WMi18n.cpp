@@ -119,7 +119,7 @@ std::vector<LanguageModule> WMi18n::GetAvailableLanguages() const
                   langDlls.push_back(langMod);
                }
             } catch (const nlohmann::json::parse_error &pe) {
-               WMLog::GetInstance().Write(L"Failed to parse language file \"%ls\": %s", wfd.cFileName, pe.what());
+               WMLog::GetInstance().Write(L"Failed to parse language file \"%ls\": %S", wfd.cFileName, pe.what());
             }
          } while (FindNextFileW(hFindFile, &wfd));
       }
@@ -179,11 +179,11 @@ bool WMi18n::LoadLanguage(const std::wstring &fileName, TranslationMap &strings)
          }
          const auto value = ConvertStringToWideString(it.value());
          if (value == L"") {
-            log.Write(L"Unable to convert language element \"%s\"", it.key().c_str());
+            log.Write(L"Unable to convert language element \"%S\"", it.key().c_str());
             return false;
          }
          if (translations_temp.contains(it.key())) {
-            log.Write(L"Double entry for language key \"%s\" found.", it.key().c_str());
+            log.Write(L"Double entry for language key \"%S\" found.", it.key().c_str());
             return false;
          }
          translations_temp[it.key()] = value;
@@ -191,7 +191,7 @@ bool WMi18n::LoadLanguage(const std::wstring &fileName, TranslationMap &strings)
       strings = std::move(translations_temp);
    } catch (const nlohmann::json::parse_error &pe) {
       WMLog::GetInstance().Write(
-         L"Failed to parse language file \"%ls\": %s",
+         L"Failed to parse language file \"%ls\": %S",
          langFilePath->filename().c_str(),
          pe.what());
       return false;

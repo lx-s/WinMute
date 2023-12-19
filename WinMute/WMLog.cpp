@@ -118,7 +118,7 @@ void WMLog::WriteMessage(const wchar_t* msg)
    logFile_.flush();
 }
 
-void WMLog::Write(const wchar_t *fmt, ...)
+void WMLog::Write(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...)
 {
    if (!enabled_) {
       return;

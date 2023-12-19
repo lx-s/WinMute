@@ -39,7 +39,7 @@ class WMLog {
 public:
    static WMLog& GetInstance();
 
-   void Write(const wchar_t* fmt, ...);
+   void Write(_In_z_ _Printf_format_string_ const wchar_t* fmt, ...);
    void WriteWindowsError(const wchar_t *functionName, DWORD errorCode = -1);
 
    void SetEnabled(bool enable);

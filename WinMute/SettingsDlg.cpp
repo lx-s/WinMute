@@ -220,8 +220,10 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
       return 0;
    case WM_NOTIFY: {
       const LPNMHDR lpnmhdr = reinterpret_cast<LPNMHDR>(lParam);
-      if (lpnmhdr->code == TCN_SELCHANGE
-          && lpnmhdr->hwndFrom == dlgData->hTabCtrl) {
+#pragma warning(push)
+#pragma warning(disable : 26454) // Disable arithmetic overflow warning for TCN_SELCHANGE
+      if (lpnmhdr->code == TCN_SELCHANGE && lpnmhdr->hwndFrom == dlgData->hTabCtrl) {
+#pragma warning(pop)
          const int curSel = TabCtrl_GetCurSel(dlgData->hTabCtrl);
          if (curSel >= 0 && curSel < SETTINGS_TAB_COUNT) {
             SwitchTab(dlgData, dlgData->hTabs[curSel]);
