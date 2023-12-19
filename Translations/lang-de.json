@@ -121,5 +121,6 @@
     "about.tab.winmute": "WinMute",
     "about.tab.license": "Lizenz",
     "about.btn-close": "OK",
-    "settings.wifi.mute-when-in-list": "Stummschalten, wenn das WLAN in der Liste ist"
+    "settings.wifi.mute-when-in-list": "Stummschalten, wenn das WLAN in der Liste ist",
+    "settings.general.check-for-updates-on-start": "Bei Programmstart nach Updates suchen"
 }
