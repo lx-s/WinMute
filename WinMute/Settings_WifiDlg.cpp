@@ -129,7 +129,7 @@ static std::vector<std::wstring> ExportSsidListItems(HWND hList)
    return items;
 }
 
-static bool IsWlanAvailable()
+static bool IsWlanAvailable() noexcept
 {
    HANDLE wlanHandle;
    DWORD vers = 2;
