@@ -72,14 +72,14 @@ bool WifiDetector::Init(HWND hNotifyWnd)
       DWORD wlErr = WlanOpenHandle(vers, nullptr, &vers, &wlanHandle_);
       if (wlErr != ERROR_SUCCESS) {
          if (wlErr != ERROR_SERVICE_NOT_ACTIVE) {
-            PrintWindowsError(L"WlanOpenHandle", wlErr);
+            ShowWindowsError(L"WlanOpenHandle", wlErr);
          }
       } else {
          wlErr = WlanRegisterNotification(
             wlanHandle_, WLAN_NOTIFICATION_SOURCE_ACM, TRUE,
             ::WlanNotificationCallback, this, nullptr, nullptr);
          if (wlErr != ERROR_SUCCESS) {
-            PrintWindowsError(L"WlanOpenHandle", wlErr);
+            ShowWindowsError(L"WlanOpenHandle", wlErr);
             WlanCloseHandle(wlanHandle_, nullptr);
          } else {
             initialized_ = true;
@@ -100,7 +100,7 @@ void WifiDetector::CheckNetwork()
    PWLAN_INTERFACE_INFO_LIST ifList;
    DWORD wlanErr = WlanEnumInterfaces(wlanHandle_, nullptr, &ifList);
    if (wlanErr != ERROR_SUCCESS) {
-      PrintWindowsError(L"WlanEnumInterfaces", wlanErr);
+      ShowWindowsError(L"WlanEnumInterfaces", wlanErr);
    } else {
       for (; ifList->dwIndex < ifList->dwNumberOfItems; ++ifList->dwIndex) {
          PWLAN_AVAILABLE_NETWORK_LIST availList = nullptr;
@@ -111,7 +111,7 @@ void WifiDetector::CheckNetwork()
             nullptr,
             &availList);
          if (wlanErr != ERROR_SUCCESS) {
-            PrintWindowsError(L"WlanGetAvailableNetworkList", wlanErr);
+            ShowWindowsError(L"WlanGetAvailableNetworkList", wlanErr);
          } else {
             for (; availList->dwIndex < availList->dwNumberOfItems; ++availList->dwIndex) {
                const PWLAN_AVAILABLE_NETWORK net = &availList->Network[availList->dwIndex];

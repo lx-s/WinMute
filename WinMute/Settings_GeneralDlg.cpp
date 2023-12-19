@@ -51,7 +51,7 @@ static void FillLanguageList(HWND hLanguageList, const SettingsGeneralData& dlgD
    for (const auto &lang : dlgData.langModules) {
       const auto itemId = SendMessage(hLanguageList, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(lang.langName.c_str()));
       if (itemId == CB_ERR || itemId == CB_ERRSPACE) {
-         WMLog::GetInstance().Write(L"Failed to add language %ls to language selector", lang.langName.c_str());
+         WMLog::GetInstance().LogError(L"Failed to add language %ls to language selector", lang.langName.c_str());
       } else {
          ComboBox_SetItemData(hLanguageList, itemId, lang.fileName.c_str());
       }
@@ -65,6 +65,7 @@ static void LoadSettingsGeneralDlgTranslation(HWND hDlg)
    i18n.SetItemText(hDlg, IDC_SELECT_LANGUAGE_LABEL, "settings.general.select-language-label");
    i18n.SetItemText(hDlg, IDC_RUNONSTARTUP, "settings.general.run-on-startup");
    i18n.SetItemText(hDlg, IDC_CHECK_FOR_UPDATES_ON_STARTUP, "settings.general.check-for-updates-on-start");
+   i18n.SetItemText(hDlg, IDC_CHECK_FOR_BETA_UPDATES, "settings.general.check-for-beta-updates-on-start");
    i18n.SetItemText(hDlg, IDC_ENABLELOGGING, "settings.general.enable-logging");
    i18n.SetItemText(hDlg, IDC_OPENLOG, "settings.general.btn-open-log-file");
 }
@@ -75,6 +76,7 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
    case WM_INITDIALOG: {
       HWND hAutostart = GetDlgItem(hDlg, IDC_RUNONSTARTUP);
       HWND hUpdateCheck = GetDlgItem(hDlg, IDC_CHECK_FOR_UPDATES_ON_STARTUP);
+      HWND hBetaUpdateCheck = GetDlgItem(hDlg, IDC_CHECK_FOR_BETA_UPDATES);
       HWND hLogging = GetDlgItem(hDlg, IDC_ENABLELOGGING);
       HWND hOpenLog = GetDlgItem(hDlg, IDC_OPENLOG);
 
@@ -98,6 +100,10 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
 
       enabled = !!dlgData->settings->QueryValue(SettingsKey::CHECK_FOR_UPDATE);
       Button_SetCheck(hUpdateCheck, enabled ? BST_CHECKED : BST_UNCHECKED);
+
+      EnableWindow(hBetaUpdateCheck, enabled);
+      enabled = !!dlgData->settings->QueryValue(SettingsKey::CHECK_FOR_BETA_UPDATE);
+      Button_SetCheck(hBetaUpdateCheck, enabled ? BST_CHECKED : BST_UNCHECKED);
 
       enabled = !!dlgData->settings->QueryValue(SettingsKey::LOGGING_ENABLED);
       Button_SetCheck(hLogging, enabled ? BST_CHECKED : BST_UNCHECKED);
@@ -137,6 +143,9 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
             SendMessageW(GetDlgItem(hDlg, IDC_LOGFILEPATH), WM_SETTEXT, 0,
                reinterpret_cast<LPARAM>(L""));
          }
+      } else if (LOWORD(wParam) == IDC_CHECK_FOR_UPDATES_ON_STARTUP) {
+         const int enabled = Button_GetCheck(GetDlgItem(hDlg, IDC_CHECK_FOR_UPDATES_ON_STARTUP));
+         EnableWindow(GetDlgItem(hDlg, IDC_CHECK_FOR_BETA_UPDATES), enabled);
       } else if (LOWORD(wParam) == IDC_OPENLOG) {
          WMLog& log = WMLog::GetInstance();
          const std::wstring filePath = log.GetLogFilePath().c_str();
@@ -151,6 +160,7 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       HWND hAutostart = GetDlgItem(hDlg, IDC_RUNONSTARTUP);
       HWND hLogging = GetDlgItem(hDlg, IDC_ENABLELOGGING);
       HWND hUpdateCheck = GetDlgItem(hDlg, IDC_CHECK_FOR_UPDATES_ON_STARTUP);
+      HWND hBetaUpdateCheck = GetDlgItem(hDlg, IDC_CHECK_FOR_BETA_UPDATES);
 
       const int enableLog = Button_GetCheck(hLogging) == BST_CHECKED;
       dlgData->settings->SetValue(SettingsKey::LOGGING_ENABLED, enableLog);
@@ -179,6 +189,9 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
 
       const int enableUpdateCheck = Button_GetCheck(hUpdateCheck) == BST_CHECKED;
       dlgData->settings->SetValue(SettingsKey::CHECK_FOR_UPDATE, enableUpdateCheck);
+
+      const int enableBetaUpdateCheck = Button_GetCheck(hBetaUpdateCheck) == BST_CHECKED;
+      dlgData->settings->SetValue(SettingsKey::CHECK_FOR_BETA_UPDATE, enableBetaUpdateCheck);
 
       if (Button_GetCheck(hAutostart) == BST_CHECKED) {
          dlgData->settings->EnableAutostart(true);

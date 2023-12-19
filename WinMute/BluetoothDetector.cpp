@@ -65,7 +65,7 @@ bool BluetoothDetector::LoadRadioNotifications()
    const BLUETOOTH_FIND_RADIO_PARAMS bfrp = { sizeof(BLUETOOTH_FIND_RADIO_PARAMS) };
    HBLUETOOTH_RADIO_FIND hRadiosFind = BluetoothFindFirstRadio(&bfrp, &btHandle);
    if (hRadiosFind == nullptr) {
-      log.WriteWindowsError(L"BluetoothFindFirstRadio", GetLastError());
+      log.LogWinError(L"BluetoothFindFirstRadio", GetLastError());
       return false;
    }
 
@@ -83,14 +83,14 @@ bool BluetoothDetector::LoadRadioNotifications()
       CloseHandle(btHandle);
 
       if (devNotify == nullptr) {
-         log.WriteWindowsError(L"RegisterDeviceNotification", GetLastError());
+         log.LogWinError(L"RegisterDeviceNotification", GetLastError());
       } else {
          notificationHandles_.push_back(devNotify);
       }
    } while (BluetoothFindNextRadio(hRadiosFind, &btHandle));
    const DWORD dwLastError = GetLastError();
    if (dwLastError != ERROR_NO_MORE_ITEMS) {
-      log.WriteWindowsError(L"BluetoothFindNextRadio", GetLastError());
+      log.LogWinError(L"BluetoothFindNextRadio", GetLastError());
       UnloadRadioNotifications();
    } else {
       success = true;
@@ -158,15 +158,15 @@ BluetoothDetector::BluetoothStatus BluetoothDetector::GetBluetoothStatus(
    if (useDeviceList_) {
       auto pos = std::find(begin(deviceNames_), end(deviceNames_), inRangeInfo->deviceInfo.name);
       if (pos == end(deviceNames_)) {
-         log.Write(L"Bluetooth device \"%S\" not in list.", inRangeInfo->deviceInfo.name);
+         log.LogInfo(L"Bluetooth device \"%S\" not in list.", inRangeInfo->deviceInfo.name);
          return BluetoothStatus::Unknown;
       }
    }
    if ((inRangeInfo->deviceInfo.flags & BDIF_CONNECTED) && !(inRangeInfo->previousDeviceFlags & BDIF_CONNECTED)) {
-      log.Write(L"Bluetooth Audio device \"%S\" connected.", inRangeInfo->deviceInfo.name);
+      log.LogInfo(L"Bluetooth Audio device \"%S\" connected.", inRangeInfo->deviceInfo.name);
       return BluetoothStatus::Connected;
    } else if (!(inRangeInfo->deviceInfo.flags & BDIF_CONNECTED) && (inRangeInfo->previousDeviceFlags & BDIF_CONNECTED)) {
-      log.Write(L"Bluetooth Audio device \"%S\" disconnected.", inRangeInfo->deviceInfo.name);
+      log.LogInfo(L"Bluetooth Audio device \"%S\" disconnected.", inRangeInfo->deviceInfo.name);
       return BluetoothStatus::Disconnected;
    }
    return BluetoothStatus::Unknown;

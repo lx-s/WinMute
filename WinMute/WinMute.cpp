@@ -133,7 +133,7 @@ bool WinMute::RegisterWindowClass()
    wc.lpszClassName = WINMUTE_CLASS_NAME;
 
    if (!RegisterClassExW(&wc)) {
-      PrintWindowsError(L"RegisterClass");
+      ShowWindowsError(L"RegisterClass");
       return false;
    }
    return true;
@@ -144,7 +144,7 @@ bool WinMute::InitWindow()
    hWnd_ = CreateWindowExW(WS_EX_TOOLWINDOW, WINMUTE_CLASS_NAME, PROGRAM_NAME,
       WS_POPUP, 0, 0, 0, 0, nullptr, 0, hglobInstance, this);
    if (hWnd_ == nullptr) {
-      PrintWindowsError(L"CreateWindowEx");
+      ShowWindowsError(L"CreateWindowEx");
       return false;
    }
    return true;
@@ -179,7 +179,7 @@ bool WinMute::InitTrayMenu()
    if (hTrayMenu_ == nullptr) {
       hTrayMenu_ = LoadMenuW(hglobInstance, MAKEINTRESOURCE(IDR_TRAYMENU));
       if (hTrayMenu_ == nullptr) {
-         PrintWindowsError(L"LoadMenu");
+         ShowWindowsError(L"LoadMenu");
          return false;
       }
    }
@@ -208,7 +208,7 @@ bool WinMute::Init()
 #else
    WMLog::GetInstance().SetEnabled(settings_.QueryValue(SettingsKey::LOGGING_ENABLED));
 #endif
-   log.Write(L"Starting new session...");
+   log.LogInfo(L"Starting new session...");
 
    if (!RegisterWindowClass() || !InitWindow()) {
       return false;
@@ -227,25 +227,25 @@ bool WinMute::Init()
    }
 
    if (!WTSRegisterSessionNotification(hWnd_, NOTIFY_FOR_THIS_SESSION)) {
-      PrintWindowsError(L"WTSRegisterSessionNotification");
+      ShowWindowsError(L"WTSRegisterSessionNotification");
       return false;
    }
 
    if (!RegisterPowerSettingNotification(hWnd_, &GUID_CONSOLE_DISPLAY_STATE, 0)) {
-      PrintWindowsError(L"RegisterPowerSettingNotification");
+      ShowWindowsError(L"RegisterPowerSettingNotification");
       return false;
    }
 
    hTrayIcon_ = LoadIconW(hglobInstance, MAKEINTRESOURCE(IDI_APP));
    if (hTrayIcon_ == nullptr) {
-      PrintWindowsError(_T("LoadIcon"));
+      ShowWindowsError(_T("LoadIcon"));
       return false;
    }
    trayIcon_.Init(hWnd_, 0, hTrayIcon_, L"WinMute", true);
 
    quietHours_.Init(hWnd_, settings_);
 
-   log.Write(L"WinMute initialized");
+   log.LogInfo(L"WinMute initialized");
 
    if (settings_.QueryValue(SettingsKey::MUTE_ON_RDP)
        && IsCurrentSessionRemoteable()) {
@@ -267,21 +267,23 @@ bool WinMute::LoadSettings()
    if (log.IsEnabled()) {
       std::wstring versionNumber;
       GetWinMuteVersion(versionNumber);
-      log.Write(L"Starting WinMute %s", versionNumber.c_str());
-      log.Write(L"Loading settings:");
-      log.Write(L"\tRestore volume: %s", settings_.QueryValue(SettingsKey::RESTORE_AUDIO) ? L"Yes" : L"No");
-      log.Write(L"\tMute delay: %d", settings_.QueryValue(SettingsKey::MUTE_DELAY));
-      log.Write(L"\tMute on lock: %s", settings_.QueryValue(SettingsKey::MUTE_ON_LOCK) ? L"Yes" : L"No");
-      log.Write(L"\tMute on display standby: %s", settings_.QueryValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY) ? L"Yes" : L"No");
-      log.Write(L"\tMute on logout: %s", settings_.QueryValue(SettingsKey::MUTE_ON_LOGOUT) ? L"Yes" : L"No");
-      log.Write(L"\tMute on suspend: %s", settings_.QueryValue(SettingsKey::MUTE_ON_SUSPEND) ? L"Yes" : L"No");
-      log.Write(L"\tMute on shutdown: %s", settings_.QueryValue(SettingsKey::MUTE_ON_SHUTDOWN) ? L"Yes" : L"No");
-      log.Write(L"\tShow notifications: %s", settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED) ? L"Yes" : L"No");
-      log.Write(L"\tMute on bluetooth: %s", settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH) ? L"Yes" : L"No");
-      log.Write(L"\t\tUse devicelist: %s", settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH_DEVICELIST) ? L"Yes" : L"No");
-      log.Write(L"\tMute on WLAN: %s", settings_.QueryValue(SettingsKey::MUTE_ON_WLAN) ? L"Yes" : L"No");
-      log.Write(L"\t\tUse allowlist: %s", settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST) ? L"Yes" : L"No");
-      log.Write(L"\tMute specific endpoints only: %s", settings_.QueryValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS) ? L"Yes" : L"No");
+      log.LogInfo(L"Starting WinMute %s", versionNumber.c_str());
+      log.LogInfo(L"Loading settings:");
+      log.LogInfo(L"Check for updates: %s", settings_.QueryValue(SettingsKey::CHECK_FOR_UPDATE) ? L"Yes" : L"No");
+      log.LogInfo(L"\tCheck for beta updates: %s", settings_.QueryValue(SettingsKey::CHECK_FOR_BETA_UPDATE) ? L"Yes" : L"No");
+      log.LogInfo(L"\tRestore volume: %s", settings_.QueryValue(SettingsKey::RESTORE_AUDIO) ? L"Yes" : L"No");
+      log.LogInfo(L"\tMute delay: %d", settings_.QueryValue(SettingsKey::MUTE_DELAY));
+      log.LogInfo(L"\tMute on lock: %s", settings_.QueryValue(SettingsKey::MUTE_ON_LOCK) ? L"Yes" : L"No");
+      log.LogInfo(L"\tMute on display standby: %s", settings_.QueryValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY) ? L"Yes" : L"No");
+      log.LogInfo(L"\tMute on logout: %s", settings_.QueryValue(SettingsKey::MUTE_ON_LOGOUT) ? L"Yes" : L"No");
+      log.LogInfo(L"\tMute on suspend: %s", settings_.QueryValue(SettingsKey::MUTE_ON_SUSPEND) ? L"Yes" : L"No");
+      log.LogInfo(L"\tMute on shutdown: %s", settings_.QueryValue(SettingsKey::MUTE_ON_SHUTDOWN) ? L"Yes" : L"No");
+      log.LogInfo(L"\tShow notifications: %s", settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED) ? L"Yes" : L"No");
+      log.LogInfo(L"\tMute on bluetooth: %s", settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH) ? L"Yes" : L"No");
+      log.LogInfo(L"\t\tUse devicelist: %s", settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH_DEVICELIST) ? L"Yes" : L"No");
+      log.LogInfo(L"\tMute on WLAN: %s", settings_.QueryValue(SettingsKey::MUTE_ON_WLAN) ? L"Yes" : L"No");
+      log.LogInfo(L"\t\tUse allowlist: %s", settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST) ? L"Yes" : L"No");
+      log.LogInfo(L"\tMute specific endpoints only: %s", settings_.QueryValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS) ? L"Yes" : L"No");
    }
 
    if (!settings_.QueryValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS)) {
@@ -395,6 +397,7 @@ void WinMute::CheckForUpdates()
 
 void WinMute::CheckForUpdatesAsync(std::unique_ptr<UpdateChecker> updateChecker)
 {
+   const bool betaUpdates = settings_.QueryValue(SettingsKey::CHECK_FOR_BETA_UPDATE) != 0;
    if (!updateChecker) {
       return;
    }
@@ -402,10 +405,18 @@ void WinMute::CheckForUpdatesAsync(std::unique_ptr<UpdateChecker> updateChecker)
       trayIcon_.ShowPopup(
          i18n_.GetTranslationW("popup.error.update-check-failed.title"),
          i18n_.GetTranslationW("popup.error.update-check-failed.text"));
-   } else if (updateInfo_.shouldUpdate) {
+   } else if (updateInfo_.beta.shouldUpdate && betaUpdates) {
+      const std::wstring popupTitle = std::vformat(
+         i18n_.GetTranslationW("popup.update-available-beta.title"),
+         std::make_wformat_args(updateInfo_.beta.version));
+      const std::wstring popupText = std::vformat(
+         i18n_.GetTranslationW("popup.update-available-beta.text"),
+         std::make_wformat_args(updateInfo_.currentVersion));
+      trayIcon_.ShowPopup(popupTitle, popupText, WM_WINMUTE_UPDATE_POPUP);
+   } else if (updateInfo_.beta.shouldUpdate) {
       const std::wstring popupTitle = std::vformat(
          i18n_.GetTranslationW("popup.update-available.title"),
-         std::make_wformat_args(updateInfo_.newVersion));
+         std::make_wformat_args(updateInfo_.beta.version));
       const std::wstring popupText = std::vformat(
          i18n_.GetTranslationW("popup.update-available.text"),
          std::make_wformat_args(updateInfo_.currentVersion));
@@ -624,9 +635,16 @@ LRESULT WinMute::OnWifiStatusChange(HWND, WPARAM wParam, LPARAM lParam)
 LRESULT WinMute::OnUpdatePopup(HWND hWnd, WPARAM, LPARAM lParam)
 {
    if (lParam == NIN_BALLOONUSERCLICK) {
-      ShellExecuteW(
-         hWnd, L"open", updateInfo_.versionPageUrl.c_str(),
-         nullptr, nullptr, SW_SHOW);
+      const bool betaUpdates = settings_.QueryValue(SettingsKey::CHECK_FOR_BETA_UPDATE) != 0;
+      if (betaUpdates && updateInfo_.beta.shouldUpdate) {
+         ShellExecuteW(
+            hWnd, L"open", updateInfo_.beta.downloadUrl.c_str(),
+            nullptr, nullptr, SW_SHOW);
+      } else if (updateInfo_.stable.shouldUpdate) {
+         ShellExecuteW(
+            hWnd, L"open", updateInfo_.stable.downloadUrl.c_str(),
+            nullptr, nullptr, SW_SHOW);
+      }
    }
    return 0;
 }

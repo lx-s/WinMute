@@ -153,7 +153,6 @@ static void LoadWifiDlgTranslation(HWND hDlg)
 
    i18n.SetItemText(hDlg, IDC_WIFI_INTRO, "settings.wifi.intro");
    i18n.SetItemText(hDlg, IDC_ENABLE_WIFI_MUTE, "settings.wifi.enable");
-   i18n.SetItemText(hDlg, IDC_IS_PERMITLIST, "settings.wifi.mute-when-not-in-list");
    i18n.SetItemText(hDlg, IDC_WIFI_ADD, "settings.btn-add");
    i18n.SetItemText(hDlg, IDC_WIFI_EDIT, "settings.btn-edit");
    i18n.SetItemText(hDlg, IDC_WIFI_REMOVE, "settings.btn-remove");

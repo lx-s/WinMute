@@ -40,11 +40,16 @@ enum class UpdateCheckInterval : int {
    ON_STARTUP = 1,
 };
 
+struct UpdateVersionInfo {
+   std::wstring version;
+   std::wstring downloadUrl;
+   bool shouldUpdate = false;
+};
+
 struct UpdateInfo {
    std::wstring currentVersion;
-   std::wstring newVersion;
-   std::wstring versionPageUrl;
-   bool shouldUpdate;
+   UpdateVersionInfo stable;
+   UpdateVersionInfo beta;
 };
 
 class UpdateChecker {
@@ -64,4 +69,5 @@ private:
    bool ParseVersionFile(const std::string &fileContents, UpdateInfo& updateInfo) const;
    std::optional<bool> IsVersionGreater(const std::wstring &newVers, const std::wstring &curVers) const;
    bool ParseVersion(const std::wstring &vers, std::vector<int>& parsedVers) const;
+   bool ParseVersionInfo(const nlohmann::json &json, UpdateVersionInfo &versInfo) const;
 };

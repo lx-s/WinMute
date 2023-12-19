@@ -149,7 +149,7 @@ bool QuietHoursTimer::LoadFromSettings(const WMSettings& settings)
    end.wHour = static_cast<WORD>((qhEnd_ - end.wMinute - end.wSecond) / 3600);
 
    if (IsQuietHours(&now, &start, &end)) {
-      WMLog::GetInstance().Write(L"Mute: On | Quiet hours have already started");
+      WMLog::GetInstance().LogInfo(L"Mute: On | Quiet hours have already started");
       SendMessage(hParent_, WM_WINMUTE_QUIETHOURS_START, 0, 0);
    } else {
       int timerQhStart = GetDiffMillseconds(&start, &now);

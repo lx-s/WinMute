@@ -73,20 +73,20 @@ static bool GetAudioEndpoints(std::vector<std::wstring>& endpoints)
    for (UINT i = 0; i < epCount; ++i) {
       IMMDevicePtr device = nullptr;
       if (FAILED(audioEndpoints->Item(i, &device))) {
-         log.Write(L"Failed to get audio endpoint #%d", i);
+         log.LogError(L"Failed to get audio endpoint #%d", i);
          continue;
       }
 
       IPropertyStorePtr propStore = nullptr;
       if (FAILED(device->OpenPropertyStore(STGM_READ, &propStore))) {
-         log.Write(L"Failed to open property store for audio endpoint #%d", i);
+         log.LogError(L"Failed to open property store for audio endpoint #%d", i);
          continue;
       }
 
       PROPVARIANT value;
       PropVariantInit(&value);
       if (FAILED(propStore->GetValue(PKEY_Device_FriendlyName, &value))) {
-         log.Write(L"Failed to get device name for audio endpoint #%d", i);
+         log.LogError(L"Failed to get device name for audio endpoint #%d", i);
          continue;
       }
 

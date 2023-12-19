@@ -52,7 +52,7 @@ static bool GetPairedBtAudioDevices(std::vector<std::wstring>& devices)
    btdi.dwSize = sizeof(btdi);
    HBLUETOOTH_DEVICE_FIND hBtDevFind = BluetoothFindFirstDevice(&bfrp, &btdi);
    if (hBtDevFind == nullptr) {
-      log.WriteWindowsError(L"BluetoothFindFirstDevice", GetLastError());
+      log.LogWinError(L"BluetoothFindFirstDevice", GetLastError());
    } else {
       do {
          if (GET_COD_MAJOR(btdi.ulClassofDevice) == COD_MAJOR_AUDIO) {

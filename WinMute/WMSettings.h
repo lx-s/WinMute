@@ -66,6 +66,7 @@ enum class SettingsKey {
    , LOGGING_ENABLED
    , APP_LANGUAGE
    , CHECK_FOR_UPDATE
+   , CHECK_FOR_BETA_UPDATE
 };
 
 class WMSettings {

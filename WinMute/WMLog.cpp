@@ -105,39 +105,77 @@ bool WMLog::IsEnabled() const
    return enabled_;
 }
 
-void WMLog::WriteMessage(const wchar_t* msg)
+void WMLog::WriteMessage(const wchar_t* level, const wchar_t* msg)
 {
-   struct tm tm = { 0 };
-   auto now = std::chrono::system_clock::now();
-   auto in_time_t = std::chrono::system_clock::to_time_t(now);
+   time_t rawtime;
+   struct tm timeinfo;
+   wchar_t buffer[30];
 
-   std::wstringstream ss;
-   localtime_s(&tm, &in_time_t);
-   ss << L"[" << std::put_time(&tm, L"%Y-%m-%d %X") << L"] "
-      << msg << L"\n";
-   const auto& logStr = ss.str();
+   time(&rawtime);
+   localtime_s(&timeinfo, &rawtime);
+
+   wcsftime(buffer, ARRAY_SIZE(buffer), L"%Y-%m-%d %H:%M:%S", &timeinfo);
+   const std::wstring logMsg = std::vformat(
+      L"[{} {}]: {}\n",
+      std::make_wformat_args(
+         buffer,
+         level,
+         msg)
+   );
    const std::scoped_lock<std::mutex> lock(logMutex_);
-   logFile_.write(logStr.c_str(), logStr.length());
+   logFile_.write(logMsg.c_str(), logMsg.length());
    logFile_.flush();
 }
 
-void WMLog::Write(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...)
+void WMLog::LogDebug(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...)
 {
    if (!enabled_) {
       return;
    }
 
-   wchar_t buf[200];
+   wchar_t buf[1024];
    va_list ap;
    va_start(ap, fmt);
 
    vswprintf_s(buf, fmt, ap);
-   WriteMessage(buf);
+   WriteMessage(L"Debug", buf);
 
    va_end(ap);
 }
 
-void WMLog::WriteWindowsError(const wchar_t *functionName, DWORD lastError)
+void WMLog::LogInfo(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...)
+{
+   if (!enabled_) {
+      return;
+   }
+
+   wchar_t buf[1024];
+   va_list ap;
+   va_start(ap, fmt);
+
+   vswprintf_s(buf, fmt, ap);
+   WriteMessage(L"Info", buf);
+
+   va_end(ap);
+}
+
+void WMLog::LogError(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...)
+{
+   if (!enabled_) {
+      return;
+   }
+
+   wchar_t buf[1024];
+   va_list ap;
+   va_start(ap, fmt);
+
+   vswprintf_s(buf, fmt, ap);
+   WriteMessage(L"Error", buf);
+
+   va_end(ap);
+}
+
+void WMLog::LogWinError(const wchar_t *functionName, DWORD lastError)
 {
    // Retrieve the system error message for the last-error code
    if (lastError == -1) {
@@ -160,6 +198,6 @@ void WMLog::WriteWindowsError(const wchar_t *functionName, DWORD lastError)
          functionName,
          lastError,
          reinterpret_cast<wchar_t *>(lpMsgBuf)));
-   WriteMessage(static_cast<const wchar_t*>(lpMsgBuf));
+   WriteMessage(L"Error", static_cast<const wchar_t *>(lpMsgBuf));
    LocalFree(lpMsgBuf);
 }

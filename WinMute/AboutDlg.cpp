@@ -123,7 +123,7 @@ static void ResizeTabs(HWND hTabCtrl, std::span<HWND> tabs)
 
    HDWP hdwp = BeginDeferWindowPos(static_cast<int>(tabs.size()));
    if (hdwp == nullptr) {
-      PrintWindowsError(L"BeginDeferWindowPos", GetLastError());
+      ShowWindowsError(L"BeginDeferWindowPos", GetLastError());
    } else {
       for (auto hTab : tabs) {
          HDWP newHdwp = DeferWindowPos(
@@ -136,7 +136,7 @@ static void ResizeTabs(HWND hTabCtrl, std::span<HWND> tabs)
             tabCtrlRect.bottom - tabCtrlRect.top,
             0);
          if (newHdwp == nullptr) {
-            PrintWindowsError(L"DeferWindowPos", GetLastError());
+            ShowWindowsError(L"DeferWindowPos", GetLastError());
             break;
          } else {
             hdwp = newHdwp;

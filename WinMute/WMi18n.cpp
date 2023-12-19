@@ -41,7 +41,6 @@ WMi18n::WMi18n() noexcept
 
 WMi18n::~WMi18n() noexcept
 {
-   UnloadLanguage();
 }
 
 WMi18n& WMi18n::GetInstance()
@@ -59,7 +58,7 @@ std::optional<fs::path> WMi18n::GetLanguageFilesPath() const
 {
    wchar_t wmPath[MAX_PATH + 1]{ 0 };
    if (GetModuleFileNameW(nullptr, wmPath, MAX_PATH) <= 0) {
-      WMLog::GetInstance().WriteWindowsError(L"GetModuleFileNameW", GetLastError());
+      WMLog::GetInstance().LogWinError(L"GetModuleFileNameW", GetLastError());
       return std::nullopt;
    }
    fs::path langPath = wmPath;
@@ -93,7 +92,7 @@ std::vector<LanguageModule> WMi18n::GetAvailableLanguages() const
                   langDlls.push_back(langMod);
                }
             } catch (const nlohmann::json::parse_error &pe) {
-               WMLog::GetInstance().Write(L"Failed to parse language file \"%ls\": %S", wfd.cFileName, pe.what());
+               WMLog::GetInstance().LogError(L"Failed to parse language file \"%ls\": %S", wfd.cFileName, pe.what());
             }
          } while (FindNextFileW(hFindFile, &wfd));
       }
@@ -135,7 +134,7 @@ bool WMi18n::LoadLanguage(const std::wstring &fileName, TranslationMap &strings)
    const fs::path loadFilePath{ fileName};
    *langFilePath /= loadFilePath.filename(); // Sanitize
    if (!fs::exists(*langFilePath)) {
-      log.Write(L"Language module \"%ls\" does not exist", langFilePath->c_str());
+      log.LogError(L"Language module \"%ls\" does not exist", langFilePath->c_str());
       return false;
    }
    try {
@@ -144,23 +143,23 @@ bool WMi18n::LoadLanguage(const std::wstring &fileName, TranslationMap &strings)
       TranslationMap translations_temp;
       for (auto it = json_data.begin(); it != json_data.end(); ++it) {
          if (it->is_structured()) {
-            log.Write(L"Language module \"%ls\" has nested elements", langFilePath->c_str());
+            log.LogError(L"Language module \"%ls\" has nested elements", langFilePath->c_str());
             return false;
          }
          const auto value = ConvertStringToWideString(it.value());
          if (value == L"") {
-            log.Write(L"Unable to convert language element \"%S\"", it.key().c_str());
+            log.LogError(L"Unable to convert language element \"%S\"", it.key().c_str());
             return false;
          }
          if (translations_temp.contains(it.key())) {
-            log.Write(L"Double entry for language key \"%S\" found.", it.key().c_str());
+            log.LogError(L"Double entry for language key \"%S\" found.", it.key().c_str());
             return false;
          }
          translations_temp[it.key()] = value;
       }
       strings = std::move(translations_temp);
    } catch (const nlohmann::json::parse_error &pe) {
-      WMLog::GetInstance().Write(
+      log.LogError(
          L"Failed to parse language file \"%ls\": %S",
          langFilePath->filename().c_str(),
          pe.what());
@@ -179,7 +178,7 @@ bool WMi18n::LoadLanguage(const std::wstring &fileName)
 
    TranslationMap new_lang;
    if (!LoadLanguage(fileName, new_lang)) {
-      WMLog::GetInstance().Write(L"Failed to load language \"%ls\"", fileName.c_str());
+      WMLog::GetInstance().LogError(L"Failed to load language \"%ls\"", fileName.c_str());
       return false;
    } else {
       UnloadLanguage();
@@ -191,10 +190,6 @@ bool WMi18n::LoadLanguage(const std::wstring &fileName)
 
 void WMi18n::UnloadLanguage()
 {
-   if (langMutex_.try_lock()) {
-      langMutex_.unlock();
-      throw "Lock was not acquired before unloading the language";
-   }
    loadedLang_.clear();
 }
 
@@ -231,7 +226,7 @@ bool WMi18n::SetItemText(HWND hWnd, int dlgItem, const std::string& textId)
 {
    const auto text = GetTranslationW(textId);
    if (!SetDlgItemTextW(hWnd, dlgItem, text.c_str())) {
-      WMLog::GetInstance().WriteWindowsError(L"SetDlgItemTextW", GetLastError());
+      WMLog::GetInstance().LogWinError(L"SetDlgItemTextW", GetLastError());
       return false;
    }
    return true;
@@ -241,7 +236,7 @@ bool WMi18n::SetItemText(HWND hItem, const std::string &textId)
 {
    const auto text = GetTranslationW(textId);
    if (!SetWindowTextW(hItem, text.c_str())) {
-      WMLog::GetInstance().WriteWindowsError(L"SetDlgItemTextW", GetLastError());
+      WMLog::GetInstance().LogWinError(L"SetDlgItemTextW", GetLastError());
       return false;
    }
    return true;

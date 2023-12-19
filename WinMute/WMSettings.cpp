@@ -125,6 +125,9 @@ static const wchar_t* KeyToStr(SettingsKey key)
    case SettingsKey::CHECK_FOR_UPDATE:
       keyStr = L"CheckForUpdate";
       break;
+   case SettingsKey::CHECK_FOR_BETA_UPDATE:
+      keyStr = L"CheckForBetaUpdate";
+      break;
    }
    return keyStr;
 }
@@ -176,6 +179,8 @@ static DWORD GetDefaultSetting(SettingsKey key)
       return 0;
    case SettingsKey::CHECK_FOR_UPDATE:
       return 0;
+   case SettingsKey::CHECK_FOR_BETA_UPDATE:
+      return 0;
    }
    return 0;
 }
@@ -199,8 +204,8 @@ static bool ReadStringFromRegistry(HKEY hKey, const wchar_t *subKey, std::wstrin
    regError = RegQueryValueExW(hKey, subKey, nullptr, nullptr, nullptr, &bufSize);
    if (regError != ERROR_SUCCESS) {
       if (regError != ERROR_FILE_NOT_FOUND) {
-         PrintWindowsError(L"RegQueryValueExW", regError);
-         log.Write(L"[Registry] Failed to read key \"%s\".", subKey);
+         ShowWindowsError(L"RegQueryValueExW", regError);
+         log.LogError(L"[Registry] Failed to read key \"%s\".", subKey);
       }
    } else {
       bufSize += 1; // Trailing '\0'
@@ -208,8 +213,8 @@ static bool ReadStringFromRegistry(HKEY hKey, const wchar_t *subKey, std::wstrin
       regError = RegQueryValueExW(hKey, subKey, nullptr, nullptr,
                                  reinterpret_cast<LPBYTE>(buf), &bufSize);
       if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(L"RegQueryValueExW", regError);
-         log.Write(L"[Registry] Failed to query value for key \"%s\".", subKey);
+         ShowWindowsError(L"RegQueryValueExW", regError);
+         log.LogError(L"[Registry] Failed to query value for key \"%s\".", subKey);
       } else {
          success = true;
          val = buf;
@@ -237,7 +242,7 @@ bool WMSettings::MigrateSettings()
 {
    DWORD version = QueryValue(SettingsKey::SETTINGS_VERSION);
    if (version != CURRENT_SETTINGS_VERSION) {
-      WMLog::GetInstance().Write(L"Unexpected settings version: %d", version);
+      WMLog::GetInstance().LogError(L"Unexpected settings version: %d", version);
    }
    return true;
 }
@@ -256,7 +261,7 @@ bool WMSettings::Init()
          &hSettingsKey_,
          nullptr);
       if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(L"RegCreateKeyEx", regError);
+         ShowWindowsError(L"RegCreateKeyEx", regError);
          return false;
       }
    }
@@ -272,7 +277,7 @@ bool WMSettings::Init()
          &hWifiKey_,
          nullptr);
       if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(L"RegCreateKeyEx", regError);
+         ShowWindowsError(L"RegCreateKeyEx", regError);
          RegCloseKey(hSettingsKey_);
          hSettingsKey_ = nullptr;
          return false;
@@ -290,7 +295,7 @@ bool WMSettings::Init()
          &hBluetoothKey_,
          nullptr);
       if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(L"RegCreateKeyEx", regError);
+         ShowWindowsError(L"RegCreateKeyEx", regError);
          RegCloseKey(hWifiKey_);
          RegCloseKey(hSettingsKey_);
          hSettingsKey_ = nullptr;
@@ -310,7 +315,7 @@ bool WMSettings::Init()
          &hAudioEndpointsKey_,
          nullptr);
       if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(L"RegCreateKeyEx", regError);
+         ShowWindowsError(L"RegCreateKeyEx", regError);
          RegCloseKey(hWifiKey_);
          RegCloseKey(hSettingsKey_);
          RegCloseKey(hBluetoothKey_);
@@ -346,7 +351,7 @@ HKEY WMSettings::OpenAutostartKey(REGSAM samDesired)
       samDesired,
       &hRunKey);
    if (regError != ERROR_SUCCESS) {
-      PrintWindowsError(L"RegOpenKeyEx", regError);
+      ShowWindowsError(L"RegOpenKeyEx", regError);
    }
    return hRunKey;
 }
@@ -357,14 +362,14 @@ bool WMSettings::IsAutostartEnabled()
    WMLog& log = WMLog::GetInstance();
    wchar_t wmPath[MAX_PATH + 1];
    if (GetModuleFileName(nullptr, wmPath, sizeof(wmPath) / sizeof(wmPath[0])) == 0) {
-      log.Write(L"Failed to get path of winmute");
+      log.LogError(L"Failed to get path of winmute");
    } else {
       HKEY hRunKey = OpenAutostartKey(KEY_READ);
       if (hRunKey != nullptr) {
          std::wstring path;
          if (ReadStringFromRegistry(hRunKey, LX_SYSTEMS_AUTOSTART_KEY, path)) {
             if (path != wmPath) {
-               log.Write(L"Autostart entry has wrong path");
+               log.LogInfo(L"Autostart entry has wrong path");
             } else {
                isEnabled = true;
             }
@@ -383,7 +388,7 @@ void WMSettings::EnableAutostart(bool enable)
       if (enable) {
          wchar_t wmPath[MAX_PATH + 1];
          if (GetModuleFileNameW(nullptr, wmPath, sizeof(wmPath) / sizeof(wmPath[0])) == 0) {
-            log.Write(L"Failed to get path of winmute");
+            log.LogError(L"Failed to get path of winmute");
          } else {
             DWORD regError = RegSetKeyValueW(
                hRunKey,
@@ -393,13 +398,13 @@ void WMSettings::EnableAutostart(bool enable)
                wmPath,
                (lstrlen(wmPath) + 1) * sizeof(wchar_t));
             if (regError != ERROR_SUCCESS) {
-               PrintWindowsError(L"RegSetKeyValue", regError);
+               ShowWindowsError(L"RegSetKeyValue", regError);
             }
          }
       } else {
          DWORD regError = RegDeleteKeyValueW(hRunKey, nullptr, LX_SYSTEMS_AUTOSTART_KEY);
          if (regError != ERROR_SUCCESS && regError != ERROR_FILE_NOT_FOUND) {
-            PrintWindowsError(L"RegDeleteKeyValue", regError);
+            ShowWindowsError(L"RegDeleteKeyValue", regError);
          }
       }
       RegCloseKey(hRunKey);
@@ -422,9 +427,9 @@ DWORD WMSettings::QueryValue(SettingsKey key) const
       &size);
    if (regError != ERROR_SUCCESS) {
       if (regError != ERROR_FILE_NOT_FOUND) {
-         PrintWindowsError(L"RegQueryValueExW", regError);
+         ShowWindowsError(L"RegQueryValueExW", regError);
          WMLog &log = WMLog::GetInstance();
-         log.Write(L"[Registry] Failed to query value for key \"%s\"", keyStr);
+         log.LogError(L"[Registry] Failed to query value for key \"%s\"", keyStr);
       }
       return GetDefaultSetting(key);
    }
@@ -456,7 +461,7 @@ bool WMSettings::SetValue(SettingsKey key, DWORD value)
       reinterpret_cast<BYTE*>(&value),
       sizeof(DWORD));
    if (regError != ERROR_SUCCESS) {
-      PrintWindowsError(L"RegSetValueExW", regError);
+      ShowWindowsError(L"RegSetValueExW", regError);
       return false;
    }
 
@@ -478,7 +483,7 @@ bool WMSettings::SetValue(SettingsKey key, const std::wstring &value)
       strValue,
       strLen);
    if (regError != ERROR_SUCCESS) {
-      PrintWindowsError(L"RegSetValueExW", regError);
+      ShowWindowsError(L"RegSetValueExW", regError);
       return false;
    }
 
@@ -503,12 +508,12 @@ bool WMSettings::StoreWifiNetworks(std::vector<std::wstring>& networks)
       if (regError == ERROR_NO_MORE_ITEMS) {
          break;
       } else if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(L"RegEnumValue", regError);
+         ShowWindowsError(L"RegEnumValue", regError);
          return false;
       } else {
          regError = RegDeleteValue(hWifiKey_, valueName);
          if (regError != ERROR_SUCCESS) {
-            PrintWindowsError(L"RegDeleteValue", regError);
+            ShowWindowsError(L"RegDeleteValue", regError);
             return false;
          }
       }
@@ -528,7 +533,7 @@ bool WMSettings::StoreWifiNetworks(std::vector<std::wstring>& networks)
          reinterpret_cast<const BYTE*>(v.c_str()),
          static_cast<DWORD>(v.length() + 1) * sizeof(wchar_t));
       if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(L"RegSetValueEx", regError);
+         ShowWindowsError(L"RegSetValueEx", regError);
          return false;
       }
    }
@@ -558,7 +563,7 @@ std::vector<std::wstring> WMSettings::GetWifiNetworks() const
       if (regError == ERROR_NO_MORE_ITEMS) {
          break;
       } else if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(L"RegEnumValue", regError);
+         ShowWindowsError(L"RegEnumValue", regError);
          return {};
       } else {
          networks.push_back(dataBuf);
@@ -586,12 +591,12 @@ bool WMSettings::StoreBluetoothDevices(std::vector<std::wstring>& devices)
       if (regError == ERROR_NO_MORE_ITEMS) {
          break;
       } else if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(L"RegEnumValue", regError);
+         ShowWindowsError(L"RegEnumValue", regError);
          return false;
       } else {
          regError = RegDeleteValue(hBluetoothKey_, valueName);
          if (regError != ERROR_SUCCESS) {
-            PrintWindowsError(L"RegDeleteValue", regError);
+            ShowWindowsError(L"RegDeleteValue", regError);
             return false;
          }
       }
@@ -614,7 +619,7 @@ bool WMSettings::StoreBluetoothDevices(std::vector<std::wstring>& devices)
          reinterpret_cast<const BYTE*>(v.c_str()),
          static_cast<DWORD>(v.length() + 1) * sizeof(wchar_t));
       if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(L"RegSetValueEx", regError);
+         ShowWindowsError(L"RegSetValueEx", regError);
          return false;
       }
    }
@@ -644,7 +649,7 @@ std::vector<std::string> WMSettings::GetBluetoothDevicesA() const
       if (regError == ERROR_NO_MORE_ITEMS) {
          break;
       } else if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(L"RegEnumValue", regError);
+         ShowWindowsError(L"RegEnumValue", regError);
          return {};
       } else {
          devices.push_back(dataBuf);
@@ -676,7 +681,7 @@ std::vector<std::wstring> WMSettings::GetBluetoothDevicesW() const
       if (regError == ERROR_NO_MORE_ITEMS) {
          break;
       } else if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(L"RegEnumValue", regError);
+         ShowWindowsError(L"RegEnumValue", regError);
          return {};
       } else {
          devices.push_back(dataBuf);
@@ -705,12 +710,12 @@ bool WMSettings::StoreManagedAudioEndpoints(std::vector<std::wstring> &endpoints
       if (regError == ERROR_NO_MORE_ITEMS) {
          break;
       } else if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(L"RegEnumValue", regError);
+         ShowWindowsError(L"RegEnumValue", regError);
          return false;
       } else {
          regError = RegDeleteValue(hAudioEndpointsKey_, valueName);
          if (regError != ERROR_SUCCESS) {
-            PrintWindowsError(L"RegDeleteValue", regError);
+            ShowWindowsError(L"RegDeleteValue", regError);
             return false;
          }
       }
@@ -733,7 +738,7 @@ bool WMSettings::StoreManagedAudioEndpoints(std::vector<std::wstring> &endpoints
          reinterpret_cast<const BYTE *>(v.c_str()),
          static_cast<DWORD>(v.length() + 1) * sizeof(wchar_t));
       if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(L"RegSetValueEx", regError);
+         ShowWindowsError(L"RegSetValueEx", regError);
          return false;
       }
    }
@@ -763,7 +768,7 @@ std::vector<std::wstring> WMSettings::GetManagedAudioEndpoints() const
       if (regError == ERROR_NO_MORE_ITEMS) {
          break;
       } else if (regError != ERROR_SUCCESS) {
-         PrintWindowsError(L"RegEnumValue", regError);
+         ShowWindowsError(L"RegEnumValue", regError);
          return {};
       } else {
          devices.push_back(dataBuf);

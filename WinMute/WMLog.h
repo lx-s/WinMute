@@ -39,8 +39,10 @@ class WMLog {
 public:
    static WMLog& GetInstance();
 
-   void Write(_In_z_ _Printf_format_string_ const wchar_t* fmt, ...);
-   void WriteWindowsError(const wchar_t *functionName, DWORD errorCode = -1);
+   void LogDebug(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...);
+   void LogInfo(_In_z_ _Printf_format_string_ const wchar_t* fmt, ...);
+   void LogError(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...);
+   void LogWinError(const wchar_t *functionName, DWORD errorCode = -1);
 
    void SetEnabled(bool enable);
    bool IsEnabled() const;
@@ -52,7 +54,7 @@ private:
    WMLog(const WMLog&) = delete;
    WMLog& operator=(const WMLog&) = delete;
 
-   void WriteMessage(const wchar_t* msg);
+   void WriteMessage(const wchar_t *level, const wchar_t *msg);
    void DeleteLogFile();
 
    std::mutex logMutex_;

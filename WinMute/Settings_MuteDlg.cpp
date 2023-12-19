@@ -130,7 +130,7 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
                hDlg,
                Settings_ManageEndpointsDlgProc,
                reinterpret_cast<LPARAM>(settings)) == 0) {
-            PrintWindowsError(L"DialogBoxParam", GetLastError());
+            ShowWindowsError(L"DialogBoxParam", GetLastError());
          }
       }
       return 0;

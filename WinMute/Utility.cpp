@@ -33,7 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "Common.h"
 
-void PrintWindowsError(const wchar_t *functionName, DWORD lastError)
+void ShowWindowsError(const wchar_t *functionName, DWORD lastError)
 {
    // Retrieve the system error message for the last-error code
    if (lastError == -1) {

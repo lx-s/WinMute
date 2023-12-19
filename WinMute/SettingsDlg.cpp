@@ -104,7 +104,7 @@ static void ResizeTabs(HWND hTabCtrl, HWND* hTabs, int tabCount)
 
    HDWP hdwp = BeginDeferWindowPos(tabCount);
    if (hdwp == nullptr) {
-      PrintWindowsError(L"BeginDeferWindowPos", GetLastError());
+      ShowWindowsError(L"BeginDeferWindowPos", GetLastError());
    } else {
       for (int i = 0; i < tabCount; ++i) {
          HDWP newHdwp = DeferWindowPos(
@@ -117,7 +117,7 @@ static void ResizeTabs(HWND hTabCtrl, HWND* hTabs, int tabCount)
             tabCtrlRect.bottom - tabCtrlRect.top,
             0);
          if (newHdwp == nullptr) {
-            PrintWindowsError(L"DeferWindowPos", GetLastError());
+            ShowWindowsError(L"DeferWindowPos", GetLastError());
             break;
          } else {
             hdwp = newHdwp;

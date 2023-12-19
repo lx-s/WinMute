@@ -63,10 +63,10 @@ static bool InitWindowsComponents()
    initComCtrl.dwSize = sizeof(INITCOMMONCONTROLSEX);
    initComCtrl.dwICC = ICC_LINK_CLASS;
    if (InitCommonControlsEx(&initComCtrl) == FALSE) {
-      WMLog::GetInstance().WriteWindowsError(L"InitCommonControlsEx", GetLastError());
+      WMLog::GetInstance().LogWinError(L"InitCommonControlsEx", GetLastError());
       return FALSE;
    } else if (CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED) != S_OK) {
-      WMLog::GetInstance().WriteWindowsError(L"CoInitializeEx", GetLastError());
+      WMLog::GetInstance().LogWinError(L"CoInitializeEx", GetLastError());
       return FALSE;
    }
    return TRUE;

@@ -134,7 +134,7 @@ constexpr int WM_WINMUTE_UPDATE_POPUP = WM_USER + 301;
 // =============================================================================
 // Utility
 
-void PrintWindowsError(const wchar_t *functionName, DWORD lastError = -1);
+void ShowWindowsError(const wchar_t *functionName, DWORD lastError = -1);
 bool GetWinMuteVersion(std::wstring &versNumber);
 
 std::wstring ConvertStringToWideString(const std::string &ansiString);

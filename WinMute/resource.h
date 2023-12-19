@@ -42,10 +42,11 @@
 #define IDC_ENABLE_WIFI_MUTE            1011
 #define IDC_ENABLELOGGING               1012
 #define IDC_CHECK3                      1013
-#define IDC_RUNONSTARTUP2               1013
 #define IDC_CHECK_FOR_UPDATES_ON_STARTUP 1013
 #define IDC_OPENLOG                     1014
 #define IDC_LICENSETEXT                 1015
+#define IDC_CHECK_FOR_UPDATES_ON_STARTUP2 1015
+#define IDC_CHECK_FOR_BETA_UPDATES      1015
 #define IDC_ABOUT_TAB                   1016
 #define IDC_ABOUTTEXT                   1019
 #define IDC_TITLE                       1020
