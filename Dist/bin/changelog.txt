@@ -1,3 +1,13 @@
+Version 3.0.0 (2024-01-xx)
+ * WinMute now supports multiple languages!
+   If your language is missing, and you want to contribute, please check
+   the WinMute GitHub project.
+   Thanks goes out for @bovirus for suggesting this feature, helping out with
+   the italian language version and providing help and feedback throughout
+   the implementation.
+ * Optional update notification (disabled for installations via package manager)
+ * Some small bugfixes
+
 Version 2.4.1 (2023-09-29)
  * Fixes crash on signout and shutdown
 
