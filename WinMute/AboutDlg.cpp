@@ -187,11 +187,9 @@ static INT_PTR CALLBACK About_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM, LPARAM
 #pragma warning(pop)
          const UINT_PTR ctrlId = pNmLink->hdr.idFrom;
          const LITEM item = pNmLink->item;
-         if ((ctrlId == IDC_LINK_HOMEPAGE
-              || ctrlId == IDC_LINK_TICKETS
-              || ctrlId == IDC_LINK_PROJECT)
+         if ((ctrlId == IDC_LINK_HOMEPAGE || ctrlId == IDC_LINK_TICKETS || ctrlId == IDC_LINK_PROJECT)
             && item.iLink == 0) {
-            ShellExecuteW(nullptr, L"open", item.szUrl, nullptr, nullptr, SW_SHOW);
+            LaunchBrowser(hDlg, item.szUrl);
          }
       }
       return TRUE;

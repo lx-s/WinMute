@@ -640,13 +640,9 @@ LRESULT WinMute::OnUpdatePopup(HWND hWnd, WPARAM, LPARAM lParam)
    if (lParam == NIN_BALLOONUSERCLICK) {
       const bool betaUpdates = settings_.QueryValue(SettingsKey::CHECK_FOR_BETA_UPDATE) != 0;
       if (betaUpdates && updateInfo_.beta.shouldUpdate) {
-         ShellExecuteW(
-            hWnd, L"open", updateInfo_.beta.downloadUrl.c_str(),
-            nullptr, nullptr, SW_SHOW);
+         LaunchBrowser(hWnd, updateInfo_.beta.downloadUrl);
       } else if (updateInfo_.stable.shouldUpdate) {
-         ShellExecuteW(
-            hWnd, L"open", updateInfo_.stable.downloadUrl.c_str(),
-            nullptr, nullptr, SW_SHOW);
+         LaunchBrowser(hWnd, updateInfo_.stable.downloadUrl);
       }
    }
    if (lParam == NIN_BALLOONHIDE || lParam == NIN_BALLOONTIMEOUT || lParam == NIN_BALLOONUSERCLICK) {
