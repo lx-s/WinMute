@@ -68,6 +68,7 @@ static void LoadSettingsGeneralDlgTranslation(HWND hDlg)
    i18n.SetItemText(hDlg, IDC_CHECK_FOR_BETA_UPDATES, "settings.general.check-for-beta-updates-on-start");
    i18n.SetItemText(hDlg, IDC_ENABLELOGGING, "settings.general.enable-logging");
    i18n.SetItemText(hDlg, IDC_OPENLOG, "settings.general.btn-open-log-file");
+   i18n.SetItemText(hDlg, IDC_UPDATE_OPTIONS_DISABLED, "settings.general.updates-handled-externally");
 }
 
 INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -79,6 +80,7 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       HWND hBetaUpdateCheck = GetDlgItem(hDlg, IDC_CHECK_FOR_BETA_UPDATES);
       HWND hLogging = GetDlgItem(hDlg, IDC_ENABLELOGGING);
       HWND hOpenLog = GetDlgItem(hDlg, IDC_OPENLOG);
+      HWND hUpdatesDisabledNotice = GetDlgItem(hDlg, IDC_UPDATE_OPTIONS_DISABLED);
 
       if (IsAppThemed()) {
          EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
@@ -112,6 +114,9 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
          EnableWindow(hBetaUpdateCheck, FALSE);
          Button_SetCheck(hUpdateCheck, BST_UNCHECKED);
          Button_SetCheck(hBetaUpdateCheck, BST_UNCHECKED);
+         ShowWindow(hUpdatesDisabledNotice, SW_SHOW);
+      } else {
+         ShowWindow(hUpdatesDisabledNotice, SW_HIDE);
       }
 
       enabled = !!dlgData->settings->QueryValue(SettingsKey::LOGGING_ENABLED);
