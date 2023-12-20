@@ -51,9 +51,24 @@ static bool SetWorkingDirectory()
 
 static void LoadLanguage(WMSettings &settings, WMi18n &i18n)
 {
-   const auto langModule = settings.QueryStrValue(SettingsKey::APP_LANGUAGE);
-   if (langModule.has_value()) {
-      i18n.LoadLanguage(*langModule);
+   auto langFile = settings.QueryStrValue(SettingsKey::APP_LANGUAGE);
+   if (!langFile || langFile->empty()) {
+      const auto langId = GetUserDefaultUILanguage() & 0xFF;
+      if (langId == LANG_GERMAN) {
+         langFile = L"lang-de.json";
+      } else if (langId == LANG_ITALIAN) {
+         langFile = L"lang-it.json";
+      } else if (langId == LANG_DUTCH) {
+         langFile = L"lang-nl.json";
+      } else if (langId == LANG_SPANISH) {
+         langFile = L"lang-es.json";
+      } else {
+         langFile = L"lang-en.json";
+      }
+      settings.SetValue(SettingsKey::APP_LANGUAGE, *langFile);
+   }
+   if (langFile && !langFile->empty()) {
+      i18n.LoadLanguage(*langFile);
    }
 }
 
