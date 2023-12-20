@@ -116,6 +116,7 @@
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>common.h</PrecompiledHeaderFile>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -143,6 +144,7 @@
       <EnablePREfast>true</EnablePREfast>
       <Optimization>MaxSpeed</Optimization>
       <ControlFlowGuard>Guard</ControlFlowGuard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -168,6 +170,7 @@
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>common.h</PrecompiledHeaderFile>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -195,6 +198,7 @@
       <EnablePREfast>true</EnablePREfast>
       <Optimization>MaxSpeed</Optimization>
       <ControlFlowGuard>Guard</ControlFlowGuard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
