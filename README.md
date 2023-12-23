@@ -36,7 +36,7 @@ computer whenever I left the room and forgot to mute my computer.
 
 ## Languages
 
-WinMute is currently available in the following languages:
+WinMute is currently (as of pre-release 2.4.9.0) available in the following languages:
 
 [![Translation Status](https://translate.codeberg.org/widget/winmute/winmute/multi-auto.svg)](https://translate.codeberg.org/engage/winmute/)
 
@@ -54,15 +54,14 @@ please take a look at [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ### Installation
 
-Either unzip it to your favourite directory or run the WinMute-Setup.exe and you are all set up!
+Either unzip it to your favourite directory or run the Setup.exe and you are all set up!
 
 ### Uninstalling WinMute
 
-Just delete the WinMute-directory (or uninstall it from Windows' Apps control panel),
+If you've installed it with the setup, uninstall it from the Windows programs control panel).
+If you've installed it without the setup, just delete it.
 
 If you want to also remove your personal WinMute settings, open the registry via `regedit.exe` and delete the Folder located in `HKEY_CURRENT_USER\Software\lx-systems\WinMute`.
-
-*Note:* It's possible that you cannot remove the `ScreensaverNotify*.dll` file right away. If you get an error trying to remove it, just wait until your next reboot and delete it afterwards. This is unfortunately a windows limitation.
 
 ### How to (un)mute
 
