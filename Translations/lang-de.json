@@ -132,5 +132,5 @@
     "pupup.error.update-check-failed.text": "Fehler beim Prüfen auf eine neue Version.\nBitte prüfen Sie die Protokolldateien.",
     "settings.general.check-for-beta-updates-on-start": "Auf Vorabversionen überprüfen",
     "settings.general.updates-handled-externally": "Optionen deaktiviert: Updates werden extern durchgeführt",
-    "settings.general.help-translating": "Hilf Übersetzen"
+    "settings.general.help-translating": "Hilf beim Übersetzen"
 }
