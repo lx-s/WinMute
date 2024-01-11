@@ -90,6 +90,8 @@ BEGIN
     CONTROL         "Enable logging",IDC_ENABLELOGGING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,102,219,15
     PUSHBUTTON      "Open log file...",IDC_OPENLOG,22,118,104,16
     LTEXT           "[log file path]",IDC_LOGFILEPATH,23,138,203,27
+    CONTROL         "<a href=""https://github.com/lx-s/WinMute/"">Help translating</a>",IDC_LINK_HELP_TRANSLATING,
+                    "SysLink",WS_TABSTOP,143,15,83,14
 END
 
 IDD_SETTINGS_QUIETHOURS DIALOGEX 0, 0, 246, 198

@@ -75,6 +75,7 @@
   "settings.general.enable-logging": "Enable logging",
   "settings.general.btn-open-log-file": "Open log file...",
   "settings.general.select-language-label": "Language",
+  "settings.general.help-translating": "Help translating",
   "settings.bluetooth.add-edit.enter-device-name-placeholder": "Please enter a Bluetooth device name",
   "settings.bluetooth.description": "\"Bluetooth Muting\" allows disabling the audio if an audio-class bluetooth device is disconnected, and re-enables it if a device is reconnected to the computer.\n\nThis behaviour can be enabled for all bluetooth audio-devices or only for a specific set.",
   "settings.bluetooth.enable-muting": "Enable Bluetooth-based muting",

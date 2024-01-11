@@ -62,6 +62,12 @@ static void FillLanguageList(HWND hLanguageList, const SettingsGeneralData& dlgD
 static void LoadSettingsGeneralDlgTranslation(HWND hDlg)
 {
    WMi18n &i18n = WMi18n::GetInstance();
+
+   const auto helpTranslateLink = std::vformat(
+      L"<a href=\"https://github.com/lx-s/WinMute/blob/main/CONTRIBUTING.md#translations\">{}</a>",
+      std::make_wformat_args(i18n.GetTranslationW("settings.general.help-translating")));
+
+   SetDlgItemText(hDlg, IDC_LINK_HELP_TRANSLATING, helpTranslateLink.c_str());
    i18n.SetItemText(hDlg, IDC_SELECT_LANGUAGE_LABEL, "settings.general.select-language-label");
    i18n.SetItemText(hDlg, IDC_RUNONSTARTUP, "settings.general.run-on-startup");
    i18n.SetItemText(hDlg, IDC_CHECK_FOR_UPDATES_ON_STARTUP, "settings.general.check-for-updates-on-start");
@@ -142,6 +148,21 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
          SetWindowLongPtr(hDlg, GWLP_USERDATA, 0);
       }
       return FALSE;
+   }
+   case WM_NOTIFY: {
+      const PNMLINK pNmLink = reinterpret_cast<PNMLINK>(lParam);
+#pragma warning(push)
+#pragma warning(disable : 26454) // Disable arithmetic overflow warning for NM_CLICK and NM_RETURN
+      if (pNmLink->hdr.code == NM_CLICK ||
+          pNmLink->hdr.code == NM_RETURN) {
+#pragma warning(pop)
+         const UINT_PTR ctrlId = pNmLink->hdr.idFrom;
+         const LITEM item = pNmLink->item;
+         if ((ctrlId == IDC_LINK_HELP_TRANSLATING) && item.iLink == 0) {
+            LaunchBrowser(hDlg, item.szUrl);
+         }
+      }
+      return TRUE;
    }
    case WM_COMMAND: {
       if (LOWORD(wParam) == IDC_ENABLELOGGING) {

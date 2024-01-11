@@ -112,6 +112,7 @@
 #define IDC_RADIO1                      1071
 #define IDC_UPDATES_VIA_PACKAGE_MANAGER_NOTICE 1072
 #define IDC_UPDATE_OPTIONS_DISABLED     1072
+#define IDC_LINK_HELP_TRANSLATING       1073
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_                    40002
 #define ID_TRAYMENU_MUTEON              40003
@@ -159,7 +160,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        142
 #define _APS_NEXT_COMMAND_VALUE         40041
-#define _APS_NEXT_CONTROL_VALUE         1073
+#define _APS_NEXT_CONTROL_VALUE         1074
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
