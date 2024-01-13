@@ -131,5 +131,6 @@
     "settings.general.updates-handled-externally": "Opciones desactivadas: Las actualizaciones se gestionan externamente",
     "popup.update-available.title": "¡WinMute {} está disponible!",
     "pupup.error.update-check-failed.text": "No se ha podido comprobar si hay una nueva versión.\nPor favor compruebe/habilite el registro para obtener más detalles.",
-    "settings.general.check-for-beta-updates-on-start": "Compruebe también si hay nuevas versiones beta"
+    "settings.general.check-for-beta-updates-on-start": "Compruebe también si hay nuevas versiones beta",
+    "settings.general.help-translating": "Ayuda a la traducción"
 }
