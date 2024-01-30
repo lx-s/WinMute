@@ -129,5 +129,7 @@
     "popup.error.update-check-failed.title": "Controllo aggiornamenti non riuscito.",
     "popup.update-available.title": "È disponibile WinMute {}!",
     "pupup.error.update-check-failed.text": "Impossibile verificare la disponibilità di una nuova versione.\nPer ulteriori dettagli controlla/abilita la registrazione eventi.",
-    "settings.general.check-for-beta-updates-on-start": "Controlla anche disponibilità nuove versioni beta"
+    "settings.general.check-for-beta-updates-on-start": "Controlla anche disponibilità nuove versioni beta",
+    "settings.general.help-translating": "Aiuta nella traduzione",
+    "settings.general.updates-handled-externally": "Opzioni disabilitate: aggiornamenti gestiti esternamente"
 }
