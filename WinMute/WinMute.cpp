@@ -426,10 +426,10 @@ void WinMute::CheckForUpdatesAsync(std::unique_ptr<UpdateChecker> updateChecker)
          std::make_wformat_args(updateInfo_.currentVersion));
       updateTray_.Show();
       updateTray_.ShowPopup(popupTitle, popupText);
-   } else if (updateInfo_.beta.shouldUpdate) {
+   } else if (updateInfo_.stable.shouldUpdate) {
       const std::wstring popupTitle = std::vformat(
          i18n_.GetTranslationW("popup.update-available.title"),
-         std::make_wformat_args(updateInfo_.beta.version));
+         std::make_wformat_args(updateInfo_.stable.version));
       const std::wstring popupText = std::vformat(
          i18n_.GetTranslationW("popup.update-available.text"),
          std::make_wformat_args(updateInfo_.currentVersion));
