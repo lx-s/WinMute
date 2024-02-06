@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Do not remove this test for UTF-8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
 <package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
-	<metadata>
-		<id>winmute</id>
-		<version>2.4.9.2023122201-beta</version>
-		<title>WinMute</title>
-		<authors>Alexander Steinhöfer</authors>
-		<owners>Alexander Steinhöfer</owners>
-		<packageSourceUrl>https://github.com/lx-s/WinMute/releases</packageSourceUrl>
-		<bugTrackerUrl>https://github.com/lx-s/WinMute/issues</bugTrackerUrl>
-		<projectSourceUrl>https://github.com/lx-s/WinMute</projectSourceUrl>
-		<projectUrl>https://github.com/lx-s/WinMute/</projectUrl>
-		<iconUrl>https://cdn.statically.io/gh/lx-s/WinMute/main/WinMute/icons/app-512.png</iconUrl>
-		<tags>winmute windows utility audio</tags>
-		<summary>Automatic sound muter</summary>
-		<description>WinMute automatically mutes your PC volume if you lock your screen or the screensaver is running.</description>
-		<copyright>© 2023 Alexander Steinhöfer</copyright>
-		<releaseNotes>https://github.com/lx-s/WinMute/releases/tag/2.4.9.0</releaseNotes>
-		<licenseUrl>https://raw.githubusercontent.com/lx-s/WinMute/main/LICENSE</licenseUrl>
-		<dependencies>
-			<dependency id="vcredist140" version="14.3"/>
-		</dependencies>
-	</metadata>
-	<files>
-		<file src="tools\**" target="tools" />
-		<file src="..\bin\WinMute.exe" target="bin" />
-		<file src="..\bin\WinMute.exe.gui" target="bin" />
-		<file src="..\bin\changelog.txt" target="bin" />
-		<file src="..\bin\license.txt" target="bin" />
-                <file src="..\bin\update-check-disabled" target="bin" />
-                <file src="..\bin\lang\**" target="bin\lang" />
-	</files>
+  <metadata>
+    <id>winmute</id>
+    <version>2.5.0.2024020601</version>
+    <title>WinMute</title>
+    <authors>Alexander Steinhöfer</authors>
+    <owners>Alexander Steinhöfer</owners>
+    <packageSourceUrl>https://github.com/lx-s/WinMute/releases</packageSourceUrl>
+    <bugTrackerUrl>https://github.com/lx-s/WinMute/issues</bugTrackerUrl>
+    <projectSourceUrl>https://github.com/lx-s/WinMute</projectSourceUrl>
+    <projectUrl>https://github.com/lx-s/WinMute/</projectUrl>
+    <iconUrl>https://cdn.statically.io/gh/lx-s/WinMute/main/WinMute/icons/app-512.png</iconUrl>
+    <tags>winmute windows utility audio</tags>
+    <summary>Automatic sound muter</summary>
+    <description>WinMute automatically mutes your PC volume if you lock your screen or the screensaver is running.</description>
+    <copyright>© 2023 Alexander Steinhöfer</copyright>
+    <releaseNotes>https://github.com/lx-s/WinMute/releases/tag/2.4.9.0</releaseNotes>
+    <licenseUrl>https://raw.githubusercontent.com/lx-s/WinMute/main/LICENSE</licenseUrl>
+    <dependencies>
+      <dependency id="vcredist140" version="14.3"/>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+    <file src="..\bin\WinMute.exe" target="bin" />
+    <file src="..\bin\WinMute.exe.gui" target="bin" />
+    <file src="..\bin\changelog.txt" target="bin" />
+    <file src="..\bin\license.txt" target="bin" />
+    <file src="..\bin\update-check-disabled" target="bin" />
+    <file src="..\bin\lang\**" target="bin\lang" />
+  </files>
 </package>
