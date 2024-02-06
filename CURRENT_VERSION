@@ -1,8 +1,8 @@
 {
    "version": 1,
    "stable": {
-      "version": "2.4.1.0",
-      "downloadUrl": "https://github.com/lx-s/WinMute/releases/tag/2.4.1.0"
+      "version": "2.5.0.0",
+      "downloadUrl": "https://github.com/lx-s/WinMute/releases/tag/2.5.0.0"
    },
    "beta": {
       "version": "2.4.9.0",
