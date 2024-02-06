@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 static const std::wstring licenseText = L"\
 WinMute\r\n\
-Copyright(c) 2023, Alexander Steinhoefer\r\n\
+Copyright(c) 2024, Alexander Steinhoefer\r\n\
 \r\n\
 -----------------------------------------------------------------------------\r\n\
 Redistribution and use in source and binary forms, with or without\r\n\

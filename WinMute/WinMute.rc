@@ -504,7 +504,7 @@ BEGIN
             VALUE "FileDescription", "WinMute"
             VALUE "FileVersion", "2.5.0.0"
             VALUE "InternalName", "WinMute.exe"
-            VALUE "LegalCopyright", "Copyright (C) 2023, Alexander Steinhoefer"
+            VALUE "LegalCopyright", "Copyright (C) 2024, Alexander Steinhoefer"
             VALUE "OriginalFilename", "WinMute.exe"
             VALUE "ProductName", "WinMute"
             VALUE "ProductVersion", "2.5.0.0"
