@@ -36,7 +36,7 @@ computer whenever I left the room and forgot to mute my computer.
 
 ## Languages
 
-WinMute is currently (as of pre-release 2.4.9.0) available in the following languages:
+WinMute is currently available in the following languages:
 
 [![Translation Status](https://translate.codeberg.org/widget/winmute/winmute/multi-auto.svg)](https://translate.codeberg.org/engage/winmute/)
 
