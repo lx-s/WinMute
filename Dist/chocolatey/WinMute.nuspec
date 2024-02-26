@@ -23,12 +23,12 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="tools\**" target="tools" />
-    <file src="..\bin\WinMute.exe" target="bin" />
-    <file src="..\bin\WinMute.exe.gui" target="bin" />
-    <file src="..\bin\changelog.txt" target="bin" />
-    <file src="..\bin\license.txt" target="bin" />
-    <file src="..\bin\update-check-disabled" target="bin" />
-    <file src="..\bin\lang\**" target="bin\lang" />
+    <file src="tools\**" target="tools\" />
+    <file src="..\bin\WinMute.exe" target="bin\" />
+    <file src="..\bin\WinMute.exe.gui" target="bin\" />
+    <file src="..\bin\changelog.txt" target="bin\" />
+    <file src="..\bin\license.txt" target="bin\" />
+    <file src="..\bin\update-check-disabled" target="bin\" />
+    <file src="..\bin\lang\*.json" target="bin\lang\" />
   </files>
 </package>
