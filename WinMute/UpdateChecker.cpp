@@ -317,7 +317,7 @@ bool UpdateChecker::IsUpdateCheckDisabledViaFile() const
    }
 
    fs::path updateDisableFile{ thisExePath };
-   updateDisableFile.replace_filename(L"update-check-disabled");
+   updateDisableFile.replace_filename(L"update-check.disabled");
    if (!fs::exists(updateDisableFile)) {
       return false;
    }

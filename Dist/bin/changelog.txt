@@ -1,3 +1,6 @@
+Version 2.5.0.1 (2024-02-26)
+ * Fixed update-check file for chocolatey package manager
+
 Version 2.5.0 (2024-02-06)
  * WinMute now supports multiple languages!
    If your language is missing, and you want to contribute, please check
