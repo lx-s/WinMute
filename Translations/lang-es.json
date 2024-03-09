@@ -38,7 +38,7 @@
     "traymenu.info": "Acerca de",
     "traymenu.mute-when": "Silenciar cuando...",
     "traymenu.mute-on-lock": "... la computadora está bloqueada",
-    "traymenu.mute-on-screen-suspend": "... se apaga la pantalla",
+    "traymenu.mute-on-screen-suspend": "... la pantalla se apaga",
     "traymenu.restore-volume": "Restaurar el volumen después",
     "traymenu.mute-no-restore": "Silencio activado (no se restablece el volumen)...",
     "traymenu.mute-on-shutdown": "... apagado",
