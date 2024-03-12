@@ -38,7 +38,7 @@
     "traymenu.info": "Info",
     "traymenu.mute-when": "Stummschalten sobald...",
     "traymenu.mute-on-lock": "... PC gesperrt wird",
-    "traymenu.mute-on-screen-suspend": "... Bildschirm standby",
+    "traymenu.mute-on-screen-suspend": "... der Bildschirm sich ausschaltet",
     "traymenu.restore-volume": "Lautstärke wiederherstellen",
     "traymenu.mute-no-restore": "Stummschalten ohne Wiederherstellung...",
     "traymenu.mute-on-shutdown": "... Herunterfahren",
