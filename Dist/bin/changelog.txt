@@ -1,3 +1,6 @@
+Version 2.5.1 (2024-05-03)
+ * Added new language: Simplified Chinese (thanks to https://translate.codeberg.org/user/richzhl/)
+
 Version 2.5.0.1 (2024-02-26)
  * Fixed update-check file for chocolatey package manager
 
