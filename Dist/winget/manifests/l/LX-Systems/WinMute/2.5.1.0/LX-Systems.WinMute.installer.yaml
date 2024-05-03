@@ -6,13 +6,12 @@ PackageVersion: 2.5.1.0
 InstallerType: inno
 InstallerSwitches:
   Custom: /SILENT /CURRENTUSER
-ReleaseDate: 2024-05-03
 Dependencies:
   PackageDependencies:
-     - PackageIdentifier: Microsoft.VCRedist.2015+.x64
+  - PackageIdentifier: Microsoft.VCRedist.2015+.x64
 Installers:
 - Architecture: x64
   InstallerUrl: https://github.com/lx-s/WinMute/releases/download/2.5.1.0/WinMute-2.5.1-Setup.exe
-  InstallerSha256: 2159122473D4B5B5931098AC527272502FC137D3F34D1487318DE93C7211C34D
+  InstallerSha256: 0F4A31D3354022388F96500DCD35F490D44A73AABC3527A667EBEB57EF40E37F
 ManifestType: installer
 ManifestVersion: 1.6.0

@@ -1,0 +1,1 @@
+wingetcreate update --submit --urls "https://github.com/lx-s/WinMute/releases/download/<vers>/WinMute-<vers>-Setup.exe|x64" --version <vers> LX-Systems.WinMute
