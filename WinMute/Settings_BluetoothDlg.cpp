@@ -119,11 +119,15 @@ static INT_PTR CALLBACK Settings_BluetoothAddDlgProc(HWND hDlg, UINT msg, WPARAM
       return TRUE;
    }
    case WM_COMMAND: {
-      
-      if (LOWORD(wParam) == IDC_BT_DEVICE_NAME && HIWORD(wParam) == CBN_EDITUPDATE) {
+      if (LOWORD(wParam) == IDC_BT_DEVICE_NAME) {
          HWND hDevName = GetDlgItem(hDlg, IDC_BT_DEVICE_NAME);
-         const int textLen = Edit_GetTextLength(hDevName);
-         EnableWindow(GetDlgItem(hDlg, IDOK), textLen > 0);
+         if (HIWORD(wParam) == CBN_EDITUPDATE) {
+            const int textLen = Edit_GetTextLength(hDevName);
+            EnableWindow(GetDlgItem(hDlg, IDOK), textLen > 0);
+         } else if (HIWORD(wParam) == CBN_SELCHANGE) {
+            const auto curSelIdx = SendMessage(hDevName, CB_GETCURSEL, 0, 0);
+            EnableWindow(GetDlgItem(hDlg, IDOK), curSelIdx != CB_ERR);
+         }
       } else if (LOWORD(wParam) == IDOK) {
          HWND hDevName = GetDlgItem(hDlg, IDC_BT_DEVICE_NAME);
          const int textLen = Edit_GetTextLength(hDevName);

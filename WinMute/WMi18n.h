@@ -54,8 +54,8 @@ public:
    std::optional<fs::path> GetLanguageFilesPath() const;
    std::wstring GetCurrentLanguageName() const;
 
-   std::wstring GetTranslationW(const std::string& textId) const;
-   std::string GetTranslationA(const std::string& textId) const;
+   const std::wstring GetTranslationW(const std::string& textId) const;
+   const std::string GetTranslationA(const std::string& textId) const;
 
    bool SetItemText(HWND hWnd, int dlgItem, const std::string &textId);
    bool SetItemText(HWND hItem, const std::string &textId);

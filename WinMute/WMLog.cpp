@@ -192,12 +192,13 @@ void WMLog::LogWinError(const wchar_t *functionName, DWORD lastError)
          reinterpret_cast<wchar_t*>(&lpMsgBuf), 0, nullptr) == 0) {
       return;
    }
+   const std::wstring errorMsgText{ reinterpret_cast<wchar_t *>(lpMsgBuf) };
    const std::wstring errorMsg = std::vformat(
       WMi18n::GetInstance().GetTranslationW("general.error.winapi.text"),
       std::make_wformat_args(
          functionName,
          lastError,
-         reinterpret_cast<wchar_t *>(lpMsgBuf)));
+         errorMsgText));
    WriteMessage(L"Error", static_cast<const wchar_t *>(lpMsgBuf));
    LocalFree(lpMsgBuf);
 }

@@ -193,7 +193,7 @@ void WMi18n::UnloadLanguage()
    loadedLang_.clear();
 }
 
-std::wstring WMi18n::GetTranslationW(const std::string& textId) const
+const std::wstring WMi18n::GetTranslationW(const std::string& textId) const
 {
    std::wstring text;
    const std::lock_guard lock(langMutex_);
@@ -216,7 +216,7 @@ std::wstring WMi18n::GetTranslationW(const std::string& textId) const
    return text;
 }
 
-std::string WMi18n::GetTranslationA(const std::string &textId) const
+const std::string WMi18n::GetTranslationA(const std::string &textId) const
 {
    const std::wstring wtext = GetTranslationW(textId);
    return ConvertWideStringToString(wtext);

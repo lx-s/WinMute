@@ -148,10 +148,10 @@ static void ResizeTabs(HWND hTabCtrl, std::span<HWND> tabs)
 
 static void TranslateAboutGeneralDlgProc(HWND hDlg)
 {
-   WMi18n &i18n = WMi18n::GetInstance();
+   WMi18n &i18n = WMi18n::GetInstance(); 
 
    const auto hpLink = std::vformat(
-      L"<a href=\"https://www.lx-s.de\">{}</a>",
+      std::wstring_view(L"<a href=\"https://www.lx-s.de\">{}</a>"),
       std::make_wformat_args(i18n.GetTranslationW("about.general.author-site-label")));
 
    const auto projLink = std::vformat(

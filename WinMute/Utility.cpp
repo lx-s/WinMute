@@ -67,12 +67,13 @@ void ShowWindowsError(const wchar_t *functionName, DWORD lastError)
       return;
    }
    // Display the error message and exit the process
+   const std::wstring errorMsgText{ reinterpret_cast<wchar_t *>(lpMsgBuf) };
    const std::wstring errorMsg = std::vformat(
       WMi18n::GetInstance().GetTranslationW("general.error.winapi.text"),
       std::make_wformat_args(
          functionName,
          lastError,
-         reinterpret_cast<wchar_t *>(lpMsgBuf)));
+         errorMsgText));
    TaskDialog(
       nullptr, nullptr, PROGRAM_NAME, errorMsg.c_str(),
       nullptr, TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
