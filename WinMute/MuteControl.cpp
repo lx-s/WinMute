@@ -51,6 +51,10 @@ enum MuteType {
    MuteTypeLogout,
    MuteTypeSuspend,
    MuteTypeShutdown,
+
+   // Quiet Hours
+   MuteTypeQuietHours,
+
    MuteTypeCount // Meta
 };
 
@@ -415,10 +419,12 @@ void MuteControl::NotifyQuietHours(bool active)
    if (active) {
       SaveMuteStatus();
       WMLog::GetInstance().LogInfo(L"Mute Event: Quiet Hours startet");
+      muteConfig_[MuteTypeQuietHours].active = true;
       winAudio_->SaveMuteStatus();
       winAudio_->SetMute(true);
    } else {
       WMLog::GetInstance().LogInfo(L"Mute Event: Quiet Hours ended");
+      muteConfig_[MuteTypeQuietHours].active = false;
       RestoreVolume();
    }
 }
