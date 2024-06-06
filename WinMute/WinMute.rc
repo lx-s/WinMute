@@ -469,7 +469,8 @@ BEGIN
         MENUITEM "... Sleep",                   ID_TRAYMENU_MUTEONSUSPEND
         MENUITEM "... Logout",                  ID_TRAYMENU_MUTEONLOGOUT
         MENUITEM SEPARATOR
-        MENUITEM "Mute all devices",            ID_TRAYMENU_MUTE
+        MENUITEM "Mute all devices now",        ID_TRAYMENU_MUTE
+        MENUITEM "Unmute all devices now",      ID_TRAYMENU_UNMUTE
         MENUITEM SEPARATOR
         MENUITEM "Settings...",                 ID_TRAYMENU_SETTINGS
         MENUITEM SEPARATOR

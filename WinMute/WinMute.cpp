@@ -477,9 +477,11 @@ LRESULT WinMute::OnCommand(HWND hWnd, WPARAM wParam, LPARAM)
       break;
    }
    case ID_TRAYMENU_MUTE: {
-      bool state = false;
-      ToggleMenuCheck(ID_TRAYMENU_MUTE, &state);
-      muteCtrl_.SetMute(state);
+      muteCtrl_.SetMute(true);
+      break;
+   }
+   case ID_TRAYMENU_UNMUTE:{
+      muteCtrl_.SetMute(false);
       break;
    }
    case ID_TRAYMENU_MUTEONLOCK: {
