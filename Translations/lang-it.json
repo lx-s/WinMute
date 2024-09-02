@@ -38,7 +38,7 @@
     "traymenu.info": "Info programma",
     "traymenu.mute-when": "Audio OFF quando...",
     "traymenu.mute-on-lock": "... il computer viene bloccato",
-    "traymenu.mute-on-screen-suspend": "... lo schermo viene spento",
+    "traymenu.mute-on-screen-suspend": "... lo schermo verrà spento",
     "traymenu.restore-volume": "Ripristina il volume in seguito",
     "traymenu.mute-no-restore": "Disattiva audio (nessun ripristino volume) quando...",
     "traymenu.mute-on-shutdown": "... il computer viene spento",
