@@ -114,7 +114,7 @@ int WINAPI wWinMain(
 
    LoadLanguage(settings, i18n);
 
-   HANDLE hMutex = CreateMutexW(nullptr, TRUE, L"LxSystemsWinMuteRunOnce");
+   HANDLE hMutex = CreateMutexW(nullptr, TRUE, L"LxSystemsWinMuteRunning");
    if (hMutex == nullptr) {
       return FALSE;
    } else if (GetLastError() == ERROR_ALREADY_EXISTS) {

@@ -6,7 +6,7 @@
 #define MyAppPublisher "LX-Systems"
 #define MyAppURL       "https://www.lx-s.de/winmute"
 #define MyAppExeName   "WinMute.exe"
-#define MyAppMutex     "LxSystemsWinMute"
+#define MyAppMutex     "LxSystemsWinMuteRunning"
 #define CurrentYear    GetDateTimeString('yyyy','','')
 
 [Setup]
@@ -26,7 +26,7 @@ VersionInfoProductName={#MyAppName}
 VersionInfoVersion={#MyAppVersion}
 
 UninstallDisplayName={#MyAppName}
-UninstallDisplayIcon={app}\{#MyAppExeName}.exe,1
+UninstallDisplayIcon={app}\{#MyAppExeName}.exe
 
 WizardStyle=modern
 ShowLanguageDialog=yes
@@ -44,7 +44,7 @@ OutputDir=..\bin\
 OutputBaseFilename=WinMuteSetup
 
 SetupIconFile=..\..\WinMute\icons\app.ico
-ArchitecturesInstallIn64BitMode=x64
+ArchitecturesInstallIn64BitMode=x64os
 Compression=lzma
 SolidCompression=yes
 
@@ -78,4 +78,7 @@ Root: HKCU; Subkey: "Software\lx-systems\WinMute\ManagedAudioEndpoints"; Flags: 
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "LX-Systems WinMute"; ValueData: "{app}\{#MyAppExeName}"; Tasks: autostart; Flags: uninsdeletevalue
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent runasoriginaluser
+
+[UninstallRun]
+
