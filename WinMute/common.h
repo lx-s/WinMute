@@ -55,6 +55,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #define _WIN32_WINNT 0x0601
 #include <sdkddkver.h>
 
+#include <atomic>
 #include <algorithm>
 #include <array>
 #include <cassert>

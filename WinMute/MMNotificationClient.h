@@ -42,21 +42,21 @@ public:
    explicit MMNotificationClient(WinAudio* notifyParent);
    ~MMNotificationClient();
 
-   ULONG STDMETHODCALLTYPE AddRef();
-   ULONG STDMETHODCALLTYPE Release();
-   HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, VOID** ppvInterface);
+   STDMETHODIMP_(ULONG) AddRef();
+   STDMETHODIMP_(ULONG) Release();
+   STDMETHODIMP_(HRESULT) QueryInterface(REFIID riid, VOID** ppvInterface);
 
-   HRESULT STDMETHODCALLTYPE OnDefaultDeviceChanged(EDataFlow flow, ERole role,
+   STDMETHODIMP_(HRESULT) OnDefaultDeviceChanged(EDataFlow flow, ERole role,
       LPCWSTR pwstrDeviceId);
-   HRESULT STDMETHODCALLTYPE OnDeviceAdded(LPCWSTR pwstrDeviceId);
-   HRESULT STDMETHODCALLTYPE OnDeviceRemoved(LPCWSTR pwstrDeviceId);
-   HRESULT STDMETHODCALLTYPE OnDeviceStateChanged(LPCWSTR pwstrDeviceId,
+   STDMETHODIMP_(HRESULT) OnDeviceAdded(LPCWSTR pwstrDeviceId);
+   STDMETHODIMP_(HRESULT) OnDeviceRemoved(LPCWSTR pwstrDeviceId);
+   STDMETHODIMP_(HRESULT) OnDeviceStateChanged(LPCWSTR pwstrDeviceId,
       DWORD dwNewState);
-   HRESULT STDMETHODCALLTYPE OnPropertyValueChanged(LPCWSTR pwstrDeviceId,
+   STDMETHODIMP_(HRESULT) OnPropertyValueChanged(LPCWSTR pwstrDeviceId,
       const PROPERTYKEY key);
 
 private:
-   LONG ref_;
+   std::atomic<LONG> ref_count_;
    IMMDeviceEnumerator* pEnumerator_;
    WinAudio* notifyParent_;
 

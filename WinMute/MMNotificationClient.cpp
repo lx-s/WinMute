@@ -40,7 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
 class WinAudio;
 
 MMNotificationClient::MMNotificationClient(WinAudio* notifyParent) :
-   ref_(1), pEnumerator_(nullptr), notifyParent_(notifyParent)
+   ref_count_(1), pEnumerator_(nullptr), notifyParent_(notifyParent)
 {
 }
 
@@ -49,21 +49,21 @@ MMNotificationClient::~MMNotificationClient()
    SafeRelease(&pEnumerator_);
 }
 
-ULONG STDMETHODCALLTYPE MMNotificationClient::AddRef()
+STDMETHODIMP_(ULONG) MMNotificationClient::AddRef()
 {
-   return InterlockedIncrement(&ref_);
+   return ++ref_count_;
 }
 
-ULONG STDMETHODCALLTYPE MMNotificationClient::Release()
+STDMETHODIMP_(ULONG) MMNotificationClient::Release()
 {
-   ULONG ref = InterlockedDecrement(&ref_);
+   const ULONG ref = --ref_count_;
    if (ref == 0) {
       delete this;
    }
    return ref;
 }
 
-HRESULT STDMETHODCALLTYPE MMNotificationClient::QueryInterface(
+STDMETHODIMP_(HRESULT) MMNotificationClient::QueryInterface(
    REFIID riid, VOID** ppvInterface)
 {
    if (IID_IUnknown == riid) {
@@ -80,13 +80,13 @@ HRESULT STDMETHODCALLTYPE MMNotificationClient::QueryInterface(
 }
 
 
-HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDefaultDeviceChanged(
+STDMETHODIMP_(HRESULT) MMNotificationClient::OnDefaultDeviceChanged(
    EDataFlow, ERole, LPCWSTR)
 {
    return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceAdded(LPCWSTR pwstrDeviceId)
+STDMETHODIMP_(HRESULT) MMNotificationClient::OnDeviceAdded(LPCWSTR pwstrDeviceId)
 {
    if (notifyParent_ && pwstrDeviceId != nullptr) {
       const auto deviceName = GetFriendlyDeviceName(pwstrDeviceId);
@@ -96,7 +96,7 @@ HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceAdded(LPCWSTR pwstrDevic
    return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceRemoved(LPCWSTR pwstrDeviceId)
+STDMETHODIMP_(HRESULT) MMNotificationClient::OnDeviceRemoved(LPCWSTR pwstrDeviceId)
 {
    if (notifyParent_ && pwstrDeviceId != nullptr) {
       const auto deviceName = GetFriendlyDeviceName(pwstrDeviceId);
@@ -106,7 +106,7 @@ HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceRemoved(LPCWSTR pwstrDev
    return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceStateChanged(
+STDMETHODIMP_(HRESULT) MMNotificationClient::OnDeviceStateChanged(
    LPCWSTR pwstrDeviceId, DWORD dwNewState)
 {
    bool notify = true;
@@ -136,7 +136,7 @@ HRESULT STDMETHODCALLTYPE MMNotificationClient::OnDeviceStateChanged(
    return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE MMNotificationClient::OnPropertyValueChanged(
+STDMETHODIMP_(HRESULT) MMNotificationClient::OnPropertyValueChanged(
    LPCWSTR, const PROPERTYKEY)
 {
    return S_OK;
