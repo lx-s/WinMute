@@ -50,7 +50,7 @@
     "traymenu.mute-on-shutdown": "... shutdown",
     "traymenu.mute-on-sleep": "... sleep",
     "traymenu.mute-on-logout": "... logout",
-    "traymenu.mute-all-devices": "Mute all devices",
+    "traymenu.mute-all-devices": "Mute all devices now",
     "traymenu.settings": "Settings...",
     "traymenu.exit": "Exit",
     "settings.title": "Settings",
