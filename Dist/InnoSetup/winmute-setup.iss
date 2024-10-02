@@ -26,7 +26,7 @@ VersionInfoProductName={#MyAppName}
 VersionInfoVersion={#MyAppVersion}
 
 UninstallDisplayName={#MyAppName}
-UninstallDisplayIcon={app}\{#MyAppExeName}.exe
+UninstallDisplayIcon={app}\{#MyAppExeName}
 
 WizardStyle=modern
 ShowLanguageDialog=yes
