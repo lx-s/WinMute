@@ -50,7 +50,7 @@
     "traymenu.mute-on-shutdown": "=关机=",
     "traymenu.mute-on-sleep": "=休眠=",
     "traymenu.mute-on-logout": "=注销=",
-    "traymenu.mute-all-devices": "静音-NOW",
+    "traymenu.mute-all-devices": "立即将所有设备静音",
     "traymenu.settings": "=设置=",
     "traymenu.exit": "=退出=",
     "settings.title": "=设置=",
