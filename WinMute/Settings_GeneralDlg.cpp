@@ -199,7 +199,7 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
 
       const int enableLog = Button_GetCheck(hLogging) == BST_CHECKED;
       dlgData->settings->SetValue(SettingsKey::LOGGING_ENABLED, enableLog);
-      WMLog::GetInstance().SetEnabled(enableLog);
+      WMLog::GetInstance().EnableLogFile(enableLog);
 
       HWND hLanguageSelector = GetDlgItem(hDlg, IDC_LANGUAGE);
       const auto curLangSel = ComboBox_GetCurSel(hLanguageSelector);

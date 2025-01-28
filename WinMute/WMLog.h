@@ -35,6 +35,18 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
+enum class LogLevel {
+   Debug,
+   Info,
+   Error,
+};
+
+struct LogMessage {
+   LogLevel level;
+   std::string time;
+   std::string message;
+};
+
 class WMLog {
 public:
    static WMLog& GetInstance();
@@ -44,9 +56,11 @@ public:
    void LogError(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...);
    void LogWinError(const wchar_t *functionName, DWORD errorCode = -1);
 
-   void SetEnabled(bool enable);
+   void EnableLogFile(bool enable);
    bool IsEnabled() const;
    std::wstring GetLogFilePath();
+
+   std::vector<LogMessage> GetLogMessages() const;
 
 private:
    WMLog();
@@ -57,7 +71,8 @@ private:
    void WriteMessage(const wchar_t *level, const wchar_t *msg);
    void DeleteLogFile();
 
-   std::mutex logMutex_;
+   mutable std::mutex logMutex_;
    bool enabled_;
    std::wofstream logFile_;
+   std::vector<LogMessage> logMessages_;
 };

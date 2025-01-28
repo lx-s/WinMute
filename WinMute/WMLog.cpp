@@ -77,7 +77,7 @@ void WMLog::DeleteLogFile()
    DeleteFileW(logFilePath.c_str());
 }
 
-void WMLog::SetEnabled(bool enable)
+void WMLog::EnableLogFile(bool enable)
 {
    const std::lock_guard lock(logMutex_);
    if (enable == enabled_) {
@@ -125,6 +125,12 @@ void WMLog::WriteMessage(const wchar_t* level, const wchar_t* msg)
    const std::scoped_lock<std::mutex> lock(logMutex_);
    logFile_.write(logMsg.c_str(), logMsg.length());
    logFile_.flush();
+}
+
+std::vector<LogMessage> WMLog::GetLogMessages() const
+{
+   const std::scoped_lock<std::mutex> lock(logMutex_);
+   return logMessages_;
 }
 
 void WMLog::LogDebug(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...)

@@ -207,6 +207,9 @@
     <ClCompile Include="AboutDlg.cpp">
       <Filter>Source Files\UI\Dialogs\Settings</Filter>
     </ClCompile>
+    <ClCompile Include="LogDialog.cpp">
+      <Filter>Source Files\UI\Dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\Translations\lang-de.json">

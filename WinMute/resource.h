@@ -25,6 +25,7 @@
 #define IDD_MANAGE_ENDPOINTS_ADD        137
 #define IDI_APP_UPDATE                  141
 #define IDI_APPUPDATE                   141
+#define IDD_LOG                         142
 #define IDC_LINK_HOMEPAGE               1001
 #define IDC_LINK_SUPPORT                1002
 #define IDC_LINK_PROJECT                1002
@@ -113,6 +114,8 @@
 #define IDC_UPDATES_VIA_PACKAGE_MANAGER_NOTICE 1072
 #define IDC_UPDATE_OPTIONS_DISABLED     1072
 #define IDC_LINK_HELP_TRANSLATING       1073
+#define IDC_EDIT1                       1075
+#define IDC_LOG_CONTENT                 1075
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_                    40002
 #define ID_TRAYMENU_MUTEON              40003
@@ -158,9 +161,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        142
+#define _APS_NEXT_RESOURCE_VALUE        144
 #define _APS_NEXT_COMMAND_VALUE         40041
-#define _APS_NEXT_CONTROL_VALUE         1074
+#define _APS_NEXT_CONTROL_VALUE         1076
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

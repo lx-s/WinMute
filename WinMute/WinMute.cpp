@@ -205,9 +205,9 @@ bool WinMute::Init()
    hAppIcon_ = LoadIconW(hglobInstance, MAKEINTRESOURCE(IDI_APP));
 
 #ifdef _DEBUG
-   WMLog::GetInstance().SetEnabled(true);
+   WMLog::GetInstance().EnableLogFile(true);
 #else
-   WMLog::GetInstance().SetEnabled(settings_.QueryValue(SettingsKey::LOGGING_ENABLED));
+   WMLog::GetInstance().EnableLogFile(settings_.QueryValue(SettingsKey::LOGGING_ENABLED));
 #endif
    log.LogInfo(L"Starting new session...");
 
