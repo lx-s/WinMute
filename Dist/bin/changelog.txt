@@ -1,6 +1,7 @@
-Version 2.5.2 (2025-02-xx)
+Version 2.5.2 (2025-02-17)
  * Added new language: French (thanks to https://translate.codeberg.org/user/avalondrey/)
  * Fixed dialog when adding new devices to mute list (#38)
+ * Fixed uninstall icon in add/remove programs control panel
 
 Version 2.5.1 (2024-05-03)
  * Added new language: Simplified Chinese (thanks to https://translate.codeberg.org/user/richzhl/)

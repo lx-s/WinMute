@@ -1,5 +1,5 @@
 /* WinMute
-           Copyright (c) 2024, Alexander Steinhoefer
+           Copyright (c) 2025, Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
