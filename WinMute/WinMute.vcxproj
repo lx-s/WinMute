@@ -416,6 +416,73 @@ copy /Y %(FullPath) $(OutputPath)lang</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutputPath)lang\%(Filename)%(Extension)</Outputs>
     </CustomBuild>
   </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\Translations\lang-lv.json">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">mkdir $(OutputPath)lang &gt;nul 2&gt;&amp;1
+copy /Y %(FullPath) $(OutputPath)lang</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">mkdir $(OutputPath)lang &gt;nul 2&gt;&amp;1
+copy /Y %(FullPath) $(OutputPath)lang</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">mkdir $(OutputPath)lang &gt;nul 2&gt;&amp;1
+copy /Y %(FullPath) $(OutputPath)lang</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">mkdir $(OutputPath)lang &gt;nul 2&gt;&amp;1
+copy /Y %(FullPath) $(OutputPath)lang</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Copy translation "%(Filename)" to build directory</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Copy translation "%(Filename)" to build directory</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Copy translation "%(Filename)" to build directory</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Copy translation "%(Filename)" to build directory</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutputPath)lang\%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutputPath)lang\%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutputPath)lang\%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutputPath)lang\%(Filename)%(Extension)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\Translations\lang-ro.json">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">mkdir $(OutputPath)lang &gt;nul 2&gt;&amp;1
+copy /Y %(FullPath) $(OutputPath)lang</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">mkdir $(OutputPath)lang &gt;nul 2&gt;&amp;1
+copy /Y %(FullPath) $(OutputPath)lang</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">mkdir $(OutputPath)lang &gt;nul 2&gt;&amp;1
+copy /Y %(FullPath) $(OutputPath)lang</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">mkdir $(OutputPath)lang &gt;nul 2&gt;&amp;1
+copy /Y %(FullPath) $(OutputPath)lang</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Copy translation "%(Filename)" to build directory</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Copy translation "%(Filename)" to build directory</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Copy translation "%(Filename)" to build directory</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Copy translation "%(Filename)" to build directory</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutputPath)lang\%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutputPath)lang\%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutputPath)lang\%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutputPath)lang\%(Filename)%(Extension)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\Translations\lang-ru.json">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">mkdir $(OutputPath)lang &gt;nul 2&gt;&amp;1
+copy /Y %(FullPath) $(OutputPath)lang</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">mkdir $(OutputPath)lang &gt;nul 2&gt;&amp;1
+copy /Y %(FullPath) $(OutputPath)lang</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">mkdir $(OutputPath)lang &gt;nul 2&gt;&amp;1
+copy /Y %(FullPath) $(OutputPath)lang</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">mkdir $(OutputPath)lang &gt;nul 2&gt;&amp;1
+copy /Y %(FullPath) $(OutputPath)lang</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Copy translation "%(Filename)" to build directory</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Copy translation "%(Filename)" to build directory</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Copy translation "%(Filename)" to build directory</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Copy translation "%(Filename)" to build directory</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutputPath)lang\%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutputPath)lang\%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutputPath)lang\%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutputPath)lang\%(Filename)%(Extension)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

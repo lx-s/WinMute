@@ -230,5 +230,17 @@
     <CustomBuild Include="..\Translations\lang-zh_Hans.json">
       <Filter>Translations</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\Translations\lang-fr.json">
+      <Filter>Translations</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\Translations\lang-lv.json">
+      <Filter>Translations</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\Translations\lang-ro.json">
+      <Filter>Translations</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\Translations\lang-ru.json">
+      <Filter>Translations</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>
