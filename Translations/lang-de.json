@@ -65,6 +65,7 @@
     "settings.general.run-on-startup": "WinMute mit Windows starten",
     "settings.general.enable-logging": "Protokollierung aktivieren",
     "settings.general.btn-open-log-file": "Protokolldatei öffnen...",
+    "settings.general.btn-open-log-window": "Protokoll anzeigen...",
     "settings.general.select-language-label": "Sprache",
     "settings.bluetooth.add-edit.enter-device-name-placeholder": "Bitte geben Sie einen Gerätenamen an",
     "settings.bluetooth.description": "\"Bluetooth Muting\" aktiviert das Stummschalten des PCs sobald ein Bluetooth-Audiogerät vom PC getrennt wird und hebt die Stummschaltung auf, sobald es wieder verbunden wird.\n\nDieses Verhalten kann für alle oder nur bestimmte Bluetooth-Geräte aktiviert werden.",
@@ -132,5 +133,6 @@
     "pupup.error.update-check-failed.text": "Fehler beim Prüfen auf eine neue Version.\nBitte prüfen Sie die Protokolldateien.",
     "settings.general.check-for-beta-updates-on-start": "Auf Vorabversionen überprüfen",
     "settings.general.updates-handled-externally": "Optionen deaktiviert: Updates werden extern durchgeführt",
-    "settings.general.help-translating": "Hilf beim Übersetzen"
+    "settings.general.help-translating": "Hilf beim Übersetzen",
+    "log.title": "WinMute Protokolldatei"
 }

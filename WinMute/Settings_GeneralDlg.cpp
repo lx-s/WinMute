@@ -35,12 +35,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace fs = std::filesystem;
 
+extern INT_PTR CALLBACK LogDlgProc(HWND, UINT, WPARAM, LPARAM);
+extern HINSTANCE hglobInstance;
+
 struct SettingsGeneralData {
    WMSettings *settings = nullptr;
    std::vector<LanguageModule> langModules;
 };
-
-extern HINSTANCE hglobInstance;
 
 static void FillLanguageList(HWND hLanguageList, const SettingsGeneralData& dlgData)
 {
@@ -75,6 +76,7 @@ static void LoadSettingsGeneralDlgTranslation(HWND hDlg)
    i18n.SetItemText(hDlg, IDC_ENABLELOGGING, "settings.general.enable-logging");
    i18n.SetItemText(hDlg, IDC_OPENLOG, "settings.general.btn-open-log-file");
    i18n.SetItemText(hDlg, IDC_UPDATE_OPTIONS_DISABLED, "settings.general.updates-handled-externally");
+   i18n.SetItemText(hDlg, IDC_OPENLOGDLG, "settings.general.btn-open-log-window");
 }
 
 INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -178,6 +180,13 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
             SendMessageW(GetDlgItem(hDlg, IDC_LOGFILEPATH), WM_SETTEXT, 0,
                reinterpret_cast<LPARAM>(L""));
          }
+      } else if (LOWORD(wParam) == IDC_OPENLOGDLG) {
+         auto hLogDlg = CreateDialogW(
+            hglobInstance,
+            MAKEINTRESOURCEW(IDD_LOG),
+            hDlg,
+            LogDlgProc);
+         ShowWindow(hLogDlg, SW_SHOW);
       } else if (LOWORD(wParam) == IDC_CHECK_FOR_UPDATES_ON_STARTUP) {
          const int enabled = Button_GetCheck(GetDlgItem(hDlg, IDC_CHECK_FOR_UPDATES_ON_STARTUP));
          EnableWindow(GetDlgItem(hDlg, IDC_CHECK_FOR_BETA_UPDATES), enabled);

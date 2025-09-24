@@ -42,9 +42,9 @@ enum class LogLevel {
 };
 
 struct LogMessage {
-   LogLevel level;
-   std::string time;
-   std::string message;
+   LogLevel level = LogLevel::Info;
+   std::chrono::zoned_time<std::chrono::milliseconds> time;
+   std::wstring message;
 };
 
 class WMLog {
@@ -57,10 +57,15 @@ public:
    void LogWinError(const wchar_t *functionName, DWORD errorCode = -1);
 
    void EnableLogFile(bool enable);
-   bool IsEnabled() const;
+   bool IsLogFileEnabled() const;
    std::wstring GetLogFilePath();
 
    std::vector<LogMessage> GetLogMessages() const;
+
+   void RegisterForLogUpdates(HWND hWnd);
+   void UnregisterForLogUpdates(HWND hWnd);
+
+   std::wstring FormatLogMessage(const LogMessage &logMsg, bool new_line=false) const;
 
 private:
    WMLog();
@@ -68,11 +73,16 @@ private:
    WMLog(const WMLog&) = delete;
    WMLog& operator=(const WMLog&) = delete;
 
-   void WriteMessage(const wchar_t *level, const wchar_t *msg);
+   const int kMaxLogEntries_ = 500;
+
+   void StoreMessage(LogLevel level, const wchar_t *msg);
    void DeleteLogFile();
 
    mutable std::mutex logMutex_;
+   mutable std::mutex wndMutex_;
+
    bool enabled_;
    std::wofstream logFile_;
    std::vector<LogMessage> logMessages_;
+   std::vector<HWND> registeredWindows_;
 };

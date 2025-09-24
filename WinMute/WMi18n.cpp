@@ -109,7 +109,9 @@ bool WMi18n::LoadDefaultLanguage()
 {
    const std::lock_guard lock(langMutex_);
    if (!LoadLanguage(defaultLangName_, defaultLang_)) {
-      const std::wstring error = std::format(L"Failed to load default language. Please make sure the langs-Folder exists and contains {}.", defaultLangName_);;
+      const std::wstring error = std::format(
+         L"Failed to load default language. Please make sure the langs-Folder exists and contains {}.",
+         defaultLangName_);
       TaskDialog(
          nullptr,
          nullptr,
@@ -178,7 +180,9 @@ bool WMi18n::LoadLanguage(const std::wstring &fileName)
 
    TranslationMap new_lang;
    if (!LoadLanguage(fileName, new_lang)) {
-      WMLog::GetInstance().LogError(L"Failed to load language \"%ls\"", fileName.c_str());
+      WMLog::GetInstance().LogError(
+         L"Failed to load language \"%ls\"",
+         fileName.c_str());
       return false;
    } else {
       UnloadLanguage();
@@ -210,7 +214,9 @@ const std::wstring WMi18n::GetTranslationW(const std::string& textId) const
       }
    }
    if (text.empty()) {
-      std::wstring err = std::format(L"Translation for {} not found", ConvertStringToWideString(textId));
+      std::wstring err = std::format(
+         L"Translation for {} not found",
+         ConvertStringToWideString(textId));
       return text;
    }
    return text;
@@ -222,7 +228,7 @@ const std::string WMi18n::GetTranslationA(const std::string &textId) const
    return ConvertWideStringToString(wtext);
 }
 
-bool WMi18n::SetItemText(HWND hWnd, int dlgItem, const std::string& textId)
+bool WMi18n::SetItemText(HWND hWnd, int dlgItem, const std::string& textId) const
 {
    const auto text = GetTranslationW(textId);
    if (!SetDlgItemTextW(hWnd, dlgItem, text.c_str())) {
@@ -232,7 +238,7 @@ bool WMi18n::SetItemText(HWND hWnd, int dlgItem, const std::string& textId)
    return true;
 }
 
-bool WMi18n::SetItemText(HWND hItem, const std::string &textId)
+bool WMi18n::SetItemText(HWND hItem, const std::string &textId) const
 {
    const auto text = GetTranslationW(textId);
    if (!SetWindowTextW(hItem, text.c_str())) {

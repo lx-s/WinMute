@@ -60,7 +60,9 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <array>
 #include <cassert>
 #include <cstdarg>
+#include <chrono>
 #include <filesystem>
+#include <format>
 #include <fstream>
 #include <iterator>
 #include <locale>
@@ -131,3 +133,4 @@ static const wchar_t *LOG_FILE_NAME = L"WinMute.log";
 
 constexpr int WM_SAVESETTINGS = WM_USER + 300;
 constexpr int WM_WINMUTE_UPDATE_POPUP = WM_USER + 301;
+constexpr int WM_LOG_UPDATED = WM_USER + 302;

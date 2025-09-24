@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "common.h"
 
 struct LogDlgData {
+   HWND hLogContent;
 };
 
 INT_PTR CALLBACK LogDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -56,16 +57,68 @@ INT_PTR CALLBACK LogDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
          MAKEINTRESOURCE(IDI_TRAY_DARK));
       SendMessageW(hDlg, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(hIcon));
 
+      auto& wmLog = WMLog::GetInstance();
+      const auto logMessages = wmLog.GetLogMessages();
+      std::wstring logText;
+      logText.reserve(logMessages.size() * 30);
+      for (auto &lm : logMessages) {
+         logText.append(wmLog.FormatLogMessage(lm, true));
+      }
+
+      dlgData->hLogContent = GetDlgItem(hDlg, IDC_LOG_CONTENT);
+      Edit_SetText(dlgData->hLogContent, logText.c_str());
+      wmLog.RegisterForLogUpdates(hDlg);
+
+      // Initial sizing
+      RECT rcClient;
+      GetClientRect(hDlg, &rcClient);
+      SetWindowPos(
+         dlgData->hLogContent,
+         nullptr,
+         0,
+         0,
+         rcClient.right - rcClient.left,
+         rcClient.bottom - rcClient.top,
+         SWP_NOZORDER);
+
       return TRUE;
    }
    case WM_COMMAND:
       return 0;
+   case WM_SIZE:
+      {
+      RECT rcClient;
+      GetClientRect(hDlg, &rcClient);
+      SetWindowPos(
+         dlgData->hLogContent,
+         nullptr,
+         0,
+         0,
+         rcClient.right - rcClient.left,
+         rcClient.bottom - rcClient.top,
+         SWP_NOZORDER);
+      return 0;
+   }
+   case WM_LOG_UPDATED: {
+      const WMLog &wmLog = WMLog::GetInstance();
+      auto logMsg = reinterpret_cast<LogMessage*>(lParam);
+      if (logMsg == nullptr) {
+         return FALSE;
+      }
+      const auto formattedMsg = wmLog.FormatLogMessage(*logMsg, true);
+      const auto textLen = Edit_GetTextLength(dlgData->hLogContent);
+      Edit_SetSel(dlgData->hLogContent, textLen, textLen);
+      Edit_ReplaceSel(dlgData->hLogContent, formattedMsg.c_str());
+      return TRUE;
+   }
    case WM_DESTROY:
       delete dlgData;
       SetWindowLongPtrW(hDlg, GWLP_USERDATA, 0);
+      WMLog::GetInstance().UnregisterForLogUpdates(hDlg);
       return 0;
    case WM_CLOSE:
-      EndDialog(hDlg, 0);
+      //EndDialog(hDlg, 0);
+      DestroyWindow(hDlg);
       return TRUE;
    default:
       break;

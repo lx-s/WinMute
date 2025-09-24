@@ -74,6 +74,7 @@
     "settings.general.updates-handled-externally": "Options disabled: Updates are handled externally",
     "settings.general.enable-logging": "Enable logging",
     "settings.general.btn-open-log-file": "Open log file...",
+    "settings.general.btn-open-log-window": "Show log...",
     "settings.general.select-language-label": "Language",
     "settings.general.help-translating": "Help translating",
     "settings.bluetooth.add-edit.enter-device-name-placeholder": "Please enter a Bluetooth device name",
@@ -131,5 +132,6 @@
     "about.general.description": "WinMute is developed by Alexander Steinhoefer his spare time. The code as well as new releases for this tool can be found on GitHub. Contributions in the form of code, tickets or feature requests are very welcome. Thanks for using this little tool!",
     "about.tab.winmute": "WinMute",
     "about.tab.license": "License",
-    "about.btn-close": "OK"
+    "about.btn-close": "OK",
+    "log.title": "WinMute Log-File"
 }

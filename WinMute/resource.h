@@ -50,6 +50,8 @@
 #define IDC_LICENSETEXT                 1015
 #define IDC_CHECK_FOR_BETA_UPDATES      1015
 #define IDC_ABOUT_TAB                   1016
+#define IDC_OPENLOG2                    1016
+#define IDC_OPENLOGDLG                  1016
 #define IDC_ABOUTTEXT                   1019
 #define IDC_TITLE                       1020
 #define IDC_ABOUT_TITLE                 1020
@@ -156,13 +158,14 @@
 #define ID_TRAYMENU_LABEL_MUTEON        40038
 #define ID_TRAYMENU_MUTEONSCREE         40039
 #define ID_TRAYMENU_LABEL_MUTEON_NO_RESTORE 40040
+#define ID_TRAYMENU_LOG                 40041
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        144
-#define _APS_NEXT_COMMAND_VALUE         40041
+#define _APS_NEXT_COMMAND_VALUE         40042
 #define _APS_NEXT_CONTROL_VALUE         1076
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

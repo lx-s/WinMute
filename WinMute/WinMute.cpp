@@ -275,7 +275,7 @@ bool WinMute::LoadSettings()
 {
    WMLog& log = WMLog::GetInstance();
 
-   if (log.IsEnabled()) {
+   if (log.IsLogFileEnabled()) {
       std::wstring versionNumber;
       GetWinMuteVersion(versionNumber);
       log.LogInfo(L"Starting WinMute %s", versionNumber.c_str());

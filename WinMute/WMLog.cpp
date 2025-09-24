@@ -32,6 +32,21 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "common.h"
+#include "WMLog.h"
+
+static const wchar_t* LogLevelToString(LogLevel level)
+{
+   switch (level) {
+   case LogLevel::Debug:
+      return L"DEBUG";
+   case LogLevel::Info:
+      return L"INFO";
+   case LogLevel::Error:
+      return L"ERROR";
+   default:
+      return L"UNKNOWN";
+   }
+}
 
 static bool OpenLogFile(const std::wstring& filePath, std::wofstream& logFile)
 {
@@ -100,31 +115,57 @@ void WMLog::EnableLogFile(bool enable)
    }
 }
 
-bool WMLog::IsEnabled() const
+bool WMLog::IsLogFileEnabled() const
 {
    return enabled_;
 }
 
-void WMLog::WriteMessage(const wchar_t* level, const wchar_t* msg)
+std::wstring WMLog::FormatLogMessage(const LogMessage &logMsg, bool new_line) const
 {
-   time_t rawtime;
-   struct tm timeinfo;
-   wchar_t buffer[30];
+   auto msg = std::format(
+      L"{:%F %T%Ez}  {}:  {}{}",
+      logMsg.time,
+      LogLevelToString(logMsg.level),
+      logMsg.message,
+      new_line ? L"\r\n" : L"");
+   return msg;
+}
 
-   time(&rawtime);
-   localtime_s(&timeinfo, &rawtime);
+void WMLog::StoreMessage(LogLevel level, const wchar_t* msg)
+{
+   namespace ch = std::chrono;
 
-   wcsftime(buffer, ARRAY_SIZE(buffer), L"%Y-%m-%d %H:%M:%S", &timeinfo);
-   const std::wstring logMsg = std::vformat(
-      L"[{} {}]: {}\n",
-      std::make_wformat_args(
-         buffer,
-         level,
-         msg)
-   );
-   const std::scoped_lock<std::mutex> lock(logMutex_);
-   logFile_.write(logMsg.c_str(), logMsg.length());
-   logFile_.flush();
+   LogMessage lm;
+   lm.level = level;
+   lm.message = msg;
+   lm.time = ch::zoned_time<ch::milliseconds>{
+      ch::current_zone(), ch::floor<ch::milliseconds>(ch::system_clock::now())
+   };
+
+   if (enabled_ && logFile_.is_open()) {
+      const auto logMsg = FormatLogMessage(lm, true);
+      logFile_.write(logMsg.c_str(), logMsg.length());
+      logFile_.flush();
+   }
+
+   {
+      const std::scoped_lock<std::mutex> lock(wndMutex_);
+      for (const auto hWnd : registeredWindows_) {
+         if (IsWindow(hWnd)) {
+            SendMessageW(hWnd, WM_LOG_UPDATED, 0, reinterpret_cast<LPARAM>(&lm));
+         }
+      }
+   }
+
+   {
+      const std::scoped_lock<std::mutex> lock(logMutex_);
+      logMessages_.push_back(std::move(lm));
+      if (logMessages_.size() >= kMaxLogEntries_) {
+         logMessages_.erase(
+            logMessages_.begin(),
+            logMessages_.begin() + (logMessages_.size() - kMaxLogEntries_ / 2));
+      }
+   }
 }
 
 std::vector<LogMessage> WMLog::GetLogMessages() const
@@ -133,50 +174,55 @@ std::vector<LogMessage> WMLog::GetLogMessages() const
    return logMessages_;
 }
 
+void WMLog::RegisterForLogUpdates(HWND hWnd)
+{
+   const std::scoped_lock<std::mutex> lock(wndMutex_);
+   if (std::find(registeredWindows_.begin(), registeredWindows_.end(), hWnd) == registeredWindows_.end()) {
+      registeredWindows_.push_back(hWnd);
+   }
+}
+
+void WMLog::UnregisterForLogUpdates(HWND hWnd)
+{
+   const std::scoped_lock<std::mutex> lock(wndMutex_);
+   if (const auto it = std::find(registeredWindows_.begin(), registeredWindows_.end(), hWnd);
+       it != registeredWindows_.end()) {
+      registeredWindows_.erase(it);
+   }
+}
+
 void WMLog::LogDebug(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...)
 {
-   if (!enabled_) {
-      return;
-   }
-
    wchar_t buf[1024];
    va_list ap;
    va_start(ap, fmt);
 
    vswprintf_s(buf, fmt, ap);
-   WriteMessage(L"Debug", buf);
+   StoreMessage(LogLevel::Debug, buf);
 
    va_end(ap);
 }
 
 void WMLog::LogInfo(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...)
 {
-   if (!enabled_) {
-      return;
-   }
-
    wchar_t buf[1024];
    va_list ap;
    va_start(ap, fmt);
 
    vswprintf_s(buf, fmt, ap);
-   WriteMessage(L"Info", buf);
+   StoreMessage(LogLevel::Info, buf);
 
    va_end(ap);
 }
 
 void WMLog::LogError(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...)
 {
-   if (!enabled_) {
-      return;
-   }
-
    wchar_t buf[1024];
    va_list ap;
    va_start(ap, fmt);
 
    vswprintf_s(buf, fmt, ap);
-   WriteMessage(L"Error", buf);
+   StoreMessage(LogLevel::Error, buf);
 
    va_end(ap);
 }
@@ -205,6 +251,6 @@ void WMLog::LogWinError(const wchar_t *functionName, DWORD lastError)
          functionName,
          lastError,
          errorMsgText));
-   WriteMessage(L"Error", static_cast<const wchar_t *>(lpMsgBuf));
+   StoreMessage(LogLevel::Error, static_cast<const wchar_t *>(lpMsgBuf));
    LocalFree(lpMsgBuf);
 }
