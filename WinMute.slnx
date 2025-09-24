@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="WinMute/WinMute.vcxproj" Id="479d2958-3ffc-43f8-8217-44d0ff9c11b1" />
+</Solution>
