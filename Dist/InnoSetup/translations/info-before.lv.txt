@@ -1,0 +1,6 @@
+﻿Lūdzu, pārliecinieties, ka jūsu sistēmā ir uzstādīta jaunākā Microsoft Visual C++ x64 izpilde.
+
+Jūs variet to lejupielādēt šeit: 
+
+* https://docs.microsoft.com/cpp/windows/latest-supported-vc-redist 
+* https://aka.ms/vs/17/release/vc_redist.x64.exe

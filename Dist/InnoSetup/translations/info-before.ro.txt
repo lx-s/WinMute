@@ -1,0 +1,8 @@
+Vă rugăm să vă asigurați că cel mai recent Microsoft Visual C++ runtime este instalat pe sistemul dvs. 
+
+Pentru a rula WinMute sunt necesare doar fișierele x64 runtime.
+
+Îl poți descărca de aici: 
+
+* https://docs.microsoft.com/cpp/windows/latest-supported-vc-redist 
+* https://aka.ms/vs/17/release/vc_redist.x64.exe
