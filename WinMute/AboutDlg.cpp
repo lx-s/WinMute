@@ -73,15 +73,10 @@ enum AboutTabsIDs {
 };
 
 struct AboutDlgData {
-   HWND hTabCtrl;
-   std::array<HWND, ABOUT_TAB_COUNT> hTabs;
-   HWND hActiveTab;
-   HFONT hTitleFont;
-
-   AboutDlgData() noexcept
-      : hTabCtrl{nullptr}, hTabs{nullptr}, hActiveTab{nullptr}, hTitleFont{nullptr}
-   {
-   }
+   HWND hTabCtrl = nullptr;
+   std::array<HWND, ABOUT_TAB_COUNT> hTabs{nullptr};
+   HWND hActiveTab = nullptr;
+   HFONT hTitleFont = nullptr;
 };
 
 static void InsertTabItem(HWND hTabCtrl, UINT id, const std::wstring& itemName)

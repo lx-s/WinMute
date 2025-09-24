@@ -33,66 +33,23 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
-static void TranslateLogDlgProc(HWND hDlg)
-{
-   WMi18n &i18n = WMi18n::GetInstance();
-   SetWindowText(hDlg, i18n.GetTranslationW("log.title").c_str());
-}
+struct LogDlgData {
+};
 
-INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK LogDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-   AboutDlgData *dlgData =
-      reinterpret_cast<AboutDlgData *>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+   auto *dlgData =
+      reinterpret_cast<LogDlgData *>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+   UNREFERENCED_PARAMETER(wParam);
+   UNREFERENCED_PARAMETER(lParam);
    switch (msg) {
    case WM_INITDIALOG:
    {
-      dlgData = new AboutDlgData();
+      dlgData = new LogDlgData();
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(dlgData));
 
-      dlgData->hTabCtrl = GetDlgItem(hDlg, IDC_ABOUT_TAB);
-
       WMi18n &i18n = WMi18n::GetInstance();
-      InsertTabItem(dlgData->hTabCtrl, ABOUT_TAB_GENERAL, i18n.GetTranslationW("about.tab.winmute"));
-      InsertTabItem(dlgData->hTabCtrl, ABOUT_TAB_LICENSE, i18n.GetTranslationW("about.tab.license"));
-
-      TranslateAboutDlgProc(hDlg);
-
-      dlgData->hTabs[ABOUT_TAB_GENERAL] = CreateDialog(
-         nullptr,
-         MAKEINTRESOURCE(IDD_ABOUT_WINMUTE),
-         hDlg,
-         About_GeneralDlgProc);
-      dlgData->hTabs[ABOUT_TAB_LICENSE] = CreateDialog(
-         nullptr,
-         MAKEINTRESOURCE(IDD_ABOUT_LICENSE),
-         hDlg,
-         About_LicenseDlgProc);
-
-
-      // Set title font
-      LOGFONT font;
-      font.lfHeight = 32;
-      font.lfWidth = 0;
-      font.lfEscapement = 0;
-      font.lfOrientation = 0;
-      font.lfWeight = FW_BOLD;
-      font.lfItalic = false;
-      font.lfUnderline = false;
-      font.lfStrikeOut = false;
-      font.lfEscapement = 0;
-      font.lfOrientation = 0;
-      font.lfOutPrecision = OUT_DEFAULT_PRECIS;
-      font.lfClipPrecision = CLIP_STROKE_PRECIS | CLIP_MASK | CLIP_TT_ALWAYS | CLIP_LH_ANGLES;
-      font.lfQuality = CLEARTYPE_QUALITY;
-      font.lfPitchAndFamily = VARIABLE_PITCH | FF_ROMAN;
-      wcscpy_s(font.lfFaceName, L"Segoe UI");
-
-      dlgData->hTitleFont = CreateFontIndirect(&font);
-      SendMessage(
-         hTitle,
-         WM_SETFONT,
-         reinterpret_cast<WPARAM>(dlgData->hTitleFont),
-         TRUE);
+      SetWindowText(hDlg, i18n.GetTranslationW("log.title").c_str());
 
       HICON hIcon = LoadIcon(
          GetModuleHandle(nullptr),
@@ -104,7 +61,6 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
    case WM_COMMAND:
       return 0;
    case WM_DESTROY:
-      DeleteObject(dlgData->hTitleFont);
       delete dlgData;
       SetWindowLongPtrW(hDlg, GWLP_USERDATA, 0);
       return 0;
