@@ -242,5 +242,8 @@
     <CustomBuild Include="..\Translations\lang-ru.json">
       <Filter>Translations</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\Translations\lang-ko.json">
+      <Filter>Translations</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>
