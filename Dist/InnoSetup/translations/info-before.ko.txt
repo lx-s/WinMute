@@ -1,7 +1,7 @@
-﻿Please make sure that the latest Microsoft Visual C++ runtime is installed on your system. 
-To run WinMute only the x64 runtime files are needed.
+시스템에 최신 Microsoft Visual C++ 런타임이 설치되어 있는지 확인해 주세요.
+WinMute를 실행하기 위해서는 x64 런타임 파일만 필요합니다.
 
-You can download it here: 
+여기에서 다운로드할 수 있습니다: 
 
 * https://docs.microsoft.com/cpp/windows/latest-supported-vc-redist 
 * https://aka.ms/vs/17/release/vc_redist.x64.exe
