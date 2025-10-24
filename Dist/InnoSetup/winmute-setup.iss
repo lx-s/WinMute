@@ -60,10 +60,14 @@ Source: "..\bin\license.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\bin\lang\lang-de.json"; DestDir: "{app}\lang"; Flags: ignoreversion
 Source: "..\bin\lang\lang-en.json"; DestDir: "{app}\lang"; Flags: ignoreversion
 Source: "..\bin\lang\lang-es.json"; DestDir: "{app}\lang"; Flags: ignoreversion
-Source: "..\bin\lang\lang-it.json"; DestDir: "{app}\lang"; Flags: ignoreversion
-Source: "..\bin\lang\lang-nl.json"; DestDir: "{app}\lang"; Flags: ignoreversion
-Source: "..\bin\lang\lang-zh_Hans.json"; DestDir: "{app}\lang"; Flags: ignoreversion
 Source: "..\bin\lang\lang-fr.json"; DestDir: "{app}\lang"; Flags: ignoreversion
+Source: "..\bin\lang\lang-it.json"; DestDir: "{app}\lang"; Flags: ignoreversion
+Source: "..\bin\lang\lang-ko.json"; DestDir: "{app}\lang"; Flags: ignoreversion
+Source: "..\bin\lang\lang-lv.json"; DestDir: "{app}\lang"; Flags: ignoreversion
+Source: "..\bin\lang\lang-nl.json"; DestDir: "{app}\lang"; Flags: ignoreversion
+Source: "..\bin\lang\lang-ro.json"; DestDir: "{app}\lang"; Flags: ignoreversion
+Source: "..\bin\lang\lang-ru.json"; DestDir: "{app}\lang"; Flags: ignoreversion
+Source: "..\bin\lang\lang-zh_Hans.json"; DestDir: "{app}\lang"; Flags: ignoreversion
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

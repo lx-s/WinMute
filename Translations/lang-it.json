@@ -63,7 +63,7 @@
   "settings.bluetooth.add-edit.edit-title": "Modifica dispositivo Bluetooth",
   "settings.bluetooth.add-edit.device-name-label": "Nome dispositivo Bluetooth:",
   "settings.general.run-on-startup": "Esegui WinMute all'accesso dell'utente",
-  "settings.general.enable-logging": "Abilita registrazione eventi",
+  "settings.general.enable-logging": "Salva il registro in un file",
   "settings.general.btn-open-log-file": "Apri file registro eventi...",
   "settings.general.select-language-label": "Lingua",
   "settings.bluetooth.add-edit.enter-device-name-placeholder": "Inserisci il nome di un dispositivo Bluetooth",

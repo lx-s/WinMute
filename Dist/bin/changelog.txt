@@ -1,3 +1,9 @@
+Version 2.5.3 (2025-10-24)
+ * Added new language: Korean (thanks to https://translate.codeberg.org/user/jseo/)
+ * Added new language: Latvian (thanks to https://github.com/Coool)
+ * Added new language: Russian (thanks to https://translate.codeberg.org/user/yurtpage/)
+ * Added new logging Dialog, so the protocol can be viewed easily without having to store it to disk
+
 Version 2.5.2 (2025-02-17)
  * Added new language: French (thanks to https://translate.codeberg.org/user/avalondrey/)
  * Fixed dialog when adding new devices to mute list (#38)
@@ -157,3 +163,4 @@ Version 1.2 (2011-05-30)
 
 Version 0.0 - 1.1
  * These documents have been lost forever...
+

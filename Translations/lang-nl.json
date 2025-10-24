@@ -63,7 +63,7 @@
   "settings.bluetooth.add-edit.edit-title": "Bluetoothapparaat wijzigen",
   "settings.bluetooth.add-edit.device-name-label": "Naam Bluetoothapparaat:",
   "settings.general.run-on-startup": "WinMute starten wanneer deze gebruiker aanmeldt",
-  "settings.general.enable-logging": "Logging inschakelen",
+  "settings.general.enable-logging": "Logboek opslaan in bestand",
   "settings.general.btn-open-log-file": "Logbestand openen…",
   "settings.general.select-language-label": "Taal",
   "settings.bluetooth.add-edit.enter-device-name-placeholder": "Geef de naam van een Bluetoothapparaat op",
