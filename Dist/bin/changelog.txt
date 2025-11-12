@@ -1,5 +1,5 @@
 Version 2.5.4 (2025-11-12)
- * Fixed: "Save" Button when adding a new WLAN not enabling
+ * Fixed: "Save" Button not enabling, when adding a new WiFi SSID
 
 Version 2.5.3 (2025-10-24)
  * Added new language: Korean (thanks to https://translate.codeberg.org/user/jseo/)
