@@ -100,7 +100,7 @@
     "settings.quiet-hours.start-time-label": "Heure de début :",
     "settings.quiet-hours.end-time-label": "Heure de fin :",
     "settings.quiet-hours.force-unmute": "Forcer la désactivation du son",
-    "settings.quiet-hours.force-unmute-description": "Si la fonction de désactivation forcée du son est activée, WinMute désactivera le son des périphériques audio des ordinateurs à la fin des heures de coupure et ne tiendra pas compte s'ils étaient déjà désactivés avant le début des heures de coupure.",
+    "settings.quiet-hours.force-unmute-description": "Si la fonction de désactivation forcée du son est activée, WinMute désactivera le son des périphériques audio des ordinateurs à la fin des heures de coupure sans tenir compte de leur état de coupure avant le début de ces heures.",
     "settings.quiet-hours.show-notifications": "Afficher les notifications d'heures de coupure",
     "settings.quiet-hours.error.invalid-time-range.title": "Plage horaire invalide",
     "settings.quiet-hours.error.invalid-time-range.text": "Le démarrage et l'arrêt ne doivent pas être simultanés.",
