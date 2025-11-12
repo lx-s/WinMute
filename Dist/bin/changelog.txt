@@ -1,3 +1,6 @@
+Version 2.5.4 (2025-11-12)
+ * Fixed: "Save" Button when adding a new WLAN not enabling
+
 Version 2.5.3 (2025-10-24)
  * Added new language: Korean (thanks to https://translate.codeberg.org/user/jseo/)
  * Added new language: Latvian (thanks to https://github.com/Coool)
