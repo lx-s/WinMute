@@ -77,7 +77,7 @@
     "settings.general.select-language-label": "Langue",
     "settings.general.help-translating": "Aide à la traduction",
     "settings.bluetooth.add-edit.enter-device-name-placeholder": "Veuillez saisir le nom du périphérique Bluetooth",
-    "settings.bluetooth.description": "\\\"Bluetooth Muting\\\" permet de désactiver l'audio si un périphérique Bluetooth de classe audio est déconnecté, et de le réactiver si un périphérique est reconnecté à l'ordinateur.\n\nPeut être actif pour tous les périphériques audio Bluetooth ou seulement pour un périphérique spécifique.",
+    "settings.bluetooth.description": "\"Bluetooth Muting\" permet de désactiver l'audio si un périphérique Bluetooth de classe audio est déconnecté, et de le réactiver si un périphérique est reconnecté à l'ordinateur.\n\nPeut être actif pour tous les périphériques audio Bluetooth ou seulement pour un périphérique spécifique.",
     "settings.bluetooth.enable-muting": "Activer la coupure de son via Bluetooth",
     "settings.bluetooth.enable-muting-filter": "Activer seulement pour ces périphériques :",
     "settings.bluetooth.bluetooth-disabled-info": "Remarque : le Bluetooth n'est pas disponible sur ce périphérique.\nCertaines options ont été désactivées.",
