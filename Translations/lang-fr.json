@@ -12,7 +12,7 @@
     "general.error.winapi.text": "{} a échoué avec l'erreur {} : {}",
     "general.error.audio-service-shutdown.title": "Le service audio a été arrêté.",
     "general.error.audio-service-shutdown.text": "WinMute n'est pas en mesure de se remettre de cette situation.\nVeuillez essayer de redémarrer le programme.",
-    "popup.update-available.title": "WinMute {} est disponible !",
+    "popup.update-available.title": "WinMute {} est disponible !",
     "popup.update-available.text": "La version installée est {}.\nCliquez sur ce message pour ouvrir la page de téléchargement.",
     "popup.update-available-beta.title": "WinMute Bêta {} est disponible !",
     "popup.update-available-beta.text": "Votre version actuelle est {}.\nCliquez sur ce message pour ouvrir la page de téléchargement de la version bêta.",
