@@ -85,12 +85,9 @@ INT_PTR CALLBACK Settings_WifiAddDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
    case WM_COMMAND:
       if (LOWORD(wParam) == IDC_WIFI_NAME) {
          HWND hSsid = GetDlgItem(hDlg, IDC_WIFI_NAME);
-         if (HIWORD(wParam) == CBN_EDITUPDATE) {
+         if (HIWORD(wParam) == EN_UPDATE) {
             const int textLen = Edit_GetTextLength(hSsid);
             EnableWindow(GetDlgItem(hDlg, IDOK), textLen > 0);
-         } else if (HIWORD(wParam) == CBN_SELCHANGE) {
-            const auto curSelIdx = SendMessage(hSsid, CB_GETCURSEL, 0, 0);
-            EnableWindow(GetDlgItem(hDlg, IDOK), curSelIdx != CB_ERR);
          }
       } else if (LOWORD(wParam) == IDOK) {
          HWND hSsid = GetDlgItem(hDlg, IDC_WIFI_NAME);
@@ -200,7 +197,7 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       }
       Button_Enable(GetDlgItem(hDlg, IDC_WIFI_REMOVEALL),
                     ListBox_GetCount(hList) > 0);
-
+      
       if (!IsWlanAvailable()) {
          // Set defaults
          Button_SetCheck(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE), BST_UNCHECKED);
