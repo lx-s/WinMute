@@ -1,6 +1,7 @@
-﻿WinMute vereist een geïnstalleerde Microsoft Visual C++-runtimeomgeving.
+Zorg ervoor dat de nieuwste versie van Microsoft Visual C++ runtime geïnstalleerd is op uw systeem.
+Om enkel WinMute te draaien zijn enkel de x64 runtimebestanden vereist.
 
-Deze kan hier via de volgende links worden gedownload:
+Je kan het hier downloaden: 
 
-* https://docs.microsoft.com/cpp/windows/latest-supported-vc-redist 
+* https://docs.microsoft.com/cpp/windows/latest-supported-vc-redist
 * https://aka.ms/vs/17/release/vc_redist.x64.exe
