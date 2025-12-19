@@ -94,9 +94,15 @@ HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnSimpleVolumeChanged(
 }
 
 HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnChannelVolumeChanged(
-   DWORD /*channelCount*/, float* /*newChannelVolumeArray[]*/,
-   DWORD /*changedChannel*/, LPCGUID /*eventContext*/) noexcept
+   DWORD channelCount,
+   float newChannelVolumeArray[],
+   DWORD changedChannel,
+   LPCGUID eventContext) noexcept
 {
+   UNREFERENCED_PARAMETER(channelCount);
+   UNREFERENCED_PARAMETER(newChannelVolumeArray);
+   UNREFERENCED_PARAMETER(changedChannel);
+   UNREFERENCED_PARAMETER(eventContext);
    return S_OK;
 }
 

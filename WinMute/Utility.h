@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <string>
+#include <optional>
 #include <windows.h>
 
 // =============================================================================
@@ -46,6 +47,8 @@ std::wstring ConvertStringToWideString(const std::string &ansiString);
 std::string ConvertWideStringToString(const std::wstring &wideString);
 
 bool LaunchBrowser(HWND hParent, const std::wstring &url);
+
+std::optional<std::wstring> GetAudioDeviceName(const CComPtr<IMMDevice>& devicePtr);
 
 // =============================================================================
 // COM Helper

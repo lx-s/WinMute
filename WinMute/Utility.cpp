@@ -33,6 +33,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "Common.h"
 
+#include <Functiondiscoverykeys_devpkey.h>
+
 // =========================================================================
 //    Types
 // =========================================================================
@@ -108,6 +110,44 @@ bool GetWinMuteVersion(std::wstring &versNumber)
       pvi->dwFileVersionLS >> 16,
       pvi->dwFileVersionLS & 0xFFFF);
    return true;
+}
+
+// =========================================================================
+//    Audio Helper
+// =========================================================================
+
+std::optional<std::wstring> GetAudioDeviceName(
+   const CComPtr<IMMDevice> &devicePtr) {
+   WMLog &log = WMLog::GetInstance();
+
+   CComPtr<IPropertyStore> propStore = nullptr;
+   if (FAILED(devicePtr->OpenPropertyStore(STGM_READ, &propStore))) {
+      log.LogError(L"Failed to open property store for audio endpoint");
+      return std::nullopt;
+   }
+
+   PROPVARIANT propValue;
+   PropVariantInit(&propValue);
+   std::wstring deviceName;
+   if (SUCCEEDED(propStore->GetValue(PKEY_Device_FriendlyName, &propValue)) &&
+       propValue.vt == VT_LPWSTR) {
+      deviceName = propValue.pwszVal;
+   } else {
+      log.LogInfo(L"Failed to get device name for audio endpoint."
+                  L" Falling back to ID");
+   }
+   PropVariantClear(&propValue);
+   if (deviceName.empty()) { // Try to get the device ID as fallback
+      PWSTR deviceId;
+      if (SUCCEEDED(devicePtr->GetId(&deviceId))) {
+         deviceName = L"Device:" + std::wstring(deviceId);
+         CoTaskMemFree(deviceId);
+      } else {
+         log.LogError(L"Failed to get device id for audio endpoint");
+         return std::nullopt;
+      }
+   }
+   return deviceName;
 }
 
 // =========================================================================

@@ -38,6 +38,7 @@ POSSIBILITY OF SUCH DAMAGE.
 enum class LogLevel {
    Debug,
    Info,
+   Warning,
    Error,
 };
 
@@ -53,6 +54,7 @@ public:
 
    void LogDebug(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...);
    void LogInfo(_In_z_ _Printf_format_string_ const wchar_t* fmt, ...);
+   void LogWarning(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...);
    void LogError(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...);
    void LogWinError(const wchar_t *functionName, DWORD errorCode = -1);
 

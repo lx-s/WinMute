@@ -57,9 +57,9 @@ public:
 
 private:
    std::atomic<LONG> ref_count_;
-   IMMDeviceEnumerator* pEnumerator_;
+   CComPtr<IMMDeviceEnumerator> deviceEnumerator_;
    WinAudio* notifyParent_;
 
-   std::wstring GetFriendlyDeviceName(LPCWSTR pwstrDeviceId);
+   std::wstring GetDeviceNameFromId(LPCWSTR pwstrDeviceId);
 };
 

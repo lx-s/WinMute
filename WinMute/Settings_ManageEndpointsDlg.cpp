@@ -32,6 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "common.h"
+#include <atlbase.h>
 #include <mmdeviceapi.h>
 #include <Functiondiscoverykeys_devpkey.h>
 
@@ -41,23 +42,18 @@ struct EndpointData {
    std::wstring name;
 };
 
-_COM_SMARTPTR_TYPEDEF(IPropertyStore, __uuidof(IPropertyStore));
-_COM_SMARTPTR_TYPEDEF(IMMDevice, __uuidof(IMMDevice));
-_COM_SMARTPTR_TYPEDEF(IMMDeviceEnumerator, __uuidof(IMMDeviceEnumerator));
-_COM_SMARTPTR_TYPEDEF(IMMDeviceCollection, __uuidof(IMMDeviceCollection));
-
 static bool GetAudioEndpoints(std::vector<std::wstring>& endpoints)
 {
    WMLog &log = WMLog::GetInstance();
 
-   IMMDeviceEnumeratorPtr deviceEnumerator;
-   if (FAILED(deviceEnumerator.CreateInstance(
+   CComPtr<IMMDeviceEnumerator> deviceEnumerator;
+   if (FAILED(deviceEnumerator.CoCreateInstance(
          __uuidof(MMDeviceEnumerator),
          nullptr,
          CLSCTX_INPROC_SERVER))) {
       return false;
    }
-   IMMDeviceCollectionPtr audioEndpoints;
+   CComPtr<IMMDeviceCollection> audioEndpoints;
    if (FAILED(deviceEnumerator->EnumAudioEndpoints(
          eRender,
          DEVICE_STATE_ACTIVE,
@@ -71,31 +67,16 @@ static bool GetAudioEndpoints(std::vector<std::wstring>& endpoints)
    }
 
    for (UINT i = 0; i < epCount; ++i) {
-      IMMDevicePtr device = nullptr;
+      CComPtr<IMMDevice> device = nullptr;
       if (FAILED(audioEndpoints->Item(i, &device))) {
          log.LogError(L"Failed to get audio endpoint #%d", i);
          continue;
       }
 
-      IPropertyStorePtr propStore = nullptr;
-      if (FAILED(device->OpenPropertyStore(STGM_READ, &propStore))) {
-         log.LogError(L"Failed to open property store for audio endpoint #%d", i);
-         continue;
+      const auto deviceName = GetAudioDeviceName(device);
+      if (deviceName) {
+         endpoints.push_back(*deviceName);
       }
-
-      PROPVARIANT value;
-      PropVariantInit(&value);
-      if (FAILED(propStore->GetValue(PKEY_Device_FriendlyName, &value))) {
-         log.LogError(L"Failed to get device name for audio endpoint #%d", i);
-         continue;
-      }
-
-      wchar_t deviceName[100];
-      StringCchCopy(deviceName,
-                    sizeof(deviceName) / sizeof(deviceName[0]),
-                    value.pwszVal);
-      PropVariantClear(&value);
-      endpoints.push_back(deviceName);
    }
 
    return true;

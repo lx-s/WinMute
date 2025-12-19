@@ -41,6 +41,8 @@ static const wchar_t* LogLevelToString(LogLevel level)
       return L"DEBUG";
    case LogLevel::Info:
       return L"INFO";
+   case LogLevel::Warning:
+      return L"WARNING";
    case LogLevel::Error:
       return L"ERROR";
    default:
@@ -211,6 +213,18 @@ void WMLog::LogInfo(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...)
 
    vswprintf_s(buf, fmt, ap);
    StoreMessage(LogLevel::Info, buf);
+
+   va_end(ap);
+}
+
+void WMLog::LogWarning(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...)
+{
+   wchar_t buf[1024];
+   va_list ap;
+   va_start(ap, fmt);
+
+   vswprintf_s(buf, fmt, ap);
+   StoreMessage(LogLevel::Warning, buf);
 
    va_end(ap);
 }

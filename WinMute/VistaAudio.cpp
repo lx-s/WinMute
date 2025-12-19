@@ -39,11 +39,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #define IF_FAILED_JUMP(hResult, ExitLabel) if (FAILED(hr)) { goto ExitLabel; }
 
-_COM_SMARTPTR_TYPEDEF(IPropertyStore, __uuidof(IPropertyStore));
-_COM_SMARTPTR_TYPEDEF(IMMDevice,      __uuidof(IMMDevice));
-_COM_SMARTPTR_TYPEDEF(IMMDeviceCollection,   __uuidof(IMMDeviceCollection));
-_COM_SMARTPTR_TYPEDEF(IAudioSessionManager2, __uuidof(IAudioSessionManager2));
-
 Endpoint::Endpoint()
    : endpointVolume(nullptr), wasapiAudioEvents(nullptr), wasMuted(false)
 {
@@ -82,7 +77,7 @@ bool VistaAudio::LoadAllEndpoints()
 
    assert(deviceEnumerator_ != nullptr);
 
-   IMMDeviceCollectionPtr audioEndpoints;
+   CComPtr<IMMDeviceCollection> audioEndpoints;
    HRESULT hr = deviceEnumerator_->EnumAudioEndpoints(
       eRender,
       DEVICE_STATE_ACTIVE,
@@ -95,9 +90,8 @@ bool VistaAudio::LoadAllEndpoints()
 
    for (UINT i = 0; i < epCount; ++i) {
       std::unique_ptr<Endpoint> ep = std::make_unique<Endpoint>();
-      IMMDevicePtr device = nullptr;
-      IPropertyStorePtr propStore;
-
+      CComPtr<IMMDevice> device = nullptr;
+      CComPtr<IPropertyStore> propStore;
 
       hr = audioEndpoints->Item(i, &device);
       if (FAILED(hr)) {
@@ -105,39 +99,28 @@ bool VistaAudio::LoadAllEndpoints()
          continue;
       }
 
-      hr = device->OpenPropertyStore(STGM_READ, &propStore);
-      if (FAILED(hr)) {
-         log.LogError(L"Failed to open property store for audio endpoint #%d", i);
-         continue;
-      }
-
-      PROPVARIANT value;
-      PropVariantInit(&value);
-      hr = propStore->GetValue(PKEY_Device_FriendlyName, &value);
-      if (FAILED(hr)) {
+      const auto deviceName = GetAudioDeviceName(device);
+      if (!deviceName) {
          log.LogError(L"Failed to get device name for audio endpoint #%d", i);
          continue;
+      } else {
+         log.LogInfo(L"Found audio endpoint \"%s\"", deviceName->c_str());
+         ep->deviceName = *deviceName;
       }
-      log.LogInfo(L"Found audio endpoint \"%s\"", value.pwszVal);
-      StringCchCopy(ep->deviceName,
-                    sizeof(ep->deviceName)/sizeof(ep->deviceName[0]),
-                    value.pwszVal);
-      PropVariantClear(&value);
-
-
-      IAudioSessionManager2Ptr sessionManager2;
+      
+      CComPtr<IAudioSessionManager2> sessionManager2;
       if (FAILED(device->Activate(
             __uuidof(IAudioSessionManager2), CLSCTX_INPROC_SERVER, nullptr,
             reinterpret_cast<LPVOID*>(&sessionManager2)))) {
          log.LogError(L"Failed to retrieve audio session manager for \"%s\"",
-                   ep->deviceName);
+                   ep->deviceName.c_str());
          continue;
       }
 
       hr = sessionManager2->GetAudioSessionControl(nullptr, 0, &ep->sessionCtrl);
       if (FAILED(hr)) {
          log.LogError(L"Failed to retrieve audio session manager for \"%s\"",
-            ep->deviceName);
+            ep->deviceName.c_str());
          continue;
       }
 
@@ -152,7 +135,7 @@ bool VistaAudio::LoadAllEndpoints()
          nullptr, reinterpret_cast<LPVOID*>(&ep->endpointVolume));
       if (FAILED(hr)) {
          log.LogError(L"Failed to active endpoint volume for device \"%s\"",
-            ep->deviceName);
+            ep->deviceName.c_str());
          continue;
       }
       endpoints_.push_back(std::move(ep));
@@ -170,7 +153,7 @@ bool VistaAudio::Init(HWND hParent)
    hParent_ = hParent;
    reInit_ = false;
 
-   if (FAILED(deviceEnumerator_.CreateInstance(
+   if (FAILED(deviceEnumerator_.CoCreateInstance(
          __uuidof(MMDeviceEnumerator),
          nullptr,
          CLSCTX_INPROC_SERVER))) {
@@ -225,7 +208,7 @@ bool VistaAudio::AllEndpointsMuted()
          if (FAILED(e->endpointVolume->GetMute(&isMuted))) {
             log.LogError(
                L"Failed to get mute status for \"%s\"",
-               e->deviceName);
+               e->deviceName.c_str());
             allMuted = false;
             break;
          } else if (isMuted == FALSE) {
@@ -248,7 +231,7 @@ bool VistaAudio::SaveMuteStatus()
          if (FAILED(e->endpointVolume->GetMute(&isMuted))) {
             log.LogError(
                L"Failed to get mute status for \"%s\"",
-               e->deviceName);
+               e->deviceName.c_str());
             success = false;
          } else {
             e->wasMuted = isMuted;
@@ -268,17 +251,17 @@ bool VistaAudio::RestoreMuteStatus()
    }
    for (auto& e : endpoints_) {
       if (!IsEndpointManaged(e->deviceName)) {
-         log.LogInfo(L"Skipping Endpoint %s", e->deviceName);
+         log.LogInfo(L"Skipping Endpoint %s", e->deviceName.c_str());
          continue;
       }
       log.LogInfo(L"Restoring: Mute %s for \"%s\"",
                 (e->wasMuted) ? L"true" : L"false",
-                e->deviceName);
+                e->deviceName.c_str());
       if (e->wasMuted != true) {
          if (FAILED(e->endpointVolume->SetMute(false, nullptr))) {
             log.LogError(_T("Failed to restore mute status to %s for \"%s\""),
                       (e->wasMuted) ? L"true" : L"false",
-                      e->deviceName);
+                      e->deviceName.c_str());
             success = false;
          }
       }
@@ -294,20 +277,20 @@ void VistaAudio::SetMute(bool mute)
       for (auto& e : endpoints_) {
          BOOL isMuted = !mute;
          if (!IsEndpointManaged(e->deviceName)) {
-            log.LogInfo(L"Skipping Endpoint %s", e->deviceName);
+            log.LogInfo(L"Skipping Endpoint %s", e->deviceName.c_str());
             continue;
          }
          if (FAILED(e->endpointVolume->GetMute(&isMuted))) {
             log.LogError(
                L"Failed to get mute status for \"%s\"",
-               e->deviceName);
+               e->deviceName.c_str());
          }
          if (!!isMuted != mute) {
             if (FAILED(e->endpointVolume->SetMute(mute, nullptr))) {
                log.LogError(
                   L"Failed to set mute status to %s for \"%s\"",
                   (e->wasMuted) ? L"true" : L"false",
-                  e->deviceName);
+                  e->deviceName.c_str());
             }
          }
       }

@@ -38,10 +38,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "VistaAudioSessionEvents.h"
 #include "MMNotificationClient.h"
 
-_COM_SMARTPTR_TYPEDEF(IAudioEndpointVolume, __uuidof(IAudioEndpointVolume));
-_COM_SMARTPTR_TYPEDEF(IMMDeviceEnumerator, __uuidof(IMMDeviceEnumerator));
-_COM_SMARTPTR_TYPEDEF(IAudioSessionControl, __uuidof(IAudioSessionControl));
-
 class WinAudio {
 public:
    virtual bool Init(HWND hParent) = 0;
@@ -58,9 +54,9 @@ public:
 };
 
 struct Endpoint {
-   wchar_t deviceName[100];
-   IAudioEndpointVolumePtr endpointVolume;
-   IAudioSessionControlPtr sessionCtrl;
+   std::wstring deviceName;
+   CComPtr<IAudioEndpointVolume> endpointVolume;
+   CComPtr<IAudioSessionControl> sessionCtrl;
    std::unique_ptr<VistaAudioSessionEvents> wasapiAudioEvents;
 
    bool wasMuted;
@@ -96,8 +92,8 @@ private:
    bool IsEndpointManaged(const std::wstring& endpointName) const;
 
    std::vector<std::unique_ptr<Endpoint>> endpoints_;
-   MMNotificationClient* mmnAudioEvents_;
-   IMMDeviceEnumeratorPtr deviceEnumerator_;
+   CComPtr<MMNotificationClient> mmnAudioEvents_;
+   CComPtr<IMMDeviceEnumerator> deviceEnumerator_;
 
    bool reInit_;
    bool muteSpecificEndpoints_;
