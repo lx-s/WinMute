@@ -366,10 +366,12 @@ bool WMSettings::IsAutostartEnabled()
    } else {
       HKEY hRunKey = OpenAutostartKey(KEY_READ);
       if (hRunKey != nullptr) {
-         std::wstring path;
-         if (ReadStringFromRegistry(hRunKey, LX_SYSTEMS_AUTOSTART_KEY, path)) {
-            if (path != wmPath) {
-               log.LogInfo(L"Autostart entry has wrong path");
+         std::wstring autostartPathFromReg;
+         if (ReadStringFromRegistry(hRunKey, LX_SYSTEMS_AUTOSTART_KEY, autostartPathFromReg)) {
+            if (autostartPathFromReg != wmPath) {
+               log.LogWarning(L"Registry entry for auto start has wrong executable path."
+                              L"Current path \"%s\". Path in registry \"%s\"",
+                              wmPath, autostartPathFromReg.c_str());
             } else {
                isEnabled = true;
             }
