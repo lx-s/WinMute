@@ -159,18 +159,18 @@ std::wstring MMNotificationClient:: GetFriendlyDeviceName(LPCWSTR pwstrDeviceId)
          __uuidof(IMMDeviceEnumerator),
          reinterpret_cast<void **>(&pEnumerator_));
    }
-   if (hr == S_OK) {
+   if (SUCCEEDED(hr)) {
       hr = pEnumerator_->GetDevice(pwstrDeviceId, &pDevice);
    }
-   if (hr == S_OK) {
+   if (SUCCEEDED(hr)) {
       hr = pDevice->OpenPropertyStore(STGM_READ, &pProps);
    }
-   if (hr == S_OK){
+   if (SUCCEEDED(hr)){
       // Get the endpoint device's friendly-name property.
       hr = pProps->GetValue(PKEY_Device_FriendlyName, &varString);
    }
    std::wstring deviceName = L"Unknown device";
-   if (hr == S_OK) {
+   if (SUCCEEDED(hr) && varString.vt == VT_LPWSTR) {
       deviceName = varString.pwszVal;
    }
 
