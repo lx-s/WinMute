@@ -131,45 +131,51 @@ bool UpdateChecker::ParseVersionFile(
    return true;
 }
 
-bool UpdateChecker::ParseVersion(const std::wstring &vers, std::vector<int>& parsedVers) const
+bool UpdateChecker::ParseVersion(const std::wstring& vers, std::vector<int>& parsedVers) const
 {
-   size_t lastVersionPos = 0;
-   size_t curPos = 0;
-   for (; curPos <= vers.length(); ++curPos) {
-      if (vers[curPos] == L'.' || vers[curPos] == L'\0') {
-         try {
-            const std::wstring versPart = vers.substr(lastVersionPos, curPos - lastVersionPos);
-            parsedVers.push_back(std::stoi(versPart));
-         } catch (...) {
+    std::wstringstream wss(vers);
+    std::wstring segment;
+    while (std::getline(wss, segment, L'.')) {
+        try {
+            parsedVers.push_back(std::stoi(segment));
+        }
+        catch (...) {
             return false;
-         }
-         lastVersionPos = curPos + 1;
-      }
-   }
-   return true;
+        }
+    }
+    return true;
 }
 
-std::optional<bool> UpdateChecker::IsVersionGreater(const std::wstring &newVers, const std::wstring &curVers) const
+std::optional<bool> UpdateChecker::IsVersionGreater(const std::wstring& newVers, const std::wstring& curVers) const
 {
-   std::vector<int> newVersParsed;
-   std::vector<int> curVersParsed;
-   WMLog &log = WMLog::GetInstance();
-   if (!ParseVersion(newVers, newVersParsed)) {
-      log.LogError(L"Failed to parse new version string \"%s\"", newVers.c_str());
-      return std::nullopt;
-   } else if (!ParseVersion(curVers, curVersParsed)) {
-      log.LogError(L"Failed to parse current version string \"%s\"", curVers.c_str());
-      return std::nullopt;
-   } else if (newVersParsed.size() != curVersParsed.size()) {
-      log.LogError(L"Version format mismatch \"%s\" / \"%s\"", curVers.c_str(), newVers.c_str());
-      return std::nullopt;
-   }
-   for (size_t i = 0; i < newVersParsed.size(); ++i) {
-      if (curVersParsed[i] < newVersParsed[i]) {
-         return true;
-      }
-   }
-   return false;
+    std::vector<int> newVersParsed;
+    std::vector<int> curVersParsed;
+    WMLog& log = WMLog::GetInstance();
+
+    if (!ParseVersion(newVers, newVersParsed)) {
+        log.LogError(L"Failed to parse new version string \"%s\"", newVers.c_str());
+        return std::nullopt;
+    }
+    if (!ParseVersion(curVers, curVersParsed)) {
+        log.LogError(L"Failed to parse current version string \"%s\"", curVers.c_str());
+        return std::nullopt;
+    }
+
+    if (newVersParsed.size() != curVersParsed.size()) {
+        log.LogError(L"Version format mismatch \"%s\" / \"%s\"", curVers.c_str(), newVers.c_str());
+        return std::nullopt;
+    }
+
+    for (size_t i = 0; i < newVersParsed.size(); ++i) {
+        if (newVersParsed[i] > curVersParsed[i]) {
+            return true;
+        }
+        if (newVersParsed[i] < curVersParsed[i]) {
+            return false;
+        }
+    }
+
+    return false;
 }
 
 bool UpdateChecker::GetUpdateInfo(UpdateInfo &updateInfo) const

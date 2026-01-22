@@ -53,15 +53,10 @@ static LRESULT CALLBACK WinMuteWndProc(
    LPARAM lParam)
 {
    auto wm = reinterpret_cast<WinMute*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
-   switch (msg) {
-   case WM_NCCREATE: {
+   if (msg == WM_NCCREATE) {
       LPCREATESTRUCTW cs = reinterpret_cast<LPCREATESTRUCTW>(lParam);
-      SetWindowLongPtrW(hWnd, GWLP_USERDATA,
-         reinterpret_cast<LONG_PTR>(cs->lpCreateParams));
+      SetWindowLongPtrW(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(cs->lpCreateParams));
       return TRUE;
-   }
-   default:
-      break;
    }
    return (wm)
       ? wm->WindowProc(hWnd, msg, wParam, lParam)
@@ -467,7 +462,7 @@ LRESULT WinMute::OnCommand(HWND hWnd, WPARAM wParam, LPARAM)
             MAKEINTRESOURCE(IDD_SETTINGS),
             hWnd_,
             SettingsDlgProc,
-            reinterpret_cast<LPARAM>(&settings_)) == 0) {
+            static_cast<LPARAM>(reinterpret_cast<INT_PTR>(&settings_))) == 0) {
             LoadSettings();
             InitTrayMenu();
             quietHours_.Reset(settings_);
@@ -577,11 +572,15 @@ LRESULT WinMute::OnPowerBroadcast(HWND, WPARAM wParam, LPARAM lParam)
          reinterpret_cast<PPOWERBROADCAST_SETTING>(lParam);
       if (IsEqualGUID(bs->PowerSetting, GUID_CONSOLE_DISPLAY_STATE)) {
          const DWORD state = bs->Data[0];
-         if (state == 0x0) { // Display standby
+         enum class DisplayState : DWORD {
+             Off = 0,
+             On = 1,
+             Dimmed = 2
+         };
+         if (state == static_cast<DWORD>(DisplayState::Off)) {
             muteCtrl_.NotifyDisplayStandby(true);
-         } else if (state == 0x1) { // Display on
+         } else if (state == static_cast<DWORD>(DisplayState::On)) {
             muteCtrl_.NotifyDisplayStandby(false);
-         } else if (state == 0x2) { // Display dimmed
          }
       }
    }

@@ -107,4 +107,7 @@ private:
 
    bool MigrateSettings();
    HKEY OpenAutostartKey(REGSAM samDesired);
+
+   bool StoreStringList(HKEY hKey, const std::vector<std::wstring>& strings, const std::wstring& nameTemplate);
+   std::vector<std::wstring> GetStringList(HKEY hKey) const;
 };

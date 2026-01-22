@@ -490,291 +490,131 @@ bool WMSettings::SetValue(SettingsKey key, const std::wstring &value)
    return true;
 }
 
+bool WMSettings::StoreStringList(HKEY hKey, const std::vector<std::wstring>& strings, const std::wstring& nameTemplate)
+{
+    // Clear all stored keys
+    for (;;) {
+        wchar_t valueName[260] = { 0 };
+        DWORD valueSize = ARRAY_SIZE(valueName);
+        DWORD regError = RegEnumValueW(
+            hKey,
+            0,
+            valueName,
+            &valueSize,
+            nullptr,
+            nullptr,
+            nullptr,
+            nullptr);
+        if (regError == ERROR_NO_MORE_ITEMS) {
+            break;
+        }
+        else if (regError != ERROR_SUCCESS) {
+            ShowWindowsError(L"RegEnumValue", regError);
+            return false;
+        }
+        else {
+            regError = RegDeleteValue(hKey, valueName);
+            if (regError != ERROR_SUCCESS) {
+                ShowWindowsError(L"RegDeleteValue", regError);
+                return false;
+            }
+        }
+    }
+
+    std::vector<std::wstring> normalizedStrings = strings;
+    NormalizeStringList(normalizedStrings);
+
+    for (size_t i = 0; i < normalizedStrings.size(); ++i) {
+        wchar_t valueName[25];
+        StringCchPrintfW(valueName, ARRAY_SIZE(valueName), nameTemplate.c_str(), i + 1);
+        const std::wstring& v = normalizedStrings[i];
+        DWORD regError = RegSetValueExW(
+            hKey,
+            valueName,
+            0,
+            REG_SZ,
+            reinterpret_cast<const BYTE*>(v.c_str()),
+            static_cast<DWORD>(v.length() + 1) * sizeof(wchar_t));
+        if (regError != ERROR_SUCCESS) {
+            ShowWindowsError(L"RegSetValueEx", regError);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+std::vector<std::wstring> WMSettings::GetStringList(HKEY hKey) const
+{
+    std::vector<std::wstring> strings;
+    for (int valIdx = 0; ; ++valIdx) {
+        wchar_t valueName[260] = { 0 };
+        wchar_t dataBuf[260] = { 0 };
+        DWORD valueSize = ARRAY_SIZE(valueName);
+        DWORD valType = 0;
+        DWORD dataLen = ARRAY_SIZE(dataBuf);
+
+        DWORD regError = RegEnumValueW(
+            hKey,
+            valIdx,
+            valueName,
+            &valueSize,
+            nullptr,
+            &valType,
+            reinterpret_cast<BYTE*>(dataBuf),
+            &dataLen);
+        if (regError == ERROR_NO_MORE_ITEMS) {
+            break;
+        }
+        else if (regError != ERROR_SUCCESS) {
+            ShowWindowsError(L"RegEnumValue", regError);
+            return {};
+        }
+        else {
+            strings.push_back(dataBuf);
+        }
+    }
+    NormalizeStringList(strings);
+    return strings;
+}
+
 bool WMSettings::StoreWifiNetworks(std::vector<std::wstring>& networks)
 {
-   // Clear all stored keys
-   for (;;) {
-      wchar_t valueName[260] = { 0 };
-      DWORD valueSize = ARRAY_SIZE(valueName);
-      DWORD regError = RegEnumValueW(
-         hWifiKey_,
-         0,
-         valueName,
-         &valueSize,
-         nullptr,
-         nullptr,
-         nullptr,
-         nullptr);
-      if (regError == ERROR_NO_MORE_ITEMS) {
-         break;
-      } else if (regError != ERROR_SUCCESS) {
-         ShowWindowsError(L"RegEnumValue", regError);
-         return false;
-      } else {
-         regError = RegDeleteValue(hWifiKey_, valueName);
-         if (regError != ERROR_SUCCESS) {
-            ShowWindowsError(L"RegDeleteValue", regError);
-            return false;
-         }
-      }
-   }
-
-   NormalizeStringList(networks);
-
-   for (size_t i = 0; i < networks.size(); ++i) {
-      wchar_t valueName[25];
-      StringCchPrintfW(valueName, ARRAY_SIZE(valueName), L"WiFi %03lld", i + 1);
-      const std::wstring& v = networks[i];
-      DWORD regError = RegSetValueExW(
-         hWifiKey_,
-         valueName,
-         0,
-         REG_SZ,
-         reinterpret_cast<const BYTE*>(v.c_str()),
-         static_cast<DWORD>(v.length() + 1) * sizeof(wchar_t));
-      if (regError != ERROR_SUCCESS) {
-         ShowWindowsError(L"RegSetValueEx", regError);
-         return false;
-      }
-   }
-
-   return true;
+    return StoreStringList(hWifiKey_, networks, L"WiFi %03lld");
 }
 
 std::vector<std::wstring> WMSettings::GetWifiNetworks() const
 {
-   std::vector<std::wstring> networks;
-   for (int valIdx = 0; ; ++valIdx) {
-      wchar_t valueName[260] = { 0 };
-      wchar_t dataBuf[260] = { 0 };
-      DWORD valueSize = ARRAY_SIZE(valueName);
-      DWORD valType = 0;
-      DWORD dataLen = ARRAY_SIZE(dataBuf);
-
-      DWORD regError = RegEnumValueW(
-         hWifiKey_,
-         valIdx,
-         valueName,
-         &valueSize,
-         nullptr,
-         &valType,
-         reinterpret_cast<BYTE*>(dataBuf),
-         &dataLen);
-      if (regError == ERROR_NO_MORE_ITEMS) {
-         break;
-      } else if (regError != ERROR_SUCCESS) {
-         ShowWindowsError(L"RegEnumValue", regError);
-         return {};
-      } else {
-         networks.push_back(dataBuf);
-      }
-   }
-   NormalizeStringList(networks);
-   return networks;
+    return GetStringList(hWifiKey_);
 }
 
 bool WMSettings::StoreBluetoothDevices(std::vector<std::wstring>& devices)
 {
-   // Clear all stored keys
-   for (;;) {
-      wchar_t valueName[260] = { 0 };
-      DWORD valueSize = ARRAY_SIZE(valueName);
-      DWORD regError = RegEnumValueW(
-         hBluetoothKey_,
-         0,
-         valueName,
-         &valueSize,
-         nullptr,
-         nullptr,
-         nullptr,
-         nullptr);
-      if (regError == ERROR_NO_MORE_ITEMS) {
-         break;
-      } else if (regError != ERROR_SUCCESS) {
-         ShowWindowsError(L"RegEnumValue", regError);
-         return false;
-      } else {
-         regError = RegDeleteValue(hBluetoothKey_, valueName);
-         if (regError != ERROR_SUCCESS) {
-            ShowWindowsError(L"RegDeleteValue", regError);
-            return false;
-         }
-      }
-   }
-
-   NormalizeStringList(devices);
-
-   for (size_t i = 0; i < devices.size(); ++i) {
-      wchar_t valueName[25];
-      StringCchPrintfW(
-         valueName,
-         ARRAY_SIZE(valueName),
-         L"Bluetooth %03lld", i + 1);
-      const std::wstring& v = devices[i];
-      DWORD regError = RegSetValueEx(
-         hBluetoothKey_,
-         valueName,
-         0,
-         REG_SZ,
-         reinterpret_cast<const BYTE*>(v.c_str()),
-         static_cast<DWORD>(v.length() + 1) * sizeof(wchar_t));
-      if (regError != ERROR_SUCCESS) {
-         ShowWindowsError(L"RegSetValueEx", regError);
-         return false;
-      }
-   }
-
-   return true;
+    return StoreStringList(hBluetoothKey_, devices, L"Bluetooth %03lld");
 }
 
 std::vector<std::string> WMSettings::GetBluetoothDevicesA() const
 {
-   std::vector<std::string> devices;
-   for (int valIdx = 0; ; ++valIdx) {
-      char valueName[260] = { 0 };
-      char dataBuf[260] = { 0 };
-      DWORD valueSize = ARRAY_SIZE(valueName);
-      DWORD valType = 0;
-      DWORD dataLen = ARRAY_SIZE(dataBuf);
-
-      DWORD regError = RegEnumValueA(
-         hBluetoothKey_,
-         valIdx,
-         valueName,
-         &valueSize,
-         nullptr,
-         &valType,
-         reinterpret_cast<BYTE*>(dataBuf),
-         &dataLen);
-      if (regError == ERROR_NO_MORE_ITEMS) {
-         break;
-      } else if (regError != ERROR_SUCCESS) {
-         ShowWindowsError(L"RegEnumValue", regError);
-         return {};
-      } else {
-         devices.push_back(dataBuf);
-      }
-   }
-   NormalizeStringList(devices);
-   return devices;
+    std::vector<std::wstring> devicesW = GetStringList(hBluetoothKey_);
+    std::vector<std::string> devicesA;
+    for (const auto& wstr : devicesW) {
+        devicesA.push_back(std::string(wstr.begin(), wstr.end()));
+    }
+    return devicesA;
 }
 
 std::vector<std::wstring> WMSettings::GetBluetoothDevicesW() const
 {
-   std::vector<std::wstring> devices;
-   for (int valIdx = 0; ; ++valIdx) {
-      wchar_t valueName[260] = { 0 };
-      wchar_t dataBuf[260] = { 0 };
-      DWORD valueSize = ARRAY_SIZE(valueName);
-      DWORD valType = 0;
-      DWORD dataLen = ARRAY_SIZE(dataBuf);
-
-      DWORD regError = RegEnumValueW(
-         hBluetoothKey_,
-         valIdx,
-         valueName,
-         &valueSize,
-         nullptr,
-         &valType,
-         reinterpret_cast<BYTE*>(dataBuf),
-         &dataLen);
-      if (regError == ERROR_NO_MORE_ITEMS) {
-         break;
-      } else if (regError != ERROR_SUCCESS) {
-         ShowWindowsError(L"RegEnumValue", regError);
-         return {};
-      } else {
-         devices.push_back(dataBuf);
-      }
-   }
-   NormalizeStringList(devices);
-   return devices;
+    return GetStringList(hBluetoothKey_);
 }
 
-
-bool WMSettings::StoreManagedAudioEndpoints(std::vector<std::wstring> &endpoints)
+bool WMSettings::StoreManagedAudioEndpoints(std::vector<std::wstring>& endpoints)
 {
-   // Clear all stored keys
-   for (;;) {
-      wchar_t valueName[260] = { 0 };
-      DWORD valueSize = ARRAY_SIZE(valueName);
-      DWORD regError = RegEnumValueW(
-         hAudioEndpointsKey_,
-         0,
-         valueName,
-         &valueSize,
-         nullptr,
-         nullptr,
-         nullptr,
-         nullptr);
-      if (regError == ERROR_NO_MORE_ITEMS) {
-         break;
-      } else if (regError != ERROR_SUCCESS) {
-         ShowWindowsError(L"RegEnumValue", regError);
-         return false;
-      } else {
-         regError = RegDeleteValue(hAudioEndpointsKey_, valueName);
-         if (regError != ERROR_SUCCESS) {
-            ShowWindowsError(L"RegDeleteValue", regError);
-            return false;
-         }
-      }
-   }
-
-   NormalizeStringList(endpoints);
-
-   for (size_t i = 0; i < endpoints.size(); ++i) {
-      wchar_t valueName[25];
-      StringCchPrintfW(
-         valueName,
-         ARRAY_SIZE(valueName),
-         L"Endpoint %03lld", i + 1);
-      const std::wstring &v = endpoints[i];
-      DWORD regError = RegSetValueEx(
-         hAudioEndpointsKey_,
-         valueName,
-         0,
-         REG_SZ,
-         reinterpret_cast<const BYTE *>(v.c_str()),
-         static_cast<DWORD>(v.length() + 1) * sizeof(wchar_t));
-      if (regError != ERROR_SUCCESS) {
-         ShowWindowsError(L"RegSetValueEx", regError);
-         return false;
-      }
-   }
-
-   return true;
+    return StoreStringList(hAudioEndpointsKey_, endpoints, L"Endpoint %03lld");
 }
 
 std::vector<std::wstring> WMSettings::GetManagedAudioEndpoints() const
 {
-   std::vector<std::wstring> devices;
-   for (int valIdx = 0; ; ++valIdx) {
-      wchar_t valueName[260] = { 0 };
-      wchar_t dataBuf[260] = { 0 };
-      DWORD valueSize = ARRAY_SIZE(valueName);
-      DWORD valType = 0;
-      DWORD dataLen = ARRAY_SIZE(dataBuf);
-
-      DWORD regError = RegEnumValueW(
-         hAudioEndpointsKey_,
-         valIdx,
-         valueName,
-         &valueSize,
-         nullptr,
-         &valType,
-         reinterpret_cast<BYTE *>(dataBuf),
-         &dataLen);
-      if (regError == ERROR_NO_MORE_ITEMS) {
-         break;
-      } else if (regError != ERROR_SUCCESS) {
-         ShowWindowsError(L"RegEnumValue", regError);
-         return {};
-      } else {
-         devices.push_back(dataBuf);
-      }
-   }
-   NormalizeStringList(devices);
-   return devices;
+    return GetStringList(hAudioEndpointsKey_);
 }
 
