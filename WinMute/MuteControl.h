@@ -56,7 +56,10 @@ public:
    void SetMuteOnRemoteSession(bool enable);
    void SetMuteOnDisplayStandby(bool enable);
    void SetMuteOnBluetoothDisconnect(bool enable);
-   
+
+   void SetMuteTryPauseMedia(bool enable);
+   void SetMuteTryResumeMedia(bool enable);
+
    void SetMuteOnLogout(bool enable);
    void SetMuteOnSuspend(bool enable);
    void SetMuteOnShutdown(bool enable);
@@ -97,9 +100,14 @@ private:
       bool shouldMute;
       bool active;
    };
+   struct MediaConfig {
+      bool tryPause = false;
+      bool tryResume = false;
+   } mediaConfig_;
    std::vector<MuteConfig> muteConfig_;
    bool restoreVolume_ = false;
    bool notificationsEnabled_ = false;
+   bool mediaWasPlaying_ = false;
    int muteDelaySeconds_ = 0;
    UINT_PTR delayedMuteTimerId_ = 0;
    std::unique_ptr<WinAudio> winAudio_;
@@ -116,4 +124,6 @@ private:
    void RestoreVolume(bool withDelay = false);
    void ShowNotification(const std::wstring& title, const std::wstring& text);
    bool StartDelayedMute();
+
+   void MuteNow();
 };

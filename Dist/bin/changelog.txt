@@ -1,3 +1,8 @@
+Version 2.5.5 (2026-01-23)
+ * Added feature to also try pausing/resuming currently playing media when muting/unmuting.
+ * Fixed loading of languages that have certain translations missing.
+ * Fixed rare crashes when trying to get the audio device name from the system.
+
 Version 2.5.4 (2025-11-12)
  * Fixed: "Save" Button not enabling, when adding a new WiFi SSID
 

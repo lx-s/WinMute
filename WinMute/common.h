@@ -99,6 +99,7 @@ namespace fs = std::filesystem;
 #include <Mmdeviceapi.h>
 #include <dwmapi.h>
 #include <sal.h>
+#include <roapi.h>
 #pragma warning(disable : 4201)
 #  include <endpointvolume.h>
 #pragma warning(default : 4201)
@@ -113,6 +114,7 @@ namespace fs = std::filesystem;
 #include "UpdateChecker.h"
 #include "TrayIcon.h"
 #include "WinAudio.h"
+#include "MediaController.h"
 #include "MuteControl.h"
 #include "WiFiDetector.h"
 #include "BluetoothDetector.h"

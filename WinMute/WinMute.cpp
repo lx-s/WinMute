@@ -291,6 +291,8 @@ bool WinMute::LoadSettings()
       log.LogInfo(L"\tMute on shutdown: %s", settings_.QueryValue(SettingsKey::MUTE_ON_SHUTDOWN) ? L"Yes" : L"No");
       log.LogInfo(L"\tShow notifications: %s", settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED) ? L"Yes" : L"No");
       log.LogInfo(L"\tMute on bluetooth: %s", settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH) ? L"Yes" : L"No");
+      log.LogInfo(L"\tTry pausing media when muting: %s", settings_.QueryValue(SettingsKey::MUTE_TRY_PAUSE_MEDIA) ? L"Yes" : L"No");
+      log.LogInfo(L"\tTry resuming media when unmuting: %s", settings_.QueryValue(SettingsKey::MUTE_TRY_RESUME_MEDIA) ? L"Yes" : L"No");
       log.LogInfo(L"\t\tUse devicelist: %s", settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH_DEVICELIST) ? L"Yes" : L"No");
       log.LogInfo(L"\tMute on WLAN: %s", settings_.QueryValue(SettingsKey::MUTE_ON_WLAN) ? L"Yes" : L"No");
       log.LogInfo(L"\t\tUse allowlist: %s", settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST) ? L"Yes" : L"No");
@@ -311,6 +313,8 @@ bool WinMute::LoadSettings()
    muteCtrl_.SetMuteOnLogout(settings_.QueryValue(SettingsKey::MUTE_ON_LOGOUT));
    muteCtrl_.SetMuteOnSuspend(settings_.QueryValue(SettingsKey::MUTE_ON_SUSPEND));
    muteCtrl_.SetMuteOnShutdown(settings_.QueryValue(SettingsKey::MUTE_ON_SHUTDOWN));
+   muteCtrl_.SetMuteTryPauseMedia(settings_.QueryValue(SettingsKey::MUTE_TRY_PAUSE_MEDIA));
+   muteCtrl_.SetMuteTryResumeMedia(settings_.QueryValue(SettingsKey::MUTE_TRY_RESUME_MEDIA));
 
    muteCtrl_.SetNotifications(settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED));
 

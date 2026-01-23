@@ -96,6 +96,8 @@
   "settings.mute.mute-without-restore.when-computer-goes-to-sleep": "... the computer goes into sleep/hibernate",
   "settings.mute.mute-without-restore.when-user-logs-out": "... the user logs out",
   "settings.mute.mute-without-restore.when-rdp-session-starts": "... WinMute is started within a RDP session",
+  "settings.mute.try-pause-media-on-mute": "Try pausing currently played media when muting.",
+  "settings.mute.try-resume-media-on-unmute": "Try resuming media when unmuting.",
   "settings.quiet-hours.intro": "During Quiet Hours WinMute automatically mutes the computers audio devices and unmutes them afterwards.",
   "settings.quiet-hours.enable": "Enable Quiet Hours",
   "settings.quiet-hours.start-time-label": "Start time:",

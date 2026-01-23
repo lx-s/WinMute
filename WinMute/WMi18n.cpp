@@ -148,16 +148,20 @@ bool WMi18n::LoadLanguage(const std::wstring &fileName, TranslationMap &strings)
             log.LogError(L"Language module \"%ls\" has nested elements", langFilePath->c_str());
             return false;
          }
-         const auto value = ConvertStringToWideString(it.value());
-         if (value == L"") {
-            log.LogError(L"Unable to convert language element \"%S\"", it.key().c_str());
-            return false;
+         if (it.value() == L"") {
+            log.LogInfo(L"No translation for \"%S\" found in language file", it.key().c_str());
+         } else {
+            const auto value = ConvertStringToWideString(it.value());
+            if (value == L"") {
+               log.LogError(L"Unable to convert language element \"%S\"", it.key().c_str());
+               return false;
+            }
+            if (translations_temp.contains(it.key())) {
+               log.LogError(L"Double entry for language key \"%S\" found.", it.key().c_str());
+               return false;
+            }
+            translations_temp[it.key()] = value;
          }
-         if (translations_temp.contains(it.key())) {
-            log.LogError(L"Double entry for language key \"%S\" found.", it.key().c_str());
-            return false;
-         }
-         translations_temp[it.key()] = value;
       }
       strings = std::move(translations_temp);
    } catch (const nlohmann::json::parse_error &pe) {

@@ -60,15 +60,11 @@ VistaAudio::VistaAudio() :
    muteSpecificEndpointsAllowList_(false),
    hParent_(nullptr)
 {
-   if (FAILED(CoInitialize(nullptr))) {
-      throw std::exception("Failed to initialize COM Library");
-   }
 }
 
 VistaAudio::~VistaAudio()
 {
    Uninit();
-   CoUninitialize();
 }
 
 bool VistaAudio::LoadAllEndpoints()

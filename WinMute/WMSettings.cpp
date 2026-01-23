@@ -98,6 +98,12 @@ static const wchar_t* KeyToStr(SettingsKey key)
    case SettingsKey::MUTE_DELAY:
       keyStr = L"MuteDelay";
       break;
+   case SettingsKey::MUTE_TRY_PAUSE_MEDIA:
+      keyStr = L"MuteTryPauseMedia";
+      break;
+   case SettingsKey::MUTE_TRY_RESUME_MEDIA:
+      keyStr = L"MuteTryResumeMedia";
+      break;
    case SettingsKey::QUIETHOURS_ENABLE:
       keyStr = L"QuietHoursEnabled";
       break;
@@ -161,6 +167,10 @@ static DWORD GetDefaultSetting(SettingsKey key)
       return MUTE_ENDPOINT_MODE_INDIVIDUAL_ALLOW_LIST;
    case SettingsKey::MUTE_DELAY:
       return 0;
+   case SettingsKey::MUTE_TRY_PAUSE_MEDIA:
+      return 1;
+   case SettingsKey::MUTE_TRY_RESUME_MEDIA:
+      return 1;
    case SettingsKey::QUIETHOURS_ENABLE:
       return 0;
    case SettingsKey::QUIETHOURS_FORCEUNMUTE:

@@ -67,6 +67,9 @@ static void LoadMuteDlgTranslation(HWND hDlg)
    i18n.SetItemText(hDlg, IDC_MUTE_WHEN_SLEEP, "settings.mute.mute-without-restore.when-computer-goes-to-sleep");
    i18n.SetItemText(hDlg, IDC_MUTE_WHEN_LOGOUT, "settings.mute.mute-without-restore.when-user-logs-out");
    i18n.SetItemText(hDlg, IDC_MUTE_WHEN_RDP_SESSION, "settings.mute.mute-without-restore.when-rdp-session-starts");
+
+   i18n.SetItemText(hDlg, IDC_MUTE_TRY_PAUSE_MEDIA, "settings.mute.try-pause-media-on-mute");
+   i18n.SetItemText(hDlg, IDC_MUTE_TRY_RESUME_MEDIA, "settings.mute.try-resume-media-on-unmute");
 }
 
 INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -94,6 +97,9 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       HWND hMuteOnSleep = GetDlgItem(hDlg, IDC_MUTE_WHEN_SLEEP);
       HWND hMuteOnLogout = GetDlgItem(hDlg, IDC_MUTE_WHEN_LOGOUT);
 
+      HWND hTryPauseMedia = GetDlgItem(hDlg, IDC_MUTE_TRY_PAUSE_MEDIA);
+      HWND hTryResumeMedia = GetDlgItem(hDlg, IDC_MUTE_TRY_RESUME_MEDIA);
+
       WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
       assert(settings != nullptr);
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(settings));
@@ -115,6 +121,9 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       SetCheckButton(hMuteOnShutdown, *settings, SettingsKey::MUTE_ON_SHUTDOWN);
       SetCheckButton(hMuteOnSleep, *settings, SettingsKey::MUTE_ON_SUSPEND);
       SetCheckButton(hMuteOnLogout, *settings, SettingsKey::MUTE_ON_LOGOUT);
+
+      SetCheckButton(hTryPauseMedia, *settings, SettingsKey::MUTE_TRY_PAUSE_MEDIA);
+      SetCheckButton(hTryResumeMedia, *settings, SettingsKey::MUTE_TRY_RESUME_MEDIA);
 
       return TRUE;
    }
@@ -150,6 +159,9 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       HWND hMuteOnSleep = GetDlgItem(hDlg, IDC_MUTE_WHEN_SLEEP);
       HWND hMuteOnLogout = GetDlgItem(hDlg, IDC_MUTE_WHEN_LOGOUT);
 
+      HWND hTryPauseMedia = GetDlgItem(hDlg, IDC_MUTE_TRY_PAUSE_MEDIA);
+      HWND hTryResumeMedia = GetDlgItem(hDlg, IDC_MUTE_TRY_RESUME_MEDIA);
+
       // General
       SetOption(hNotify, *settings, SettingsKey::NOTIFICATIONS_ENABLED);
       SetOption(hManageEndpoints, *settings, SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS);
@@ -166,6 +178,10 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       SetOption(hMuteOnShutdown, *settings, SettingsKey::MUTE_ON_SHUTDOWN);
       SetOption(hMuteOnSleep, *settings, SettingsKey::MUTE_ON_SUSPEND);
       SetOption(hMuteOnLogout, *settings, SettingsKey::MUTE_ON_LOGOUT);
+
+      // Media
+      SetOption(hTryPauseMedia, *settings, SettingsKey::MUTE_TRY_PAUSE_MEDIA);
+      SetOption(hTryResumeMedia, *settings, SettingsKey::MUTE_TRY_RESUME_MEDIA);
 
       return 0;
    }

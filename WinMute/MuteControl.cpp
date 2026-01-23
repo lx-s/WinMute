@@ -189,10 +189,7 @@ void MuteControl::MuteDelayed(int magic)
       return;
    }
    WMLog::GetInstance().LogInfo(L"Muting workstation after delay");
-   ShowNotification(
-      WMi18n::GetInstance().GetTranslationW("popup.muting-workstation-after-delay.title"),
-      WMi18n::GetInstance().GetTranslationW("popup.muting-workstation-after-delay.text"));
-   winAudio_->SetMute(true);
+   MuteNow();
    KillTimer(hMuteCtrlWnd_, delayedMuteTimerId_);
    delayedMuteTimerId_ = 0;
 }
@@ -239,6 +236,10 @@ void MuteControl::RestoreVolume(bool withDelay)
          Sleep(BLUETOOTH_RECONNECT_UNMUTE_DELAY);
       }
       winAudio_->RestoreMuteStatus();
+      if (mediaWasPlaying_ && mediaConfig_.tryResume) {
+         MediaController::TryPlayCurrentSession();
+         mediaWasPlaying_ = false;
+      }
    }
 }
 
@@ -287,6 +288,16 @@ void MuteControl::SetMuteOnBluetoothDisconnect(bool enable)
    muteConfig_[MuteTypeBluetoothDisconnect].shouldMute = enable;
 }
 
+void MuteControl::SetMuteTryPauseMedia(bool enable)
+{
+   mediaConfig_.tryPause = enable;
+}
+
+void MuteControl::SetMuteTryResumeMedia(bool enable)
+{
+   mediaConfig_.tryResume = enable;
+}
+
 bool MuteControl::GetRestoreVolume()
 {
    return restoreVolume_;
@@ -327,6 +338,22 @@ bool MuteControl::GetMuteOnShutdown() const
    return muteConfig_[MuteTypeShutdown].shouldMute;
 }
 
+void MuteControl::MuteNow()
+{
+   WMLog::GetInstance().LogInfo(L"Muting workstation");
+   ShowNotification(
+      WMi18n::GetInstance().GetTranslationW("popup.muting-workstation.title"),
+      WMi18n::GetInstance().GetTranslationW("popup.muting-workstation.text"));
+   winAudio_->SetMute(true);
+   if (mediaConfig_.tryPause) {
+      bool did_pause = false;
+      if (MediaController::TryPauseCurrentSession(did_pause)) {
+         mediaWasPlaying_ = did_pause;
+      }
+   }
+}
+
+
 void MuteControl::NotifyRestoreCondition(int type, bool active, bool withDelay)
 {
    if (active) {
@@ -334,11 +361,7 @@ void MuteControl::NotifyRestoreCondition(int type, bool active, bool withDelay)
       muteConfig_[type].active = active;
       if (muteConfig_[type].shouldMute) {
          if (muteDelaySeconds_ == 0) {
-            WMLog::GetInstance().LogInfo(L"Muting workstation");
-            ShowNotification(
-               WMi18n::GetInstance().GetTranslationW("popup.muting-workstation.title"),
-               WMi18n::GetInstance().GetTranslationW("popup.muting-workstation.text"));
-            winAudio_->SetMute(true);
+            MuteNow();
          } else {
             WMLog::GetInstance().LogInfo(L"Starting delayed mute timer...");
             StartDelayedMute();

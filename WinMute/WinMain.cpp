@@ -79,10 +79,10 @@ static bool InitWindowsComponents()
    initComCtrl.dwICC = ICC_LINK_CLASS;
    if (InitCommonControlsEx(&initComCtrl) == FALSE) {
       WMLog::GetInstance().LogWinError(L"InitCommonControlsEx", GetLastError());
-      return FALSE;
-   } else if (CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED) != S_OK) {
-      WMLog::GetInstance().LogWinError(L"CoInitializeEx", GetLastError());
-      return FALSE;
+      return false;
+   } else if (FAILED(RoInitialize(RO_INIT_MULTITHREADED))) {
+      WMLog::GetInstance().LogWinError(L"RoInitialize", GetLastError());
+      return false;
    }
    return TRUE;
 }
@@ -161,7 +161,7 @@ int WINAPI wWinMain(
       }
    }
 
-   CoUninitialize();
+   RoUninitialize();
    ReleaseMutex(hMutex);
    return static_cast<int>(msg.wParam);
 }
