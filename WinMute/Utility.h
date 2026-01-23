@@ -35,7 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include <string>
 #include <optional>
+
+#include <atlbase.h>
 #include <windows.h>
+#include <mmdeviceapi.h>
 
 // =============================================================================
 // Utility
@@ -48,14 +51,15 @@ std::string ConvertWideStringToString(const std::wstring &wideString);
 
 bool LaunchBrowser(HWND hParent, const std::wstring &url);
 
-std::optional<std::wstring> GetAudioDeviceName(const CComPtr<IMMDevice>& devicePtr);
+std::optional<std::wstring> GetAudioDeviceName(const CComPtr<IMMDevice> &devicePtr);
 
 // =============================================================================
 // COM Helper
-template<class Interface>
+template <class Interface>
 inline void SafeRelease(Interface **ppInterfaceToRelease)
 {
-   if (*ppInterfaceToRelease) {
+   if (*ppInterfaceToRelease)
+   {
       (*ppInterfaceToRelease)->Release();
       (*ppInterfaceToRelease) = nullptr;
    }
