@@ -1,7 +1,7 @@
-﻿请确保您的系统上安装了最新的Microsoft Visual C++。
-运行WinMute，需要x64支持。
+﻿请确保您的系统已安装最新的 Microsoft Visual C++ 运行时库。
+运行 WinMute 只需安装 x64 运行时文件。
 
-您可以在此处下载: 
+您可以在此处下载： 
 
 * https://docs.microsoft.com/cpp/windows/latest-supported-vc-redist 
 * https://aka.ms/vs/17/release/vc_redist.x64.exe
