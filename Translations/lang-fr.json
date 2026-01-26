@@ -133,5 +133,7 @@
     "about.tab.license": "Licence",
     "about.btn-close": "OK",
     "settings.general.btn-open-log-window": "Afficher le journal...",
-    "log.title": "Fichier journal WinMute"
+    "log.title": "Fichier journal WinMute",
+    "settings.mute.try-pause-media-on-mute": "Essayez de mettre en pause la lecture multimédia en cours si vous coupez le son.",
+    "settings.mute.try-resume-media-on-unmute": "Essayez de reprendre la lecture multimédia une fois le son réactivé."
 }
