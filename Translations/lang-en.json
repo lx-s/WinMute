@@ -9,6 +9,8 @@
   "init.error.winmute.text": "WinMute encountered a critical error while initializing and must shut down.",
   "init.error.winmute.platform-support.title": "Only Windows Vista and newer is supported",
   "init.error.winmute.platform-support.text": "If Windows XP support is needed, please download WinMute version 1.4.2 or lower.",
+  "init.error.winmute.migrating-settings-error": "Failed to migrate settings. Please review error log and/or create a support ticket",
+  "init.error.winmute.quiet-hours-corrupted-settings": "Quiet Hours settings are corrupted. Quiet Hour times have been reset",
   "general.error.winapi.text": "{} failed with error {}: {}",
   "general.error.audio-service-shutdown.title": "The audio service has been shut down.",
   "general.error.audio-service-shutdown.text": "WinMute is not able to recover from that condition.\nPlease try to restart the program.",

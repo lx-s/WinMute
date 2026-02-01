@@ -130,8 +130,8 @@ bool QuietHoursTimer::LoadFromSettings(const WMSettings& settings)
       return true;
    }
 
-   qhStart_ = settings.QueryValue(SettingsKey::QUIETHOURS_START);
-   qhEnd_ = settings.QueryValue(SettingsKey::QUIETHOURS_END);
+   qhStart_ = settings.QueryValue(SettingsKey::QUIETHOURS_START_V0_DEPRECATED);
+   qhEnd_ = settings.QueryValue(SettingsKey::QUIETHOURS_END_V0_DEPRECATED);
 
    SYSTEMTIME now;
    SYSTEMTIME start;

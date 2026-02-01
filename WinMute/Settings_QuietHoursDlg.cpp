@@ -76,8 +76,8 @@ static bool SaveQuietHours(
    if (!settings->SetValue(SettingsKey::QUIETHOURS_ENABLE, enabled)
        || !settings->SetValue(SettingsKey::QUIETHOURS_FORCEUNMUTE, forceUnmute)
        || !settings->SetValue(SettingsKey::QUIETHOURS_NOTIFICATIONS, showNotifications)
-       || !settings->SetValue(SettingsKey::QUIETHOURS_START, setStart)
-       || !settings->SetValue(SettingsKey::QUIETHOURS_END, setEnd)) {
+       || !settings->SetValue(SettingsKey::QUIETHOURS_START_V0_DEPRECATED, setStart)
+       || !settings->SetValue(SettingsKey::QUIETHOURS_END_V0_DEPRECATED, setEnd)) {
       WMi18n &i18n = WMi18n::GetInstance();
 
       TaskDialog(
@@ -143,8 +143,8 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
       EnableWindow(hStart, qhEnabled);
       EnableWindow(hEnd, qhEnabled);
 
-      int setStart = settings->QueryValue(SettingsKey::QUIETHOURS_START);
-      int setEnd = settings->QueryValue(SettingsKey::QUIETHOURS_END);
+      int setStart = settings->QueryValue(SettingsKey::QUIETHOURS_START_V0_DEPRECATED);
+      int setEnd = settings->QueryValue(SettingsKey::QUIETHOURS_END_V0_DEPRECATED);
 
       SYSTEMTIME start;
       GetLocalTime(&start);

@@ -62,8 +62,8 @@ enum class SettingsKey {
    , QUIETHOURS_ENABLE
    , QUIETHOURS_FORCEUNMUTE
    , QUIETHOURS_NOTIFICATIONS
-   , QUIETHOURS_START
-   , QUIETHOURS_END
+   , QUIETHOURS_START_V0_DEPRECATED // Settings v0 to v1. Migrated to Subkey
+   , QUIETHOURS_END_V0_DEPRECATED   // Settings v0 to v1. Migrated to Subkey
    , NOTIFICATIONS_ENABLED
    , LOGGING_ENABLED
    , APP_LANGUAGE
@@ -95,6 +95,9 @@ public:
    bool StoreManagedAudioEndpoints(std::vector<std::wstring> &endpoints);
    std::vector<std::wstring> GetManagedAudioEndpoints() const;
 
+   bool StoreQuietHoursTimes(const std::vector<std::pair<DWORD, DWORD>> &times);
+   std::vector<std::pair<DWORD, DWORD>> GetQuietHoursTimes();
+
    DWORD QueryValue(SettingsKey key) const;
    bool  SetValue(SettingsKey key, DWORD value);
 
@@ -102,10 +105,11 @@ public:
    bool SetValue(SettingsKey key, const std::wstring &value);
 
 private:
-   HKEY hSettingsKey_;
-   HKEY hWifiKey_;
-   HKEY hBluetoothKey_;
-   HKEY hAudioEndpointsKey_;
+   HKEY hSettingsKey_ = nullptr;
+   HKEY hWifiKey_ = nullptr;
+   HKEY hBluetoothKey_ = nullptr;
+   HKEY hAudioEndpointsKey_ = nullptr;
+   HKEY hQuietHoursTimesKey_ = nullptr;
 
    bool MigrateSettings();
    HKEY OpenAutostartKey(REGSAM samDesired);

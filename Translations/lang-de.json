@@ -9,6 +9,8 @@
   "init.error.winmute.text": "Ein kritischer Fehler trat beim starten von WinMute auf. Das Programm muss beendet werden.",
   "init.error.winmute.platform-support.title": "Nur Windows Vista and neuer werden unterstützt",
   "init.error.winmute.platform-support.text": "Für Windows XP Unterstützung, kann WinMute in der Version 1.4.2 oder älter installiert werden.",
+  "init.error.winmute.migrating-settings-error": "Fehler beim Migrieren der Einstellungen. Bitte konsultieren sie das Fehlerprotokoll und/oder erstellen sie ein Support-Ticket",
+  "init.error.winmute.quiet-hours-corrupted-settings": "QuietHours Einstellungen wurden beschädigt. Die QuietHour Zeiten wurden zurückgesetzt.",
   "general.error.winapi.text": "{} fehlgeschlagen mit Fehler {}: {}",
   "general.error.audio-service-shutdown.title": "Der Audioservice wurde beendet.",
   "general.error.audio-service-shutdown.text": "WinMute kann diese Situation nicht Beheben. Bitte starten Sie das Programm neu.",
