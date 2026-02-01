@@ -63,6 +63,9 @@
     <Filter Include="Source Files\_External">
       <UniqueIdentifier>{825b7134-b70c-4e13-a95a-0a72645b1ec4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Controllers\MediaPlayback">
+      <UniqueIdentifier>{da8d211c-0ba1-418d-9480-5cc15d8f8a5a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinAudio.h">
@@ -116,6 +119,9 @@
     </ClInclude>
     <ClInclude Include="Utility.h">
       <Filter>Source Files\Base\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="MediaController.h">
+      <Filter>Source Files\Controllers\MediaPlayback</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -209,6 +215,9 @@
     </ClCompile>
     <ClCompile Include="LogDialog.cpp">
       <Filter>Source Files\UI\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="MediaController.cpp">
+      <Filter>Source Files\Controllers\MediaPlayback</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

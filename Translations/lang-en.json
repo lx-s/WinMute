@@ -111,6 +111,8 @@
   "settings.quiet-hours.error.invalid-time-range.text": "Start and stop must not be the same time.",
   "settings.quiet-hours.error.error-while-saving.title": "Failed to save quiet hours settings",
   "settings.quiet-hours.error.error-while-saving.text": "Something went wrong while saving the settings",
+  "settings.quiet-hours.add-edit.add-title": "Add quiet hours",
+  "settings.quiet-hours.add-edit.edit-title": "Edit quiet hours",
   "settings.wifi.intro": "\"WLAN Mute\" mutes the computer based on the name of the connected wireless network.",
   "settings.wifi.enable": "Enable WLAN based muting",
   "settings.wifi.mute-when-in-list": "Mute if connected WLAN is in list",

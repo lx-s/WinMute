@@ -237,7 +237,7 @@ void MuteControl::RestoreVolume(bool withDelay)
       }
       winAudio_->RestoreMuteStatus();
       if (mediaWasPlaying_ && mediaConfig_.tryResume) {
-         MediaController::TryPlayCurrentSession();
+         MediaPlaybackController::TryPlayCurrentSession();
          mediaWasPlaying_ = false;
       }
    }
@@ -347,7 +347,7 @@ void MuteControl::MuteNow()
    winAudio_->SetMute(true);
    if (mediaConfig_.tryPause) {
       bool did_pause = false;
-      if (MediaController::TryPauseCurrentSession(did_pause)) {
+      if (MediaPlaybackController::TryPauseCurrentSession(did_pause)) {
          mediaWasPlaying_ = did_pause;
       }
    }

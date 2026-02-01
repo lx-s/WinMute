@@ -26,6 +26,8 @@
 #define IDI_APP_UPDATE                  141
 #define IDI_APPUPDATE                   141
 #define IDD_LOG                         142
+#define IDD_EDIT_QUIET_HOURS_ENTRY      144
+#define IDD_SETTINGS_QUIETHOURS_ADD     144
 #define IDC_LINK_HOMEPAGE               1001
 #define IDC_LINK_SUPPORT                1002
 #define IDC_LINK_PROJECT                1002
@@ -122,7 +124,13 @@
 #define IDC_LINK_HELP_TRANSLATING       1073
 #define IDC_EDIT1                       1075
 #define IDC_LOG_CONTENT                 1075
-#define IDC_LIST1                       1077
+#define IDC_QUIET_HOURS_TIMES           1077
+#define IDC_QUIET_HOURS_START_PICKER    1078
+#define IDC_QUIET_HOURS_END_PICKER      1079
+#define IDC_QUIET_HOURS_ADD             1079
+#define IDC_QUIET_HOURS_EDIT            1080
+#define IDC_QUIET_HOURS_REMOVE          1081
+#define IDC_QUIET_HOURS_REMOVEALL       1082
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_                    40002
 #define ID_TRAYMENU_MUTEON              40003
@@ -169,9 +177,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        144
+#define _APS_NEXT_RESOURCE_VALUE        146
 #define _APS_NEXT_COMMAND_VALUE         40042
-#define _APS_NEXT_CONTROL_VALUE         1078
+#define _APS_NEXT_CONTROL_VALUE         1082
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

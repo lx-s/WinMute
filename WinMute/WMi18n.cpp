@@ -221,7 +221,7 @@ const std::wstring WMi18n::GetTranslationW(const std::string& textId) const
       std::wstring err = std::format(
          L"Translation for {} not found",
          ConvertStringToWideString(textId));
-      return text;
+      return err;
    }
    return text;
 }
