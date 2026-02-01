@@ -38,6 +38,11 @@ struct QuietHoursEntry {
    DWORD end = 0;
 };
 
+struct QuietHoursDlgData {
+   WMSettings* settings = nullptr;
+   std::vector<std::pair<DWORD, DWORD>> quietHoursTimes;
+};
+
 static bool IsValidTimeRange(
    const LPSYSTEMTIME start,
    const LPSYSTEMTIME end)
@@ -209,6 +214,28 @@ static void LoadQuietHoursDlgTranslation(HWND hDlg)
    i18n.SetItemText(hDlg, IDC_SHOWNOTIFICATIONS, "settings.quiet-hours.show-notifications");
 }
 
+static void SetupListView(HWND hListView)
+{
+   auto& i18n = WMi18n::GetInstance();
+   const auto textBegin = i18n.GetTranslationW("settings.quiet-hours.start-time-label");
+   const auto textEnd = i18n.GetTranslationW("settings.quiet-hours.end-time-label");
+
+   int order = 0;
+   LVCOLUMN lvCol{};
+   lvCol.mask = LVCF_FMT | LVCF_TEXT | LVCF_WIDTH | LVCF_ORDER;
+   lvCol.fmt = LVCFMT_LEFT;
+   lvCol.cx = 100;
+   lvCol.pszText = const_cast<LPWSTR>(textBegin.c_str());
+   lvCol.cchTextMax = static_cast<int>(textBegin.length());
+   lvCol.iOrder = order++;
+   ListView_InsertColumn(hListView, 0, &lvCol);
+
+   lvCol.pszText = const_cast<LPWSTR>(textEnd.c_str());
+   lvCol.cchTextMax = static_cast<int>(textEnd.length());
+   lvCol.iOrder = order++;
+   ListView_InsertColumn(hListView, 0, &lvCol);
+}
+
 INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    UNREFERENCED_PARAMETER(lParam);
@@ -224,9 +251,13 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
       HWND hDelete = GetDlgItem(hDlg, IDC_QUIET_HOURS_REMOVE);
       HWND hDeleteAll = GetDlgItem(hDlg, IDC_QUIET_HOURS_REMOVEALL);
 
-      WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
+      auto settings = reinterpret_cast<WMSettings *>(lParam);
       assert(settings != nullptr);
-      SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(settings));
+
+      auto qhdata = new QuietHoursDlgData();
+      assert(qhdata != nullptr);
+      qhdata->settings = reinterpret_cast<WMSettings *>(lParam);
+      SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(qhdata));
 
       if (IsAppThemed()) {
          EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
@@ -241,6 +272,16 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
 
       DWORD qhNotifications = !!settings->QueryValue(SettingsKey::QUIETHOURS_NOTIFICATIONS);
       Button_SetCheck(hNotify, qhNotifications ? BST_CHECKED : BST_UNCHECKED);
+
+      SetupListView(hQuietHoursTimes);
+
+      qhdata->quietHoursTimes = settings->GetQuietHoursTimes();
+      for (const auto &qh_time : qhdata->quietHoursTimes) {
+         LVITEM item{};
+         item.mask = LVIF_COLUMNS | LVIF_PARAM | LVIF_TEXT;
+         // item.
+         ListView_InsertItem(hQuietHoursTimes, &item) ;
+      }
 
       EnableWindow(hForce, qhEnabled);
       EnableWindow(hNotify, qhEnabled);
@@ -258,11 +299,11 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
       HWND hForce  = GetDlgItem(hDlg, IDC_FORCEUNMUTE);
       HWND hNotify = GetDlgItem(hDlg, IDC_SHOWNOTIFICATIONS);
       HWND hQuietHoursTimes = GetDlgItem(hDlg, IDC_QUIET_HOURS_TIMES);
-      WMSettings* settings = reinterpret_cast<WMSettings*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+      auto qhdata = reinterpret_cast<QuietHoursDlgData *>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
       int qhEnabled       = Button_GetCheck(hEnable) == BST_CHECKED;
       int qhForceUnmute   = Button_GetCheck(hForce)  == BST_CHECKED;
       int qhNotifications = Button_GetCheck(hNotify) == BST_CHECKED;
-      settings->SetValue(SettingsKey::QUIETHOURS_ENABLE, qhEnabled);
+      qhdata->settings->SetValue(SettingsKey::QUIETHOURS_ENABLE, qhEnabled);
 
       // Get number of items from IDC_QUIET_HOURS_TIMES
       // Get each item from IDC_QUIET_HOURS_TIMES
@@ -281,7 +322,8 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
          }
       }
 
-      if (SaveQuietHours(settings, qhEnabled, qhForceUnmute, qhNotifications, times)) {
+      if (SaveQuietHours(qhdata->settings, qhEnabled, qhForceUnmute, qhNotifications, times)) {
+         delete qhdata;
          EndDialog(hDlg, 0);
       }
       return 0;
@@ -332,9 +374,12 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
       }
       return 0;
    }
-   case WM_CLOSE:
+   case WM_CLOSE: {
+      auto qhdata = reinterpret_cast<QuietHoursDlgData *>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+      delete qhdata;
       EndDialog(hDlg, 0);
       return TRUE;
+   }
    default:
       break;
    }
