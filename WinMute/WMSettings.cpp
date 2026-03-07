@@ -850,12 +850,12 @@ std::vector<std::pair<DWORD, DWORD>> WMSettings::GetQuietHoursTimes()
    }
 
    std::vector<std::pair<DWORD, DWORD>> times;
-   for (DWORD valIdx = 0; valIdx < numEntries; valIdx += 2) {
+   for (DWORD valIdx = 0; valIdx < numEntries / 2; valIdx += 1) {
       const std::wstring keyStart = L"Start" + std::to_wstring(valIdx);
       const std::wstring keyEnd = L"End" + std::to_wstring(valIdx);
 
       std::pair<DWORD, DWORD> timeEntry{};
-      DWORD size{};
+      DWORD size = sizeof(DWORD);
       regError = RegQueryValueExW(
          hQuietHoursTimesKey_,
          keyStart.c_str(),
@@ -865,10 +865,13 @@ std::vector<std::pair<DWORD, DWORD>> WMSettings::GetQuietHoursTimes()
          &size);
       if (regError != ERROR_SUCCESS) {
          WMLog::GetInstance().LogError(
-            L"Failed to read entry \"%s\" while initializing quiet hours",
-            keyStart.c_str());
+            L"Failed to read entry \"%s\" while initializing quiet hours (%d)",
+            keyStart.c_str(), regError
+        );
          continue;
       }
+
+      size = sizeof(DWORD);
       regError = RegQueryValueExW(
          hQuietHoursTimesKey_,
          keyEnd.c_str(),
@@ -878,8 +881,8 @@ std::vector<std::pair<DWORD, DWORD>> WMSettings::GetQuietHoursTimes()
          &size);
       if (regError != ERROR_SUCCESS) {
          WMLog::GetInstance().LogError(
-            L"Failed to read entry \"%s\" while initializing quiet hours",
-            keyStart.c_str());
+            L"Failed to read entry \"%s\" while initializing quiet hours (%d)",
+            keyStart.c_str(), regError);
          continue;
       }
       times.push_back(std::move(timeEntry));

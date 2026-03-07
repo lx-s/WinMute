@@ -105,7 +105,7 @@ BEGIN
     LTEXT           "If force unmute is enabled, WinMute will unmute your workstation when quiet hours end and not take into account if your workstation was already muted before quiet hours started.",IDC_QUIET_HOURS_FORCE_UNMUTE_DESCRIPTION,33,140,204,37
     CONTROL         "Show quiet hours notifications",IDC_SHOWNOTIFICATIONS,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,175,180,21
-    CONTROL         "",IDC_QUIET_HOURS_TIMES,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,22,47,155,72
+    CONTROL         "",IDC_QUIET_HOURS_TIMES,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,22,47,155,72
     PUSHBUTTON      "Add",IDC_QUIET_HOURS_ADD,183,46,56,16
     PUSHBUTTON      "Edit",IDC_QUIET_HOURS_EDIT,183,65,56,16
     PUSHBUTTON      "Remove",IDC_QUIET_HOURS_REMOVE,183,84,56,16
