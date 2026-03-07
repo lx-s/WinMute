@@ -137,3 +137,4 @@ static const wchar_t *LOG_FILE_NAME = L"WinMute.log";
 constexpr int WM_SAVESETTINGS = WM_USER + 300;
 constexpr int WM_WINMUTE_UPDATE_POPUP = WM_USER + 301;
 constexpr int WM_LOG_UPDATED = WM_USER + 302;
+constexpr int WM_WINMUTE_AUDIO_SERVICE_SHUTDOWN = WM_USER + 303;

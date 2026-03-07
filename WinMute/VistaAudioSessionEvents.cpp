@@ -131,18 +131,9 @@ HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnSessionDisconnected(
    case DisconnectReasonSessionDisconnected:
       notifyParent_->ShouldReInit();
       break;
-   case DisconnectReasonServerShutdown: {
-      WMi18n &i18n = WMi18n::GetInstance();
-      TaskDialog(nullptr,
-         nullptr,
-         PROGRAM_NAME,
-         i18n.GetTranslationW("general.error.audio-service-shutdown.title").c_str(),
-         i18n.GetTranslationW("general.error.audio-service-shutdown.text").c_str(),
-         TDCBF_OK_BUTTON,
-         TD_WARNING_ICON,
-         nullptr);
+   case DisconnectReasonServerShutdown:
+      notifyParent_->OnAudioServiceShutdown();
       break;
-   }
    case DisconnectReasonSessionLogoff:
       break;
    case DisconnectReasonExclusiveModeOverride:

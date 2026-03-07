@@ -95,6 +95,7 @@ public:
 
    // Should only be called internally
    void MuteDelayed(int magic);
+   void CompleteVolumeRestore();
 private:
    struct MuteConfig {
       bool shouldMute;
@@ -110,6 +111,7 @@ private:
    bool mediaWasPlaying_ = false;
    int muteDelaySeconds_ = 0;
    UINT_PTR delayedMuteTimerId_ = 0;
+   UINT_PTR bluetoothUnmuteTimerId_ = 0;
    std::unique_ptr<WinAudio> winAudio_;
    HWND hMuteCtrlWnd_ = nullptr;
 
