@@ -173,7 +173,7 @@ void VistaAudio::Uninit()
       deviceEnumerator_->UnregisterEndpointNotificationCallback(mmnAudioEvents_);
    }
    deviceEnumerator_.Release();
-   SafeRelease(&mmnAudioEvents_);
+   mmnAudioEvents_.Release();
 
    endpoints_.clear();
 }

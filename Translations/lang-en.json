@@ -113,6 +113,8 @@
   "settings.quiet-hours.error.error-while-saving.text": "Something went wrong while saving the settings",
   "settings.quiet-hours.add-edit.add-title": "Add quiet hours",
   "settings.quiet-hours.add-edit.edit-title": "Edit quiet hours",
+  "settings.quiet-hours.error.overlapping-time-range.title": "Overlapping time range",
+  "settings.quiet-hours.error.overlapping-time-range.text": "This time range overlaps with an existing entry.",
   "settings.wifi.intro": "\"WLAN Mute\" mutes the computer based on the name of the connected wireless network.",
   "settings.wifi.enable": "Enable WLAN based muting",
   "settings.wifi.mute-when-in-list": "Mute if connected WLAN is in list",

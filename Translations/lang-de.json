@@ -103,6 +103,8 @@
   "settings.quiet-hours.error.error-while-saving.text": "Während dem Speichern der Ruhezeiteinstellungen trat ein Fehler auf",
   "settings.quiet-hours.add-edit.add-title": "Ruhezeit hinzufügen",
   "settings.quiet-hours.add-edit.edit-title": "Ruhezeit bearbeiten",
+  "settings.quiet-hours.error.overlapping-time-range.title": "Überlappender Zeitraum",
+  "settings.quiet-hours.error.overlapping-time-range.text": "Dieser Zeitraum überschneidet sich mit einem vorhandenen Eintrag.",
   "settings.wifi.intro": "Das WLAN basiert Stummschalten ermöglicht es die PC-Lautstärke abhängig von dem Namen des verbundenen WLAN Netzwerks zu steuern.",
   "settings.wifi.enable": "Aktiviere WLAN-basiertes Stummschalten",
   "settings.wifi.mute-when-not-in-list": "Stummschalten, wenn das WLAN nicht in der Liste ist",

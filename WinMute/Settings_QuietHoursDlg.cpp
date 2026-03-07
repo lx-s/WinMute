@@ -96,6 +96,57 @@ static void FreeListViewEntries(HWND hListView)
    }
 }
 
+static bool TimeInWindow(DWORD t, DWORD wStart, DWORD wEnd) noexcept
+{
+   if (wStart < wEnd) {
+      return t >= wStart && t < wEnd;
+   } else { // wraps midnight
+      return t >= wStart || t < wEnd;
+   }
+}
+
+static bool WindowsOverlap(DWORD s1, DWORD e1, DWORD s2, DWORD e2) noexcept
+{
+   // Two circular intervals overlap iff one contains the start of the other
+   return TimeInWindow(s1, s2, e2) || TimeInWindow(s2, s1, e1);
+}
+
+static bool ShowOverlapError(HWND hParent)
+{
+   WMi18n &i18n = WMi18n::GetInstance();
+   TaskDialog(
+      hParent,
+      nullptr,
+      PROGRAM_NAME,
+      i18n.GetTranslationW("settings.quiet-hours.error.overlapping-time-range.title").c_str(),
+      i18n.GetTranslationW("settings.quiet-hours.error.overlapping-time-range.text").c_str(),
+      TDCBF_OK_BUTTON,
+      TD_WARNING_ICON,
+      nullptr);
+   return false;
+}
+
+static bool HasOverlapWithListView(
+   HWND hListView,
+   const QuietHoursEntry* newEntry,
+   int excludeIdx)
+{
+   const int count = ListView_GetItemCount(hListView);
+   for (int i = 0; i < count; ++i) {
+      if (i == excludeIdx) continue;
+      LVITEM lvi{};
+      lvi.mask  = LVIF_PARAM;
+      lvi.iItem = i;
+      if (ListView_GetItem(hListView, &lvi) && lvi.lParam != 0) {
+         const auto* existing = reinterpret_cast<const QuietHoursEntry*>(lvi.lParam);
+         if (WindowsOverlap(newEntry->start, newEntry->end, existing->start, existing->end)) {
+            return true;
+         }
+      }
+   }
+   return false;
+}
+
 static bool SaveQuietHours(
    WMSettings* settings,
    const int enabled,
@@ -383,8 +434,13 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
                hDlg,
                Settings_QuietHoursAddDlgProc,
                reinterpret_cast<LPARAM>(qh_entry)) == 0) {
-            AddQuietHoursEntryToListView(hQuietHoursTimes, qh_entry);
-            UpdateButtonStates(hDlg, hQuietHoursTimes, true);
+            if (HasOverlapWithListView(hQuietHoursTimes, qh_entry, -1)) {
+               ShowOverlapError(hDlg);
+               delete qh_entry;
+            } else {
+               AddQuietHoursEntryToListView(hQuietHoursTimes, qh_entry);
+               UpdateButtonStates(hDlg, hQuietHoursTimes, true);
+            }
          } else {
             delete qh_entry;
          }
@@ -404,9 +460,13 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
                      hDlg,
                      Settings_QuietHoursAddDlgProc,
                      reinterpret_cast<LPARAM>(&editCopy)) == 0) {
-                  entry->start = editCopy.start;
-                  entry->end   = editCopy.end;
-                  UpdateListViewItem(hQuietHoursTimes, sel, entry);
+                  if (HasOverlapWithListView(hQuietHoursTimes, &editCopy, sel)) {
+                     ShowOverlapError(hDlg);
+                  } else {
+                     entry->start = editCopy.start;
+                     entry->end   = editCopy.end;
+                     UpdateListViewItem(hQuietHoursTimes, sel, entry);
+                  }
                }
             }
          }

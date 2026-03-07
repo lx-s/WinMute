@@ -45,21 +45,23 @@ public:
    QuietHoursTimer(const QuietHoursTimer&) = delete;
    QuietHoursTimer& operator=(const QuietHoursTimer&) = delete;
 
-   bool Init(HWND hParent, const WMSettings& settings);
+   bool Init(HWND hParent, WMSettings& settings);
 
-   bool IsQuietTime();
+   bool IsQuietTime() const;
 
    bool SetStart();
    bool SetEnd();
 
-   bool Reset(const WMSettings& settings);
+   bool Reset(WMSettings& settings);
 
 private:
    HWND hParent_;
    bool initialized_;
    bool enabled_;
-   time_t qhStart_;
-   time_t qhEnd_;
+   std::vector<std::pair<DWORD, DWORD>> windows_; // sorted by start, seconds since midnight
+   int activeWindowIdx_;                           // index of currently scheduled/active window
 
-   bool LoadFromSettings(const WMSettings& settings);
+   bool LoadFromSettings(WMSettings& settings);
+   int FindActiveWindowIdx() const;
+   int FindNextWindowIdx() const;
 };
