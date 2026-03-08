@@ -1,0 +1,13 @@
+---
+BasedOnStyle: Google
+AlignAfterOpenBracket: AlwaysBreak
+AllowAllConstructorInitializersOnNextLine: 'true'
+AllowShortBlocksOnASingleLine: 'false'
+AllowShortCaseLabelsOnASingleLine: 'false'
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: 'false'
+BinPackParameters: 'false'
+BreakBeforeBraces: Stroustrup
+ColumnLimit: '80'
+UseTab: Never
