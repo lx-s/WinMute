@@ -233,8 +233,7 @@ static INT_PTR CALLBACK Settings_QuietHoursAddDlgProc(HWND hDlg, UINT msg, WPARA
       return TRUE;
    }
    case WM_COMMAND:
-      if (LOWORD(wParam) == IDOK)
-      {
+      if (LOWORD(wParam) == IDOK) {
          HWND hStart = GetDlgItem(hDlg, IDC_QUIET_HOURS_START_PICKER);
          HWND hEnd = GetDlgItem(hDlg, IDC_QUIET_HOURS_END_PICKER);
          SYSTEMTIME start{};
@@ -362,8 +361,7 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
 
       SetupListView(hQuietHoursTimes);
 
-      for (const auto &t : settings->GetQuietHoursTimes())
-      {
+      for (const auto &t : settings->GetQuietHoursTimes()) {
          auto *entry = new QuietHoursEntry();
          entry->start = t.first;
          entry->end = t.second;
@@ -380,11 +378,15 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
    case WM_NOTIFY:
    {
       const NMHDR *pnmh = reinterpret_cast<const NMHDR *>(lParam);
-      if (pnmh->idFrom == IDC_QUIET_HOURS_TIMES && pnmh->code == LVN_ITEMCHANGED)
-      {
+      if (pnmh->idFrom == IDC_QUIET_HOURS_TIMES && pnmh->code == LVN_ITEMCHANGED) {
          HWND hQuietHoursTimes = GetDlgItem(hDlg, IDC_QUIET_HOURS_TIMES);
          const bool qhEnabled = Button_GetCheck(GetDlgItem(hDlg, IDC_ENABLEQUIETHOURS)) == BST_CHECKED;
          UpdateButtonStates(hDlg, hQuietHoursTimes, qhEnabled);
+      } else if (pnmh->idFrom == IDC_QUIET_HOURS_TIMES && pnmh->code == NM_DBLCLK) {
+         auto nmItemActivate = reinterpret_cast<const LPNMITEMACTIVATE>(lParam);
+         if (nmItemActivate->iItem != -1) {
+            SendMessage(hDlg, WM_COMMAND, MAKEWPARAM(IDC_QUIET_HOURS_EDIT, 0), 0);
+         }
       }
       return 0;
    }
@@ -403,8 +405,7 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
       const int entries = ListView_GetItemCount(hQuietHoursTimes);
       std::vector<std::pair<DWORD, DWORD>> times;
       times.reserve(entries);
-      for (int i = 0; i < entries; ++i)
-      {
+      for (int i = 0; i < entries; ++i) {
          LVITEM lvi{};
          lvi.iItem = i;
          lvi.mask = LVIF_PARAM;
@@ -458,8 +459,7 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
             LVITEM lvi{};
             lvi.mask = LVIF_PARAM;
             lvi.iItem = sel;
-            if (ListView_GetItem(hQuietHoursTimes, &lvi) && lvi.lParam != 0)
-            {
+            if (ListView_GetItem(hQuietHoursTimes, &lvi) && lvi.lParam != 0) {
                QuietHoursEntry *entry = reinterpret_cast<QuietHoursEntry *>(lvi.lParam);
                QuietHoursEntry editCopy = *entry;
                if (DialogBoxParam(
@@ -467,14 +467,10 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
                        MAKEINTRESOURCE(IDD_SETTINGS_QUIETHOURS_ADD),
                        hDlg,
                        Settings_QuietHoursAddDlgProc,
-                       reinterpret_cast<LPARAM>(&editCopy)) == 0)
-               {
-                  if (HasOverlapWithExistingEntries(hQuietHoursTimes, &editCopy, sel))
-                  {
+                       reinterpret_cast<LPARAM>(&editCopy)) == 0) {
+                  if (HasOverlapWithExistingEntries(hQuietHoursTimes, &editCopy, sel)) {
                      ShowOverlapError(hDlg);
-                  }
-                  else
-                  {
+                  } else {
                      entry->start = editCopy.start;
                      entry->end = editCopy.end;
                      UpdateListViewItem(hQuietHoursTimes, sel, entry);
