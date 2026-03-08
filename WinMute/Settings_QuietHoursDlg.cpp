@@ -91,8 +91,7 @@ static void FreeListViewEntries(HWND hListView)
       LVITEM lvi{};
       lvi.mask = LVIF_PARAM;
       lvi.iItem = i;
-      if (ListView_GetItem(hListView, &lvi) && lvi.lParam != 0)
-      {
+      if (ListView_GetItem(hListView, &lvi) && lvi.lParam != 0) {
          delete reinterpret_cast<QuietHoursEntry *>(lvi.lParam);
       }
    }
@@ -100,12 +99,9 @@ static void FreeListViewEntries(HWND hListView)
 
 static bool TimeInWindow(DWORD t, DWORD wStart, DWORD wEnd) noexcept
 {
-   if (wStart < wEnd)
-   {
+   if (wStart < wEnd) {
       return t >= wStart && t < wEnd;
-   }
-   else
-   { // wraps midnight
+   } else { // wraps midnight
       return t >= wStart || t < wEnd;
    }
 }
@@ -137,18 +133,16 @@ static bool HasOverlapWithExistingEntries(
     int excludeIdx)
 {
    const int count = ListView_GetItemCount(hListView);
-   for (int i = 0; i < count; ++i)
-   {
-      if (i == excludeIdx)
+   for (int i = 0; i < count; ++i) {
+      if (i == excludeIdx) {
          continue;
+      }
       LVITEM lvi{};
       lvi.mask = LVIF_PARAM;
       lvi.iItem = i;
-      if (ListView_GetItem(hListView, &lvi) && lvi.lParam != 0)
-      {
+      if (ListView_GetItem(hListView, &lvi) && lvi.lParam != 0) {
          const auto *existing = reinterpret_cast<const QuietHoursEntry *>(lvi.lParam);
-         if (TimeWindowsOverlap(newEntry->start, newEntry->end, existing->start, existing->end))
-         {
+         if (TimeWindowsOverlap(newEntry->start, newEntry->end, existing->start, existing->end)) {
             return true;
          }
       }
@@ -163,8 +157,10 @@ static bool SaveQuietHours(
     const int showNotifications,
     const std::vector<std::pair<DWORD, DWORD>> &times)
 {
-   if (!settings->SetValue(SettingsKey::QUIETHOURS_ENABLE, enabled) || !settings->SetValue(SettingsKey::QUIETHOURS_FORCEUNMUTE, forceUnmute) || !settings->SetValue(SettingsKey::QUIETHOURS_NOTIFICATIONS, showNotifications) || !settings->StoreQuietHoursTimes(times))
-   {
+   if (!settings->SetValue(SettingsKey::QUIETHOURS_ENABLE, enabled) ||
+       !settings->SetValue(SettingsKey::QUIETHOURS_FORCEUNMUTE, forceUnmute) ||
+       !settings->SetValue(SettingsKey::QUIETHOURS_NOTIFICATIONS, showNotifications) ||
+       !settings->StoreQuietHoursTimes(times)) {
       WMi18n &i18n = WMi18n::GetInstance();
       TaskDialog(
           nullptr,
@@ -187,12 +183,9 @@ static bool SaveQuietHours(
 static void LoadQuietHoursAddDlgTranslation(HWND hDlg, bool isEdit)
 {
    WMi18n &i18n = WMi18n::GetInstance();
-   if (isEdit)
-   {
+   if (isEdit) {
       i18n.SetItemText(hDlg, "settings.quiet-hours.add-edit.edit-title");
-   }
-   else
-   {
+   } else {
       i18n.SetItemText(hDlg, "settings.quiet-hours.add-edit.add-title");
    }
    i18n.SetItemText(hDlg, IDC_QUIET_HOURS_START_LABEL, "settings.quiet-hours.start-time-label");
@@ -204,15 +197,11 @@ static void LoadQuietHoursAddDlgTranslation(HWND hDlg, bool isEdit)
 static void SetQuietHourPickerTime(HWND hPicker, DWORD savedTime)
 {
    SYSTEMTIME tp{};
-   if (savedTime > 0)
-   {
+   GetLocalTime(&tp);
+   if (savedTime > 0) {
       tp.wSecond = static_cast<WORD>(savedTime % 60);
       tp.wMinute = static_cast<WORD>(((savedTime - tp.wSecond) / 60) % 60);
       tp.wHour = static_cast<WORD>((savedTime - tp.wMinute * 60 - tp.wSecond) / 3600);
-   }
-   else
-   {
-      GetLocalTime(&tp);
    }
    DateTime_SetSystemtime(hPicker, GDT_VALID, &tp);
 }
@@ -227,8 +216,7 @@ static INT_PTR CALLBACK Settings_QuietHoursAddDlgProc(HWND hDlg, UINT msg, WPARA
       HWND hEnd = GetDlgItem(hDlg, IDC_QUIET_HOURS_END_PICKER);
 
       QuietHoursEntry *qh_entry = reinterpret_cast<QuietHoursEntry *>(lParam);
-      if (qh_entry == nullptr)
-      {
+      if (qh_entry == nullptr) {
          return FALSE;
       }
       SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(qh_entry));
@@ -236,12 +224,10 @@ static INT_PTR CALLBACK Settings_QuietHoursAddDlgProc(HWND hDlg, UINT msg, WPARA
       const bool isEdit = qh_entry->start != 0 || qh_entry->end != 0;
       LoadQuietHoursAddDlgTranslation(hDlg, isEdit);
 
-      if (qh_entry->start != 0)
-      {
+      if (qh_entry->start != 0) {
          SetQuietHourPickerTime(hStart, qh_entry->start);
       }
-      if (qh_entry->end != 0)
-      {
+      if (qh_entry->end != 0) {
          SetQuietHourPickerTime(hEnd, qh_entry->end);
       }
       return TRUE;
@@ -255,8 +241,7 @@ static INT_PTR CALLBACK Settings_QuietHoursAddDlgProc(HWND hDlg, UINT msg, WPARA
          SYSTEMTIME end{};
          DateTime_GetSystemtime(hStart, &start);
          DateTime_GetSystemtime(hEnd, &end);
-         if (!IsValidTimeRange(&start, &end))
-         {
+         if (!IsValidTimeRange(&start, &end)) {
             WMi18n &i18n = WMi18n::GetInstance();
             TaskDialog(
                 nullptr,
@@ -268,9 +253,7 @@ static INT_PTR CALLBACK Settings_QuietHoursAddDlgProc(HWND hDlg, UINT msg, WPARA
                 TD_WARNING_ICON,
                 nullptr);
             return FALSE;
-         }
-         else
-         {
+         } else {
             auto *qh_entry = reinterpret_cast<QuietHoursEntry *>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
             qh_entry->start = start.wHour * 3600 + start.wMinute * 60 + start.wSecond;
             qh_entry->end = end.wHour * 3600 + end.wMinute * 60 + end.wSecond;
@@ -425,15 +408,13 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
          LVITEM lvi{};
          lvi.iItem = i;
          lvi.mask = LVIF_PARAM;
-         if (ListView_GetItem(hQuietHoursTimes, &lvi) && lvi.lParam != 0)
-         {
+         if (ListView_GetItem(hQuietHoursTimes, &lvi) && lvi.lParam != 0) {
             const QuietHoursEntry *qh_entry = reinterpret_cast<QuietHoursEntry *>(lvi.lParam);
             times.emplace_back(qh_entry->start, qh_entry->end);
          }
       }
 
-      if (SaveQuietHours(qhdata->settings, qhEnabled, qhForceUnmute, qhNotifications, times))
-      {
+      if (SaveQuietHours(qhdata->settings, qhEnabled, qhForceUnmute, qhNotifications, times)) {
          FreeListViewEntries(hQuietHoursTimes);
          delete qhdata;
          EndDialog(hDlg, 0);
@@ -447,45 +428,33 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
       HWND hNotify = GetDlgItem(hDlg, IDC_SHOWNOTIFICATIONS);
       HWND hQuietHoursTimes = GetDlgItem(hDlg, IDC_QUIET_HOURS_TIMES);
 
-      if (LOWORD(wParam) == IDC_ENABLEQUIETHOURS)
-      {
+      if (LOWORD(wParam) == IDC_ENABLEQUIETHOURS) {
          const bool qhEnabled = Button_GetCheck(hEnable) == BST_CHECKED;
          EnableWindow(hForce, qhEnabled);
          EnableWindow(hNotify, qhEnabled);
          EnableWindow(hQuietHoursTimes, qhEnabled);
          UpdateButtonStates(hDlg, hQuietHoursTimes, qhEnabled);
-      }
-      else if (LOWORD(wParam) == IDC_QUIET_HOURS_ADD)
-      {
+      } else if (LOWORD(wParam) == IDC_QUIET_HOURS_ADD) {
          auto *qh_entry = new QuietHoursEntry();
          if (DialogBoxParam(
                  nullptr,
                  MAKEINTRESOURCE(IDD_SETTINGS_QUIETHOURS_ADD),
                  hDlg,
                  Settings_QuietHoursAddDlgProc,
-                 reinterpret_cast<LPARAM>(qh_entry)) == 0)
-         {
-            if (HasOverlapWithExistingEntries(hQuietHoursTimes, qh_entry, -1))
-            {
+                 reinterpret_cast<LPARAM>(qh_entry)) == 0) {
+            if (HasOverlapWithExistingEntries(hQuietHoursTimes, qh_entry, -1)) {
                ShowOverlapError(hDlg);
                delete qh_entry;
-            }
-            else
-            {
+            } else {
                AddQuietHoursEntryToListView(hQuietHoursTimes, qh_entry);
                UpdateButtonStates(hDlg, hQuietHoursTimes, true);
             }
-         }
-         else
-         {
+         } else {
             delete qh_entry;
          }
-      }
-      else if (LOWORD(wParam) == IDC_QUIET_HOURS_EDIT)
-      {
+      } else if (LOWORD(wParam) == IDC_QUIET_HOURS_EDIT) {
          const int sel = ListView_GetNextItem(hQuietHoursTimes, -1, LVNI_SELECTED);
-         if (sel != -1)
-         {
+         if (sel != -1) {
             LVITEM lvi{};
             lvi.mask = LVIF_PARAM;
             lvi.iItem = sel;
@@ -513,9 +482,7 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
                }
             }
          }
-      }
-      else if (LOWORD(wParam) == IDC_QUIET_HOURS_REMOVE)
-      {
+      } else if (LOWORD(wParam) == IDC_QUIET_HOURS_REMOVE) {
          const int sel = ListView_GetNextItem(hQuietHoursTimes, -1, LVNI_SELECTED);
          if (sel != -1)
          {
@@ -529,9 +496,7 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
             ListView_DeleteItem(hQuietHoursTimes, sel);
             UpdateButtonStates(hDlg, hQuietHoursTimes, true);
          }
-      }
-      else if (LOWORD(wParam) == IDC_QUIET_HOURS_REMOVEALL)
-      {
+      } else if (LOWORD(wParam) == IDC_QUIET_HOURS_REMOVEALL) {
          FreeListViewEntries(hQuietHoursTimes);
          ListView_DeleteAllItems(hQuietHoursTimes);
          UpdateButtonStates(hDlg, hQuietHoursTimes, true);
