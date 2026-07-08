@@ -33,7 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-class MediaController {
+class MediaPlaybackController {
 public:
    static bool TryPauseCurrentSession(bool& paused_media);
    static bool TryPlayCurrentSession();

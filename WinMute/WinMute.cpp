@@ -618,6 +618,16 @@ LRESULT WinMute::OnQuietHours(HWND, UINT msg, WPARAM, LPARAM)
    return 0;
 }
 
+LRESULT WinMute::OnAudioServiceShutdown(HWND hWnd, WPARAM, LPARAM)
+{
+   TaskDialog(
+      hWnd, hglobInstance, PROGRAM_NAME,
+      i18n_.GetTranslationW("general.error.audio-service-shutdown.title").c_str(),
+      i18n_.GetTranslationW("general.error.audio-service-shutdown.text").c_str(),
+      TDCBF_OK_BUTTON, TD_WARNING_ICON, nullptr);
+   return 0;
+}
+
 LRESULT WinMute::OnDeviceChange(HWND, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    if (muteConfig_.muteOnBluetooth) {
@@ -706,6 +716,8 @@ LRESULT CALLBACK WinMute::WindowProc(
    case WM_WINMUTE_QUIETHOURS_START: // fall through
    case WM_WINMUTE_QUIETHOURS_END:
       return OnQuietHours(hWnd, msg, wParam, lParam);
+   case WM_WINMUTE_AUDIO_SERVICE_SHUTDOWN:
+      return OnAudioServiceShutdown(hWnd, wParam, lParam);
    case WM_DEVICECHANGE:
       return OnDeviceChange(hWnd, msg, wParam, lParam);
    case WM_WIFISTATUSCHANGED:

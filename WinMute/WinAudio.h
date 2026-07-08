@@ -42,6 +42,7 @@ class WinAudio {
 public:
    virtual bool Init(HWND hParent) = 0;
    virtual void ShouldReInit() = 0;
+   virtual void OnAudioServiceShutdown() = 0;
    virtual bool AllEndpointsMuted() = 0;
    virtual bool SaveMuteStatus() = 0;
    virtual bool RestoreMuteStatus() = 0;
@@ -74,6 +75,7 @@ public:
 
    bool Init(HWND hParent) override;
    void ShouldReInit() override;
+   void OnAudioServiceShutdown() override;
    bool AllEndpointsMuted() override;
    bool SaveMuteStatus() override;
    bool RestoreMuteStatus() override;
@@ -95,7 +97,7 @@ private:
    CComPtr<MMNotificationClient> mmnAudioEvents_;
    CComPtr<IMMDeviceEnumerator> deviceEnumerator_;
 
-   bool reInit_;
+   std::atomic<bool> reInit_;
    bool muteSpecificEndpoints_;
    bool muteSpecificEndpointsAllowList_;
    HWND hParent_;

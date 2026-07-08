@@ -7,7 +7,7 @@
 using namespace winrt;
 using namespace winrt::Windows::Media::Control;
 
-bool MediaController::TryPauseCurrentSession(bool &paused_media)
+bool MediaPlaybackController::TryPauseCurrentSession(bool &paused_media)
 {
    auto &log = WMLog::GetInstance();
    try {
@@ -20,22 +20,22 @@ bool MediaController::TryPauseCurrentSession(bool &paused_media)
 
          if (status == GlobalSystemMediaTransportControlsSessionPlaybackStatus::Playing) {
             session.TryPauseAsync().get();
-            log.LogInfo(L"MediaController: Paused current media session.");
+            log.LogInfo(L"MediaPlaybackController: Paused current media session.");
             paused_media = true;
          } else {
-            log.LogDebug(L"MediaController: Media is not playing, no action needed.\n");
+            log.LogDebug(L"MediaPlaybackController: Media is not playing, no action needed.\n");
             paused_media = false;
          }
       }
    } catch (const hresult_error& e) {
-      log.LogError(L"MediaController: Failed to pause current media session. Error: %s",
+      log.LogError(L"MediaPlaybackController: Failed to pause current media session. Error: %s",
                    e.message().c_str());
       return false;
    }
    return true;
 }
 
-bool MediaController::TryPlayCurrentSession()
+bool MediaPlaybackController::TryPlayCurrentSession()
 {
    auto &log = WMLog::GetInstance();
    try {
@@ -48,11 +48,11 @@ bool MediaController::TryPlayCurrentSession()
 
          if (status == GlobalSystemMediaTransportControlsSessionPlaybackStatus::Paused) {
             session.TryPlayAsync().get();
-            log.LogInfo(L"MediaController: Resumed current media session.");
+            log.LogInfo(L"MediaPlaybackController: Resumed current media session.");
          }
       }
    } catch (const hresult_error &e) {
-      log.LogError(L"MediaController: Failed to resume current media session. Error: %s",
+      log.LogError(L"MediaPlaybackController: Failed to resume current media session. Error: %s",
                    e.message().c_str());
       return false;
    }

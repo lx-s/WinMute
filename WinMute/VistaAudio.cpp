@@ -137,9 +137,10 @@ bool VistaAudio::LoadAllEndpoints()
       endpoints_.push_back(std::move(ep));
    }
 
-exit_error:
-
    return true;
+
+exit_error:
+   return false;
 }
 
 bool VistaAudio::Init(HWND hParent)
@@ -147,7 +148,6 @@ bool VistaAudio::Init(HWND hParent)
    WMLog& log = WMLog::GetInstance();
 
    hParent_ = hParent;
-   reInit_ = false;
 
    if (FAILED(deviceEnumerator_.CoCreateInstance(
          __uuidof(MMDeviceEnumerator),
@@ -173,7 +173,7 @@ void VistaAudio::Uninit()
       deviceEnumerator_->UnregisterEndpointNotificationCallback(mmnAudioEvents_);
    }
    deviceEnumerator_.Release();
-   SafeRelease(&mmnAudioEvents_);
+   mmnAudioEvents_.Release();
 
    endpoints_.clear();
 }
@@ -183,37 +183,39 @@ void VistaAudio::ShouldReInit()
    reInit_ = true;
 }
 
+void VistaAudio::OnAudioServiceShutdown()
+{
+   PostMessageW(hParent_, WM_WINMUTE_AUDIO_SERVICE_SHUTDOWN, 0, 0);
+}
+
 bool VistaAudio::CheckForReInit()
 {
-   bool ok = true;
-   if (reInit_) {
+   if (reInit_.exchange(false)) {
       Uninit();
-      ok = Init(hParent_);
+      return Init(hParent_);
    }
-   return ok;
+   return true;
 }
 
 bool VistaAudio::AllEndpointsMuted()
 {
-   bool allMuted = true;
    WMLog& log = WMLog::GetInstance();
 
-   if (CheckForReInit()) {
-      for (auto& e : endpoints_) {
-         BOOL isMuted = FALSE;
-         if (FAILED(e->endpointVolume->GetMute(&isMuted))) {
-            log.LogError(
-               L"Failed to get mute status for \"%s\"",
-               e->deviceName.c_str());
-            allMuted = false;
-            break;
-         } else if (isMuted == FALSE) {
-            allMuted = false;
-            break;
-         }
+   if (!CheckForReInit()) {
+      return false;
+   }
+   for (auto& e : endpoints_) {
+      BOOL isMuted = FALSE;
+      if (FAILED(e->endpointVolume->GetMute(&isMuted))) {
+         log.LogError(
+            L"Failed to get mute status for \"%s\"",
+            e->deviceName.c_str());
+         return false;
+      } else if (isMuted == FALSE) {
+         return false;
       }
    }
-   return allMuted;
+   return true;
 }
 
 bool VistaAudio::SaveMuteStatus()

@@ -33,7 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
-static constexpr int CURRENT_SETTINGS_VERSION = 0;
+static constexpr int CURRENT_SETTINGS_VERSION = 1;
 
 static const wchar_t *LX_SYSTEMS_SUBKEY
    = L"SOFTWARE\\lx-systems\\WinMute";
@@ -43,6 +43,8 @@ static const wchar_t* LX_SYSTEMS_BLUETOOTH_SUBKEY
    = L"SOFTWARE\\lx-systems\\WinMute\\BluetoothDevices";
 static const wchar_t *LX_SYSTEMS_AUDIO_ENDPOINTS_SUBKEY
 = L"SOFTWARE\\lx-systems\\WinMute\\ManagedAudioEndpoints";
+static const wchar_t *LX_SYSTEMS_QUIET_HOUR_TIMES_SUBKEY
+= L"SOFTWARE\\lx-systems\\WinMute\\QuietHourTimes";
 
 static const wchar_t* LX_SYSTEMS_AUTOSTART_KEY
    = L"LX-Systems WinMute";
@@ -113,10 +115,10 @@ static const wchar_t* KeyToStr(SettingsKey key)
    case SettingsKey::QUIETHOURS_NOTIFICATIONS:
       keyStr = L"QuietHoursNotifications";
       break;
-   case SettingsKey::QUIETHOURS_START:
+   case SettingsKey::QUIETHOURS_START_V0_DEPRECATED:
       keyStr = L"QuietHoursStart";
       break;
-   case SettingsKey::QUIETHOURS_END:
+   case SettingsKey::QUIETHOURS_END_V0_DEPRECATED:
       keyStr = L"QuietHoursEnd";
       break;
    case SettingsKey::LOGGING_ENABLED:
@@ -177,9 +179,9 @@ static DWORD GetDefaultSetting(SettingsKey key)
       return 0;
    case SettingsKey::QUIETHOURS_NOTIFICATIONS:
       return 0;
-   case SettingsKey::QUIETHOURS_START:
+   case SettingsKey::QUIETHOURS_START_V0_DEPRECATED:
       return 0;
-   case SettingsKey::QUIETHOURS_END:
+   case SettingsKey::QUIETHOURS_END_V0_DEPRECATED:
       return 0;
    case SettingsKey::LOGGING_ENABLED:
       return 0;
@@ -250,9 +252,36 @@ WMSettings::~WMSettings()
 
 bool WMSettings::MigrateSettings()
 {
+   WMi18n &i18n = WMi18n::GetInstance();
    DWORD version = QueryValue(SettingsKey::SETTINGS_VERSION);
-   if (version != CURRENT_SETTINGS_VERSION) {
-      WMLog::GetInstance().LogError(L"Unexpected settings version: %d", version);
+   if (version > CURRENT_SETTINGS_VERSION) {
+      WMLog::GetInstance().LogError(
+         L"Settings version %d is newer than application supports (%d). "
+         L"Some settings may not work correctly.",
+         version,
+         CURRENT_SETTINGS_VERSION);
+   } else if (version == 0) {
+      // Migrate Quiet Hours settings from old keys and update settings version
+      const auto quietHoursStart = QueryValue(SettingsKey::QUIETHOURS_START_V0_DEPRECATED);
+      const auto quietHoursEnd = QueryValue(SettingsKey::QUIETHOURS_END_V0_DEPRECATED);
+
+      if (StoreQuietHoursTimes({ { quietHoursStart, quietHoursEnd } })
+          && SetValue(SettingsKey::SETTINGS_VERSION, CURRENT_SETTINGS_VERSION)) {
+         // Remove old settings keys
+         RegDeleteValueW(hSettingsKey_, KeyToStr(SettingsKey::QUIETHOURS_START_V0_DEPRECATED));
+         RegDeleteValueW(hSettingsKey_, KeyToStr(SettingsKey::QUIETHOURS_END_V0_DEPRECATED));
+      } else {
+         WMLog::GetInstance().LogError(L"Error migrating Quiet Hours settings");
+         TaskDialog(
+            nullptr,
+            nullptr,
+            PROGRAM_NAME,
+            i18n.GetTranslationW("init.error.winmute.title").c_str(),
+            i18n.GetTranslationW("init.error.winmute.migrating-settings-error").c_str(),
+            TDCBF_OK_BUTTON,
+            TD_ERROR_ICON,
+            nullptr);
+      }
    }
    return true;
 }
@@ -332,6 +361,31 @@ bool WMSettings::Init()
          hSettingsKey_ = nullptr;
          hWifiKey_ = nullptr;
          hBluetoothKey_ = nullptr;
+         return false;
+      }
+   }
+
+   if (hQuietHoursTimesKey_ == nullptr) {
+      DWORD regError = RegCreateKeyExW(
+         HKEY_CURRENT_USER,
+         LX_SYSTEMS_QUIET_HOUR_TIMES_SUBKEY,
+         0,
+         nullptr,
+         0,
+         KEY_READ | KEY_WRITE,
+         nullptr,
+         &hQuietHoursTimesKey_,
+         nullptr);
+      if (regError != ERROR_SUCCESS) {
+         ShowWindowsError(L"RegCreateKeyEx", regError);
+         RegCloseKey(hWifiKey_);
+         RegCloseKey(hSettingsKey_);
+         RegCloseKey(hBluetoothKey_);
+         RegCloseKey(hAudioEndpointsKey_);
+         hSettingsKey_ = nullptr;
+         hWifiKey_ = nullptr;
+         hBluetoothKey_ = nullptr;
+         hAudioEndpointsKey_ = nullptr;
          return false;
       }
    }
@@ -701,6 +755,139 @@ std::vector<std::wstring> WMSettings::GetBluetoothDevicesW() const
    }
    NormalizeStringList(devices);
    return devices;
+}
+
+bool WMSettings::StoreQuietHoursTimes(const std::vector<std::pair<DWORD, DWORD>> &times)
+{
+   // Clear all stored keys
+   for (;;) {
+      wchar_t valueName[260] = { 0 };
+      DWORD valueSize = ARRAY_SIZE(valueName);
+      DWORD regError = RegEnumValueW(
+         hQuietHoursTimesKey_,
+         0,
+         valueName,
+         &valueSize,
+         nullptr,
+         nullptr,
+         nullptr,
+         nullptr);
+      if (regError == ERROR_NO_MORE_ITEMS) {
+         break;
+      } else if (regError != ERROR_SUCCESS) {
+         ShowWindowsError(L"RegEnumValue", regError);
+         return false;
+      } else {
+         regError = RegDeleteValue(hQuietHoursTimesKey_, valueName);
+         if (regError != ERROR_SUCCESS) {
+            ShowWindowsError(L"RegDeleteValue", regError);
+            return false;
+         }
+      }
+   }
+
+   for (size_t i = 0; i < times.size(); ++i) {
+      const std::wstring keyStart = L"Start" + std::to_wstring(i);
+      const std::wstring keyEnd = L"End" + std::to_wstring(i);
+      DWORD regError = RegSetValueExW(
+         hQuietHoursTimesKey_,
+         keyStart.c_str(),
+         0,
+         REG_DWORD,
+         reinterpret_cast<const BYTE *>(&times[i].first),
+         static_cast<DWORD>(sizeof(times[i].first)));
+      if (regError != ERROR_SUCCESS) {
+         ShowWindowsError(L"RegSetValueEx", regError);
+         return false;
+      }
+      regError = RegSetValueExW(
+         hQuietHoursTimesKey_,
+         keyEnd.c_str(),
+         0,
+         REG_DWORD,
+         reinterpret_cast<const BYTE *>(&times[i].second),
+         static_cast<DWORD>(sizeof(times[i].second)));
+      if (regError != ERROR_SUCCESS) {
+         ShowWindowsError(L"RegSetValueEx", regError);
+         return false;
+      }
+   }
+   return true;
+}
+
+std::vector<std::pair<DWORD, DWORD>> WMSettings::GetQuietHoursTimes()
+{
+   WMi18n &i18n = WMi18n::GetInstance();
+
+   DWORD numEntries = 0;
+   auto regError = RegQueryInfoKeyW(
+      hQuietHoursTimesKey_,
+      nullptr, nullptr,
+      nullptr, nullptr,
+      nullptr, nullptr,
+      &numEntries, nullptr,
+      nullptr, nullptr,
+      nullptr);
+   if (regError != ERROR_SUCCESS) {
+      ShowWindowsError(L"ShowWindowsError", regError);
+      return {};
+   }
+      
+   if (numEntries % 2 != 0) {
+      WMLog::GetInstance().LogError(
+         L"Corrupted Quiet Hours times in registry: odd number of entries (%d). Resetting QuietHours", numEntries);
+      TaskDialog(
+         nullptr,
+         nullptr,
+         PROGRAM_NAME,
+         i18n.GetTranslationW("init.error.winmute.title").c_str(),
+         i18n.GetTranslationW("init.error.winmute.migrating-settings-error").c_str(),
+         TDCBF_OK_BUTTON,
+         TD_ERROR_ICON,
+         nullptr);
+      StoreQuietHoursTimes({});
+      return {};
+   }
+
+   std::vector<std::pair<DWORD, DWORD>> times;
+   for (DWORD valIdx = 0; valIdx < numEntries / 2; valIdx += 1) {
+      const std::wstring keyStart = L"Start" + std::to_wstring(valIdx);
+      const std::wstring keyEnd = L"End" + std::to_wstring(valIdx);
+
+      std::pair<DWORD, DWORD> timeEntry{};
+      DWORD size = sizeof(DWORD);
+      regError = RegQueryValueExW(
+         hQuietHoursTimesKey_,
+         keyStart.c_str(),
+         0,
+         nullptr,
+         reinterpret_cast<LPBYTE>(&timeEntry.first),
+         &size);
+      if (regError != ERROR_SUCCESS) {
+         WMLog::GetInstance().LogError(
+            L"Failed to read entry \"%s\" while initializing quiet hours (%d)",
+            keyStart.c_str(), regError
+        );
+         continue;
+      }
+
+      size = sizeof(DWORD);
+      regError = RegQueryValueExW(
+         hQuietHoursTimesKey_,
+         keyEnd.c_str(),
+         0,
+         nullptr,
+         reinterpret_cast<LPBYTE>(&timeEntry.second),
+         &size);
+      if (regError != ERROR_SUCCESS) {
+         WMLog::GetInstance().LogError(
+            L"Failed to read entry \"%s\" while initializing quiet hours (%d)",
+            keyStart.c_str(), regError);
+         continue;
+      }
+      times.push_back(std::move(timeEntry));
+   }
+   return times;
 }
 
 

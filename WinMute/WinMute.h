@@ -99,4 +99,5 @@ private:
    
    LRESULT OnDeviceChange(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
    LRESULT OnQuietHours(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+   LRESULT OnAudioServiceShutdown(HWND hWnd, WPARAM wParam, LPARAM lParam);
 };
