@@ -67,10 +67,10 @@ STDMETHODIMP_(HRESULT) MMNotificationClient::QueryInterface(
 {
    if (IID_IUnknown == riid) {
       AddRef();
-      *ppvInterface = reinterpret_cast<IUnknown*>(this);
+      *ppvInterface = static_cast<IUnknown*>(this);
    } else if (__uuidof(IMMNotificationClient) == riid) {
       AddRef();
-      *ppvInterface = reinterpret_cast<IMMNotificationClient*>(this);
+      *ppvInterface = static_cast<IMMNotificationClient*>(this);
    } else {
       *ppvInterface = nullptr;
       return E_NOINTERFACE;
@@ -89,7 +89,7 @@ STDMETHODIMP_(HRESULT) MMNotificationClient::OnDeviceAdded(LPCWSTR pwstrDeviceId
 {
    if (notifyParent_ && pwstrDeviceId != nullptr) {
       const auto deviceName = GetDeviceNameFromId(pwstrDeviceId);
-      WMLog::GetInstance().GetInstance().LogInfo(L"Device \"%s\" added", deviceName.c_str());
+      WMLog::GetInstance().LogInfo(L"Device \"%s\" added", deviceName.c_str());
       notifyParent_->ShouldReInit();
    }
    return S_OK;
@@ -99,7 +99,7 @@ STDMETHODIMP_(HRESULT) MMNotificationClient::OnDeviceRemoved(LPCWSTR pwstrDevice
 {
    if (notifyParent_ && pwstrDeviceId != nullptr) {
       const auto deviceName = GetDeviceNameFromId(pwstrDeviceId);
-      WMLog::GetInstance().GetInstance().LogInfo(L"Device \"%s\" removed", deviceName.c_str());
+      WMLog::GetInstance().LogInfo(L"Device \"%s\" removed", deviceName.c_str());
       notifyParent_->ShouldReInit();
    }
    return S_OK;
@@ -126,7 +126,7 @@ STDMETHODIMP_(HRESULT) MMNotificationClient::OnDeviceStateChanged(
    if (notify && notifyParent_) {
       // TODO: Check if output device
       const auto deviceName = GetDeviceNameFromId(pwstrDeviceId);
-      WMLog::GetInstance().GetInstance().LogInfo(
+      WMLog::GetInstance().LogInfo(
          L"Device \"%s\" status changed to %s",
          deviceName.c_str(),
          what.c_str());
