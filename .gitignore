@@ -27,3 +27,6 @@ Bin/
 
 # Cpp Check
 winmute-cppcheck-build-dir/
+
+# AI Stuff
+.claude/
