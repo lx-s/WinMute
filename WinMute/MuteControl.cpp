@@ -35,8 +35,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 extern HINSTANCE hglobInstance;
 
-static const int BLUETOOTH_RECONNECT_UNMUTE_DELAY = 5000; // Milliseconds
-static const int MUTE_DELAY_MAGIC_VALUE = 0x198604;
+static constexpr int BLUETOOTH_RECONNECT_UNMUTE_DELAY = 5000; // Milliseconds
+static constexpr int MUTE_DELAY_MAGIC_VALUE = 0x198604;
+
+// Fixed timer IDs: SetTimer with an ID of 0 returns a value that is not
+// guaranteed to be the timer's actual ID, which breaks the later KillTimer.
+static constexpr UINT_PTR DELAYED_MUTE_TIMER_ID = 190501;
+static constexpr UINT_PTR BLUETOOTH_UNMUTE_TIMER_ID = 190502;
 
 static const wchar_t *MUTECONTROL_CLASS_NAME = L"WinMuteMuteControl";
 
@@ -111,8 +116,12 @@ MuteControl::MuteControl()
 
 MuteControl::~MuteControl()
 {
+   if (hMuteCtrlWnd_ != nullptr)
+   {
+      DestroyWindow(hMuteCtrlWnd_);
+      hMuteCtrlWnd_ = nullptr;
+   }
    UnregisterClassW(MUTECONTROL_CLASS_NAME, hglobInstance);
-   DestroyWindow(hMuteCtrlWnd_);
 }
 
 bool MuteControl::Init(HWND hParent, const TrayIcon *trayIcon)
@@ -147,6 +156,7 @@ bool MuteControl::Init(HWND hParent, const TrayIcon *trayIcon)
    if (!winAudio_->Init(hParent))
    {
       DestroyWindow(hMuteCtrlWnd_);
+      hMuteCtrlWnd_ = nullptr;
       UnregisterClassW(MUTECONTROL_CLASS_NAME, hglobInstance);
       return false;
    }
@@ -218,14 +228,18 @@ void MuteControl::MuteDelayed(int magic)
 
 bool MuteControl::StartDelayedMute()
 {
-   delayedMuteTimerId_ = SetTimer(
-       hMuteCtrlWnd_,
-       delayedMuteTimerId_,
-       muteDelaySeconds_ * 1000,
-       DelayedMuteTimerProc);
-   if (delayedMuteTimerId_ == 0)
+   if (SetTimer(
+           hMuteCtrlWnd_,
+           DELAYED_MUTE_TIMER_ID,
+           muteDelaySeconds_ * 1000,
+           DelayedMuteTimerProc) == 0)
    {
       WMLog::GetInstance().LogWinError(L"SetTimer", GetLastError());
+      delayedMuteTimerId_ = 0;
+   }
+   else
+   {
+      delayedMuteTimerId_ = DELAYED_MUTE_TIMER_ID;
    }
    return delayedMuteTimerId_ != 0;
 }
@@ -261,15 +275,19 @@ void MuteControl::RestoreVolume(bool withDelay)
       ShowNotification(
           WMi18n::GetInstance().GetTranslationW("popup.volume-restored.title"),
           WMi18n::GetInstance().GetTranslationW("popup.volume-restored.text"));
-      bluetoothUnmuteTimerId_ = SetTimer(
-          hMuteCtrlWnd_,
-          bluetoothUnmuteTimerId_,
-          BLUETOOTH_RECONNECT_UNMUTE_DELAY,
-          BluetoothUnmuteTimerProc);
-      if (bluetoothUnmuteTimerId_ == 0)
+      if (SetTimer(
+              hMuteCtrlWnd_,
+              BLUETOOTH_UNMUTE_TIMER_ID,
+              BLUETOOTH_RECONNECT_UNMUTE_DELAY,
+              BluetoothUnmuteTimerProc) == 0)
       {
          log.LogWinError(L"SetTimer (Bluetooth unmute delay)");
+         bluetoothUnmuteTimerId_ = 0;
          CompleteVolumeRestore(); // fall back to immediate restore
+      }
+      else
+      {
+         bluetoothUnmuteTimerId_ = BLUETOOTH_UNMUTE_TIMER_ID;
       }
    }
    else
@@ -501,9 +519,12 @@ void MuteControl::NotifyQuietHours(bool active)
 {
    if (active)
    {
+      // SaveMuteStatus() must stay the only save here: calling
+      // winAudio_->SaveMuteStatus() directly would overwrite the state
+      // remembered by an already-active mute event (e.g. workstation lock)
+      // with the currently muted state.
       SaveMuteStatus();
-      WMLog::GetInstance().LogInfo(L"Mute Event: Quiet Hours startet");
-      winAudio_->SaveMuteStatus();
+      WMLog::GetInstance().LogInfo(L"Mute Event: Quiet Hours started");
       winAudio_->SetMute(true);
    }
    else

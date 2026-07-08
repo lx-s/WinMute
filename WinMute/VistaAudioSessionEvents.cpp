@@ -64,10 +64,10 @@ HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::QueryInterface(
 {
    if (riid == IID_IUnknown) {
       AddRef();
-      *ppvInterface = reinterpret_cast<IUnknown*>(this);
+      *ppvInterface = static_cast<IUnknown*>(this);
    } else if (riid == __uuidof(IAudioSessionEvents)) {
       AddRef();
-      *ppvInterface = reinterpret_cast<IAudioSessionEvents*>(this);
+      *ppvInterface = static_cast<IAudioSessionEvents*>(this);
    } else {
       *ppvInterface = nullptr;
       return E_NOINTERFACE;
