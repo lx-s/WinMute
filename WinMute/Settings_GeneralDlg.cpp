@@ -96,7 +96,6 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       LoadSettingsGeneralDlgTranslation(hDlg);
 
       SettingsGeneralData *dlgData = new SettingsGeneralData;
-      memset(dlgData, 0, sizeof(*dlgData));
       dlgData->langModules = WMi18n::GetInstance().GetAvailableLanguages();
       dlgData->settings = reinterpret_cast<WMSettings *>(lParam);
       assert(dlgData->settings != nullptr);
