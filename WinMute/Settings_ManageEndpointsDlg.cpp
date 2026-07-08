@@ -69,7 +69,7 @@ static bool GetAudioEndpoints(std::vector<std::wstring>& endpoints)
    for (UINT i = 0; i < epCount; ++i) {
       CComPtr<IMMDevice> device = nullptr;
       if (FAILED(audioEndpoints->Item(i, &device))) {
-         log.LogError(L"Failed to get audio endpoint #%d", i);
+         log.LogError(L"Failed to get audio endpoint #{}", i);
          continue;
       }
 

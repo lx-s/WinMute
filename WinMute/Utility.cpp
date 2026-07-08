@@ -197,7 +197,7 @@ bool LaunchBrowser(HWND hParent, const std::wstring &url)
    };
    if (!hasPrefix(L"https://") && !hasPrefix(L"http://")) {
       WMLog::GetInstance().LogError(
-         L"Refused to open \"%s\": not a http(s) URL", url.c_str());
+         L"Refused to open \"{}\": not a http(s) URL", url);
       return false;
    }
 

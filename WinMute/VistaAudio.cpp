@@ -86,16 +86,16 @@ bool VistaAudio::LoadAllEndpoints()
 
       hr = audioEndpoints->Item(i, &device);
       if (FAILED(hr)) {
-         log.LogError(L"Failed to get audio endpoint #%d", i);
+         log.LogError(L"Failed to get audio endpoint #{}", i);
          continue;
       }
 
       const auto deviceName = GetAudioDeviceName(device);
       if (!deviceName) {
-         log.LogError(L"Failed to get device name for audio endpoint #%d", i);
+         log.LogError(L"Failed to get device name for audio endpoint #{}", i);
          continue;
       } else {
-         log.LogInfo(L"Found audio endpoint \"%s\"", deviceName->c_str());
+         log.LogInfo(L"Found audio endpoint \"{}\"", *deviceName);
          ep->deviceName = *deviceName;
       }
       
@@ -103,15 +103,15 @@ bool VistaAudio::LoadAllEndpoints()
       if (FAILED(device->Activate(
             __uuidof(IAudioSessionManager2), CLSCTX_INPROC_SERVER, nullptr,
             reinterpret_cast<LPVOID*>(&sessionManager2)))) {
-         log.LogError(L"Failed to retrieve audio session manager for \"%s\"",
-                   ep->deviceName.c_str());
+         log.LogError(L"Failed to retrieve audio session manager for \"{}\"",
+                   ep->deviceName);
          continue;
       }
 
       hr = sessionManager2->GetAudioSessionControl(nullptr, 0, &ep->sessionCtrl);
       if (FAILED(hr)) {
-         log.LogError(L"Failed to retrieve audio session manager for \"%s\"",
-            ep->deviceName.c_str());
+         log.LogError(L"Failed to retrieve audio session manager for \"{}\"",
+            ep->deviceName);
          continue;
       }
 
@@ -124,8 +124,8 @@ bool VistaAudio::LoadAllEndpoints()
          __uuidof(IAudioEndpointVolume), CLSCTX_INPROC_SERVER,
          nullptr, reinterpret_cast<LPVOID*>(&ep->endpointVolume));
       if (FAILED(hr)) {
-         log.LogError(L"Failed to active endpoint volume for device \"%s\"",
-            ep->deviceName.c_str());
+         log.LogError(L"Failed to active endpoint volume for device \"{}\"",
+            ep->deviceName);
          continue;
       }
       endpoints_.push_back(std::move(ep));
@@ -199,8 +199,8 @@ bool VistaAudio::AllEndpointsMuted()
       BOOL isMuted = FALSE;
       if (FAILED(e->endpointVolume->GetMute(&isMuted))) {
          log.LogError(
-            L"Failed to get mute status for \"%s\"",
-            e->deviceName.c_str());
+            L"Failed to get mute status for \"{}\"",
+            e->deviceName);
          return false;
       } else if (isMuted == FALSE) {
          return false;
@@ -219,8 +219,8 @@ bool VistaAudio::SaveMuteStatus()
          BOOL isMuted = FALSE;
          if (FAILED(e->endpointVolume->GetMute(&isMuted))) {
             log.LogError(
-               L"Failed to get mute status for \"%s\"",
-               e->deviceName.c_str());
+               L"Failed to get mute status for \"{}\"",
+               e->deviceName);
             success = false;
          } else {
             e->wasMuted = isMuted;
@@ -240,17 +240,17 @@ bool VistaAudio::RestoreMuteStatus()
    }
    for (auto& e : endpoints_) {
       if (!IsEndpointManaged(e->deviceName)) {
-         log.LogInfo(L"Skipping Endpoint %s", e->deviceName.c_str());
+         log.LogInfo(L"Skipping Endpoint {}", e->deviceName);
          continue;
       }
-      log.LogInfo(L"Restoring: Mute %s for \"%s\"",
+      log.LogInfo(L"Restoring: Mute {} for \"{}\"",
                 (e->wasMuted) ? L"true" : L"false",
-                e->deviceName.c_str());
+                e->deviceName);
       if (e->wasMuted != true) {
          if (FAILED(e->endpointVolume->SetMute(false, nullptr))) {
-            log.LogError(L"Failed to restore mute status to %s for \"%s\"",
+            log.LogError(L"Failed to restore mute status to {} for \"{}\"",
                       (e->wasMuted) ? L"true" : L"false",
-                      e->deviceName.c_str());
+                      e->deviceName);
             success = false;
          }
       }
@@ -266,20 +266,20 @@ void VistaAudio::SetMute(bool mute)
       for (auto& e : endpoints_) {
          BOOL isMuted = !mute;
          if (!IsEndpointManaged(e->deviceName)) {
-            log.LogInfo(L"Skipping Endpoint %s", e->deviceName.c_str());
+            log.LogInfo(L"Skipping Endpoint {}", e->deviceName);
             continue;
          }
          if (FAILED(e->endpointVolume->GetMute(&isMuted))) {
             log.LogError(
-               L"Failed to get mute status for \"%s\"",
-               e->deviceName.c_str());
+               L"Failed to get mute status for \"{}\"",
+               e->deviceName);
          }
          if (!!isMuted != mute) {
             if (FAILED(e->endpointVolume->SetMute(mute, nullptr))) {
                log.LogError(
-                  L"Failed to set mute status to %s for \"%s\"",
+                  L"Failed to set mute status to {} for \"{}\"",
                   (e->wasMuted) ? L"true" : L"false",
-                  e->deviceName.c_str());
+                  e->deviceName);
             }
          }
       }

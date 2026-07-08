@@ -35,6 +35,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
+#include <format>
+
 enum class LogLevel {
    Debug,
    Info,
@@ -52,10 +54,31 @@ class WMLog {
 public:
    static WMLog& GetInstance();
 
-   void LogDebug(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...);
-   void LogInfo(_In_z_ _Printf_format_string_ const wchar_t* fmt, ...);
-   void LogWarning(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...);
-   void LogError(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...);
+   // The format string is validated against the arguments at compile time.
+   template<typename... Args>
+   void LogDebug(std::wformat_string<Args...> fmt, Args&&... args)
+   {
+      StoreMessage(LogLevel::Debug,
+                   std::format(fmt, std::forward<Args>(args)...).c_str());
+   }
+   template<typename... Args>
+   void LogInfo(std::wformat_string<Args...> fmt, Args&&... args)
+   {
+      StoreMessage(LogLevel::Info,
+                   std::format(fmt, std::forward<Args>(args)...).c_str());
+   }
+   template<typename... Args>
+   void LogWarning(std::wformat_string<Args...> fmt, Args&&... args)
+   {
+      StoreMessage(LogLevel::Warning,
+                   std::format(fmt, std::forward<Args>(args)...).c_str());
+   }
+   template<typename... Args>
+   void LogError(std::wformat_string<Args...> fmt, Args&&... args)
+   {
+      StoreMessage(LogLevel::Error,
+                   std::format(fmt, std::forward<Args>(args)...).c_str());
+   }
    void LogWinError(const wchar_t *functionName, DWORD errorCode = -1);
 
    void EnableLogFile(bool enable);

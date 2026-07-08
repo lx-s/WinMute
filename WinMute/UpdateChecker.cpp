@@ -129,13 +129,13 @@ bool UpdateChecker::ParseVersionFile(const std::string& fileContents,
         }
 
     } catch (const nlohmann::json::parse_error& pe) {
-        log.LogError(L"Failed to parse update: %S", pe.what());
+        log.LogError(L"Failed to parse update: {}", ConvertStringToWideString(pe.what()));
         return false;
     } catch (const nlohmann::json::type_error& te) {
-        log.LogError(L"Failed to parse update: %S", te.what());
+        log.LogError(L"Failed to parse update: {}", ConvertStringToWideString(te.what()));
         return false;
     } catch (const std::exception& e) {
-        log.LogError(L"Failed to parse update: %S", e.what());
+        log.LogError(L"Failed to parse update: {}", ConvertStringToWideString(e.what()));
         return false;
     }
     return true;
@@ -168,16 +168,16 @@ std::optional<bool> UpdateChecker::IsVersionGreater(
     std::vector<int> curVersParsed;
     WMLog& log = WMLog::GetInstance();
     if (!ParseVersion(newVers, newVersParsed)) {
-        log.LogError(L"Failed to parse new version string \"%s\"",
-                     newVers.c_str());
+        log.LogError(L"Failed to parse new version string \"{}\"",
+                     newVers);
         return std::nullopt;
     } else if (!ParseVersion(curVers, curVersParsed)) {
-        log.LogError(L"Failed to parse current version string \"%s\"",
-                     curVers.c_str());
+        log.LogError(L"Failed to parse current version string \"{}\"",
+                     curVers);
         return std::nullopt;
     } else if (newVersParsed.size() != curVersParsed.size()) {
-        log.LogError(L"Version format mismatch \"%s\" / \"%s\"",
-                     curVers.c_str(), newVers.c_str());
+        log.LogError(L"Version format mismatch \"{}\" / \"{}\"",
+                     curVers, newVers);
         return std::nullopt;
     }
     for (size_t i = 0; i < newVersParsed.size(); ++i) {
@@ -294,7 +294,7 @@ bool UpdateChecker::GetVersionFile(std::string& fileContents) const
                         GetLastError());
         return false;
     } else if (statusCode != HTTP_STATUS_OK) {
-        log.LogError(L"Update-Server returned HTTP %d", statusCode);
+        log.LogError(L"Update-Server returned HTTP {}", statusCode);
         return false;
     }
 

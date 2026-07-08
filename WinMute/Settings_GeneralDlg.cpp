@@ -52,7 +52,7 @@ static void FillLanguageList(HWND hLanguageList, const SettingsGeneralData& dlgD
    for (const auto &lang : dlgData.langModules) {
       const auto itemId = SendMessage(hLanguageList, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(lang.langName.c_str()));
       if (itemId == CB_ERR || itemId == CB_ERRSPACE) {
-         WMLog::GetInstance().LogError(L"Failed to add language %ls to language selector", lang.langName.c_str());
+         WMLog::GetInstance().LogError(L"Failed to add language {} to language selector", lang.langName);
       } else {
          ComboBox_SetItemData(hLanguageList, itemId, lang.fileName.c_str());
       }

@@ -205,56 +205,6 @@ void WMLog::UnregisterForLogUpdates(HWND hWnd)
    }
 }
 
-void WMLog::LogDebug(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...)
-{
-   wchar_t buf[1024];
-   va_list ap;
-   va_start(ap, fmt);
-
-   // _TRUNCATE: oversized messages (e.g. containing long external strings)
-   // must be cut short, not trip the invalid-parameter handler.
-   _vsnwprintf_s(buf, ARRAY_SIZE(buf), _TRUNCATE, fmt, ap);
-   StoreMessage(LogLevel::Debug, buf);
-
-   va_end(ap);
-}
-
-void WMLog::LogInfo(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...)
-{
-   wchar_t buf[1024];
-   va_list ap;
-   va_start(ap, fmt);
-
-   _vsnwprintf_s(buf, ARRAY_SIZE(buf), _TRUNCATE, fmt, ap);
-   StoreMessage(LogLevel::Info, buf);
-
-   va_end(ap);
-}
-
-void WMLog::LogWarning(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...)
-{
-   wchar_t buf[1024];
-   va_list ap;
-   va_start(ap, fmt);
-
-   _vsnwprintf_s(buf, ARRAY_SIZE(buf), _TRUNCATE, fmt, ap);
-   StoreMessage(LogLevel::Warning, buf);
-
-   va_end(ap);
-}
-
-void WMLog::LogError(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...)
-{
-   wchar_t buf[1024];
-   va_list ap;
-   va_start(ap, fmt);
-
-   _vsnwprintf_s(buf, ARRAY_SIZE(buf), _TRUNCATE, fmt, ap);
-   StoreMessage(LogLevel::Error, buf);
-
-   va_end(ap);
-}
-
 void WMLog::LogWinError(const wchar_t *functionName, DWORD lastError)
 {
    // Retrieve the system error message for the last-error code

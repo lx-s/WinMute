@@ -284,25 +284,25 @@ bool WinMute::LoadSettings()
    if (log.IsLogFileEnabled()) {
       std::wstring versionNumber;
       GetWinMuteVersion(versionNumber);
-      log.LogInfo(L"Starting WinMute %s", versionNumber.c_str());
+      log.LogInfo(L"Starting WinMute {}", versionNumber);
       log.LogInfo(L"Loading settings:");
-      log.LogInfo(L"Check for updates: %s", settings_.QueryValue(SettingsKey::CHECK_FOR_UPDATE) ? L"Yes" : L"No");
-      log.LogInfo(L"\tCheck for beta updates: %s", settings_.QueryValue(SettingsKey::CHECK_FOR_BETA_UPDATE) ? L"Yes" : L"No");
-      log.LogInfo(L"\tRestore volume: %s", settings_.QueryValue(SettingsKey::RESTORE_AUDIO) ? L"Yes" : L"No");
-      log.LogInfo(L"\tMute delay: %d", settings_.QueryValue(SettingsKey::MUTE_DELAY));
-      log.LogInfo(L"\tMute on lock: %s", settings_.QueryValue(SettingsKey::MUTE_ON_LOCK) ? L"Yes" : L"No");
-      log.LogInfo(L"\tMute on display standby: %s", settings_.QueryValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY) ? L"Yes" : L"No");
-      log.LogInfo(L"\tMute on logout: %s", settings_.QueryValue(SettingsKey::MUTE_ON_LOGOUT) ? L"Yes" : L"No");
-      log.LogInfo(L"\tMute on suspend: %s", settings_.QueryValue(SettingsKey::MUTE_ON_SUSPEND) ? L"Yes" : L"No");
-      log.LogInfo(L"\tMute on shutdown: %s", settings_.QueryValue(SettingsKey::MUTE_ON_SHUTDOWN) ? L"Yes" : L"No");
-      log.LogInfo(L"\tShow notifications: %s", settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED) ? L"Yes" : L"No");
-      log.LogInfo(L"\tMute on bluetooth: %s", settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH) ? L"Yes" : L"No");
-      log.LogInfo(L"\tTry pausing media when muting: %s", settings_.QueryValue(SettingsKey::MUTE_TRY_PAUSE_MEDIA) ? L"Yes" : L"No");
-      log.LogInfo(L"\tTry resuming media when unmuting: %s", settings_.QueryValue(SettingsKey::MUTE_TRY_RESUME_MEDIA) ? L"Yes" : L"No");
-      log.LogInfo(L"\t\tUse devicelist: %s", settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH_DEVICELIST) ? L"Yes" : L"No");
-      log.LogInfo(L"\tMute on WLAN: %s", settings_.QueryValue(SettingsKey::MUTE_ON_WLAN) ? L"Yes" : L"No");
-      log.LogInfo(L"\t\tUse allowlist: %s", settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST) ? L"Yes" : L"No");
-      log.LogInfo(L"\tMute specific endpoints only: %s", settings_.QueryValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS) ? L"Yes" : L"No");
+      log.LogInfo(L"Check for updates: {}", settings_.QueryValue(SettingsKey::CHECK_FOR_UPDATE) ? L"Yes" : L"No");
+      log.LogInfo(L"\tCheck for beta updates: {}", settings_.QueryValue(SettingsKey::CHECK_FOR_BETA_UPDATE) ? L"Yes" : L"No");
+      log.LogInfo(L"\tRestore volume: {}", settings_.QueryValue(SettingsKey::RESTORE_AUDIO) ? L"Yes" : L"No");
+      log.LogInfo(L"\tMute delay: {}", settings_.QueryValue(SettingsKey::MUTE_DELAY));
+      log.LogInfo(L"\tMute on lock: {}", settings_.QueryValue(SettingsKey::MUTE_ON_LOCK) ? L"Yes" : L"No");
+      log.LogInfo(L"\tMute on display standby: {}", settings_.QueryValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY) ? L"Yes" : L"No");
+      log.LogInfo(L"\tMute on logout: {}", settings_.QueryValue(SettingsKey::MUTE_ON_LOGOUT) ? L"Yes" : L"No");
+      log.LogInfo(L"\tMute on suspend: {}", settings_.QueryValue(SettingsKey::MUTE_ON_SUSPEND) ? L"Yes" : L"No");
+      log.LogInfo(L"\tMute on shutdown: {}", settings_.QueryValue(SettingsKey::MUTE_ON_SHUTDOWN) ? L"Yes" : L"No");
+      log.LogInfo(L"\tShow notifications: {}", settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED) ? L"Yes" : L"No");
+      log.LogInfo(L"\tMute on bluetooth: {}", settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH) ? L"Yes" : L"No");
+      log.LogInfo(L"\tTry pausing media when muting: {}", settings_.QueryValue(SettingsKey::MUTE_TRY_PAUSE_MEDIA) ? L"Yes" : L"No");
+      log.LogInfo(L"\tTry resuming media when unmuting: {}", settings_.QueryValue(SettingsKey::MUTE_TRY_RESUME_MEDIA) ? L"Yes" : L"No");
+      log.LogInfo(L"\t\tUse devicelist: {}", settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH_DEVICELIST) ? L"Yes" : L"No");
+      log.LogInfo(L"\tMute on WLAN: {}", settings_.QueryValue(SettingsKey::MUTE_ON_WLAN) ? L"Yes" : L"No");
+      log.LogInfo(L"\t\tUse allowlist: {}", settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST) ? L"Yes" : L"No");
+      log.LogInfo(L"\tMute specific endpoints only: {}", settings_.QueryValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS) ? L"Yes" : L"No");
    }
 
    if (!settings_.QueryValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS)) {

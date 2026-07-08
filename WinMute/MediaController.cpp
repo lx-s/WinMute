@@ -84,8 +84,8 @@ bool MediaPlaybackController::TryPauseCurrentSession(bool &pausedMedia)
          }
       }
    } catch (const hresult_error &e) {
-      log.LogError(L"MediaPlaybackController: Failed to pause current media session. Error: %s",
-                   e.message().c_str());
+      log.LogError(L"MediaPlaybackController: Failed to pause current media session. Error: {}",
+                   e.message());
       return false;
    }
    return true;
@@ -108,8 +108,8 @@ bool MediaPlaybackController::TryPlayCurrentSession()
          }
       }
    } catch (const hresult_error &e) {
-      log.LogError(L"MediaPlaybackController: Failed to resume current media session. Error: %s",
-                   e.message().c_str());
+      log.LogError(L"MediaPlaybackController: Failed to resume current media session. Error: {}",
+                   e.message());
       return false;
    }
    return true;

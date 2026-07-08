@@ -161,7 +161,7 @@ LRESULT CALLBACK MuteControl::WindowProc(
 
 void MuteControl::SetMute(bool mute)
 {
-   WMLog::GetInstance().LogInfo(L"Manual muting: %s", mute ? L"on" : L"off");
+   WMLog::GetInstance().LogInfo(L"Manual muting: {}", mute ? L"on" : L"off");
    winAudio_->SetMute(mute);
 }
 
@@ -438,14 +438,14 @@ void MuteControl::NotifyRestoreCondition(MuteType type, bool active, bool withDe
 
 void MuteControl::NotifyWorkstationLock(bool active)
 {
-   WMLog::GetInstance().LogInfo(L"Mute Event: Workstation Lock %s",
+   WMLog::GetInstance().LogInfo(L"Mute Event: Workstation Lock {}",
                                 active ? L"start" : L"stop");
    NotifyRestoreCondition(MuteTypeWorkstationLock, active);
 }
 
 void MuteControl::NotifyRemoteSession(bool active)
 {
-   WMLog::GetInstance().LogInfo(L"Mute Event: Remote Session %s",
+   WMLog::GetInstance().LogInfo(L"Mute Event: Remote Session {}",
                                 active ? L"start" : L"stop");
    NotifyRestoreCondition(MuteTypeRemoteSession, active);
 }
@@ -454,7 +454,7 @@ void MuteControl::NotifyDisplayStandby(bool active)
 {
    if (displayWasOffOnce_ || active)
    {
-      WMLog::GetInstance().LogInfo(L"Mute Event: Display Standby %s",
+      WMLog::GetInstance().LogInfo(L"Mute Event: Display Standby {}",
                                    active ? L"start" : L"stop");
       NotifyRestoreCondition(MuteTypeDisplayStandby, active);
       displayWasOffOnce_ = true;
@@ -464,7 +464,7 @@ void MuteControl::NotifyDisplayStandby(bool active)
 void MuteControl::NotifyBluetoothConnected(bool connected)
 {
    WMLog::GetInstance().LogInfo(
-       L"Mute Event: Bluetooth audio device %s",
+       L"Mute Event: Bluetooth audio device {}",
        connected ? L"connected" : L"disconnected");
    NotifyRestoreCondition(MuteTypeBluetoothDisconnect, !connected, true);
 }

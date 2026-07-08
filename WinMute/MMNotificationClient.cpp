@@ -89,7 +89,7 @@ STDMETHODIMP_(HRESULT) MMNotificationClient::OnDeviceAdded(LPCWSTR pwstrDeviceId
 {
    if (notifyParent_ && pwstrDeviceId != nullptr) {
       const auto deviceName = GetDeviceNameFromId(pwstrDeviceId);
-      WMLog::GetInstance().LogInfo(L"Device \"%s\" added", deviceName.c_str());
+      WMLog::GetInstance().LogInfo(L"Device \"{}\" added", deviceName);
       notifyParent_->ShouldReInit();
    }
    return S_OK;
@@ -99,7 +99,7 @@ STDMETHODIMP_(HRESULT) MMNotificationClient::OnDeviceRemoved(LPCWSTR pwstrDevice
 {
    if (notifyParent_ && pwstrDeviceId != nullptr) {
       const auto deviceName = GetDeviceNameFromId(pwstrDeviceId);
-      WMLog::GetInstance().LogInfo(L"Device \"%s\" removed", deviceName.c_str());
+      WMLog::GetInstance().LogInfo(L"Device \"{}\" removed", deviceName);
       notifyParent_->ShouldReInit();
    }
    return S_OK;
@@ -127,9 +127,9 @@ STDMETHODIMP_(HRESULT) MMNotificationClient::OnDeviceStateChanged(
       // TODO: Check if output device
       const auto deviceName = GetDeviceNameFromId(pwstrDeviceId);
       WMLog::GetInstance().LogInfo(
-         L"Device \"%s\" status changed to %s",
-         deviceName.c_str(),
-         what.c_str());
+         L"Device \"{}\" status changed to {}",
+         deviceName,
+         what);
       notifyParent_->ShouldReInit();
    } 
    return S_OK;

@@ -218,7 +218,7 @@ static bool ReadStringFromRegistry(HKEY hKey, const wchar_t* valueName,
     if (regError != ERROR_SUCCESS) {
         if (regError != ERROR_FILE_NOT_FOUND) {
             ShowWindowsError(L"RegGetValueW", regError);
-            log.LogError(L"[Registry] Failed to read key \"%s\".", valueName);
+            log.LogError(L"[Registry] Failed to read key \"{}\".", valueName);
         }
     } else {
         std::wstring buf(bufSize / sizeof(wchar_t), L'\0');
@@ -226,7 +226,7 @@ static bool ReadStringFromRegistry(HKEY hKey, const wchar_t* valueName,
                                 nullptr, buf.data(), &bufSize);
         if (regError != ERROR_SUCCESS) {
             ShowWindowsError(L"RegGetValueW", regError);
-            log.LogError(L"[Registry] Failed to query value for key \"%s\".",
+            log.LogError(L"[Registry] Failed to query value for key \"{}\".",
                          valueName);
         } else {
             buf.resize(wcslen(buf.c_str()));  // Drop trailing '\0's
@@ -257,7 +257,7 @@ bool WMSettings::MigrateSettings()
     DWORD version = QueryValue(SettingsKey::SETTINGS_VERSION);
     if (version > CURRENT_SETTINGS_VERSION) {
         WMLog::GetInstance().LogError(
-            L"Settings version %d is newer than application supports (%d). "
+            L"Settings version {} is newer than application supports ({}). "
             L"Some settings may not work correctly.",
             version, CURRENT_SETTINGS_VERSION);
     } else if (version == 0) {
@@ -421,8 +421,8 @@ bool WMSettings::IsAutostartEnabled()
                     log.LogWarning(
                         L"Registry entry for auto start has wrong executable "
                         L"path."
-                        L"Current path \"%s\". Path in registry \"%s\"",
-                        wmPath, autostartPathFromReg.c_str());
+                        L"Current path \"{}\". Path in registry \"{}\"",
+                        wmPath, autostartPathFromReg);
                 } else {
                     isEnabled = true;
                 }
@@ -480,7 +480,7 @@ DWORD WMSettings::QueryValue(SettingsKey key) const
         if (regError != ERROR_FILE_NOT_FOUND) {
             ShowWindowsError(L"RegQueryValueExW", regError);
             WMLog& log = WMLog::GetInstance();
-            log.LogError(L"[Registry] Failed to query value for key \"%s\"",
+            log.LogError(L"[Registry] Failed to query value for key \"{}\"",
                          keyStr);
         }
         return GetDefaultSetting(key);
@@ -735,7 +735,7 @@ std::vector<std::pair<DWORD, DWORD>> WMSettings::GetQuietHoursTimes()
     if (numEntries % 2 != 0) {
         WMLog::GetInstance().LogError(
             L"Corrupted Quiet Hours times in registry: odd number of entries "
-            L"(%d). Resetting QuietHours",
+            L"({}). Resetting QuietHours",
             numEntries);
         TaskDialog(
             nullptr, nullptr, PROGRAM_NAME,
@@ -759,9 +759,9 @@ std::vector<std::pair<DWORD, DWORD>> WMSettings::GetQuietHoursTimes()
                              reinterpret_cast<LPBYTE>(&timeEntry.first), &size);
         if (regError != ERROR_SUCCESS) {
             WMLog::GetInstance().LogError(
-                L"Failed to read entry \"%s\" while initializing quiet hours "
-                L"(%d)",
-                keyStart.c_str(), regError);
+                L"Failed to read entry \"{}\" while initializing quiet hours "
+                L"({})",
+                keyStart, regError);
             continue;
         }
 
@@ -771,9 +771,9 @@ std::vector<std::pair<DWORD, DWORD>> WMSettings::GetQuietHoursTimes()
             reinterpret_cast<LPBYTE>(&timeEntry.second), &size);
         if (regError != ERROR_SUCCESS) {
             WMLog::GetInstance().LogError(
-                L"Failed to read entry \"%s\" while initializing quiet hours "
-                L"(%d)",
-                keyStart.c_str(), regError);
+                L"Failed to read entry \"{}\" while initializing quiet hours "
+                L"({})",
+                keyEnd, regError);
             continue;
         }
         times.push_back(std::move(timeEntry));

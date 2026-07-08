@@ -162,15 +162,15 @@ BluetoothDetector::BluetoothStatus BluetoothDetector::GetBluetoothStatus(
    if (useDeviceList_) {
       auto pos = std::find(begin(deviceNames_), end(deviceNames_), deviceName);
       if (pos == end(deviceNames_)) {
-         log.LogInfo(L"Bluetooth device \"%s\" not in list.", deviceName.c_str());
+         log.LogInfo(L"Bluetooth device \"{}\" not in list.", deviceName);
          return BluetoothStatus::Unknown;
       }
    }
    if ((inRangeInfo->deviceInfo.flags & BDIF_CONNECTED) && !(inRangeInfo->previousDeviceFlags & BDIF_CONNECTED)) {
-      log.LogInfo(L"Bluetooth Audio device \"%s\" connected.", deviceName.c_str());
+      log.LogInfo(L"Bluetooth Audio device \"{}\" connected.", deviceName);
       return BluetoothStatus::Connected;
    } else if (!(inRangeInfo->deviceInfo.flags & BDIF_CONNECTED) && (inRangeInfo->previousDeviceFlags & BDIF_CONNECTED)) {
-      log.LogInfo(L"Bluetooth Audio device \"%s\" disconnected.", deviceName.c_str());
+      log.LogInfo(L"Bluetooth Audio device \"{}\" disconnected.", deviceName);
       return BluetoothStatus::Disconnected;
    }
    return BluetoothStatus::Unknown;

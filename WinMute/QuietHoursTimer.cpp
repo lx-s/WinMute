@@ -153,7 +153,7 @@ bool QuietHoursTimer::SetStart()
    }
 
    WMLog::GetInstance().LogInfo(
-      L"QuietHours: Next start scheduled in %u s (window %d, %02u:%02u-%02u:%02u)",
+      L"QuietHours: Next start scheduled in {} s (window {}, {:02}:{:02}-{:02}:{:02})",
       diffSec, idx,
       windows_[idx].first / 3600,  (windows_[idx].first % 3600) / 60,
       windows_[idx].second / 3600, (windows_[idx].second % 3600) / 60);
@@ -189,7 +189,7 @@ bool QuietHoursTimer::SetEnd()
    }
 
    WMLog::GetInstance().LogInfo(
-      L"QuietHours: End scheduled in %u s (window %d)", diffSec, activeWindowIdx_);
+      L"QuietHours: End scheduled in {} s (window {})", diffSec, activeWindowIdx_);
 
    return true;
 }
@@ -226,7 +226,7 @@ bool QuietHoursTimer::LoadFromSettings(WMSettings& settings)
    const int activeIdx = FindActiveWindowIdx();
    if (activeIdx != -1) {
       activeWindowIdx_ = activeIdx;
-      WMLog::GetInstance().LogInfo(L"QuietHours: Currently inside window %d — muting now", activeIdx);
+      WMLog::GetInstance().LogInfo(L"QuietHours: Currently inside window {} — muting now", activeIdx);
       // Sending START will cause WinMute to mute and call SetEnd()
       SendMessageW(hParent_, WM_WINMUTE_QUIETHOURS_START, 0, 0);
    } else {
