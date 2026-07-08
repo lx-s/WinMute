@@ -98,8 +98,8 @@
     "settings.mute.mute-without-restore.when-rdp-session-starts": "... 원격데스크탑(RDP) 세션에서 WinMute가 실행될 때 음소거",
     "settings.quiet-hours.intro": "무음 시간 동안 WinMute는 컴퓨터 오디오 장치를 자동으로 음소거하고 종료 후 음소거를 해제합니다.",
     "settings.quiet-hours.enable": "무음 시간 활성화",
-    "settings.quiet-hours.start-time-label": "시작 시간:",
-    "settings.quiet-hours.end-time-label": "종료 시간:",
+    "settings.quiet-hours.start-time-label": "시작 시간",
+    "settings.quiet-hours.end-time-label": "종료 시간",
     "settings.quiet-hours.force-unmute": "강제 음소거 해제",
     "settings.quiet-hours.force-unmute-description": "강제 음소거 해제 기능이 활성화되면, 무음 시간이 종료될 때 WinMute가 컴퓨터의 오디오 장치를 자동으로 음소거 해제하며, 무음 시간이 시작되기 전 이미 음소거 상태였는지는 고려하지 않습니다.",
     "settings.quiet-hours.show-notifications": "무음 시간 알림 표시",
@@ -135,5 +135,11 @@
     "about.btn-close": "확인",
     "log.title": "WinMute 로그 파일",
     "settings.mute.try-pause-media-on-mute": "음소거할 때 현재 재생 중인 미디어를 일시 정지해 보세요.",
-    "settings.mute.try-resume-media-on-unmute": "음소거를 해제한 후 미디어 재생을 재개해 보세요."
+    "settings.mute.try-resume-media-on-unmute": "음소거를 해제한 후 미디어 재생을 재개해 보세요.",
+    "init.error.winmute.migrating-settings-error": "설정 마이그레이션에 실패했습니다. 오류 로그를 확인하거나 지원 티켓을 생성해 주세요",
+    "init.error.winmute.quiet-hours-corrupted-settings": "소음 제한 시간 설정이 손상되었습니다. 소음 제한 시간 설정이 초기화되었습니다",
+    "settings.quiet-hours.add-edit.add-title": "방해 금지 시간대 추가",
+    "settings.quiet-hours.add-edit.edit-title": "방해 금지 시간대 수정",
+    "settings.quiet-hours.error.overlapping-time-range.title": "겹치는 시간 범위",
+    "settings.quiet-hours.error.overlapping-time-range.text": "이 기간 범위는 기존 항목과 겹칩니다."
 }
