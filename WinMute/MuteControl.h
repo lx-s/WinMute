@@ -97,6 +97,20 @@ public:
    void MuteDelayed(int magic);
    void CompleteVolumeRestore();
 private:
+   enum MuteType
+   {
+      // With restore
+      MuteTypeWorkstationLock = 0,
+      MuteTypeRemoteSession,
+      MuteTypeDisplayStandby,
+      MuteTypeBluetoothDisconnect,
+
+      // Without restore
+      MuteTypeLogout,
+      MuteTypeSuspend,
+      MuteTypeShutdown,
+      MuteTypeCount // Meta
+   };
    struct MuteConfig {
       bool shouldMute;
       bool active;
@@ -108,11 +122,11 @@ private:
    std::vector<MuteConfig> muteConfig_;
    bool restoreVolume_ = false;
    bool notificationsEnabled_ = false;
-   bool mediaWasPlaying_ = false;
    int muteDelaySeconds_ = 0;
    UINT_PTR delayedMuteTimerId_ = 0;
    UINT_PTR bluetoothUnmuteTimerId_ = 0;
    std::unique_ptr<WinAudio> winAudio_;
+   MediaPlaybackController mediaController_;
    HWND hMuteCtrlWnd_ = nullptr;
 
    // Since a power message is sent right after registering
@@ -121,7 +135,7 @@ private:
 
    const TrayIcon* trayIcon_ = nullptr;
 
-   void NotifyRestoreCondition(int type, bool active, bool withDelay = false);
+   void NotifyRestoreCondition(MuteType type, bool active, bool withDelay = false);
    void SaveMuteStatus();
    void RestoreVolume(bool withDelay = false);
    void ShowNotification(const std::wstring& title, const std::wstring& text);

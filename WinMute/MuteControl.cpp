@@ -45,21 +45,6 @@ static constexpr UINT_PTR BLUETOOTH_UNMUTE_TIMER_ID = 190502;
 
 static const wchar_t *MUTECONTROL_CLASS_NAME = L"WinMuteMuteControl";
 
-enum MuteType
-{
-   // With restore
-   MuteTypeWorkstationLock = 0,
-   MuteTypeRemoteSession,
-   MuteTypeDisplayStandby,
-   MuteTypeBluetoothDisconnect,
-
-   // Without restore
-   MuteTypeLogout,
-   MuteTypeSuspend,
-   MuteTypeShutdown,
-   MuteTypeCount // Meta
-};
-
 void CALLBACK DelayedMuteTimerProc(HWND hWnd, UINT, UINT_PTR, DWORD)
 {
    MuteControl *muteCtrl = reinterpret_cast<MuteControl *>(GetWindowLongPtrW(hWnd, GWLP_USERDATA));
@@ -304,10 +289,10 @@ void MuteControl::CompleteVolumeRestore()
 {
    bluetoothUnmuteTimerId_ = 0;
    winAudio_->RestoreMuteStatus();
-   if (mediaWasPlaying_ && mediaConfig_.tryResume)
+   if (mediaConfig_.tryResume)
    {
-      MediaPlaybackController::TryPlayCurrentSession();
-      mediaWasPlaying_ = false;
+      // Only resumes if a previous RequestPause actually paused the session.
+      mediaController_.RequestResume();
    }
 }
 
@@ -415,15 +400,11 @@ void MuteControl::MuteNow()
    winAudio_->SetMute(true);
    if (mediaConfig_.tryPause)
    {
-      bool did_pause = false;
-      if (MediaPlaybackController::TryPauseCurrentSession(did_pause))
-      {
-         mediaWasPlaying_ = did_pause;
-      }
+      mediaController_.RequestPause();
    }
 }
 
-void MuteControl::NotifyRestoreCondition(int type, bool active, bool withDelay)
+void MuteControl::NotifyRestoreCondition(MuteType type, bool active, bool withDelay)
 {
    if (active)
    {
