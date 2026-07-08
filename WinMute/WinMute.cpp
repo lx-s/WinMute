@@ -88,7 +88,9 @@ static bool IsCurrentSessionRemoteable() noexcept
             reinterpret_cast<BYTE*>(&dwGlassSessionId),
             &cbGlassSessionId);
 
-         if (lResult == ERROR_SUCCESS) {
+         if (lResult == ERROR_SUCCESS
+             && dwType == REG_DWORD
+             && cbGlassSessionId == sizeof(dwGlassSessionId)) {
             DWORD dwCurrentSessionId;
             if (ProcessIdToSessionId(GetCurrentProcessId(), &dwCurrentSessionId)) {
                isRemoteable = (dwCurrentSessionId != dwGlassSessionId);
@@ -234,8 +236,11 @@ bool WinMute::Init()
       log.LogWinError(L"WTSRegisterSessionNotification", lastError);
       return false;
    }
+   wtsSessionNotificationRegistered_ = true;
 
-   if (!RegisterPowerSettingNotification(hWnd_, &GUID_CONSOLE_DISPLAY_STATE, DEVICE_NOTIFY_WINDOW_HANDLE)) {
+   hPowerNotify_ = RegisterPowerSettingNotification(
+      hWnd_, &GUID_CONSOLE_DISPLAY_STATE, DEVICE_NOTIFY_WINDOW_HANDLE);
+   if (hPowerNotify_ == nullptr) {
       const DWORD lastError = GetLastError();
       ShowWindowsError(L"RegisterPowerSettingNotification", lastError);
       log.LogWinError(L"RegisterPowerSettingNotification", lastError);
@@ -764,6 +769,14 @@ LRESULT CALLBACK WinMute::WindowProc(
 
 void WinMute::Unload() noexcept
 {
+   if (hPowerNotify_ != nullptr) {
+      UnregisterPowerSettingNotification(hPowerNotify_);
+      hPowerNotify_ = nullptr;
+   }
+   if (wtsSessionNotificationRegistered_) {
+      WTSUnRegisterSessionNotification(hWnd_);
+      wtsSessionNotificationRegistered_ = false;
+   }
    settings_.Unload();
 }
 

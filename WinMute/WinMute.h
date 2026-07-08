@@ -65,6 +65,9 @@ private:
       bool muteOnBluetooth;
    } muteConfig_;
 
+   bool wtsSessionNotificationRegistered_ = false;
+   HPOWERNOTIFY hPowerNotify_ = nullptr;
+
    TrayIcon wmTray_;
    TrayIcon updateTray_;
    WifiDetector wifiDetector_;
