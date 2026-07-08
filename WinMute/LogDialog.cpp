@@ -40,14 +40,14 @@ struct LogDlgData {
 INT_PTR CALLBACK LogDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    auto *dlgData =
-      reinterpret_cast<LogDlgData *>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+      reinterpret_cast<LogDlgData *>(GetWindowLongPtr(hDlg, DWLP_USER));
    UNREFERENCED_PARAMETER(wParam);
    UNREFERENCED_PARAMETER(lParam);
    switch (msg) {
    case WM_INITDIALOG:
    {
       dlgData = new LogDlgData();
-      SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(dlgData));
+      SetWindowLongPtr(hDlg, DWLP_USER, reinterpret_cast<LONG_PTR>(dlgData));
 
       WMi18n &i18n = WMi18n::GetInstance();
       SetWindowText(hDlg, i18n.GetTranslationW("log.title").c_str());
@@ -117,7 +117,7 @@ INT_PTR CALLBACK LogDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
    }
    case WM_DESTROY:
       delete dlgData;
-      SetWindowLongPtrW(hDlg, GWLP_USERDATA, 0);
+      SetWindowLongPtrW(hDlg, DWLP_USER, 0);
       WMLog::GetInstance().UnregisterForLogUpdates(hDlg);
       return 0;
    case WM_CLOSE:

@@ -218,7 +218,7 @@ static INT_PTR CALLBACK Settings_QuietHoursAddDlgProc(HWND hDlg, UINT msg, WPARA
       if (qh_entry == nullptr) {
          return FALSE;
       }
-      SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(qh_entry));
+      SetWindowLongPtr(hDlg, DWLP_USER, reinterpret_cast<LONG_PTR>(qh_entry));
 
       const bool isEdit = qh_entry->start != 0 || qh_entry->end != 0;
       LoadQuietHoursAddDlgTranslation(hDlg, isEdit);
@@ -252,7 +252,7 @@ static INT_PTR CALLBACK Settings_QuietHoursAddDlgProc(HWND hDlg, UINT msg, WPARA
                 nullptr);
             return FALSE;
          } else {
-            auto *qh_entry = reinterpret_cast<QuietHoursEntry *>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+            auto *qh_entry = reinterpret_cast<QuietHoursEntry *>(GetWindowLongPtr(hDlg, DWLP_USER));
             qh_entry->start = start.wHour * 3600 + start.wMinute * 60 + start.wSecond;
             qh_entry->end = end.wHour * 3600 + end.wMinute * 60 + end.wSecond;
             EndDialog(hDlg, 0);
@@ -341,7 +341,7 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
       auto qhdata = new QuietHoursDlgData();
       assert(qhdata != nullptr);
       qhdata->settings = settings;
-      SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(qhdata));
+      SetWindowLongPtr(hDlg, DWLP_USER, reinterpret_cast<LONG_PTR>(qhdata));
 
       if (IsAppThemed())
       {
@@ -395,7 +395,7 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
       HWND hForce = GetDlgItem(hDlg, IDC_FORCEUNMUTE);
       HWND hNotify = GetDlgItem(hDlg, IDC_SHOWNOTIFICATIONS);
       HWND hQuietHoursTimes = GetDlgItem(hDlg, IDC_QUIET_HOURS_TIMES);
-      auto qhdata = reinterpret_cast<QuietHoursDlgData *>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+      auto qhdata = reinterpret_cast<QuietHoursDlgData *>(GetWindowLongPtr(hDlg, DWLP_USER));
 
       const int qhEnabled = Button_GetCheck(hEnable) == BST_CHECKED;
       const int qhForceUnmute = Button_GetCheck(hForce) == BST_CHECKED;
@@ -502,7 +502,7 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam, 
    {
       HWND hQuietHoursTimes = GetDlgItem(hDlg, IDC_QUIET_HOURS_TIMES);
       FreeListViewEntries(hQuietHoursTimes);
-      auto qhdata = reinterpret_cast<QuietHoursDlgData *>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+      auto qhdata = reinterpret_cast<QuietHoursDlgData *>(GetWindowLongPtr(hDlg, DWLP_USER));
       delete qhdata;
       EndDialog(hDlg, 0);
       return TRUE;

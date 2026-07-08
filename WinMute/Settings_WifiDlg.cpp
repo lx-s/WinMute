@@ -66,7 +66,7 @@ INT_PTR CALLBACK Settings_WifiAddDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       if (wifiData == nullptr) {
          return FALSE;
       }
-      SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(wifiData));
+      SetWindowLongPtr(hDlg, DWLP_USER, reinterpret_cast<LONG_PTR>(wifiData));
 
       LoadWifiAddDlgTranslation(hDlg, wifiData->ssidName.length() != 0);
 
@@ -94,7 +94,7 @@ INT_PTR CALLBACK Settings_WifiAddDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
          const int textLen = Edit_GetTextLength(hSsid);
          if (textLen != 0) {
             wchar_t ssidBuf[SSID_MAX_LEN + 1];
-            WiFiData* wifiData = reinterpret_cast<WiFiData*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+            WiFiData* wifiData = reinterpret_cast<WiFiData*>(GetWindowLongPtr(hDlg, DWLP_USER));
             if (wifiData != nullptr) {
                Edit_GetText(hSsid, ssidBuf, ARRAY_SIZE(ssidBuf));
                wifiData->ssidName = ssidBuf;
@@ -174,7 +174,7 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       LoadWifiDlgTranslation(hDlg);
       WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
       assert(settings != nullptr);
-      SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(settings));
+      SetWindowLongPtr(hDlg, DWLP_USER, reinterpret_cast<LONG_PTR>(settings));
 
       DWORD enabled = settings->QueryValue(SettingsKey::MUTE_ON_WLAN);
       Button_SetCheck(GetDlgItem(hDlg, IDC_ENABLE_WIFI_MUTE),
@@ -309,7 +309,7 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       return 0;
    }
    case WM_SAVESETTINGS: {
-      WMSettings* settings = reinterpret_cast<WMSettings*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+      WMSettings* settings = reinterpret_cast<WMSettings*>(GetWindowLongPtr(hDlg, DWLP_USER));
       std::vector<std::wstring> networks = ExportSsidListItems(GetDlgItem(hDlg, IDC_WIFI_LIST));
       settings->StoreWifiNetworks(networks);
 

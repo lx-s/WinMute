@@ -92,7 +92,7 @@ static INT_PTR CALLBACK Settings_BluetoothAddDlgProc(HWND hDlg, UINT msg, WPARAM
       if (btDeviceData == nullptr) {
          return FALSE;
       }
-      SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(btDeviceData));
+      SetWindowLongPtr(hDlg, DWLP_USER, reinterpret_cast<LONG_PTR>(btDeviceData));
       LoadBluetoothAddDlgTranslation(hDlg, btDeviceData->devName.length() != 0);
       if (btDeviceData->devName.length() != 0) {
          SetWindowTextW(GetDlgItem(hDlg, IDC_BT_DEVICE_NAME),
@@ -133,7 +133,7 @@ static INT_PTR CALLBACK Settings_BluetoothAddDlgProc(HWND hDlg, UINT msg, WPARAM
          const int textLen = Edit_GetTextLength(hDevName);
          if (textLen != 0) {
             wchar_t devNameBuf[BT_DEV_NAME_MAX_LEN + 1] = { 'L\0' };
-            BtDeviceData* btDevName = reinterpret_cast<BtDeviceData*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+            BtDeviceData* btDevName = reinterpret_cast<BtDeviceData*>(GetWindowLongPtr(hDlg, DWLP_USER));
             if (btDevName != nullptr) {
                Edit_GetText(hDevName, devNameBuf, ARRAY_SIZE(devNameBuf));
                btDevName->devName = devNameBuf;
@@ -215,7 +215,7 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
 
       WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
       assert(settings != nullptr);
-      SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(settings));
+      SetWindowLongPtr(hDlg, DWLP_USER, reinterpret_cast<LONG_PTR>(settings));
 
       DWORD enabled = settings->QueryValue(SettingsKey::MUTE_ON_BLUETOOTH);
 
@@ -350,7 +350,7 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
       return 0;
    }
    case WM_SAVESETTINGS: {
-      WMSettings* settings = reinterpret_cast<WMSettings*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+      WMSettings* settings = reinterpret_cast<WMSettings*>(GetWindowLongPtr(hDlg, DWLP_USER));
       std::vector<std::wstring> devices = ExportBluetoothDeviceList(GetDlgItem(hDlg, IDC_BLUETOOTH_LIST));
       settings->StoreBluetoothDevices(devices);
 

@@ -220,11 +220,11 @@ static void TranslateAboutDlgProc(HWND hDlg)
 INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    AboutDlgData* dlgData =
-      reinterpret_cast<AboutDlgData*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+      reinterpret_cast<AboutDlgData*>(GetWindowLongPtr(hDlg, DWLP_USER));
    switch (msg) {
    case WM_INITDIALOG: {
       dlgData = new AboutDlgData();
-      SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(dlgData));
+      SetWindowLongPtr(hDlg, DWLP_USER, reinterpret_cast<LONG_PTR>(dlgData));
 
       dlgData->hTabCtrl = GetDlgItem(hDlg, IDC_ABOUT_TAB);
 
@@ -312,7 +312,7 @@ INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
    case WM_DESTROY:
       DeleteObject(dlgData->hTitleFont);
       delete dlgData;
-      SetWindowLongPtrW(hDlg, GWLP_USERDATA, 0);
+      SetWindowLongPtrW(hDlg, DWLP_USER, 0);
       return 0;
    case WM_CLOSE:
       EndDialog(hDlg, 0);

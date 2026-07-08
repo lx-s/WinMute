@@ -102,7 +102,7 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 
       WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
       assert(settings != nullptr);
-      SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(settings));
+      SetWindowLongPtr(hDlg, DWLP_USER, reinterpret_cast<LONG_PTR>(settings));
 
       // General
       SetCheckButton(hNotify, *settings, SettingsKey::NOTIFICATIONS_ENABLED);
@@ -132,7 +132,7 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
          int isEnabled = Button_GetCheck(GetDlgItem(hDlg, IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY));
          Button_Enable(GetDlgItem(hDlg, IDC_MANAGE_ENDPOINTS), isEnabled);
       } else if (LOWORD(wParam) == IDC_MANAGE_ENDPOINTS) {
-         WMSettings *settings = reinterpret_cast<WMSettings *>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+         WMSettings *settings = reinterpret_cast<WMSettings *>(GetWindowLongPtr(hDlg, DWLP_USER));
          if (!DialogBoxParam(
                nullptr,
                MAKEINTRESOURCE(IDD_MANAGE_ENDPOINTS),
@@ -145,7 +145,7 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       return 0;
    case WM_SAVESETTINGS:
    {
-      WMSettings* settings = reinterpret_cast<WMSettings*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+      WMSettings* settings = reinterpret_cast<WMSettings*>(GetWindowLongPtr(hDlg, DWLP_USER));
 
       HWND hNotify = GetDlgItem(hDlg, IDC_SHOWNOTIFICATIONS);
       HWND hManageEndpoints = GetDlgItem(hDlg, IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY);

@@ -110,7 +110,7 @@ static INT_PTR CALLBACK Settings_EndpointAddDlgProc(HWND hDlg, UINT msg, WPARAM 
       if (endpointData == nullptr) {
          return FALSE;
       }
-      SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(endpointData));
+      SetWindowLongPtr(hDlg, DWLP_USER, reinterpret_cast<LONG_PTR>(endpointData));
 
       LoadManageEndpointsAddDlgTranslation(hDlg, endpointData->name.length() != 0);
       if (endpointData->name.length() != 0) {
@@ -151,7 +151,7 @@ static INT_PTR CALLBACK Settings_EndpointAddDlgProc(HWND hDlg, UINT msg, WPARAM 
          const int textLen = Edit_GetTextLength(hEpName);
          if (textLen != 0) {
             wchar_t epNameBuf[ENDPOINT_NAME_MAX_LEN + 1] = { 'L\0' };
-            EndpointData *epData = reinterpret_cast<EndpointData*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+            EndpointData *epData = reinterpret_cast<EndpointData*>(GetWindowLongPtr(hDlg, DWLP_USER));
             if (epData != nullptr) {
                Edit_GetText(hEpName, epNameBuf, ARRAY_SIZE(epNameBuf));
                epData->name = epNameBuf;
@@ -218,7 +218,7 @@ INT_PTR CALLBACK Settings_ManageEndpointsDlgProc(HWND hDlg, UINT msg, WPARAM wPa
 
       WMSettings *settings = reinterpret_cast<WMSettings *>(lParam);
       assert(settings != nullptr);
-      SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(settings));
+      SetWindowLongPtr(hDlg, DWLP_USER, reinterpret_cast<LONG_PTR>(settings));
 
       DWORD endpointMode = settings->QueryValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS_MODE);
       if (endpointMode == MUTE_ENDPOINT_MODE_INDIVIDUAL_ALLOW_LIST) {
@@ -320,7 +320,7 @@ INT_PTR CALLBACK Settings_ManageEndpointsDlgProc(HWND hDlg, UINT msg, WPARAM wPa
          Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVE), FALSE);
          Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVEALL), FALSE);
       } else if (LOWORD(wParam) == IDOK) {
-         WMSettings *settings = reinterpret_cast<WMSettings *>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+         WMSettings *settings = reinterpret_cast<WMSettings *>(GetWindowLongPtr(hDlg, DWLP_USER));
          std::vector<std::wstring> devices = ExportEndpointNameList(GetDlgItem(hDlg, IDC_ENDPOINT_LIST));
          settings->StoreManagedAudioEndpoints(devices);
          if (Button_GetCheck(GetDlgItem(hDlg, IDC_ENDPOINT_LIST_IS_ALLOWLIST))) {

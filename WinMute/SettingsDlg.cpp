@@ -130,7 +130,7 @@ static void ResizeTabs(HWND hTabCtrl, HWND* hTabs, int tabCount)
 INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
    SettingsDlgData* dlgData =
-      reinterpret_cast<SettingsDlgData*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+      reinterpret_cast<SettingsDlgData*>(GetWindowLongPtr(hDlg, DWLP_USER));
    switch (msg) {
    case WM_INITDIALOG: {
       WMi18n &i18n = WMi18n::GetInstance();
@@ -138,7 +138,7 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
       assert(dlgData == nullptr);
       WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
       dlgData = new SettingsDlgData(settings);
-      SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(dlgData));
+      SetWindowLongPtr(hDlg, DWLP_USER, reinterpret_cast<LONG_PTR>(dlgData));
       
       dlgData->hTabCtrl = GetDlgItem(hDlg, IDC_SETTINGS_TAB);
 
@@ -236,7 +236,7 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
       return TRUE;
    case WM_DESTROY:
       delete dlgData;
-      SetWindowLongPtrW(hDlg, GWLP_USERDATA, 0);
+      SetWindowLongPtrW(hDlg, DWLP_USER, 0);
       return 0;
    default:
       break;

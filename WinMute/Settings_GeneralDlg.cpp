@@ -100,7 +100,7 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       dlgData->settings = reinterpret_cast<WMSettings *>(lParam);
       assert(dlgData->settings != nullptr);
 
-      SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(dlgData));
+      SetWindowLongPtr(hDlg, DWLP_USER, reinterpret_cast<LONG_PTR>(dlgData));
      
       FillLanguageList(GetDlgItem(hDlg, IDC_LANGUAGE), *dlgData);
 
@@ -143,10 +143,10 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       return TRUE;
    }
    case WM_DESTROY: {
-      SettingsGeneralData *dlgData = reinterpret_cast<SettingsGeneralData *>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+      SettingsGeneralData *dlgData = reinterpret_cast<SettingsGeneralData *>(GetWindowLongPtr(hDlg, DWLP_USER));
       if (dlgData != nullptr) {
          delete dlgData;
-         SetWindowLongPtr(hDlg, GWLP_USERDATA, 0);
+         SetWindowLongPtr(hDlg, DWLP_USER, 0);
       }
       return FALSE;
    }
@@ -197,7 +197,7 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       return 0;
    }
    case WM_SAVESETTINGS: {
-      SettingsGeneralData *dlgData = reinterpret_cast<SettingsGeneralData *>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+      SettingsGeneralData *dlgData = reinterpret_cast<SettingsGeneralData *>(GetWindowLongPtr(hDlg, DWLP_USER));
       assert(dlgData != nullptr);
 
       HWND hAutostart = GetDlgItem(hDlg, IDC_RUNONSTARTUP);
