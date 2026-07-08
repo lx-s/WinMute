@@ -1,13 +1,32 @@
----
+
+
 BasedOnStyle: Google
-AlignAfterOpenBracket: AlwaysBreak
-AllowAllConstructorInitializersOnNextLine: 'true'
-AllowShortBlocksOnASingleLine: 'false'
-AllowShortCaseLabelsOnASingleLine: 'false'
-AllowShortFunctionsOnASingleLine: Empty
-AllowShortIfStatementsOnASingleLine: Never
-AllowShortLoopsOnASingleLine: 'false'
-BinPackParameters: 'false'
-BreakBeforeBraces: Stroustrup
-ColumnLimit: '80'
+IndentWidth: 4
+---
+Language: Cpp
 UseTab: Never
+AlignEscapedNewlines: Left
+AlignConsecutiveMacros: Consecutive
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortBlocksOnASingleLine: false
+AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakBeforeMultilineStrings: true
+BinPackParameters: False
+# BreakAfterOpenBracketFunction: true
+FixNamespaceComments: true
+IndentPPDirectives: AfterHash
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction: true
+  AfterClass: false
+  AfterStruct: false
+  AfterControlStatement: MultiLine
+  AfterEnum: false
+  AfterNamespace: false
+  AfterUnion: false
+  BeforeElse: false
+  BeforeCatch: false
+  IndentBraces: false
+
