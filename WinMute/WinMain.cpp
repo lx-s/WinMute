@@ -93,6 +93,10 @@ int WINAPI wWinMain(
    _In_ PWSTR,
    _In_ int)
 {
+   // Harden the DLL search path against binary planting before anything
+   // is loaded dynamically.
+   SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_SYSTEM32);
+
    hglobInstance = hInstance;
    WMSettings settings;
    WMi18n& i18n = WMi18n::GetInstance();
@@ -152,7 +156,14 @@ int WINAPI wWinMain(
    MSG msg = { nullptr };
    WinMute program(settings);
    if (program.Init()) {
-      while (GetMessage(&msg, nullptr, 0, 0)) {
+      for (;;) {
+         const BOOL msgResult = GetMessage(&msg, nullptr, 0, 0);
+         if (msgResult == 0) { // WM_QUIT
+            break;
+         } else if (msgResult == -1) {
+            WMLog::GetInstance().LogWinError(L"GetMessage", GetLastError());
+            break;
+         }
          HWND hwnd = GetForegroundWindow();
          if (!IsWindow(hwnd) || !IsDialogMessage(hwnd, &msg)) {
             TranslateMessage(&msg);
