@@ -87,6 +87,10 @@ INT_PTR CALLBACK LogDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
       return 0;
    case WM_SIZE:
       {
+      // WM_SIZE arrives before WM_INITDIALOG, when dlgData is not set yet
+      if (dlgData == nullptr) {
+         return 0;
+      }
       RECT rcClient;
       GetClientRect(hDlg, &rcClient);
       SetWindowPos(
@@ -102,7 +106,7 @@ INT_PTR CALLBACK LogDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
    case WM_LOG_UPDATED: {
       const WMLog &wmLog = WMLog::GetInstance();
       auto logMsg = reinterpret_cast<LogMessage*>(lParam);
-      if (logMsg == nullptr) {
+      if (dlgData == nullptr || logMsg == nullptr) {
          return FALSE;
       }
       const auto formattedMsg = wmLog.FormatLogMessage(*logMsg, true);
