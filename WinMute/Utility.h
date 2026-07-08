@@ -33,7 +33,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
+#include <format>
 #include <string>
+#include <string_view>
 #include <optional>
 
 #include <atlbase.h>
@@ -42,6 +44,19 @@ POSSIBILITY OF SUCH DAMAGE.
 
 // =============================================================================
 // Utility
+
+// Formats a runtime format string (e.g. from a translation file) without
+// letting a malformed placeholder terminate the process: on std::format_error
+// the unformatted string is returned instead.
+template<typename... Args>
+std::wstring SafeVFormat(std::wstring_view fmt, Args&&... args)
+{
+   try {
+      return std::vformat(fmt, std::make_wformat_args(args...));
+   } catch (const std::format_error &) {
+      return std::wstring{ fmt };
+   }
+}
 
 void ShowWindowsError(const wchar_t *functionName, DWORD lastError = -1);
 bool GetWinMuteVersion(std::wstring &versNumber);

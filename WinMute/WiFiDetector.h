@@ -35,7 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
-/* wParam = Connected = 1 | Disconnected = 0. lParam = Pointer to Wifi Name */
+/* wParam = Connected = 1 | Disconnected = 0. lParam = Pointer to Wifi Name.
+   Sent synchronously; the name is only valid for the duration of the call
+   and is owned by the sender. */
 constexpr int WM_WIFISTATUSCHANGED = WM_USER + 400;
 
 class WifiDetector {
@@ -55,6 +57,8 @@ public:
    void WlanNotificationCallback(PWLAN_NOTIFICATION_DATA notifyData);
 
 private:
+   bool IsNetworkRelevant(const wchar_t *profileName) const;
+
    HWND hNotifyWnd_;
    HANDLE wlanHandle_;
    // If "true" then networks_ contains all networks where the workstation should
@@ -63,4 +67,7 @@ private:
    bool isMuteList_;
    bool initialized_;
    std::vector<std::wstring> networks_;
+   // WlanNotificationCallback is invoked on a WLAN service thread, while
+   // SetNetworkList is called from the UI thread.
+   mutable std::mutex networksMutex_;
 };

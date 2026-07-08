@@ -70,12 +70,11 @@ void ShowWindowsError(const wchar_t *functionName, DWORD lastError)
    }
    // Display the error message and exit the process
    const std::wstring errorMsgText{ reinterpret_cast<wchar_t *>(lpMsgBuf) };
-   const std::wstring errorMsg = std::vformat(
+   const std::wstring errorMsg = SafeVFormat(
       WMi18n::GetInstance().GetTranslationW("general.error.winapi.text"),
-      std::make_wformat_args(
-         functionName,
-         lastError,
-         errorMsgText));
+      functionName,
+      lastError,
+      errorMsgText);
    TaskDialog(
       nullptr, nullptr, PROGRAM_NAME, errorMsg.c_str(),
       nullptr, TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
@@ -156,14 +155,15 @@ std::optional<std::wstring> GetAudioDeviceName(
 
 std::wstring ConvertStringToWideString(const std::string &ansiString)
 {
+   // For CP_UTF8 the only valid flags are 0 and MB_ERR_INVALID_CHARS.
    std::wstring unicodeString;
-   auto wideCharSize = MultiByteToWideChar(CP_UTF8, MB_PRECOMPOSED, ansiString.c_str(), -1, nullptr, 0);
+   auto wideCharSize = MultiByteToWideChar(CP_UTF8, 0, ansiString.c_str(), -1, nullptr, 0);
    if (wideCharSize == 0) {
       return L"";
    }
    unicodeString.reserve(wideCharSize);
    unicodeString.resize(wideCharSize - 1);
-   wideCharSize = MultiByteToWideChar(CP_UTF8, MB_PRECOMPOSED, ansiString.c_str(), -1, &unicodeString[0], wideCharSize);
+   wideCharSize = MultiByteToWideChar(CP_UTF8, 0, ansiString.c_str(), -1, &unicodeString[0], wideCharSize);
    return unicodeString;
 }
 
@@ -186,6 +186,21 @@ std::string ConvertWideStringToString(const std::wstring &wideString)
 
 bool LaunchBrowser(HWND hParent, const std::wstring &url)
 {
+   // Only hand real web URLs to the shell. Anything else (local file paths,
+   // UNC shares, other protocol handlers) would be executed/opened directly
+   // by ShellExecute, which is dangerous for URLs that come from the
+   // update file or other external sources.
+   auto hasPrefix = [&url](const wchar_t *prefix) {
+      const size_t prefixLen = wcslen(prefix);
+      return url.length() > prefixLen
+          && _wcsnicmp(url.c_str(), prefix, prefixLen) == 0;
+   };
+   if (!hasPrefix(L"https://") && !hasPrefix(L"http://")) {
+      WMLog::GetInstance().LogError(
+         L"Refused to open \"%s\": not a http(s) URL", url.c_str());
+      return false;
+   }
+
    SHELLEXECUTEINFOW sxi = { 0 };
    sxi.cbSize = sizeof(sxi);
    sxi.nShow = SW_SHOWNORMAL;
