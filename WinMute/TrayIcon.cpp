@@ -107,7 +107,6 @@ void TrayIcon::ChangeIcon(HICON hNewIcon)
     if (oldIconVisible) {
         NOTIFYICONDATA tnid{0};
         tnid.cbSize = sizeof(NOTIFYICONDATA);
-        tnid.uVersion = NOTIFYICON_VERSION_4;
         tnid.hWnd = hWnd_;
         tnid.uID = trayID_;
         tnid.hIcon = hIcon_;
@@ -142,13 +141,11 @@ void TrayIcon::ShowPopup(const std::wstring& title,
     }
     NOTIFYICONDATAW tnid{0};
     tnid.cbSize = sizeof(tnid);
-    tnid.uVersion = NOTIFYICON_VERSION_4;
     tnid.hWnd = hWnd_;
     tnid.uID = trayID_;
     tnid.uFlags = NIF_INFO | NIF_SHOWTIP;
     tnid.dwInfoFlags =
         NIIF_INFO | NIIF_NOSOUND | NIIF_LARGE_ICON | NIIF_RESPECT_QUIET_TIME;
-    tnid.uTimeout = 10 * 1000;
     StringCchCopy(tnid.szInfoTitle, ARRAY_SIZE(tnid.szInfoTitle),
                   title.c_str());
     StringCchCopy(tnid.szInfo, ARRAY_SIZE(tnid.szInfo), text.c_str());
@@ -178,11 +175,13 @@ bool TrayIcon::AddNotifyIcon()
     if (SUCCEEDED(StringCchCopy(tnid.szTip, ARRAY_SIZE(tnid.szTip),
                                 tooltip_.c_str())))
     {
-        DWORD result = Shell_NotifyIconW(NIM_ADD, &tnid);
-        if (result == 0) {
+        BOOL result = Shell_NotifyIconW(NIM_ADD, &tnid);
+        if (result) {
+            // Opt in to NOTIFYICON_VERSION_4 message semantics; uVersion is
+            // only honored by NIM_SETVERSION.
             result = Shell_NotifyIconW(NIM_SETVERSION, &tnid);
         }
-        return result != 0;
+        return result != FALSE;
     }
     return false;
 }
@@ -191,7 +190,6 @@ bool TrayIcon::RemoveNotifyIcon()
 {
     NOTIFYICONDATAW tnid{0};
     tnid.cbSize = sizeof(tnid);
-    tnid.uVersion = NOTIFYICON_VERSION_4;
     tnid.hWnd = hWnd_;
     tnid.uID = trayID_;
 
@@ -202,7 +200,6 @@ bool TrayIcon::ChangeText()
 {
     NOTIFYICONDATAW tnid{0};
     tnid.cbSize = sizeof(tnid);
-    tnid.uVersion = NOTIFYICON_VERSION_4;
     tnid.hWnd = hWnd_;
     tnid.uID = trayID_;
     tnid.uFlags = NIF_TIP;

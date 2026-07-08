@@ -339,7 +339,7 @@ bool WinMute::LoadSettings()
       } else {
          muteCtrl_.SetMuteOnBluetoothDisconnect(true);
          const bool muteOnWithDeviceList = settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH_DEVICELIST);
-         btDetector_.SetDeviceList(settings_.GetBluetoothDevicesA(), muteOnWithDeviceList);
+         btDetector_.SetDeviceList(settings_.GetBluetoothDevices(), muteOnWithDeviceList);
       }
    }
 
@@ -564,13 +564,15 @@ LRESULT WinMute::OnCommand(HWND hWnd, WPARAM wParam, LPARAM)
    return 0;
 }
 
-LRESULT WinMute::OnTrayIcon(HWND hWnd, WPARAM, LPARAM lParam)
+LRESULT WinMute::OnTrayIcon(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-   if (LOWORD(lParam) == WM_CONTEXTMENU ||
-       lParam == WM_LBUTTONUP ||
-       lParam == WM_RBUTTONUP) {
-      POINT p = { 0 };
-      GetCursorPos(&p);
+   // NOTIFYICON_VERSION_4 semantics: LOWORD(lParam) carries the event,
+   // HIWORD(lParam) the icon ID and wParam the anchor coordinates.
+   const UINT event = LOWORD(lParam);
+   if (event == WM_CONTEXTMENU ||
+       event == NIN_SELECT ||
+       event == NIN_KEYSELECT) {
+      const POINT p{ GET_X_LPARAM(wParam), GET_Y_LPARAM(wParam) };
       SetForegroundWindow(hWnd);
       TrackPopupMenuEx(
          GetSubMenu(hTrayMenu_, 0),
@@ -582,7 +584,9 @@ LRESULT WinMute::OnTrayIcon(HWND hWnd, WPARAM, LPARAM lParam)
 
 LRESULT WinMute::OnUpdatePopup(HWND hWnd, WPARAM, LPARAM lParam)
 {
-   if (lParam == NIN_BALLOONUSERCLICK) {
+   // NOTIFYICON_VERSION_4 semantics: LOWORD(lParam) carries the event.
+   const UINT event = LOWORD(lParam);
+   if (event == NIN_BALLOONUSERCLICK) {
       const bool betaUpdates = settings_.QueryValue(SettingsKey::CHECK_FOR_BETA_UPDATE) != 0;
       if (betaUpdates && updateInfo_.beta.shouldUpdate) {
          LaunchBrowser(hWnd, updateInfo_.beta.downloadUrl);
@@ -590,7 +594,7 @@ LRESULT WinMute::OnUpdatePopup(HWND hWnd, WPARAM, LPARAM lParam)
          LaunchBrowser(hWnd, updateInfo_.stable.downloadUrl);
       }
    }
-   if (lParam == NIN_BALLOONHIDE || lParam == NIN_BALLOONTIMEOUT || lParam == NIN_BALLOONUSERCLICK) {
+   if (event == NIN_BALLOONHIDE || event == NIN_BALLOONTIMEOUT || event == NIN_BALLOONUSERCLICK) {
       updateTray_.Hide();
    }
    return 0;
