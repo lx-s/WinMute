@@ -75,7 +75,7 @@ private:
    WMLog(const WMLog&) = delete;
    WMLog& operator=(const WMLog&) = delete;
 
-   const int kMaxLogEntries_ = 500;
+   const size_t kMaxLogEntries_ = 500;
 
    void StoreMessage(LogLevel level, const wchar_t *msg);
    void DeleteLogFile();

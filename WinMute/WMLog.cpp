@@ -144,10 +144,15 @@ void WMLog::StoreMessage(LogLevel level, const wchar_t* msg)
       ch::current_zone(), ch::floor<ch::milliseconds>(ch::system_clock::now())
    };
 
-   if (enabled_ && logFile_.is_open()) {
-      const auto logMsg = FormatLogMessage(lm, true);
-      logFile_.write(logMsg.c_str(), logMsg.length());
-      logFile_.flush();
+   {
+      // logMutex_ also guards logFile_, which EnableLogFile can close
+      // concurrently from another thread.
+      const std::scoped_lock<std::mutex> lock(logMutex_);
+      if (enabled_ && logFile_.is_open()) {
+         const auto logMsg = FormatLogMessage(lm, true);
+         logFile_.write(logMsg.c_str(), logMsg.length());
+         logFile_.flush();
+      }
    }
 
    {
@@ -199,7 +204,9 @@ void WMLog::LogDebug(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...)
    va_list ap;
    va_start(ap, fmt);
 
-   vswprintf_s(buf, fmt, ap);
+   // _TRUNCATE: oversized messages (e.g. containing long external strings)
+   // must be cut short, not trip the invalid-parameter handler.
+   _vsnwprintf_s(buf, ARRAY_SIZE(buf), _TRUNCATE, fmt, ap);
    StoreMessage(LogLevel::Debug, buf);
 
    va_end(ap);
@@ -211,7 +218,7 @@ void WMLog::LogInfo(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...)
    va_list ap;
    va_start(ap, fmt);
 
-   vswprintf_s(buf, fmt, ap);
+   _vsnwprintf_s(buf, ARRAY_SIZE(buf), _TRUNCATE, fmt, ap);
    StoreMessage(LogLevel::Info, buf);
 
    va_end(ap);
@@ -223,7 +230,7 @@ void WMLog::LogWarning(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...)
    va_list ap;
    va_start(ap, fmt);
 
-   vswprintf_s(buf, fmt, ap);
+   _vsnwprintf_s(buf, ARRAY_SIZE(buf), _TRUNCATE, fmt, ap);
    StoreMessage(LogLevel::Warning, buf);
 
    va_end(ap);
@@ -235,7 +242,7 @@ void WMLog::LogError(_In_z_ _Printf_format_string_ const wchar_t *fmt, ...)
    va_list ap;
    va_start(ap, fmt);
 
-   vswprintf_s(buf, fmt, ap);
+   _vsnwprintf_s(buf, ARRAY_SIZE(buf), _TRUNCATE, fmt, ap);
    StoreMessage(LogLevel::Error, buf);
 
    va_end(ap);
@@ -259,12 +266,11 @@ void WMLog::LogWinError(const wchar_t *functionName, DWORD lastError)
       return;
    }
    const std::wstring errorMsgText{ reinterpret_cast<wchar_t *>(lpMsgBuf) };
-   const std::wstring errorMsg = std::vformat(
+   const std::wstring errorMsg = SafeVFormat(
       WMi18n::GetInstance().GetTranslationW("general.error.winapi.text"),
-      std::make_wformat_args(
-         functionName,
-         lastError,
-         errorMsgText));
-   StoreMessage(LogLevel::Error, static_cast<const wchar_t *>(lpMsgBuf));
+      functionName,
+      lastError,
+      errorMsgText);
+   StoreMessage(LogLevel::Error, errorMsg.c_str());
    LocalFree(lpMsgBuf);
 }
