@@ -89,8 +89,7 @@ public:
    std::vector<std::wstring> GetWifiNetworks() const;
 
    bool StoreBluetoothDevices(std::vector<std::wstring>& networks);
-   std::vector<std::wstring> GetBluetoothDevicesW() const;
-   std::vector<std::string> GetBluetoothDevicesA() const;
+   std::vector<std::wstring> GetBluetoothDevices() const;
 
    bool StoreManagedAudioEndpoints(std::vector<std::wstring> &endpoints);
    std::vector<std::wstring> GetManagedAudioEndpoints() const;

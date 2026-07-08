@@ -646,33 +646,7 @@ bool WMSettings::StoreBluetoothDevices(std::vector<std::wstring>& devices)
     return true;
 }
 
-std::vector<std::string> WMSettings::GetBluetoothDevicesA() const
-{
-    std::vector<std::string> devices;
-    for (int valIdx = 0;; ++valIdx) {
-        char valueName[260] = {0};
-        char dataBuf[260] = {0};
-        DWORD valueSize = ARRAY_SIZE(valueName);
-        DWORD valType = 0;
-        DWORD dataLen = sizeof(dataBuf) - sizeof(char);
-
-        DWORD regError = RegEnumValueA(
-            hBluetoothKey_, valIdx, valueName, &valueSize, nullptr, &valType,
-            reinterpret_cast<BYTE*>(dataBuf), &dataLen);
-        if (regError == ERROR_NO_MORE_ITEMS) {
-            break;
-        } else if (regError != ERROR_SUCCESS) {
-            ShowWindowsError(L"RegEnumValue", regError);
-            return {};
-        } else {
-            devices.push_back(dataBuf);
-        }
-    }
-    NormalizeStringList(devices);
-    return devices;
-}
-
-std::vector<std::wstring> WMSettings::GetBluetoothDevicesW() const
+std::vector<std::wstring> WMSettings::GetBluetoothDevices() const
 {
     std::vector<std::wstring> devices;
     for (int valIdx = 0;; ++valIdx) {

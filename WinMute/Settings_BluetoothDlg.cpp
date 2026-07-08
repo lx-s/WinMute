@@ -232,7 +232,7 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam, L
       Button_Enable(GetDlgItem(hDlg, IDC_BLUETOOTH_REMOVE), FALSE);
 
       HWND hList = GetDlgItem(hDlg, IDC_BLUETOOTH_LIST);
-      const auto devices = settings->GetBluetoothDevicesW();
+      const auto devices = settings->GetBluetoothDevices();
       for (const auto& dev : devices) {
          ListBox_AddString(hList, dev.c_str());
       }

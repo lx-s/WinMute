@@ -119,7 +119,7 @@ void BluetoothDetector::Unload()
 }
 
 void BluetoothDetector::SetDeviceList(
-   const std::vector<std::string>& devices,
+   const std::vector<std::wstring>& devices,
    bool useDeviceList)
 {
    deviceNames_ = devices;
@@ -155,18 +155,22 @@ BluetoothDetector::BluetoothStatus BluetoothDetector::GetBluetoothStatus(
    }
 
    auto& log = WMLog::GetInstance();
+   // BTH_DEVICE_INFO.name is UTF-8; convert it once so the comparison and
+   // the log output are correct for non-ASCII device names.
+   const std::wstring deviceName =
+      ConvertStringToWideString(inRangeInfo->deviceInfo.name);
    if (useDeviceList_) {
-      auto pos = std::find(begin(deviceNames_), end(deviceNames_), inRangeInfo->deviceInfo.name);
+      auto pos = std::find(begin(deviceNames_), end(deviceNames_), deviceName);
       if (pos == end(deviceNames_)) {
-         log.LogInfo(L"Bluetooth device \"%S\" not in list.", inRangeInfo->deviceInfo.name);
+         log.LogInfo(L"Bluetooth device \"%s\" not in list.", deviceName.c_str());
          return BluetoothStatus::Unknown;
       }
    }
    if ((inRangeInfo->deviceInfo.flags & BDIF_CONNECTED) && !(inRangeInfo->previousDeviceFlags & BDIF_CONNECTED)) {
-      log.LogInfo(L"Bluetooth Audio device \"%S\" connected.", inRangeInfo->deviceInfo.name);
+      log.LogInfo(L"Bluetooth Audio device \"%s\" connected.", deviceName.c_str());
       return BluetoothStatus::Connected;
    } else if (!(inRangeInfo->deviceInfo.flags & BDIF_CONNECTED) && (inRangeInfo->previousDeviceFlags & BDIF_CONNECTED)) {
-      log.LogInfo(L"Bluetooth Audio device \"%S\" disconnected.", inRangeInfo->deviceInfo.name);
+      log.LogInfo(L"Bluetooth Audio device \"%s\" disconnected.", deviceName.c_str());
       return BluetoothStatus::Disconnected;
    }
    return BluetoothStatus::Unknown;
