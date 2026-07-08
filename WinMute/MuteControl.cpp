@@ -55,7 +55,7 @@ enum MuteType
    MuteTypeCount // Meta
 };
 
-void DelayedMuteTimerProc(HWND hWnd, UINT, UINT_PTR, DWORD)
+void CALLBACK DelayedMuteTimerProc(HWND hWnd, UINT, UINT_PTR, DWORD)
 {
    MuteControl *muteCtrl = reinterpret_cast<MuteControl *>(GetWindowLongPtrW(hWnd, GWLP_USERDATA));
    if (muteCtrl != nullptr)
