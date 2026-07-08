@@ -1,1 +1,1 @@
-﻿Stop-Process -Name WinMute
+﻿Stop-Process -Name WinMute -ErrorAction SilentlyContinue
