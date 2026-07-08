@@ -156,8 +156,15 @@ void WMLog::StoreMessage(LogLevel level, const wchar_t* msg)
    }
 
    {
-      const std::scoped_lock<std::mutex> lock(wndMutex_);
-      for (const auto hWnd : registeredWindows_) {
+      // Copy the window list first: holding wndMutex_ across SendMessageW
+      // deadlocks if the UI thread is simultaneously blocked on wndMutex_
+      // in (Un)RegisterForLogUpdates.
+      std::vector<HWND> logWindows;
+      {
+         const std::scoped_lock<std::mutex> lock(wndMutex_);
+         logWindows = registeredWindows_;
+      }
+      for (const auto hWnd : logWindows) {
          if (IsWindow(hWnd)) {
             SendMessageW(hWnd, WM_LOG_UPDATED, 0, reinterpret_cast<LPARAM>(&lm));
          }
