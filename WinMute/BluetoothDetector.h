@@ -43,12 +43,12 @@ public:
    enum class BluetoothStatus { Unknown, Connected, Disconnected };
    BluetoothDetector();
    ~BluetoothDetector();
-   BluetoothDetector(const WifiDetector&) = delete;
-   BluetoothDetector(WifiDetector&&) = delete;
-   BluetoothDetector& operator=(const WifiDetector&) = delete;
-   BluetoothDetector& operator=(WifiDetector&&) = delete;
+   BluetoothDetector(const BluetoothDetector&) = delete;
+   BluetoothDetector(BluetoothDetector&&) = delete;
+   BluetoothDetector& operator=(const BluetoothDetector&) = delete;
+   BluetoothDetector& operator=(BluetoothDetector&&) = delete;
 
-   void SetDeviceList(const std::vector<std::string>& devices, bool useDeviceList);
+   void SetDeviceList(const std::vector<std::wstring>& devices, bool useDeviceList);
 
    bool Init(HWND hNotifyWnd);
    void Unload();
@@ -67,5 +67,5 @@ private:
 
    bool initialized_;
    bool useDeviceList_;
-   std::vector<std::string> deviceNames_;
+   std::vector<std::wstring> deviceNames_;
 };
