@@ -60,9 +60,9 @@ struct Endpoint {
    CComPtr<IAudioSessionControl> sessionCtrl;
    std::unique_ptr<VistaAudioSessionEvents> wasapiAudioEvents;
 
-   bool wasMuted;
+   bool wasMuted = false;
 
-   Endpoint();
+   Endpoint() = default;
    ~Endpoint();
    Endpoint(const Endpoint&) = delete;
    Endpoint& operator=(const Endpoint&) = delete;

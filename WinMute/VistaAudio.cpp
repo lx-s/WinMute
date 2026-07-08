@@ -37,14 +37,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "WinAudio.h"
 
-#define IF_FAILED_JUMP(hResult, ExitLabel) if (FAILED(hr)) { goto ExitLabel; }
-
-Endpoint::Endpoint()
-   : endpointVolume(nullptr), wasapiAudioEvents(nullptr), wasMuted(false)
-{
-   deviceName[0] = _T('\0');
-}
-
 Endpoint::~Endpoint()
 {
    if (sessionCtrl && wasapiAudioEvents != nullptr) {
@@ -78,16 +70,19 @@ bool VistaAudio::LoadAllEndpoints()
       eRender,
       DEVICE_STATE_ACTIVE,
       &audioEndpoints);
-   IF_FAILED_JUMP(hr, exit_error);
+   if (FAILED(hr)) {
+      return false;
+   }
 
    UINT epCount;
    hr = audioEndpoints->GetCount(&epCount);
-   IF_FAILED_JUMP(hr, exit_error);
+   if (FAILED(hr)) {
+      return false;
+   }
 
    for (UINT i = 0; i < epCount; ++i) {
       std::unique_ptr<Endpoint> ep = std::make_unique<Endpoint>();
       CComPtr<IMMDevice> device = nullptr;
-      CComPtr<IPropertyStore> propStore;
 
       hr = audioEndpoints->Item(i, &device);
       if (FAILED(hr)) {
@@ -138,9 +133,6 @@ bool VistaAudio::LoadAllEndpoints()
    }
 
    return true;
-
-exit_error:
-   return false;
 }
 
 bool VistaAudio::Init(HWND hParent)
@@ -159,10 +151,10 @@ bool VistaAudio::Init(HWND hParent)
 
    LoadAllEndpoints();
 
-   mmnAudioEvents_ = new MMNotificationClient(this);
-   if (mmnAudioEvents_) {
-      deviceEnumerator_->RegisterEndpointNotificationCallback(mmnAudioEvents_);
-   }
+   // Attach: the client is created with a refcount of 1; a plain assignment
+   // would AddRef it to 2 and Uninit's single Release would leak it.
+   mmnAudioEvents_.Attach(new MMNotificationClient(this));
+   deviceEnumerator_->RegisterEndpointNotificationCallback(mmnAudioEvents_);
 
    return true;
 }
@@ -257,7 +249,7 @@ bool VistaAudio::RestoreMuteStatus()
                 e->deviceName.c_str());
       if (e->wasMuted != true) {
          if (FAILED(e->endpointVolume->SetMute(false, nullptr))) {
-            log.LogError(_T("Failed to restore mute status to %s for \"%s\""),
+            log.LogError(L"Failed to restore mute status to %s for \"%s\"",
                       (e->wasMuted) ? L"true" : L"false",
                       e->deviceName.c_str());
             success = false;
