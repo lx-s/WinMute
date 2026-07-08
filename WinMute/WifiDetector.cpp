@@ -33,7 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
-static void WlanNotificationCallback(
+static void WINAPI WlanNotificationCallback(
    PWLAN_NOTIFICATION_DATA unnamedParam1,
    PVOID unnamedParam2)
 {
@@ -91,8 +91,20 @@ bool WifiDetector::Init(HWND hNotifyWnd)
 
 void WifiDetector::SetNetworkList(const std::vector<std::wstring>& networks, bool isMuteList)
 {
+   const std::lock_guard lock(networksMutex_);
    networks_ = networks;
    isMuteList_ = isMuteList;
+}
+
+// Returns true if the given network should trigger a mute/unmute
+// notification according to the configured network list.
+bool WifiDetector::IsNetworkRelevant(const wchar_t *profileName) const
+{
+   const std::lock_guard lock(networksMutex_);
+   const auto it = std::find(std::begin(networks_), std::end(networks_),
+                             profileName);
+   return (isMuteList_ && it != std::end(networks_))
+       || (!isMuteList_ && it == std::end(networks_));
 }
 
 void WifiDetector::CheckNetwork()
@@ -116,16 +128,11 @@ void WifiDetector::CheckNetwork()
             for (; availList->dwIndex < availList->dwNumberOfItems; ++availList->dwIndex) {
                const PWLAN_AVAILABLE_NETWORK net = &availList->Network[availList->dwIndex];
                if (net->dwFlags & WLAN_AVAILABLE_NETWORK_CONNECTED) {
-                  const auto it = std::find(std::begin(networks_),
-                                            std::end(networks_),
-                                            net->strProfileName);
-                  if (isMuteList_ && it != std::end(networks_)
-                      || !isMuteList_ && it == std::end(networks_)) {
-                     const size_t profileNameLen = lstrlen(net->strProfileName);
-                     wchar_t* wiFiName = new wchar_t[profileNameLen + 1];
-                     StringCchCopy(wiFiName, profileNameLen + 1, net->strProfileName);
+                  if (IsNetworkRelevant(net->strProfileName)) {
+                     // SendMessage is synchronous, so the profile name stays
+                     // valid while the receiver processes it.
                      SendMessage(hNotifyWnd_, WM_WIFISTATUSCHANGED, 1,
-                                 reinterpret_cast<LPARAM>(wiFiName));
+                                 reinterpret_cast<LPARAM>(net->strProfileName));
                      break;
                   }
                }
@@ -144,19 +151,15 @@ void WifiDetector::WlanNotificationCallback(PWLAN_NOTIFICATION_DATA notifyData)
    }
    if (notifyData->NotificationCode == wlan_notification_acm_connection_complete
        || notifyData->NotificationCode == wlan_notification_acm_disconnected) {
-      bool connected = notifyData->NotificationCode == wlan_notification_acm_connection_complete;
-      WLAN_CONNECTION_NOTIFICATION_DATA * wcnd = 
+      const bool connected = notifyData->NotificationCode == wlan_notification_acm_connection_complete;
+      const WLAN_CONNECTION_NOTIFICATION_DATA *wcnd =
          reinterpret_cast<WLAN_CONNECTION_NOTIFICATION_DATA*>(notifyData->pData);
-      const auto it = std::find(std::begin(networks_), std::end(networks_),
-                                wcnd->strProfileName);
-
-      if (isMuteList_ && it != std::end(networks_)
-          || !isMuteList_ && it == std::end(networks_)) {
-         size_t profileNameLen = lstrlen(wcnd->strProfileName);
-         wchar_t* wiFiName = new wchar_t[profileNameLen + 1];
-         StringCchCopyW(wiFiName, profileNameLen + 1, wcnd->strProfileName);
+      if (wcnd == nullptr) {
+         return;
+      }
+      if (IsNetworkRelevant(wcnd->strProfileName)) {
          SendMessageW(hNotifyWnd_, WM_WIFISTATUSCHANGED, connected,
-                      reinterpret_cast<LPARAM>(wiFiName));
+                      reinterpret_cast<LPARAM>(wcnd->strProfileName));
       }
    }
 }
