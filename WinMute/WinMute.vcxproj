@@ -154,6 +154,8 @@
       <AdditionalDependencies>mincore.lib;windowsapp.lib;Winhttp.lib;Bthprops.lib;Winmm.lib;UxTheme.lib;Wlanapi.lib;comctl32.lib;WtsApi32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <CETCompat>true</CETCompat>
+      <AdditionalOptions>/DEPENDENTLOADFLAG:0x800 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
@@ -208,6 +210,8 @@
       <AdditionalDependencies>mincore.lib;windowsapp.lib;Winhttp.lib;Bthprops.lib;Winmm.lib;UxTheme.lib;Wlanapi.lib;comctl32.lib;WtsApi32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <CETCompat>true</CETCompat>
+      <AdditionalOptions>/DEPENDENTLOADFLAG:0x800 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
