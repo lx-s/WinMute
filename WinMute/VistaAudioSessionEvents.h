@@ -44,10 +44,10 @@ public:
    ~VistaAudioSessionEvents();
 
    // IUnknown methods -- AddRef, Release, and QueryInterface
-   ULONG STDMETHODCALLTYPE AddRef();
-   ULONG STDMETHODCALLTYPE Release();
+   ULONG STDMETHODCALLTYPE AddRef() override;
+   ULONG STDMETHODCALLTYPE Release() override;
 
-   HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, VOID** ppvInterface);
+   HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, VOID** ppvInterface) override;
 
    // Notification methods for audio session events
    HRESULT STDMETHODCALLTYPE OnDisplayNameChanged(
