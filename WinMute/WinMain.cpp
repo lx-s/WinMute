@@ -80,11 +80,17 @@ static bool InitWindowsComponents()
    if (InitCommonControlsEx(&initComCtrl) == FALSE) {
       WMLog::GetInstance().LogWinError(L"InitCommonControlsEx", GetLastError());
       return false;
-   } else if (FAILED(RoInitialize(RO_INIT_MULTITHREADED))) {
-      WMLog::GetInstance().LogWinError(L"RoInitialize", GetLastError());
+   }
+   // The UI thread hosts windows and shell interactions, so it belongs in an
+   // STA. All blocking WinRT calls run on a dedicated MTA worker thread
+   // (see MediaPlaybackController).
+   const HRESULT hr = CoInitializeEx(
+      nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+   if (FAILED(hr)) {
+      WMLog::GetInstance().LogWinError(L"CoInitializeEx", static_cast<DWORD>(hr));
       return false;
    }
-   return TRUE;
+   return true;
 }
 
 int WINAPI wWinMain(
@@ -123,6 +129,7 @@ int WINAPI wWinMain(
       return FALSE;
    } else if (GetLastError() == ERROR_ALREADY_EXISTS) {
       ReleaseMutex(hMutex);
+      CloseHandle(hMutex);
       TaskDialog(
          nullptr,
          nullptr,
@@ -150,6 +157,7 @@ int WINAPI wWinMain(
          TD_ERROR_ICON,
          nullptr);
       ReleaseMutex(hMutex);
+      CloseHandle(hMutex);
       return FALSE;
    }
 
@@ -164,15 +172,21 @@ int WINAPI wWinMain(
             WMLog::GetInstance().LogWinError(L"GetMessage", GetLastError());
             break;
          }
+         // Only route through IsDialogMessage if the foreground window
+         // actually belongs to this thread; otherwise keystrokes meant for
+         // other applications would be inspected against a foreign HWND.
          HWND hwnd = GetForegroundWindow();
-         if (!IsWindow(hwnd) || !IsDialogMessage(hwnd, &msg)) {
+         if (hwnd == nullptr
+             || GetWindowThreadProcessId(hwnd, nullptr) != GetCurrentThreadId()
+             || !IsDialogMessage(hwnd, &msg)) {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
          }
       }
    }
 
-   RoUninitialize();
+   CoUninitialize();
    ReleaseMutex(hMutex);
+   CloseHandle(hMutex);
    return static_cast<int>(msg.wParam);
 }
