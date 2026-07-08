@@ -13,7 +13,7 @@ AllowShortFunctionsOnASingleLine: false
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 AlwaysBreakBeforeMultilineStrings: true
-BinPackParameters: False
+# BinPackParameters: False
 # BreakAfterOpenBracketFunction: true
 FixNamespaceComments: true
 IndentPPDirectives: AfterHash
@@ -29,4 +29,3 @@ BraceWrapping:
   BeforeElse: false
   BeforeCatch: false
   IndentBraces: false
-

@@ -53,11 +53,10 @@ static bool IsValidTimeRange(
 
 static std::wstring FormatQuietHoursTime(DWORD seconds)
 {
-   const WORD h = static_cast<WORD>(seconds / 3600);
-   const WORD m = static_cast<WORD>((seconds % 3600) / 60);
-   wchar_t buf[6];
-   swprintf_s(buf, L"%02d:%02d", h, m);
-   return buf;
+   const auto h = seconds / 3600;
+   const auto m = (seconds % 3600) / 60;
+   const auto s = (seconds % 3600) % 60;
+   return std::format(L"{:02}:{:02}:{:02}", h,m,s);
 }
 
 static void AddQuietHoursEntryToListView(HWND hListView, QuietHoursEntry *entry)
