@@ -40,7 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
 Endpoint::~Endpoint()
 {
    if (sessionCtrl && wasapiAudioEvents != nullptr) {
-      sessionCtrl->UnregisterAudioSessionNotification(wasapiAudioEvents.get());
+      sessionCtrl->UnregisterAudioSessionNotification(wasapiAudioEvents);
    }
 }
 
@@ -115,11 +115,10 @@ bool VistaAudio::LoadAllEndpoints()
          continue;
       }
 
-      ep->wasapiAudioEvents = std::make_unique<VistaAudioSessionEvents>(this);
-      if (ep->wasapiAudioEvents) {
-         ep->sessionCtrl->RegisterAudioSessionNotification(
-            ep->wasapiAudioEvents.get());
-      }
+      // Attach: the CComPtr takes over the initial reference from new,
+      // so the refcount stays balanced.
+      ep->wasapiAudioEvents.Attach(new VistaAudioSessionEvents(this));
+      ep->sessionCtrl->RegisterAudioSessionNotification(ep->wasapiAudioEvents);
 
       hr = device->Activate(
          __uuidof(IAudioEndpointVolume), CLSCTX_INPROC_SERVER,

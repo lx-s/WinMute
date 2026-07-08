@@ -58,7 +58,10 @@ struct Endpoint {
    std::wstring deviceName;
    CComPtr<IAudioEndpointVolume> endpointVolume;
    CComPtr<IAudioSessionControl> sessionCtrl;
-   std::unique_ptr<VistaAudioSessionEvents> wasapiAudioEvents;
+   // VistaAudioSessionEvents is a ref-counted COM object; holding it in a
+   // CComPtr keeps its lifetime tied to the COM refcount instead of fighting
+   // it with a second owner.
+   CComPtr<VistaAudioSessionEvents> wasapiAudioEvents;
 
    bool wasMuted = false;
 
