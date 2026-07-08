@@ -51,7 +51,6 @@ public:
 
    // for internal use
    LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-   void CheckForUpdatesAsync(std::unique_ptr<UpdateChecker> updateChecker);
 private:
    HWND hWnd_;
    HMENU hTrayMenu_;
@@ -96,8 +95,15 @@ private:
    LRESULT OnPowerBroadcast(HWND hWnd, WPARAM wParam, LPARAM lParam);
    LRESULT OnWifiStatusChange(HWND hWnd, WPARAM wParam, LPARAM lParam);
    LRESULT OnUpdatePopup(HWND hWnd, WPARAM wParam, LPARAM lParam);
-   
+   LRESULT OnUpdateCheckDone(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
    LRESULT OnDeviceChange(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
    LRESULT OnQuietHours(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
    LRESULT OnAudioServiceShutdown(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+   // Runs on updateThread_; must only touch its own locals and post the
+   // result to hWnd. Declared last so it is joined (destroyed) before any
+   // other member goes away.
+   static void CheckForUpdatesAsync(HWND hWnd);
+   std::jthread updateThread_;
 };

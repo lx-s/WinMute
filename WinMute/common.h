@@ -74,6 +74,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <span>
 #include <string>
 #include <string_view>
+#include <thread>
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
@@ -138,3 +139,5 @@ constexpr int WM_SAVESETTINGS = WM_USER + 300;
 constexpr int WM_WINMUTE_UPDATE_POPUP = WM_USER + 301;
 constexpr int WM_LOG_UPDATED = WM_USER + 302;
 constexpr int WM_WINMUTE_AUDIO_SERVICE_SHUTDOWN = WM_USER + 303;
+/* wParam = success. lParam = UpdateInfo*, ownership passes to the receiver */
+constexpr int WM_WINMUTE_UPDATE_CHECK_DONE = WM_USER + 304;

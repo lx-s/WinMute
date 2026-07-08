@@ -402,44 +402,68 @@ void WinMute::LoadMainMenuText()
 
 void WinMute::CheckForUpdates()
 {
-   auto updateChecker = std::make_unique<UpdateChecker>();
-   if (!updateChecker ||
-       !updateChecker->IsUpdateCheckEnabled(settings_)) {
+   const UpdateChecker updateChecker;
+   if (!updateChecker.IsUpdateCheckEnabled(settings_)) {
       return;
    }
-   std::thread updateThread(&WinMute::CheckForUpdatesAsync, this, std::move(updateChecker));
-   updateThread.detach();
+   if (updateThread_.joinable()) { // Check still running
+      return;
+   }
+   // The worker only uses its own locals and the raw window handle; the
+   // result is marshalled back to the UI thread via
+   // WM_WINMUTE_UPDATE_CHECK_DONE and handled in OnUpdateCheckDone. As a
+   // std::jthread member, the thread is joined before this object dies.
+   updateThread_ = std::jthread(&WinMute::CheckForUpdatesAsync, hWnd_);
 }
 
-void WinMute::CheckForUpdatesAsync(std::unique_ptr<UpdateChecker> updateChecker)
+void WinMute::CheckForUpdatesAsync(HWND hWnd)
 {
-   const bool betaUpdates = settings_.QueryValue(SettingsKey::CHECK_FOR_BETA_UPDATE) != 0;
-   if (!updateChecker) {
-      return;
+   const UpdateChecker updateChecker;
+   auto updateInfo = std::make_unique<UpdateInfo>();
+   const bool success = updateChecker.GetUpdateInfo(*updateInfo);
+   if (PostMessageW(hWnd, WM_WINMUTE_UPDATE_CHECK_DONE,
+                    static_cast<WPARAM>(success),
+                    reinterpret_cast<LPARAM>(updateInfo.get()))) {
+      // Ownership has passed to OnUpdateCheckDone
+      updateInfo.release();
    }
-   if (!updateChecker->GetUpdateInfo(updateInfo_)) {
+}
+
+LRESULT WinMute::OnUpdateCheckDone(HWND, WPARAM wParam, LPARAM lParam)
+{
+   const std::unique_ptr<UpdateInfo> updateInfo{
+      reinterpret_cast<UpdateInfo *>(lParam) };
+   if (updateThread_.joinable()) {
+      updateThread_.join();
+   }
+   if (wParam == 0 || !updateInfo) {
       wmTray_.ShowPopup(
          i18n_.GetTranslationW("popup.error.update-check-failed.title"),
          i18n_.GetTranslationW("popup.error.update-check-failed.text"));
-   } else if (updateInfo_.beta.shouldUpdate && betaUpdates) {
-      const std::wstring popupTitle = std::vformat(
+      return 0;
+   }
+   updateInfo_ = *updateInfo;
+   const bool betaUpdates = settings_.QueryValue(SettingsKey::CHECK_FOR_BETA_UPDATE) != 0;
+   if (updateInfo_.beta.shouldUpdate && betaUpdates) {
+      const std::wstring popupTitle = SafeVFormat(
          i18n_.GetTranslationW("popup.update-available-beta.title"),
-         std::make_wformat_args(updateInfo_.beta.version));
-      const std::wstring popupText = std::vformat(
+         updateInfo_.beta.version);
+      const std::wstring popupText = SafeVFormat(
          i18n_.GetTranslationW("popup.update-available-beta.text"),
-         std::make_wformat_args(updateInfo_.currentVersion));
+         updateInfo_.currentVersion);
       updateTray_.Show();
       updateTray_.ShowPopup(popupTitle, popupText);
    } else if (updateInfo_.stable.shouldUpdate) {
-      const std::wstring popupTitle = std::vformat(
+      const std::wstring popupTitle = SafeVFormat(
          i18n_.GetTranslationW("popup.update-available.title"),
-         std::make_wformat_args(updateInfo_.stable.version));
-      const std::wstring popupText = std::vformat(
+         updateInfo_.stable.version);
+      const std::wstring popupText = SafeVFormat(
          i18n_.GetTranslationW("popup.update-available.text"),
-         std::make_wformat_args(updateInfo_.currentVersion));
+         updateInfo_.currentVersion);
       updateTray_.Show();
       updateTray_.ShowPopup(popupTitle, popupText);
    }
+   return 0;
 }
 
 LRESULT WinMute::OnCommand(HWND hWnd, WPARAM wParam, LPARAM)
@@ -523,7 +547,7 @@ LRESULT WinMute::OnCommand(HWND hWnd, WPARAM wParam, LPARAM)
    }
    case ID_TRAYMENU_MUTEONLOGOUT: {
       bool checked = false;
-      ToggleMenuCheck(ID_TRAYMENU_MUTEONBLUETOOTH, &checked);
+      ToggleMenuCheck(ID_TRAYMENU_MUTEONLOGOUT, &checked);
       muteCtrl_.SetMuteOnLogout(checked);
       settings_.SetValue(SettingsKey::MUTE_ON_LOGOUT, checked);
       break;
@@ -652,20 +676,20 @@ LRESULT WinMute::OnWifiStatusChange(HWND, WPARAM wParam, LPARAM lParam)
 
    if (settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED)) {
       std::wstring popupMsg;
-      wchar_t *wifiName = reinterpret_cast<wchar_t *>(lParam);
+      // Non-owning: the name is only valid for the duration of this call.
+      const wchar_t *wifiName = reinterpret_cast<const wchar_t *>(lParam);
       if (settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST)) {
-         popupMsg = std::vformat(
+         popupMsg = SafeVFormat(
             i18n_.GetTranslationW("popup.wlan-not-on-mute-list.text"),
-            std::make_wformat_args(wifiName));
+            wifiName);
       } else {
-         popupMsg = std::vformat(
+         popupMsg = SafeVFormat(
             i18n_.GetTranslationW("popup.wlan-is-on-mute-list.text"),
-            std::make_wformat_args(wifiName));
+            wifiName);
       }
       wmTray_.ShowPopup(
          i18n_.GetTranslationW("popup.workstation-muted.title"),
          popupMsg);
-      delete[] wifiName;
    }
    muteCtrl_.SetMute(true);
 
@@ -722,6 +746,8 @@ LRESULT CALLBACK WinMute::WindowProc(
       return OnDeviceChange(hWnd, msg, wParam, lParam);
    case WM_WIFISTATUSCHANGED:
       return OnWifiStatusChange(hWnd, wParam, lParam);
+   case WM_WINMUTE_UPDATE_CHECK_DONE:
+      return OnUpdateCheckDone(hWnd, wParam, lParam);
    case WM_SETTINGCHANGE:
       return OnSettingChange(hWnd, wParam, lParam);
    default:
