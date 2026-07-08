@@ -87,8 +87,8 @@
     "settings.mute.mute-without-restore.when-rdp-session-starts": "... WinMute se inicia dentro de una sesión RDP",
     "settings.quiet-hours.intro": "Durante las horas de silencio, WinMute silencia automáticamente los dispositivos de audio del ordenador y los vuelve a silenciar después.",
     "settings.quiet-hours.enable": "Activar las horas de silencio",
-    "settings.quiet-hours.start-time-label": "Hora de inicio:",
-    "settings.quiet-hours.end-time-label": "Hora de finalización:",
+    "settings.quiet-hours.start-time-label": "Hora de inicio",
+    "settings.quiet-hours.end-time-label": "Hora de finalización",
     "settings.quiet-hours.force-unmute": "Forzar el silencio",
     "settings.quiet-hours.force-unmute-description": "Si la opción de forzar el silencio está activada, WinMute anulará el silencio de los dispositivos de audio del ordenador cuando finalicen las horas de silencio y no tendrá en cuenta si ya estaban silenciados antes de que comenzaran las horas de silencio.",
     "settings.quiet-hours.show-notifications": "Mostrar notificaciones de horas de silencio",
@@ -136,5 +136,11 @@
     "log.title": "WinMute Archivo de registro",
     "settings.general.btn-open-log-window": "Mostrar registro...",
     "settings.mute.try-pause-media-on-mute": "Intenta pausar el contenido multimedia que se está reproduciendo actualmente al silenciar.",
-    "settings.mute.try-resume-media-on-unmute": "Intenta reanudar la reproducción multimedia al activar el sonido."
+    "settings.mute.try-resume-media-on-unmute": "Intenta reanudar la reproducción multimedia al activar el sonido.",
+    "init.error.winmute.migrating-settings-error": "No se ha podido migrar la configuración. Por favor, revisa el registro de errores y/o crea un ticket de asistencia",
+    "init.error.winmute.quiet-hours-corrupted-settings": "La configuración de las horas de descanso está dañada. Se han restablecido los horarios de las horas de descanso",
+    "settings.quiet-hours.add-edit.add-title": "Agregar tiempo de descanso",
+    "settings.quiet-hours.add-edit.edit-title": "Editar tiempo de descanso",
+    "settings.quiet-hours.error.overlapping-time-range.title": "Período superpuesto",
+    "settings.quiet-hours.error.overlapping-time-range.text": "Este período de tiempo coincide con una entrada ya existente."
 }
