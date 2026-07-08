@@ -1,5 +1,10 @@
 Version 2.6.0 (2026-07-xx)
  * QuietHours are now configurable multiple time slots per day.
+ * Fixed some possible race conditions
+ * Fixed memory leak in wifi detector
+ * Fixed possible security issues in update checker
+ * WinMute is now build with control-flow enforcement (CET)
+ * Chocolatey uninstall now removes all settings.
 
 
 Version 2.5.5 (2026-01-23)
