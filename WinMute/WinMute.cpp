@@ -128,7 +128,8 @@ bool WinMute::RegisterWindowClass()
    WNDCLASSEX wc = { 0 };
    wc.cbSize = sizeof(wc);
    wc.hIcon = LoadIcon(hglobInstance, MAKEINTRESOURCE(IDI_APP));
-   wc.hbrBackground = CreateSolidBrush(GetSysColor(COLOR_BTNFACE));
+   // System color index brush: no GDI object to leak, tracks theme changes
+   wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_BTNFACE + 1);
    wc.hInstance = hglobInstance;
    wc.lpfnWndProc = WinMuteWndProc;
    wc.lpszClassName = WINMUTE_CLASS_NAME;
@@ -243,12 +244,12 @@ bool WinMute::Init()
 
    hTrayIcon_ = LoadIconW(hglobInstance, MAKEINTRESOURCE(IDI_APP));
    if (hTrayIcon_ == nullptr) {
-      ShowWindowsError(_T("LoadIcon"));
+      ShowWindowsError(L"LoadIcon");
       return false;
    }
    hUpdateIcon_ = LoadIconW(hglobInstance, MAKEINTRESOURCE(IDI_APPUPDATE));
    if (hUpdateIcon_ == nullptr) {
-      ShowWindowsError(_T("LoadIcon"));
+      ShowWindowsError(L"LoadIcon");
       return false;
    }
    wmTray_.Init(hWnd_, 0, hTrayIcon_, L"WinMute", true);
