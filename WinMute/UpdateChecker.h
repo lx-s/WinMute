@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "WMSettings.h"
 
-#include <nlohmann/json.hpp>
+#include "libs/json.hpp"
 
 enum class UpdateCheckInterval : int {
    DISABLED = 0,

@@ -440,7 +440,7 @@ void MuteControl::NotifyLogout()
     }
 }
 
-void MuteControl::NotifySuspend(bool [[maybe_unused]] active)
+void MuteControl::NotifySuspend([[maybe_unused]] bool active)
 {
     WMLog::GetInstance().LogInfo(L"Mute Event: Suspend start");
     if (muteConfig_[MuteTypeSuspend].shouldMute) {

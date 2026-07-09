@@ -35,6 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
+#include "WinAudio.h"
+#include "TrayIcon.h"
+
 class MuteControl {
    public:
     MuteControl();
