@@ -36,110 +36,115 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "common.h"
 
 class MuteControl {
-public:
-   MuteControl();
-   ~MuteControl();
-   MuteControl(const MuteControl&) = delete;
-   MuteControl& operator=(const MuteControl&) = delete;
+   public:
+    MuteControl();
+    ~MuteControl();
+    MuteControl(const MuteControl&) = delete;
+    MuteControl& operator=(const MuteControl&) = delete;
 
-   bool Init(HWND hParent, const TrayIcon* trayIcon);
+    bool Init(HWND hParent, const TrayIcon* trayIcon);
 
-   void SetNotifications(bool enable);
+    void SetNotifications(bool enable);
 
-   void SetMute(bool mute);
+    void SetMute(bool mute);
 
-   void SetRestoreVolume(bool enable);
+    void SetRestoreVolume(bool enable);
 
-   void SetMuteDelay(int delaySeconds);
+    void SetMuteDelay(int delaySeconds);
 
-   void SetMuteOnWorkstationLock(bool enable);
-   void SetMuteOnRemoteSession(bool enable);
-   void SetMuteOnDisplayStandby(bool enable);
-   void SetMuteOnBluetoothDisconnect(bool enable);
+    void SetMuteOnWorkstationLock(bool enable);
+    void SetMuteOnRemoteSession(bool enable);
+    void SetMuteOnDisplayStandby(bool enable);
+    void SetMuteOnLidClose(bool enable);
+    void SetMuteOnBluetoothDisconnect(bool enable);
 
-   void SetMuteTryPauseMedia(bool enable);
-   void SetMuteTryResumeMedia(bool enable);
+    void SetMuteTryPauseMedia(bool enable);
+    void SetMuteTryResumeMedia(bool enable);
 
-   void SetMuteOnLogout(bool enable);
-   void SetMuteOnSuspend(bool enable);
-   void SetMuteOnShutdown(bool enable);
+    void SetMuteOnLogout(bool enable);
+    void SetMuteOnSuspend(bool enable);
+    void SetMuteOnShutdown(bool enable);
 
-   bool GetRestoreVolume();
+    bool GetRestoreVolume();
 
-   bool GetMuteOnWorkstationLock()  const;
-   bool GetMuteOnRemoteSession()  const;
-   bool GetMuteOnDisplayStandby()  const;
-   bool GetMuteOnBluetoothDisconnect() const;
+    bool GetMuteOnWorkstationLock() const;
+    bool GetMuteOnRemoteSession() const;
+    bool GetMuteOnDisplayStandby() const;
+    bool GetMuteOnLidClose() const;
+    bool GetMuteOnBluetoothDisconnect() const;
 
-   bool GetMuteOnLogout() const;
-   bool GetMuteOnSuspend() const;
-   bool GetMuteOnShutdown() const;
+    bool GetMuteOnLogout() const;
+    bool GetMuteOnSuspend() const;
+    bool GetMuteOnShutdown() const;
 
-   void NotifyWorkstationLock(bool active);
-   void NotifyRemoteSession(bool active);
-   void NotifyDisplayStandby(bool active);
-   void NotifyBluetoothConnected(bool connected);
+    void NotifyWorkstationLock(bool active);
+    void NotifyRemoteSession(bool active);
+    void NotifyDisplayStandby(bool active);
+    void NotifyLidClosed(bool active);
+    void NotifyBluetoothConnected(bool connected);
 
-   void NotifyLogout();
-   void NotifySuspend(bool active);
-   void NotifyShutdown();
+    void NotifyLogout();
+    void NotifySuspend(bool active);
+    void NotifyShutdown();
 
-   void NotifyQuietHours(bool active);
+    void NotifyQuietHours(bool active);
 
-   void SetManagedEndpoints(
-      const std::vector<std::wstring>& endpoints,
-      bool isAllowList);
-   void ClearManagedEndpoints();
+    void SetManagedEndpoints(const std::vector<std::wstring>& endpoints,
+                             bool isAllowList);
+    void ClearManagedEndpoints();
 
-   LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+    LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam,
+                                LPARAM lParam);
 
-   // Should only be called internally
-   void MuteDelayed(int magic);
-   void CompleteVolumeRestore();
-private:
-   enum MuteType
-   {
-      // With restore
-      MuteTypeWorkstationLock = 0,
-      MuteTypeRemoteSession,
-      MuteTypeDisplayStandby,
-      MuteTypeBluetoothDisconnect,
+    // Should only be called internally
+    void MuteDelayed(int magic);
+    void CompleteVolumeRestore();
 
-      // Without restore
-      MuteTypeLogout,
-      MuteTypeSuspend,
-      MuteTypeShutdown,
-      MuteTypeCount // Meta
-   };
-   struct MuteConfig {
-      bool shouldMute;
-      bool active;
-   };
-   struct MediaConfig {
-      bool tryPause = false;
-      bool tryResume = false;
-   } mediaConfig_;
-   std::vector<MuteConfig> muteConfig_;
-   bool restoreVolume_ = false;
-   bool notificationsEnabled_ = false;
-   int muteDelaySeconds_ = 0;
-   UINT_PTR delayedMuteTimerId_ = 0;
-   UINT_PTR bluetoothUnmuteTimerId_ = 0;
-   std::unique_ptr<WinAudio> winAudio_;
-   MediaPlaybackController mediaController_;
-   HWND hMuteCtrlWnd_ = nullptr;
+   private:
+    enum MuteType {
+        // With restore
+        MuteTypeWorkstationLock = 0,
+        MuteTypeRemoteSession,
+        MuteTypeDisplayStandby,
+        MuteTypeLidClose,
+        MuteTypeBluetoothDisconnect,
 
-   // Since a power message is sent right after registering
-   // We skip the first "was on" message
-   bool displayWasOffOnce_ = false;
+        // Without restore
+        MuteTypeLogout,
+        MuteTypeSuspend,
+        MuteTypeShutdown,
+        MuteTypeCount  // Meta
+    };
+    struct MuteConfig {
+        bool shouldMute;
+        bool active;
+    };
+    struct MediaConfig {
+        bool tryPause = false;
+        bool tryResume = false;
+    } mediaConfig_;
+    std::vector<MuteConfig> muteConfig_;
+    bool restoreVolume_ = false;
+    bool notificationsEnabled_ = false;
+    int muteDelaySeconds_ = 0;
+    UINT_PTR delayedMuteTimerId_ = 0;
+    UINT_PTR bluetoothUnmuteTimerId_ = 0;
+    std::unique_ptr<WinAudio> winAudio_;
+    MediaPlaybackController mediaController_;
+    HWND hMuteCtrlWnd_ = nullptr;
 
-   const TrayIcon* trayIcon_ = nullptr;
+    // Since a power message is sent right after registering
+    // We skip the first "was on" message
+    bool displayWasOffOnce_ = false;
 
-   void NotifyRestoreCondition(MuteType type, bool active, bool withDelay = false);
-   void SaveMuteStatus();
-   void RestoreVolume(bool withDelay = false);
-   void ShowNotification(const std::wstring& title, const std::wstring& text);
-   bool StartDelayedMute();
+    const TrayIcon* trayIcon_ = nullptr;
 
-   void MuteNow();
+    void NotifyRestoreCondition(MuteType type, bool active,
+                                bool withDelay = false);
+    void SaveMuteStatus();
+    void RestoreVolume(bool withDelay = false);
+    void ShowNotification(const std::wstring& title, const std::wstring& text);
+    bool StartDelayedMute();
+
+    void MuteNow();
 };

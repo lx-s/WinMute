@@ -67,6 +67,7 @@ private:
 
    bool wtsSessionNotificationRegistered_ = false;
    HPOWERNOTIFY hPowerNotify_ = nullptr;
+   HPOWERNOTIFY hLidCloseNotify_ = nullptr;
 
    TrayIcon wmTray_;
    TrayIcon updateTray_;

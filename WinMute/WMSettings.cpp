@@ -62,6 +62,9 @@ static const wchar_t* KeyToStr(SettingsKey key)
         case SettingsKey::MUTE_ON_DISPLAYSTANDBY:
             keyStr = L"MuteOnDisplayStandby";
             break;
+        case SettingsKey::MUTE_ON_LIDCLOSE:
+            keyStr = L"MuteOnLidClose";
+            break;
         case SettingsKey::MUTE_ON_RDP:
             keyStr = L"MuteOnRDP";
             break;
@@ -147,6 +150,8 @@ static DWORD GetDefaultSetting(SettingsKey key)
             return 1;
         case SettingsKey::MUTE_ON_DISPLAYSTANDBY:
             return 1;
+        case SettingsKey::MUTE_ON_LIDCLOSE:
+            return 0;
         case SettingsKey::MUTE_ON_RDP:
             return 0;
         case SettingsKey::RESTORE_AUDIO:

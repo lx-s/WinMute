@@ -34,34 +34,42 @@ POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #ifndef UNICODE
-#  define UNICODE
+#    define UNICODE
 #endif
 
 #ifndef _UNICODE
-#  define _UNICODE
+#    define _UNICODE
 #endif
 
 #if defined _M_IX86
-#  pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#    pragma comment( \
+        linker,      \
+        "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #elif defined _M_IA64
-#  pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='ia64' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#    pragma comment( \
+        linker,      \
+        "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='ia64' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #elif defined _M_X64
-#  pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#    pragma comment( \
+        linker,      \
+        "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #else
-#  pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#    pragma comment( \
+        linker,      \
+        "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
 
 #define STRICT
 #define _WIN32_WINNT 0x0601
+#include <atlbase.h>
 #include <sdkddkver.h>
 
-#include <atlbase.h>
-#include <atomic>
 #include <algorithm>
 #include <array>
+#include <atomic>
 #include <cassert>
-#include <cstdarg>
 #include <chrono>
+#include <cstdarg>
 #include <filesystem>
 #include <format>
 #include <fstream>
@@ -81,48 +89,48 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace fs = std::filesystem;
 
-#include <windows.h>
-#include <windowsx.h>
-#include <commctrl.h>
-#include <WtsApi32.h>
-#include <winhttp.h>
-#include <dbt.h>
+#include <BluetoothAPIs.h>
 #include <Bthdef.h>
 #include <Bthsdpdef.h>
-#include <BluetoothAPIs.h>
-#include <tchar.h>
+#include <Mmdeviceapi.h>
+#include <WtsApi32.h>
+#include <comdef.h>
+#include <comip.h>
+#include <commctrl.h>
+#include <dbt.h>
+#include <dwmapi.h>
+#include <initguid.h>
+#include <powrprof.h>
+#include <roapi.h>
+#include <sal.h>
 #include <strsafe.h>
+#include <tchar.h>
 #include <time.h>
 #include <uxtheme.h>
-#include <comip.h>
-#include <comdef.h>
+#include <windows.h>
+#include <windowsx.h>
+#include <winhttp.h>
 #include <wlanapi.h>
-#include <Mmdeviceapi.h>
-#include <dwmapi.h>
-#include <sal.h>
-#include <roapi.h>
 #pragma warning(disable : 4201)
-#  include <endpointvolume.h>
+#include <endpointvolume.h>
 #pragma warning(default : 4201)
 
-#include "libs/json.hpp"
-
-#include "resource.h"
-
-#include "WMi18n.h"
-#include "WMSettings.h"
-#include "WMLog.h"
-#include "UpdateChecker.h"
-#include "TrayIcon.h"
-#include "WinAudio.h"
+#include "BluetoothDetector.h"
 #include "MediaController.h"
 #include "MuteControl.h"
-#include "WiFiDetector.h"
-#include "BluetoothDetector.h"
 #include "QuietHoursTimer.h"
-#include "WinMute.h"
+#include "TrayIcon.h"
+#include "UpdateChecker.h"
 #include "Utility.h"
 #include "VersionHelper.h"
+#include "WMLog.h"
+#include "WMSettings.h"
+#include "WMi18n.h"
+#include "WiFiDetector.h"
+#include "WinAudio.h"
+#include "WinMute.h"
+#include "libs/json.hpp"
+#include "resource.h"
 
 // =============================================================================
 // Macros
@@ -132,8 +140,8 @@ namespace fs = std::filesystem;
 // =============================================================================
 // Constants
 
-static const wchar_t *PROGRAM_NAME = L"WinMute";
-static const wchar_t *LOG_FILE_NAME = L"WinMute.log";
+static const wchar_t* PROGRAM_NAME = L"WinMute";
+static const wchar_t* LOG_FILE_NAME = L"WinMute.log";
 
 constexpr int WM_SAVESETTINGS = WM_USER + 300;
 constexpr int WM_WINMUTE_UPDATE_POPUP = WM_USER + 301;

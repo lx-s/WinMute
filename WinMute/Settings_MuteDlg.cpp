@@ -59,6 +59,7 @@ static void LoadMuteDlgTranslation(HWND hDlg)
    i18n.SetItemText(hDlg, IDC_GROUP_MUTE_WITH_RESTORE, "settings.mute.mute-with-restore.title");
    i18n.SetItemText(hDlg, IDC_MUTE_WHEN_WS_LOCKED, "settings.mute.mute-with-restore.when-workstation-is-locked");
    i18n.SetItemText(hDlg, IDC_MUTE_WHEN_SCREEN_OFF, "settings.mute.mute-with-restore.when-screen-turns-off");
+   i18n.SetItemText(hDlg, IDC_MUTE_WHEN_LID_CLOSE, "settings.mute.mute-with-restore.when-lid-closes");
    i18n.SetItemText(hDlg, IDC_RESTOREVOLUME, "settings.mute.mute-with-restore.restore-volume");
    i18n.SetItemText(hDlg, IDC_DELAY_MUTING_LABEL, "settings.mute.mute-with-restore.restore-volume-delay-label");
 
@@ -90,6 +91,7 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 
       HWND hMuteOnLock = GetDlgItem(hDlg, IDC_MUTE_WHEN_WS_LOCKED);
       HWND hMuteOnScreenOff = GetDlgItem(hDlg, IDC_MUTE_WHEN_SCREEN_OFF);
+      HWND hMuteOnLidClose = GetDlgItem(hDlg, IDC_MUTE_WHEN_LID_CLOSE);
       HWND hMuteOnRDP = GetDlgItem(hDlg, IDC_MUTE_WHEN_RDP_SESSION);
       HWND hRestoreVolume = GetDlgItem(hDlg, IDC_RESTOREVOLUME);
 
@@ -114,6 +116,7 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       // With restore
       SetCheckButton(hMuteOnLock, *settings, SettingsKey::MUTE_ON_LOCK);
       SetCheckButton(hMuteOnScreenOff, *settings, SettingsKey::MUTE_ON_DISPLAYSTANDBY);
+      SetCheckButton(hMuteOnLidClose, *settings, SettingsKey::MUTE_ON_LIDCLOSE);
       SetCheckButton(hMuteOnRDP, *settings, SettingsKey::MUTE_ON_RDP);
       SetCheckButton(hRestoreVolume, *settings, SettingsKey::RESTORE_AUDIO);
 
@@ -152,6 +155,7 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 
       HWND hMuteOnLock = GetDlgItem(hDlg, IDC_MUTE_WHEN_WS_LOCKED);
       HWND hMuteOnScreenOff = GetDlgItem(hDlg, IDC_MUTE_WHEN_SCREEN_OFF);
+      HWND hMuteOnLidClose = GetDlgItem(hDlg, IDC_MUTE_WHEN_LID_CLOSE);
       HWND hMuteOnRDP = GetDlgItem(hDlg, IDC_MUTE_WHEN_RDP_SESSION);
       HWND hRestoreVolume = GetDlgItem(hDlg, IDC_RESTOREVOLUME);
 
@@ -171,6 +175,8 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
       // With restore
       SetOption(hMuteOnLock, *settings, SettingsKey::MUTE_ON_LOCK);
       SetOption(hMuteOnScreenOff, *settings, SettingsKey::MUTE_ON_DISPLAYSTANDBY);
+      SetOption(hMuteOnLidClose, *settings, SettingsKey::MUTE_ON_LIDCLOSE);
+      
       SetOption(hMuteOnRDP, *settings, SettingsKey::MUTE_ON_RDP);
       SetOption(hRestoreVolume, *settings, SettingsKey::RESTORE_AUDIO);
 

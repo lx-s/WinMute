@@ -81,6 +81,7 @@
   "settings.mute.mute-with-restore.title": "Stummschalten mit Lautstärkewiederherstellung, wenn...",
   "settings.mute.mute-with-restore.when-workstation-is-locked": "... der PC gesperrt wird",
   "settings.mute.mute-with-restore.when-screen-turns-off": "... der Bildschirm in Standby geht",
+  "settings.mute.mute-with-restore.when-lid-closes": "... der Laptop zugeklappt wird",
   "settings.mute.mute-with-restore.restore-volume": "Lautstärke danach wiederherstellen",
   "settings.mute.mute-with-restore.restore-volume-delay-label": "Sekunden Verzögerung vor dem Stummschalten.",
   "settings.mute.mute-without-restore.title": "Stummschalten ohne Lautstärkenwiederherstellung, wenn...",

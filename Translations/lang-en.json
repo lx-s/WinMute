@@ -91,6 +91,7 @@
   "settings.mute.mute-with-restore.title": "Mute with volume restore, when...",
   "settings.mute.mute-with-restore.when-workstation-is-locked": "... the computer is locked",
   "settings.mute.mute-with-restore.when-screen-turns-off": "... the screen turns off",
+  "settings.mute.mute-with-restore.when-lid-closes": "... the laptop lid closes",
   "settings.mute.mute-with-restore.restore-volume": "Restore volume afterwards",
   "settings.mute.mute-with-restore.restore-volume-delay-label": "seconds delay before muting.",
   "settings.mute.mute-without-restore.title": "Mute without volume restore, when...",

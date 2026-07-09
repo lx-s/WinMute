@@ -105,7 +105,7 @@ BEGIN
     LTEXT           "If force unmute is enabled, WinMute will unmute your workstation when quiet hours end and not take into account if your workstation was already muted before quiet hours started.",IDC_QUIET_HOURS_FORCE_UNMUTE_DESCRIPTION,33,140,204,37
     CONTROL         "Show quiet hours notifications",IDC_SHOWNOTIFICATIONS,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,175,180,21
-    CONTROL         "",IDC_QUIET_HOURS_TIMES,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,22,47,155,72
+    CONTROL         "",IDC_QUIET_HOURS_TIMES,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,22,47,155,72
     PUSHBUTTON      "Add",IDC_QUIET_HOURS_ADD,183,46,56,16
     PUSHBUTTON      "Edit",IDC_QUIET_HOURS_EDIT,183,65,56,16
     PUSHBUTTON      "Remove",IDC_QUIET_HOURS_REMOVE,183,84,56,16
@@ -132,7 +132,7 @@ BEGIN
     EDITTEXT        IDC_ABOUTTEXT,7,14,182,144,ES_MULTILINE | ES_AUTOVSCROLL | ES_NOHIDESEL | ES_READONLY | NOT WS_BORDER
 END
 
-IDD_SETTINGS_MUTE DIALOGEX 0, 0, 253, 263
+IDD_SETTINGS_MUTE DIALOGEX 0, 0, 253, 289
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -142,27 +142,29 @@ BEGIN
     CONTROL         "Manage audio endpoints individually",IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,28,227,18
     PUSHBUTTON      "Manage endpoints...",IDC_MANAGE_ENDPOINTS,26,46,97,15
-    GROUPBOX        "Mute with volume restore, when...",IDC_GROUP_MUTE_WITH_RESTORE,7,71,239,71
+    GROUPBOX        "Mute with volume restore, when...",IDC_GROUP_MUTE_WITH_RESTORE,7,71,239,91
     CONTROL         "... the workstation is locked.",IDC_MUTE_WHEN_WS_LOCKED,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,83,214,10
     CONTROL         "... the screen turns off.",IDC_MUTE_WHEN_SCREEN_OFF,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,97,205,10
-    CONTROL         "Restore volume afterwards.",IDC_RESTOREVOLUME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,112,221,10
-    EDITTEXT        IDC_MUTEDELAY,13,124,30,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "seconds delay before muting.",IDC_DELAY_MUTING_LABEL,47,127,187,8
-    GROUPBOX        "Mute without volume restore, when...",IDC_GROUP_MUTE_WITHOUT_RESTORE,7,145,239,67
+    CONTROL         "Restore volume afterwards.",IDC_RESTOREVOLUME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,131,221,10
+    EDITTEXT        IDC_MUTEDELAY,13,143,30,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "seconds delay before muting.",IDC_DELAY_MUTING_LABEL,47,146,187,8
+    GROUPBOX        "Mute without volume restore, when...",IDC_GROUP_MUTE_WITHOUT_RESTORE,7,165,239,67
     CONTROL         "... the computer shuts down.",IDC_MUTE_WHEN_SHUTDOWN,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,156,220,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,176,220,10
     CONTROL         "... the computer goes into sleep/hibernate.",IDC_MUTE_WHEN_SLEEP,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,170,214,10
-    CONTROL         "... you log out.",IDC_MUTE_WHEN_LOGOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,184,214,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,190,214,10
+    CONTROL         "... you log out.",IDC_MUTE_WHEN_LOGOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,204,214,10
     CONTROL         "... when WinMute is started within a RDP session.",IDC_MUTE_WHEN_RDP_SESSION,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,198,220,10
-    GROUPBOX        "Media",IDC_GROUP_MUTE_MEDIA_CONTROL,7,216,239,42
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,218,220,10
+    GROUPBOX        "Media",IDC_GROUP_MUTE_MEDIA_CONTROL,7,236,239,42
     CONTROL         "Try pausing currently played media when muting.",IDC_MUTE_TRY_PAUSE_MEDIA,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,227,219,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,247,219,10
     CONTROL         "Try resuming media when unmuting.",IDC_MUTE_TRY_RESUME_MEDIA,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,241,214,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,261,214,10
+    CONTROL         "... the laptop lid closes.",IDC_MUTE_WHEN_LID_CLOSE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,110,205,10
 END
 
 IDD_SETTINGS_WIFI DIALOGEX 0, 0, 242, 216
@@ -336,7 +338,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 246
         TOPMARGIN, 7
-        BOTTOMMARGIN, 254
+        BOTTOMMARGIN, 280
     END
 
     IDD_SETTINGS_WIFI, DIALOG
