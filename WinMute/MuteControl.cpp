@@ -420,9 +420,12 @@ void MuteControl::NotifyDisplayStandby(bool active)
 
 void MuteControl::NotifyLidClosed(bool active)
 {
-    WMLog::GetInstance().LogInfo(L"Mute Event: Lid Close {}",
-                                 active ? L"start" : L"stop");
-    NotifyRestoreCondition(MuteTypeLidClose, active);
+    if (lidWasOpenedOnce_ || !active) {
+        WMLog::GetInstance().LogInfo(L"Mute Event: Lid Close {}",
+                                     active ? L"start" : L"stop");
+        NotifyRestoreCondition(MuteTypeLidClose, active);
+        lidWasOpenedOnce_ = true;
+    }
 }
 
 void MuteControl::NotifyBluetoothConnected(bool connected)

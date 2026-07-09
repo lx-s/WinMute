@@ -140,6 +140,11 @@ class MuteControl {
     // We skip the first "was on" message
     bool displayWasOffOnce_ = false;
 
+    // The lid-switch registration also reports the current state
+    // immediately. Ignore "closed" until the lid was open once, so a
+    // laptop started docked with its lid closed is not muted on launch.
+    bool lidWasOpenedOnce_ = false;
+
     const TrayIcon* trayIcon_ = nullptr;
 
     void NotifyRestoreCondition(MuteType type, bool active,

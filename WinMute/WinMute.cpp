@@ -715,7 +715,7 @@ LRESULT WinMute::OnPowerBroadcast(HWND, WPARAM wParam, LPARAM lParam)
             if (state == 0x0) {  // Lid closed
                 muteCtrl_.NotifyLidClosed(true);
             } else if (state == 0x1) {  // Lid open
-                muteCtrl_.NotifyLidClosed(true);
+                muteCtrl_.NotifyLidClosed(false);
             }
         }
     }
