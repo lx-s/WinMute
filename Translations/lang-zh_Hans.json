@@ -97,8 +97,8 @@
     "settings.mute.mute-without-restore.when-rdp-session-starts": "…通过远程桌面协议 (RDP) 会话启动 WinMute 时",
     "settings.quiet-hours.intro": "在免打扰时间，WinMute 将自动静音计算机音频设备，并在之后取消静音。",
     "settings.quiet-hours.enable": "启用免打扰时间",
-    "settings.quiet-hours.start-time-label": "开始时间：",
-    "settings.quiet-hours.end-time-label": "结束时间：",
+    "settings.quiet-hours.start-time-label": "开始时间",
+    "settings.quiet-hours.end-time-label": "结束时间",
     "settings.quiet-hours.force-unmute": "强制取消静音",
     "settings.quiet-hours.force-unmute-description": "如果启用强制取消静音，WinMute 将在免打扰时间结束时取消计算机音频设备的静音，无论其在免打扰时间开始前是否已静音。",
     "settings.quiet-hours.show-notifications": "显示免打扰时间通知",
@@ -135,5 +135,11 @@
     "log.title": "WinMute 日志文件",
     "settings.general.btn-open-log-window": "显示日志…",
     "settings.mute.try-pause-media-on-mute": "尝试在静音时暂停当前播放的媒体。",
-    "settings.mute.try-resume-media-on-unmute": "尝试在取消静音时继续播放媒体。"
+    "settings.mute.try-resume-media-on-unmute": "尝试在取消静音时继续播放媒体。",
+    "init.error.winmute.migrating-settings-error": "无法迁移设置。请查看错误日志和/或创建支持工单",
+    "init.error.winmute.quiet-hours-corrupted-settings": "免打扰时间设置已损坏。免打扰时间时段已被重置",
+    "settings.quiet-hours.add-edit.add-title": "添加免打扰时间",
+    "settings.quiet-hours.add-edit.edit-title": "编辑免打扰时间",
+    "settings.quiet-hours.error.overlapping-time-range.title": "时间范围重叠",
+    "settings.quiet-hours.error.overlapping-time-range.text": "此时间范围与现有条目重叠。"
 }
