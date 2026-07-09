@@ -320,6 +320,10 @@ bool WinMute::LoadSettings()
                     settings_.QueryValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY)
                         ? L"Yes"
                         : L"No");
+        log.LogInfo(L"\tMute on display lid close: {}",
+                    settings_.QueryValue(SettingsKey::MUTE_ON_LIDCLOSE)
+                        ? L"Yes"
+                        : L"No");
         log.LogInfo(
             L"\tMute on logout: {}",
             settings_.QueryValue(SettingsKey::MUTE_ON_LOGOUT) ? L"Yes" : L"No");
@@ -380,6 +384,8 @@ bool WinMute::LoadSettings()
         settings_.QueryValue(SettingsKey::MUTE_ON_LOCK));
     muteCtrl_.SetMuteOnDisplayStandby(
         settings_.QueryValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY));
+    muteCtrl_.SetMuteOnLidClose(
+        settings_.QueryValue(SettingsKey::MUTE_ON_LIDCLOSE));
     muteCtrl_.SetMuteOnLogout(
         settings_.QueryValue(SettingsKey::MUTE_ON_LOGOUT));
     muteCtrl_.SetMuteOnSuspend(
