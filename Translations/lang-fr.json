@@ -97,8 +97,8 @@
     "settings.mute.mute-without-restore.when-rdp-session-starts": "... WinMute est démarré dans une session RDP",
     "settings.quiet-hours.intro": "Pendant les heures calmes, WinMute coupe automatiquement le son des périphériques audio de l'ordinateur et le réactive ensuite.",
     "settings.quiet-hours.enable": "Activer les heures de silence",
-    "settings.quiet-hours.start-time-label": "Heure de début :",
-    "settings.quiet-hours.end-time-label": "Heure de fin :",
+    "settings.quiet-hours.start-time-label": "Heure de début",
+    "settings.quiet-hours.end-time-label": "Heure de fin",
     "settings.quiet-hours.force-unmute": "Forcer la désactivation du son",
     "settings.quiet-hours.force-unmute-description": "Si la fonction de désactivation forcée du son est activée, WinMute désactivera le son des périphériques audio des ordinateurs à la fin des heures de coupure sans tenir compte de leur état de coupure avant le début de ces heures.",
     "settings.quiet-hours.show-notifications": "Afficher les notifications d'heures de coupure",
@@ -135,5 +135,11 @@
     "settings.general.btn-open-log-window": "Afficher le journal...",
     "log.title": "Fichier journal WinMute",
     "settings.mute.try-pause-media-on-mute": "Essayez de mettre en pause la lecture multimédia en cours si vous coupez le son.",
-    "settings.mute.try-resume-media-on-unmute": "Essayez de reprendre la lecture multimédia une fois le son réactivé."
+    "settings.mute.try-resume-media-on-unmute": "Essayez de reprendre la lecture multimédia une fois le son réactivé.",
+    "settings.quiet-hours.add-edit.add-title": "Ajouter des heures de silence",
+    "settings.quiet-hours.add-edit.edit-title": "Modifier les heures de silence",
+    "settings.quiet-hours.error.overlapping-time-range.title": "Plage de temps chevauchante",
+    "settings.quiet-hours.error.overlapping-time-range.text": "Cette plage horaire chevauche une entrée existante.",
+    "init.error.winmute.migrating-settings-error": "Échec de la migration des paramètres. Veuillez consulter le journal des erreurs et/ou créer un ticket d'assistance",
+    "init.error.winmute.quiet-hours-corrupted-settings": "Paramètres des heures de silence corrompus. Les horaires des heures de silence ont été réinitialisés"
 }
