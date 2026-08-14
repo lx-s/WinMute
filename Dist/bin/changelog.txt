@@ -1,12 +1,12 @@
-Version 2.6.0 (2026-07-xx)
+Version 2.6.0 (2026-08-14)
  * QuietHours are now configurable multiple time slots per day.
+ * Added "Mute on Laptop Lid Close"
+ * Updated translations
  * Fixed some possible race conditions
  * Fixed memory leak in wifi detector
  * Fixed possible security issues in update checker
  * WinMute is now build with control-flow enforcement (CET)
  * Chocolatey uninstall now removes all settings.
- * General fixes and improvements
-
 
 Version 2.5.5 (2026-01-23)
  * Added feature to also try pausing/resuming currently playing media when muting/unmuting.

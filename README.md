@@ -32,7 +32,7 @@ computer whenever I left the room and forgot to mute my computer.
 ## Screenshots
 
 ![Screenshot of WinMute](Dist/screenshots/app.png? "Screenshot of WinMute")
-![Screenshot of the Settings](Dist/screenshots/settings.gif? "Settings dialog")
+![Screenshot of the Settings](Dist/screenshots/settings.webp? "Settings dialog")
 
 ## Languages
 
@@ -50,7 +50,7 @@ please take a look at [CONTRIBUTING.md](CONTRIBUTING.md).
 ### Requirements
 
 * Windows 7 or any newer version of Windows.
-* [Visual Studio 2015-2022 Redistributable](https://support.microsoft.com/help/2977003/the-latest-supported-visual-c-downloads)
+* [Visual Studio 2015-2026 Redistributable](https://support.microsoft.com/help/2977003/the-latest-supported-visual-c-downloads)
 
 ### Installation
 
