@@ -41,7 +41,7 @@ SetupMutex={#MyAppMutex}Setup
 PrivilegesRequiredOverridesAllowed=dialog
 PrivilegesRequired=lowest
 OutputDir=..\bin\
-OutputBaseFilename=WinMuteSetup
+OutputBaseFilename=WinMute-{#MyAppVersion}-Setup
 
 SetupIconFile=..\..\WinMute\icons\app.ico
 ArchitecturesInstallIn64BitMode=x64os
