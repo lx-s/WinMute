@@ -50,7 +50,7 @@ please take a look at [CONTRIBUTING.md](CONTRIBUTING.md).
 ### Requirements
 
 * Windows 7 or any newer version of Windows.
-* [Visual Studio 2015-2026 Redistributable](https://support.microsoft.com/help/2977003/the-latest-supported-visual-c-downloads)
+* [Visual Studio 2015-2026 Redistributable](https://aka.ms/vc14/vc_redist.x64.exe)
 
 ### Installation
 

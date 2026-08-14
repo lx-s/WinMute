@@ -141,6 +141,7 @@
   "about.general.description": "WinMute is developed by Alexander Steinhoefer his spare time. The code as well as new releases for this tool can be found on GitHub. Contributions in the form of code, tickets or feature requests are very welcome. Thanks for using this little tool!",
   "about.tab.winmute": "WinMute",
   "about.tab.license": "License",
+  "about.tab.third-party": "Attributions",
   "about.btn-close": "OK",
   "log.title": "WinMute Log-File"
 }
