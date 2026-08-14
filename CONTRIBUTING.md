@@ -24,8 +24,8 @@ a new program icon suitable for Windows' light and dark theme (or GitHubs README
 
 You are invited to provide translations for the app. But there are some rules.
 
-1. Please only translate if you are fluid with the language you provide the translation and also if you are familiar with the nomenclature of the Android system. If in doubt about a specific string, check out other Apps of big companies, like WhatsApp, Facebook, Google, etc., and see how they did it.
-2. Only contribute, if you are committed to translate the majority of strings. No one wants an app, which is a mix of English and the native language. I might remove translations again, if they won't receive updates on new string resources.
+1. Please only translate if you are fluid with the language you provide the translation and also if you are familiar with the nomenclature of the Windows system. If in doubt about a specific string, check out other Windows-Apps you like to use and see how they did it.
+2. Only contribute, if you are committed to translate the majority of strings. No one wants an app, which is a mix of mostly English and very little of the native language. I might remove translations again, if they won't receive updates on new string resources.
 
 [![Translation Status](https://translate.codeberg.org/widget/winmute/winmute/multi-auto.svg)](https://translate.codeberg.org/engage/winmute/)
 
