@@ -143,5 +143,6 @@
     "settings.quiet-hours.add-edit.edit-title": "Editar tiempo de descanso",
     "settings.quiet-hours.error.overlapping-time-range.title": "Período superpuesto",
     "settings.quiet-hours.error.overlapping-time-range.text": "Este período de tiempo coincide con una entrada ya existente.",
-    "settings.mute.mute-with-restore.when-lid-closes": "…se cierra la tapa del portátil"
+    "settings.mute.mute-with-restore.when-lid-closes": "…se cierra la tapa del portátil",
+    "about.tab.third-party": "Reconocimientos"
 }
