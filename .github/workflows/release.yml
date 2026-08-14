@@ -120,10 +120,18 @@ jobs:
           if (-not $isccPath) { throw 'Could not locate ISCC.exe after installing Inno Setup' }
           "ISCC_PATH=$isccPath" >> $env:GITHUB_ENV
 
-          # Latvian is a community ("unofficial") translation not bundled with
-          # Inno Setup itself; every other language referenced by
-          # Dist/InnoSetup/winmute-setup-languages.iss ships in the box.
+          # The unattended Inno Setup install doesn't reliably bundle every
+          # translation as a component, so fetch every language
+          # Dist/InnoSetup/winmute-setup-languages.iss references directly
+          # from the Inno Setup source repo rather than depending on what
+          # the installer happened to include.
           $languagesDir = Join-Path (Split-Path $isccPath) 'Languages'
+          $officialLangs = 'German', 'Spanish', 'French', 'Italian', 'Korean', 'Dutch', 'Russian', 'ChineseSimplified'
+          foreach ($lang in $officialLangs) {
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jrsoftware/issrc/main/Files/Languages/$lang.isl" -OutFile (Join-Path $languagesDir "$lang.isl")
+          }
+          # Latvian is a community ("unofficial") translation, kept in a
+          # separate folder in the source repo.
           Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/jrsoftware/issrc/main/Files/Languages/Unofficial/Latvian.isl' -OutFile (Join-Path $languagesDir 'Latvian.isl')
 
       - name: Build installer
