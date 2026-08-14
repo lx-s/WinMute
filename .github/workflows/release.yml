@@ -103,8 +103,14 @@ jobs:
 
       - name: Install Inno Setup
         run: |
+          # jrsoftware.org/download.php no longer redirects straight to the
+          # binary (it serves an HTML chooser page now) - installers are
+          # published as GitHub release assets instead. Pinned to a specific
+          # version for reproducibility; bump this URL when you want a newer
+          # Inno Setup - see https://github.com/jrsoftware/issrc/releases
+          $innoSetupUrl = 'https://github.com/jrsoftware/issrc/releases/download/is-7_1_0/innosetup-7.1.0-x64.exe'
           $ProgressPreference = 'SilentlyContinue'
-          Invoke-WebRequest -Uri 'https://jrsoftware.org/download.php/is.exe' -OutFile "$env:RUNNER_TEMP\innosetup.exe"
+          Invoke-WebRequest -Uri $innoSetupUrl -OutFile "$env:RUNNER_TEMP\innosetup.exe"
           Start-Process -FilePath "$env:RUNNER_TEMP\innosetup.exe" -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-' -Wait
 
           $isccPath = Get-ChildItem "${env:ProgramFiles(x86)}" -Directory -Filter 'Inno Setup*' |
