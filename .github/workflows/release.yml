@@ -51,7 +51,14 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: Build WinMute.exe
-        run: msbuild WinMute\WinMute.vcxproj /p:Configuration=Release /p:Platform=x64 /m
+        run: |
+          # SolutionDir only resolves correctly when MSBuild is invoked
+          # through the .sln/.slnx; building the .vcxproj directly (done here
+          # to avoid depending on the runner's MSBuild supporting .slnx)
+          # otherwise falls back to the project's own directory, and
+          # WinMute.props's OutDir/IntDir (which are $(SolutionDir)-relative)
+          # end up one level too deep.
+          msbuild WinMute\WinMute.vcxproj /p:Configuration=Release /p:Platform=x64 /p:SolutionDir="$env:GITHUB_WORKSPACE\" /m
 
       - name: Determine version
         id: version
