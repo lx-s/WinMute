@@ -1,0 +1,196 @@
+name: Release
+
+# Builds WinMute.exe and the Inno Setup installer, signs both via SignPath,
+# and (on a tagged push only) publishes them plus a zip as assets on a
+# GitHub Release.
+#
+# Triggered by pushing a version tag matching the existing 4-part convention,
+# e.g. `2.6.1.0`. Bump the version in WinMute/WinMute.rc and add an entry to
+# Dist/bin/changelog.txt first, then:
+#   git tag 2.6.1.0 && git push origin 2.6.1.0
+#
+# Can also be run manually (Actions tab -> Release -> Run workflow) to build
+# and sign a one-off test build without tagging or creating a release - the
+# signed exe/installer/zip are still uploaded as workflow artifacts so you
+# can download and inspect them.
+#
+# Chocolatey packaging and the winget submission are NOT part of this
+# workflow — run Dist/publish-packages.ps1 locally afterwards for those.
+#
+# Requires (repo Settings -> Secrets and variables -> Actions):
+#   secrets.SIGNPATH_API_TOKEN            SignPath API token (Submitter role)
+#   vars.SIGNPATH_ORG_ID                  SignPath organization ID
+#   vars.SIGNPATH_PROJECT_SLUG            SignPath project slug
+#   vars.SIGNPATH_SIGNING_POLICY_SLUG     e.g. "test-signing" or "release-signing"
+#   vars.SIGNPATH_ARTIFACT_CONFIG_SLUG    (optional) artifact configuration slug
+#
+# Also requires the SignPath GitHub App (https://github.com/apps/signpath) to be
+# installed on this repository and linked as a Trusted Build System on the
+# SignPath project, per https://docs.signpath.io/trusted-build-systems/github
+
+on:
+  push:
+    tags:
+      - '*.*.*.*'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build-sign-release:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build WinMute.exe
+        run: msbuild WinMute\WinMute.vcxproj /p:Configuration=Release /p:Platform=x64 /m
+
+      - name: Determine version
+        id: version
+        run: |
+          $version = (Get-Item Bin\WinMute.exe).VersionInfo.FileVersion.Trim()
+          if ('${{ github.event_name }}' -eq 'push') {
+            $tag = "${{ github.ref_name }}"
+            if ($version -ne $tag) {
+              throw "Built exe FileVersion '$version' does not match tag '$tag'. Did you forget to bump WinMute/WinMute.rc?"
+            }
+          }
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Stage payload
+        run: |
+          New-Item -ItemType Directory -Force -Path Dist\bin\lang | Out-Null
+          Copy-Item Bin\WinMute.exe Dist\bin\WinMute.exe -Force
+          Copy-Item Translations\*.json Dist\bin\lang\ -Force
+
+      - name: Upload unsigned WinMute.exe
+        id: upload-unsigned-exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: unsigned-WinMute.exe
+          path: Dist/bin/WinMute.exe
+          retention-days: 1
+
+      - name: Sign WinMute.exe
+        uses: signpath/github-action-submit-signing-request@v2
+        with:
+          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
+          organization-id: '${{ vars.SIGNPATH_ORG_ID }}'
+          project-slug: '${{ vars.SIGNPATH_PROJECT_SLUG }}'
+          signing-policy-slug: '${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}'
+          artifact-configuration-slug: '${{ vars.SIGNPATH_ARTIFACT_CONFIG_SLUG }}'
+          github-artifact-id: '${{ steps.upload-unsigned-exe.outputs.artifact-id }}'
+          wait-for-completion: true
+          output-artifact-directory: signed\exe
+
+      - name: Replace exe with signed copy
+        run: Copy-Item signed\exe\WinMute.exe Dist\bin\WinMute.exe -Force
+
+      - name: Install Inno Setup
+        run: |
+          $ProgressPreference = 'SilentlyContinue'
+          Invoke-WebRequest -Uri 'https://jrsoftware.org/download.php/is.exe' -OutFile "$env:RUNNER_TEMP\innosetup.exe"
+          Start-Process -FilePath "$env:RUNNER_TEMP\innosetup.exe" -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-' -Wait
+
+          $isccPath = Get-ChildItem "${env:ProgramFiles(x86)}" -Directory -Filter 'Inno Setup*' |
+            ForEach-Object { Join-Path $_.FullName 'ISCC.exe' } |
+            Where-Object { Test-Path $_ } |
+            Select-Object -First 1
+          if (-not $isccPath) { throw 'Could not locate ISCC.exe after installing Inno Setup' }
+          "ISCC_PATH=$isccPath" >> $env:GITHUB_ENV
+
+          # Latvian is a community ("unofficial") translation not bundled with
+          # Inno Setup itself; every other language referenced by
+          # Dist/InnoSetup/winmute-setup-languages.iss ships in the box.
+          $languagesDir = Join-Path (Split-Path $isccPath) 'Languages'
+          Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/jrsoftware/issrc/main/Files/Languages/Unofficial/Latvian.isl' -OutFile (Join-Path $languagesDir 'Latvian.isl')
+
+      - name: Build installer
+        run: |
+          & "$env:ISCC_PATH" Dist\InnoSetup\winmute-setup.iss
+
+      - name: Locate installer output
+        id: installer
+        run: |
+          # winmute-setup.iss names its output "WinMute-{#MyAppVersion}-Setup.exe",
+          # where MyAppVersion is read from the exe itself - already verified
+          # above to equal the tag on a tagged push - so discover the actual
+          # filename rather than assuming its exact form.
+          $setupFile = Get-ChildItem Dist\bin -Filter 'WinMute-*-Setup.exe' | Select-Object -First 1
+          if (-not $setupFile) { throw 'Inno Setup did not produce a WinMute-*-Setup.exe output' }
+          "setupName=$($setupFile.Name)" >> $env:GITHUB_OUTPUT
+
+      - name: Upload unsigned installer
+        id: upload-unsigned-setup
+        uses: actions/upload-artifact@v4
+        with:
+          name: unsigned-WinMuteSetup.exe
+          path: Dist/bin/${{ steps.installer.outputs.setupName }}
+          retention-days: 1
+
+      - name: Sign WinMuteSetup.exe
+        uses: signpath/github-action-submit-signing-request@v2
+        with:
+          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
+          organization-id: '${{ vars.SIGNPATH_ORG_ID }}'
+          project-slug: '${{ vars.SIGNPATH_PROJECT_SLUG }}'
+          signing-policy-slug: '${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}'
+          artifact-configuration-slug: '${{ vars.SIGNPATH_ARTIFACT_CONFIG_SLUG }}'
+          github-artifact-id: '${{ steps.upload-unsigned-setup.outputs.artifact-id }}'
+          wait-for-completion: true
+          output-artifact-directory: signed\setup
+
+      - name: Replace installer with signed copy
+        run: Copy-Item "signed\setup\${{ steps.installer.outputs.setupName }}" "Dist\bin\${{ steps.installer.outputs.setupName }}" -Force
+
+      - name: Build zip
+        id: package
+        run: |
+          $zipName = "WinMute-${{ steps.version.outputs.version }}.zip"
+          $zipPath = "Dist\bin\$zipName"
+          if (Test-Path $zipPath) { Remove-Item $zipPath }
+          # Named members only - never the whole Dist\bin folder - so
+          # update-check.disabled and the Chocolatey-only WinMute.exe.gui
+          # marker never end up in the zip.
+          Compress-Archive -Path Dist\bin\WinMute.exe, Dist\bin\lang, Dist\bin\changelog.txt, Dist\bin\license.txt, Dist\bin\license.rtf -DestinationPath $zipPath
+          "zipName=$zipName" >> $env:GITHUB_OUTPUT
+
+      - name: Upload signed artifacts (workflow record)
+        uses: actions/upload-artifact@v4
+        with:
+          name: signed-WinMute-${{ steps.version.outputs.version }}
+          path: |
+            Dist/bin/WinMute.exe
+            Dist/bin/${{ steps.installer.outputs.setupName }}
+            Dist/bin/${{ steps.package.outputs.zipName }}
+          retention-days: 30
+
+      - name: Extract release notes
+        if: github.event_name == 'push'
+        run: |
+          $notesLines = @()
+          foreach ($line in Get-Content Dist\bin\changelog.txt) {
+            if ($line.Trim() -eq '' -and $notesLines.Count -gt 0) { break }
+            $notesLines += $line
+          }
+          Set-Content -Path release-notes.txt -Value ($notesLines -join "`n")
+
+      - name: Create GitHub Release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.version.outputs.version }}" `
+            "Dist\bin\WinMute.exe" `
+            "Dist\bin\${{ steps.installer.outputs.setupName }}" `
+            "Dist\bin\${{ steps.package.outputs.zipName }}" `
+            --title "${{ steps.version.outputs.version }}" `
+            --notes-file release-notes.txt

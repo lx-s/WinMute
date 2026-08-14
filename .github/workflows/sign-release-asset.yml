@@ -1,0 +1,99 @@
+name: Sign release asset
+
+# Re-signs a file that is already attached to an EXISTING GitHub Release, in
+# place, WITHOUT rebuilding it from source.
+#
+# For normal releases and one-off pipeline test builds, use the "Release"
+# workflow (release.yml) instead - it builds, signs, and (on a tagged push)
+# publishes WinMute.exe and the installer in one go, including a
+# workflow_dispatch mode for test builds that doesn't touch any release.
+#
+# This workflow exists for the narrower case of re-signing bits that are
+# already published - e.g. the SignPath signing policy or certificate
+# changed and you want the already-shipped asset re-signed without cutting
+# a whole new version. Usage:
+#   1. Run this workflow (Actions tab -> Sign release asset -> Run workflow),
+#      giving it an existing release tag, the exact asset filename already
+#      attached to it, and the signing policy to use.
+#   2. The signed file replaces that asset on the release, in place.
+#
+# Requires (see repo Settings -> Secrets and variables -> Actions):
+#   secrets.SIGNPATH_API_TOKEN            SignPath API token (Submitter role)
+#   vars.SIGNPATH_ORG_ID                  SignPath organization ID
+#   vars.SIGNPATH_PROJECT_SLUG            SignPath project slug
+#   vars.SIGNPATH_ARTIFACT_CONFIG_SLUG    (optional) artifact configuration slug
+#
+# Also requires the SignPath GitHub App (https://github.com/apps/signpath) to be
+# installed on this repository and linked as a Trusted Build System on the
+# SignPath project, per https://docs.signpath.io/trusted-build-systems/github
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Tag of the GitHub Release that holds the unsigned asset"
+        required: true
+        type: string
+      asset_name:
+        description: "Exact filename of the unsigned release asset to sign (e.g. WinMute.exe)"
+        required: true
+        type: string
+      signing_policy_slug:
+        description: "SignPath signing policy slug"
+        required: true
+        type: string
+        default: "test-signing"
+
+permissions:
+  contents: write
+
+jobs:
+  sign:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download unsigned asset from release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p unsigned
+          gh release download "${{ inputs.release_tag }}" \
+            --repo "${{ github.repository }}" \
+            --pattern "${{ inputs.asset_name }}" \
+            --dir unsigned
+
+      - name: Upload unsigned artifact for signing
+        id: upload-unsigned
+        uses: actions/upload-artifact@v4
+        with:
+          name: unsigned-${{ inputs.asset_name }}
+          path: unsigned/${{ inputs.asset_name }}
+          retention-days: 1
+
+      - name: Submit signing request
+        id: sign
+        uses: signpath/github-action-submit-signing-request@v2
+        with:
+          api-token: "${{ secrets.SIGNPATH_API_TOKEN }}"
+          organization-id: "${{ vars.SIGNPATH_ORG_ID }}"
+          project-slug: "${{ vars.SIGNPATH_PROJECT_SLUG }}"
+          signing-policy-slug: "${{ inputs.signing_policy_slug }}"
+          artifact-configuration-slug: "${{ vars.SIGNPATH_ARTIFACT_CONFIG_SLUG }}"
+          github-artifact-id: "${{ steps.upload-unsigned.outputs.artifact-id }}"
+          wait-for-completion: true
+          output-artifact-directory: signed
+
+      - name: Upload signed artifact (workflow record)
+        uses: actions/upload-artifact@v4
+        with:
+          name: signed-${{ inputs.asset_name }}
+          path: signed/${{ inputs.asset_name }}
+          retention-days: 30
+
+      - name: Replace unsigned asset on the release with the signed one
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${{ inputs.release_tag }}" \
+            "signed/${{ inputs.asset_name }}" \
+            --repo "${{ github.repository }}" \
+            --clobber
