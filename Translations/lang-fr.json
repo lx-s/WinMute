@@ -141,5 +141,7 @@
     "settings.quiet-hours.error.overlapping-time-range.title": "Plage de temps chevauchante",
     "settings.quiet-hours.error.overlapping-time-range.text": "Cette plage horaire chevauche une entrée existante.",
     "init.error.winmute.migrating-settings-error": "Échec de la migration des paramètres. Veuillez consulter le journal des erreurs et/ou créer un ticket d'assistance",
-    "init.error.winmute.quiet-hours-corrupted-settings": "Paramètres des heures de silence corrompus. Les horaires des heures de silence ont été réinitialisés"
+    "init.error.winmute.quiet-hours-corrupted-settings": "Paramètres des heures de silence corrompus. Les horaires des heures de silence ont été réinitialisés",
+    "settings.mute.mute-with-restore.when-lid-closes": "... le capot de l'ordinateur portable se referme",
+    "about.tab.third-party": "Attributions"
 }
