@@ -36,7 +36,7 @@ POSSIBILITY OF SUCH DAMAGE.
 static const std::wstring kLicenseText =
     L"\
 WinMute\r\n\
-Copyright(c) 2026, Alexander Steinhoefer\r\n\
+Copyright(c) 2011-2026, Alexander Steinhoefer\r\n\
 \r\n\
 -----------------------------------------------------------------------------\r\n\
 Redistribution and use in source and binary forms, with or without\r\n\
@@ -65,10 +65,14 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT\r\n\
 LIABILITY, OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY\r\n\
 WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE\r\n\
 POSSIBILITY OF SUCH DAMAGE.\r\n\
+\r\n\
+\r\n\
 ";
 
 static const std::wstring kAttributionsText =
     L"\
+nlohmann/json / https://github.com/nlohmann/json\r\n\
+================================================\r\n\
 MIT License\r\n\
 \r\n\
 Copyright (c) 2013-2026 Niels Lohmann\r\n\
@@ -90,6 +94,8 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\r\n\
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\r\n\
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\r\n\
 SOFTWARE.\r\n\
+\r\n\
+\r\n\
 ";
 
 enum AboutTabsIDs {

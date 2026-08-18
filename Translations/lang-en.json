@@ -76,6 +76,7 @@
   "settings.general.check-for-updates-on-start": "Check for new updates on startup",
   "settings.general.check-for-beta-updates-on-start": "Also check for new beta versions",
   "settings.general.updates-handled-externally": "Options disabled: Updates are handled externally",
+  "settings.general.enable-global-mute-hotkey": "Enable global hotkey to mute workstation",
   "settings.general.enable-logging": "Save log to file",
   "settings.general.btn-open-log-file": "Open log file...",
   "settings.general.btn-open-log-window": "Show log...",

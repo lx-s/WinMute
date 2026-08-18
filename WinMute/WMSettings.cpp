@@ -137,6 +137,12 @@ static const wchar_t* KeyToStr(SettingsKey key)
         case SettingsKey::CHECK_FOR_BETA_UPDATE:
             keyStr = L"CheckForBetaUpdate";
             break;
+        case SettingsKey::ENABLE_GLOBAL_MUTE_HOTKEY:
+            keyStr = L"EnableGlobalMuteHotkey";
+            break;
+        case SettingsKey::GLOBAL_MUTE_HOTKEY:
+            keyStr = L"GlobalMuteHotkey";
+            break;
     }
     return keyStr;
 }

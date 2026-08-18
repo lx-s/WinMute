@@ -126,13 +126,13 @@ IDD_ABOUT_WINMUTE DIALOGEX 0, 0, 298, 176
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    EDITTEXT        IDC_ABOUTTEXT,7,14,182,144,ES_MULTILINE | ES_AUTOVSCROLL | ES_NOHIDESEL | ES_READONLY | NOT WS_BORDER
     CONTROL         "<a href=""https://lx-s.de"">Author Site: www.lx-s.de</a>",IDC_LINK_HOMEPAGE,
                     "SysLink",WS_TABSTOP,197,14,94,14
     CONTROL         "<a href=""https://github.com/lx-s/WinMute/"">Project Site && Code</a>",IDC_LINK_PROJECT,
                     "SysLink",WS_TABSTOP,197,32,94,14
     CONTROL         "<a href=""https://github.com/lx-s/WinMute/issues/"">Support</a>",IDC_LINK_TICKETS,
                     "SysLink",WS_TABSTOP,197,49,94,14
+    EDITTEXT        IDC_ABOUTTEXT,7,14,182,144,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | NOT WS_BORDER
 END
 
 IDD_SETTINGS_MUTE DIALOGEX 0, 0, 253, 274

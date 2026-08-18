@@ -73,6 +73,8 @@ static void LoadSettingsGeneralDlgTranslation(HWND hDlg)
    i18n.SetItemText(hDlg, IDC_RUNONSTARTUP, "settings.general.run-on-startup");
    i18n.SetItemText(hDlg, IDC_CHECK_FOR_UPDATES_ON_STARTUP, "settings.general.check-for-updates-on-start");
    i18n.SetItemText(hDlg, IDC_CHECK_FOR_BETA_UPDATES, "settings.general.check-for-beta-updates-on-start");
+   i18n.SetItemText(hDlg, IDC_ENABLE_GLOBAL_MUTE_HOTKEY,
+                    "settings.general.enable-global-mute-hotkey");
    i18n.SetItemText(hDlg, IDC_ENABLELOGGING, "settings.general.enable-logging");
    i18n.SetItemText(hDlg, IDC_OPENLOG, "settings.general.btn-open-log-file");
    i18n.SetItemText(hDlg, IDC_UPDATE_OPTIONS_DISABLED, "settings.general.updates-handled-externally");
@@ -89,6 +91,8 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       HWND hLogging = GetDlgItem(hDlg, IDC_ENABLELOGGING);
       HWND hOpenLog = GetDlgItem(hDlg, IDC_OPENLOG);
       HWND hUpdatesDisabledNotice = GetDlgItem(hDlg, IDC_UPDATE_OPTIONS_DISABLED);
+      HWND hEnableGlobalMuteHotkey = GetDlgItem(hDlg, IDC_ENABLE_GLOBAL_MUTE_HOTKEY);
+      HWND hGlobalMuteHotkey = GetDlgItem(hDlg, IDC_GLOBAL_MUTE_HOTKEY);
 
       if (IsAppThemed()) {
          EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
@@ -113,6 +117,16 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       EnableWindow(hBetaUpdateCheck, enabled);
       enabled = !!dlgData->settings->QueryValue(SettingsKey::CHECK_FOR_BETA_UPDATE);
       Button_SetCheck(hBetaUpdateCheck, enabled ? BST_CHECKED : BST_UNCHECKED);
+
+      // Hotkey
+      const auto hotkey =
+          dlgData->settings->QueryValue(SettingsKey::GLOBAL_MUTE_HOTKEY);
+      SendMessage(hGlobalMuteHotkey, HKM_SETHOTKEY, hotkey, 0);
+      enabled =
+          !!dlgData->settings->QueryValue(SettingsKey::ENABLE_GLOBAL_MUTE_HOTKEY);
+      Button_SetCheck(hEnableGlobalMuteHotkey,
+                      enabled ? BST_CHECKED : BST_UNCHECKED);
+      EnableWindow(hGlobalMuteHotkey, enabled);
 
       // If the disable-update file is present, then also hide all options
       UpdateChecker updateChecker;
@@ -179,6 +193,10 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
             SendMessageW(GetDlgItem(hDlg, IDC_LOGFILEPATH), WM_SETTEXT, 0,
                reinterpret_cast<LPARAM>(L""));
          }
+      } else if (LOWORD(wParam) == IDC_ENABLE_GLOBAL_MUTE_HOTKEY) {
+          const auto checked =
+              Button_GetCheck(GetDlgItem(hDlg, IDC_ENABLE_GLOBAL_MUTE_HOTKEY));
+          EnableWindow(GetDlgItem(hDlg, IDC_GLOBAL_MUTE_HOTKEY), checked);
       } else if (LOWORD(wParam) == IDC_OPENLOGDLG) {
          auto hLogDlg = CreateDialogW(
             hglobInstance,
@@ -204,6 +222,9 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       HWND hLogging = GetDlgItem(hDlg, IDC_ENABLELOGGING);
       HWND hUpdateCheck = GetDlgItem(hDlg, IDC_CHECK_FOR_UPDATES_ON_STARTUP);
       HWND hBetaUpdateCheck = GetDlgItem(hDlg, IDC_CHECK_FOR_BETA_UPDATES);
+      HWND hEnableGlobalMuteHotkey =
+          GetDlgItem(hDlg, IDC_ENABLE_GLOBAL_MUTE_HOTKEY);
+      HWND hGlobalMuteHotkey = GetDlgItem(hDlg, IDC_GLOBAL_MUTE_HOTKEY);
 
       const int enableLog = Button_GetCheck(hLogging) == BST_CHECKED;
       dlgData->settings->SetValue(SettingsKey::LOGGING_ENABLED, enableLog);
@@ -241,6 +262,13 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
       } else {
          dlgData->settings->EnableAutostart(false);
       }
+
+      const int enableGlobalMuteHotkey =
+          Button_GetCheck(hEnableGlobalMuteHotkey) == BST_CHECKED;
+      dlgData->settings->SetValue(SettingsKey::ENABLE_GLOBAL_MUTE_HOTKEY,
+                                  enableGlobalMuteHotkey);
+      const auto hotkey = SendMessage(hGlobalMuteHotkey, HKM_GETHOTKEY, 0, 0);
+      dlgData->settings->SetValue(SettingsKey::GLOBAL_MUTE_HOTKEY, static_cast<DWORD>(hotkey));
 
       return 0;
    }

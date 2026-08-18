@@ -67,6 +67,7 @@
   "settings.bluetooth.add-edit.edit-title": "Bluetooth-Gerät bearbeiten",
   "settings.bluetooth.add-edit.device-name-label": "Bluetooth Gerätename:",
   "settings.general.run-on-startup": "WinMute mit Windows starten",
+  "settings.general.enable-global-mute-hotkey": "Globalen Hotkey zur Stummschaltung aktivieren",
   "settings.general.enable-logging": "Protokoll in Datei speichern",
   "settings.general.btn-open-log-file": "Protokolldatei öffnen...",
   "settings.general.btn-open-log-window": "Protokoll anzeigen...",
