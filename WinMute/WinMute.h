@@ -105,6 +105,7 @@ class WinMute {
 
     void ToggleMenuCheck(UINT item, bool* setting) noexcept;
     void ToggleMute();
+    void UpdateMuteMenuCheck(bool muted) noexcept;
 
     void LoadMainMenuText();
     void LoadGlobalHotkeys();

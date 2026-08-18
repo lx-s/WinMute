@@ -207,7 +207,8 @@ bool WinMute::InitTrayMenu()
         }
     }
 
-    if (!CHECK_MENU_ITEM(MUTEONLOCK, muteCtrl_.GetMuteOnWorkstationLock()) ||
+    if (!CHECK_MENU_ITEM(MUTE, muteCtrl_.IsMuted()) ||
+        !CHECK_MENU_ITEM(MUTEONLOCK, muteCtrl_.GetMuteOnWorkstationLock()) ||
         !CHECK_MENU_ITEM(RESTOREAUDIO, muteCtrl_.GetRestoreVolume()) ||
         !CHECK_MENU_ITEM(MUTEONSUSPEND, muteCtrl_.GetMuteOnSuspend()) ||
         !CHECK_MENU_ITEM(MUTEONSHUTDOWN, muteCtrl_.GetMuteOnShutdown()) ||
@@ -559,11 +560,15 @@ void WinMute::ToggleMenuCheck(UINT item, bool* setting) noexcept
     }
 }
 
-void WinMute::ToggleMute()
+void WinMute::UpdateMuteMenuCheck(bool muted) noexcept
 {
-    const bool muted = muteCtrl_.ToggleMute();
     CheckMenuItem(hTrayMenu_, ID_TRAYMENU_MUTE,
                   muted ? MF_CHECKED : MF_UNCHECKED);
+}
+
+void WinMute::ToggleMute()
+{
+    UpdateMuteMenuCheck(muteCtrl_.ToggleMute());
 }
 
 void WinMute::LoadMainMenuText()
@@ -804,6 +809,11 @@ LRESULT WinMute::OnTrayIcon(HWND hWnd, WPARAM wParam, LPARAM lParam)
         event == NIN_KEYSELECT)
     {
         const POINT p{GET_X_LPARAM(wParam), GET_Y_LPARAM(wParam)};
+        // Anything else can have changed the mute status in the meantime
+        // (a mute event, quiet hours, or the Windows volume mixer), so
+        // refresh the check right before the menu becomes visible.
+        // TPM_NONOTIFY suppresses WM_INITMENUPOPUP, hence doing it here.
+        UpdateMuteMenuCheck(muteCtrl_.IsMuted());
         SetForegroundWindow(hWnd);
         TrackPopupMenuEx(GetSubMenu(hTrayMenu_, 0),
                          TPM_NONOTIFY | TPM_TOPALIGN | TPM_LEFTALIGN, p.x, p.y,

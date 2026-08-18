@@ -55,6 +55,9 @@ class MuteControl {
     // state that was set.
     bool ToggleMute();
 
+    // True only if every managed endpoint is currently muted.
+    bool IsMuted();
+
     void SetRestoreVolume(bool enable);
 
     void SetMuteDelay(int delaySeconds);
