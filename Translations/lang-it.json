@@ -45,6 +45,7 @@
     "traymenu.mute-on-sleep": "... il computer va in sospensione",
     "traymenu.mute-on-logout": "... l'utente si scollega",
     "traymenu.mute-all-devices": "Disattiva audio",
+    "traymenu.show-log": "Mostra log...",
     "traymenu.settings": "Impostazioni...",
     "traymenu.exit": "Esci",
     "settings.title": "Impostazioni",
@@ -132,5 +133,6 @@
     "settings.general.check-for-beta-updates-on-start": "Controlla anche disponibilità nuove versioni beta",
     "settings.general.help-translating": "Aiuta nella traduzione",
     "settings.general.updates-handled-externally": "Opzioni disabilitate: aggiornamenti gestiti esternamente",
-    "log.title": "WinMute Registro Eventi"
+    "log.title": "WinMute Registro Eventi",
+    "settings.general.btn-open-log-window": "Mostra log..."
 }

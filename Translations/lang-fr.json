@@ -51,6 +51,7 @@
     "traymenu.mute-on-sleep": "... veille",
     "traymenu.mute-on-logout": "... déconnexion",
     "traymenu.mute-all-devices": "Couper le son",
+    "traymenu.show-log": "Afficher le journal...",
     "traymenu.settings": "Paramètres...",
     "traymenu.exit": "Quitter",
     "settings.title": "Paramètres",

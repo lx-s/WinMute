@@ -45,6 +45,7 @@
     "traymenu.mute-on-sleep": "... suspender",
     "traymenu.mute-on-logout": "... cerrar sesión",
     "traymenu.mute-all-devices": "Silenciar audio",
+    "traymenu.show-log": "Mostrar registro...",
     "traymenu.settings": "Configuración...",
     "traymenu.exit": "Salir",
     "settings.title": "Configuración",

@@ -51,6 +51,7 @@
     "traymenu.mute-on-sleep": "... 절전 모드",
     "traymenu.mute-on-logout": "... 로그아웃",
     "traymenu.mute-all-devices": "오디오 음소거",
+    "traymenu.show-log": "로그 표시...",
     "traymenu.settings": "설정...",
     "traymenu.exit": "종료",
     "settings.title": "설정",
