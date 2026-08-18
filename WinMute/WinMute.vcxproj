@@ -121,6 +121,7 @@
     <ClInclude Include="BluetoothDetector.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="libs\json.hpp" />
+    <ClInclude Include="ManagedEndpoint.hpp" />
     <ClInclude Include="MediaController.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="UpdateChecker.h" />

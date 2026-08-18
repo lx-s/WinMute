@@ -49,8 +49,8 @@ class WinAudio {
     virtual void RestoreArrivedEndpoints() = 0;
     virtual void SetMute(bool mute) = 0;
     virtual void MuteSpecificEndpoints(bool muteSpecific) = 0;
-    virtual void SetManagedEndpoints(const std::vector<std::wstring>& endpoints,
-                                     bool isAllowList) = 0;
+    virtual void SetManagedEndpoints(
+        const std::vector<ManagedEndpoint>& endpoints, bool isAllowList) = 0;
     virtual ~WinAudio() noexcept {};
 };
 
@@ -89,7 +89,7 @@ class VistaAudio : public WinAudio {
     void SetMute(bool mute) override;
 
     void MuteSpecificEndpoints(bool muteSpecific) override;
-    void SetManagedEndpoints(const std::vector<std::wstring>& endpoints,
+    void SetManagedEndpoints(const std::vector<ManagedEndpoint>& endpoints,
                              bool isAllowList) override;
 
    private:
@@ -97,7 +97,7 @@ class VistaAudio : public WinAudio {
     bool CheckForReInit();
 
     bool LoadAllEndpoints();
-    bool IsEndpointManaged(const std::wstring& endpointName) const;
+    bool IsEndpointManaged(const Endpoint& ep) const;
     bool RestoreEndpoint(const Endpoint& ep, bool wasMuted);
 
     std::vector<std::unique_ptr<Endpoint>> endpoints_;
@@ -119,7 +119,7 @@ class VistaAudio : public WinAudio {
     bool muteSpecificEndpointsAllowList_;
     HWND hParent_;
 
-    std::vector<std::wstring> managedEndpointNames_;
+    std::vector<ManagedEndpoint> managedEndpoints_;
 
     // non copy-able
     VistaAudio(const VistaAudio& other) = delete;

@@ -177,13 +177,15 @@
 #define ID_TRAYMENU_MUTEONSCREE         40039
 #define ID_TRAYMENU_LABEL_MUTEON_NO_RESTORE 40040
 #define ID_TRAYMENU_LOG                 40041
+#define ID_TRAYMENU_SHOWLOG             40042
+#define ID_TRAYMENU_40043               40043
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        146
-#define _APS_NEXT_COMMAND_VALUE         40042
+#define _APS_NEXT_COMMAND_VALUE         40044
 #define _APS_NEXT_CONTROL_VALUE         1083
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

@@ -252,7 +252,7 @@ bool VistaAudio::AllEndpointsMuted()
     }
     bool anyManaged = false;
     for (auto& e : endpoints_) {
-        if (!IsEndpointManaged(e->deviceName)) {
+        if (!IsEndpointManaged(*e)) {
             continue;
         }
         anyManaged = true;
@@ -329,7 +329,7 @@ bool VistaAudio::RestoreMuteStatus()
     std::set<std::wstring> presentIds;
     for (auto& e : endpoints_) {
         presentIds.insert(e->deviceId);
-        if (!IsEndpointManaged(e->deviceName)) {
+        if (!IsEndpointManaged(*e)) {
             log.LogInfo(L"Skipping Endpoint {}", e->deviceName);
             continue;
         }
@@ -388,7 +388,7 @@ void VistaAudio::RestoreArrivedEndpoints()
         if (pendingRestoreIds_.count(e->deviceId) == 0) {
             continue;
         }
-        if (!IsEndpointManaged(e->deviceName)) {
+        if (!IsEndpointManaged(*e)) {
             log.LogInfo(L"Skipping Endpoint {}", e->deviceName);
             pendingRestoreIds_.erase(e->deviceId);
             continue;
@@ -405,7 +405,7 @@ void VistaAudio::SetMute(bool mute)
     if (CheckForReInit()) {
         for (auto& e : endpoints_) {
             BOOL isMuted = !mute;
-            if (!IsEndpointManaged(e->deviceName)) {
+            if (!IsEndpointManaged(*e)) {
                 log.LogInfo(L"Skipping Endpoint {}", e->deviceName);
                 continue;
             }
@@ -423,16 +423,21 @@ void VistaAudio::SetMute(bool mute)
     }
 }
 
-bool VistaAudio::IsEndpointManaged(const std::wstring& endpointName) const
+bool VistaAudio::IsEndpointManaged(const Endpoint& ep) const
 {
     if (!muteSpecificEndpoints_) {
         return true;
     }
 
+    // An entry that carries an id identifies exactly one device, so the
+    // friendly name is ignored for it.
     const bool inManagedEndpoints =
-        std::find(std::begin(managedEndpointNames_),
-                  std::end(managedEndpointNames_),
-                  endpointName) != std::end(managedEndpointNames_);
+        std::any_of(std::begin(managedEndpoints_), std::end(managedEndpoints_),
+                    [&ep](const ManagedEndpoint& managed) {
+                        return managed.id.empty()
+                                   ? managed.name == ep.deviceName
+                                   : managed.id == ep.deviceId;
+                    });
 
     // ------------+----------+-------------+
     //             | In List  | Not in List |
@@ -449,9 +454,9 @@ void VistaAudio::MuteSpecificEndpoints(bool muteSpecific)
     muteSpecificEndpoints_ = muteSpecific;
 }
 
-void VistaAudio::SetManagedEndpoints(const std::vector<std::wstring>& endpoints,
-                                     bool isAllowList)
+void VistaAudio::SetManagedEndpoints(
+    const std::vector<ManagedEndpoint>& endpoints, bool isAllowList)
 {
-    managedEndpointNames_ = endpoints;
+    managedEndpoints_ = endpoints;
     muteSpecificEndpointsAllowList_ = isAllowList;
 }

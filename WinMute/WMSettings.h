@@ -71,7 +71,12 @@ enum class SettingsKey {
     CHECK_FOR_UPDATE,
     CHECK_FOR_BETA_UPDATE,
     ENABLE_GLOBAL_MUTE_HOTKEY,
-    GLOBAL_MUTE_HOTKEY
+    GLOBAL_MUTE_HOTKEY,
+    // Set once the one-time "resolve stored endpoint names to endpoint ids"
+    // pass has run. This is deliberately not folded into SETTINGS_VERSION:
+    // MigrateSettings() runs from WMSettings::Init(), which happens before
+    // CoInitializeEx(), so it cannot enumerate audio devices.
+    MANAGED_ENDPOINTS_ID_MIGRATED
 };
 
 class WMSettings {
@@ -94,8 +99,13 @@ class WMSettings {
     bool StoreBluetoothDevices(std::vector<std::wstring>& networks);
     std::vector<std::wstring> GetBluetoothDevices() const;
 
-    bool StoreManagedAudioEndpoints(std::vector<std::wstring>& endpoints);
-    std::vector<std::wstring> GetManagedAudioEndpoints() const;
+    bool StoreManagedAudioEndpoints(std::vector<ManagedEndpoint>& endpoints);
+    std::vector<ManagedEndpoint> GetManagedAudioEndpoints() const;
+
+    // Binds stored name-only entries to the endpoint id of a device with that
+    // name, for every such device present right now. Requires COM, so it must
+    // be called after CoInitializeEx. Runs at most once per installation.
+    void MigrateManagedEndpointIds();
 
     bool StoreQuietHoursTimes(
         const std::vector<std::pair<DWORD, DWORD>>& times);

@@ -162,6 +162,48 @@ std::optional<std::wstring> GetAudioDeviceId(const CComPtr<IMMDevice>& devicePtr
     return id;
 }
 
+bool EnumerateAudioEndpoints(std::vector<ManagedEndpoint>& endpoints)
+{
+    WMLog& log = WMLog::GetInstance();
+
+    CComPtr<IMMDeviceEnumerator> deviceEnumerator;
+    if (FAILED(deviceEnumerator.CoCreateInstance(
+            __uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER)))
+    {
+        return false;
+    }
+    // Must match the states VistaAudio manages, otherwise endpoints that are
+    // currently unplugged (a sleeping monitor's HDMI/DisplayPort audio) would
+    // be invisible here.
+    CComPtr<IMMDeviceCollection> audioEndpoints;
+    if (FAILED(deviceEnumerator->EnumAudioEndpoints(
+            eRender, DEVICE_STATE_ACTIVE | DEVICE_STATE_UNPLUGGED,
+            &audioEndpoints)))
+    {
+        return false;
+    }
+
+    UINT epCount = 0;
+    if (FAILED(audioEndpoints->GetCount(&epCount))) {
+        return false;
+    }
+
+    for (UINT i = 0; i < epCount; ++i) {
+        CComPtr<IMMDevice> device = nullptr;
+        if (FAILED(audioEndpoints->Item(i, &device))) {
+            log.LogError(L"Failed to get audio endpoint #{}", i);
+            continue;
+        }
+        const auto deviceName = GetAudioDeviceName(device);
+        const auto deviceId = GetAudioDeviceId(device);
+        if (deviceName && deviceId) {
+            endpoints.push_back({*deviceId, *deviceName});
+        }
+    }
+
+    return true;
+}
+
 // =========================================================================
 //    String Conversion
 // =========================================================================

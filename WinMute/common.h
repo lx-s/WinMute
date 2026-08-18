@@ -116,6 +116,8 @@ namespace fs = std::filesystem;
 #include <endpointvolume.h>
 #pragma warning(default : 4201)
 
+#include "ManagedEndpoint.hpp"
+
 #include "BluetoothDetector.h"
 #include "MediaController.h"
 #include "MuteControl.h"

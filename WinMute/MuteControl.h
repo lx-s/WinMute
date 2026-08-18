@@ -100,7 +100,7 @@ class MuteControl {
 
     void NotifyAudioDeviceArrived();
 
-    void SetManagedEndpoints(const std::vector<std::wstring>& endpoints,
+    void SetManagedEndpoints(const std::vector<ManagedEndpoint>& endpoints,
                              bool isAllowList);
     void ClearManagedEndpoints();
 

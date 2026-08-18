@@ -137,6 +137,9 @@ static const wchar_t* KeyToStr(SettingsKey key)
         case SettingsKey::CHECK_FOR_BETA_UPDATE:
             keyStr = L"CheckForBetaUpdate";
             break;
+        case SettingsKey::MANAGED_ENDPOINTS_ID_MIGRATED:
+            keyStr = L"ManagedEndpointsIdMigrated";
+            break;
         case SettingsKey::ENABLE_GLOBAL_MUTE_HOTKEY:
             keyStr = L"EnableGlobalMuteHotkey";
             break;
@@ -202,8 +205,40 @@ static DWORD GetDefaultSetting(SettingsKey key)
             return 0;
         case SettingsKey::CHECK_FOR_BETA_UPDATE:
             return 0;
+        case SettingsKey::MANAGED_ENDPOINTS_ID_MIGRATED:
+            return 0;
     }
     return 0;
+}
+
+// Serialized form of a list entry: "<endpoint id>|<friendly name>", or just
+// "<friendly name>" when no id is bound. Endpoint ids always start with '{'
+// (e.g. "{0.0.0.00000000}.{9f81ed6c-...}"), which is what tells the two apart
+// -- a friendly name may well contain a '|', so the separator alone is not a
+// reliable discriminator.
+static std::wstring SerializeManagedEndpoint(const ManagedEndpoint& ep)
+{
+    return ep.id.empty() ? ep.name : ep.id + L"|" + ep.name;
+}
+
+static ManagedEndpoint ParseManagedEndpoint(const std::wstring& stored)
+{
+    if (!stored.empty() && stored.front() == L'{') {
+        const size_t sep = stored.find(L'|');
+        if (sep != std::wstring::npos) {
+            return {stored.substr(0, sep), stored.substr(sep + 1)};
+        }
+    }
+    return {L"", stored};
+}
+
+static void NormalizeEndpointList(std::vector<ManagedEndpoint>& items)
+{
+    if (items.size() > 1) {
+        std::sort(std::begin(items), std::end(items));
+        auto it = std::unique(std::begin(items), std::end(items));
+        items.resize(std::distance(std::begin(items), it));
+    }
 }
 
 template <typename T>
@@ -793,7 +828,7 @@ std::vector<std::pair<DWORD, DWORD>> WMSettings::GetQuietHoursTimes()
 }
 
 bool WMSettings::StoreManagedAudioEndpoints(
-    std::vector<std::wstring>& endpoints)
+    std::vector<ManagedEndpoint>& endpoints)
 {
     // Clear all stored keys
     for (;;) {
@@ -816,13 +851,13 @@ bool WMSettings::StoreManagedAudioEndpoints(
         }
     }
 
-    NormalizeStringList(endpoints);
+    NormalizeEndpointList(endpoints);
 
     for (size_t i = 0; i < endpoints.size(); ++i) {
         wchar_t valueName[25];
         StringCchPrintfW(valueName, ARRAY_SIZE(valueName), L"Endpoint %03zu",
                          i + 1);
-        const std::wstring& v = endpoints[i];
+        const std::wstring v = SerializeManagedEndpoint(endpoints[i]);
         DWORD regError =
             RegSetValueEx(hAudioEndpointsKey_, valueName, 0, REG_SZ,
                           reinterpret_cast<const BYTE*>(v.c_str()),
@@ -836,12 +871,14 @@ bool WMSettings::StoreManagedAudioEndpoints(
     return true;
 }
 
-std::vector<std::wstring> WMSettings::GetManagedAudioEndpoints() const
+std::vector<ManagedEndpoint> WMSettings::GetManagedAudioEndpoints() const
 {
-    std::vector<std::wstring> devices;
+    std::vector<ManagedEndpoint> devices;
     for (int valIdx = 0;; ++valIdx) {
         wchar_t valueName[260] = {0};
-        wchar_t dataBuf[260] = {0};
+        // Holds "<endpoint id>|<friendly name>": an endpoint id runs to about
+        // 55 characters and the name is capped at ENDPOINT_NAME_MAX_LEN (200),
+        wchar_t dataBuf[512] = {0};
         DWORD valueSize = ARRAY_SIZE(valueName);
         DWORD valType = 0;
         DWORD dataLen = sizeof(dataBuf) - sizeof(wchar_t);
@@ -855,9 +892,64 @@ std::vector<std::wstring> WMSettings::GetManagedAudioEndpoints() const
             ShowWindowsError(L"RegEnumValue", regError);
             return {};
         } else {
-            devices.push_back(dataBuf);
+            devices.push_back(ParseManagedEndpoint(dataBuf));
         }
     }
-    NormalizeStringList(devices);
+    NormalizeEndpointList(devices);
     return devices;
+}
+
+void WMSettings::MigrateManagedEndpointIds()
+{
+    WMLog& log = WMLog::GetInstance();
+
+    if (QueryValue(SettingsKey::MANAGED_ENDPOINTS_ID_MIGRATED) != 0) {
+        return;
+    }
+
+    auto endpoints = GetManagedAudioEndpoints();
+    const bool anyUnbound =
+        std::any_of(endpoints.begin(), endpoints.end(),
+                    [](const ManagedEndpoint& ep) { return ep.id.empty(); });
+    if (!anyUnbound) {
+        SetValue(SettingsKey::MANAGED_ENDPOINTS_ID_MIGRATED, 1);
+        return;
+    }
+
+    std::vector<ManagedEndpoint> present;
+    if (!EnumerateAudioEndpoints(present)) {
+        log.LogError(
+            L"Could not enumerate audio endpoints;"
+            L" postponing endpoint id migration");
+        return;
+    }
+
+    int bound = 0;
+    for (auto& ep : endpoints) {
+        if (!ep.id.empty()) {
+            continue;
+        }
+        const auto match =
+            std::find_if(present.begin(), present.end(),
+                         [&ep](const ManagedEndpoint& dev) {
+                             return dev.name == ep.name;
+                         });
+        if (match != present.end()) {
+            ep.id = match->id;
+            ++bound;
+            log.LogInfo(L"Bound managed endpoint \"{}\" to id {}", ep.name,
+                        ep.id);
+        } else {
+            log.LogInfo(
+                L"Managed endpoint \"{}\" is not present;"
+                L" it stays matched by name",
+                ep.name);
+        }
+    }
+
+    if (bound == 0 || StoreManagedAudioEndpoints(endpoints)) {
+        SetValue(SettingsKey::MANAGED_ENDPOINTS_ID_MIGRATED, 1);
+        log.LogInfo(L"Endpoint id migration finished ({} of {} entries bound)",
+                    bound, endpoints.size());
+    }
 }

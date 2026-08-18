@@ -473,6 +473,9 @@ bool WinMute::LoadSettings()
     if (!settings_.QueryValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS)) {
         muteCtrl_.ClearManagedEndpoints();
     } else {
+        // Not done in WMSettings::Init: this needs COM, which is only
+        // initialized once WinMute itself starts up.
+        settings_.MigrateManagedEndpointIds();
         const auto endpoints = settings_.GetManagedAudioEndpoints();
         const bool isAllowList =
             settings_.QueryValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS_MODE) ==
@@ -593,6 +596,8 @@ void WinMute::LoadMainMenuText()
         i18n_.GetTranslationW("traymenu.mute-on-logout");
     menuText[ID_TRAYMENU_MUTE] =
         i18n_.GetTranslationW("traymenu.mute-all-devices");
+    menuText[ID_TRAYMENU_SHOWLOG] =
+        i18n_.GetTranslationW("traymenu.show-log");
     menuText[ID_TRAYMENU_SETTINGS] = i18n_.GetTranslationW("traymenu.settings");
     menuText[ID_TRAYMENU_EXIT] = i18n_.GetTranslationW("traymenu.exit");
 

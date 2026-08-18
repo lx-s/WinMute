@@ -71,6 +71,10 @@ std::optional<std::wstring> GetAudioDeviceName(
 
 std::optional<std::wstring> GetAudioDeviceId(const CComPtr<IMMDevice>& devicePtr);
 
+// Lists every render endpoint WinMute is willing to manage, with both its id
+// and its friendly name. Requires an initialized COM apartment.
+bool EnumerateAudioEndpoints(std::vector<ManagedEndpoint>& endpoints);
+
 // =============================================================================
 // COM Helper
 template <class Interface>

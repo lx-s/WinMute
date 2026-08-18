@@ -545,7 +545,7 @@ void MuteControl::NotifyAudioDeviceArrived()
 }
 
 void MuteControl::SetManagedEndpoints(
-    const std::vector<std::wstring>& endpoints, bool isAllowList)
+    const std::vector<ManagedEndpoint>& endpoints, bool isAllowList)
 {
     winAudio_->MuteSpecificEndpoints(true);
     winAudio_->SetManagedEndpoints(endpoints, isAllowList);
