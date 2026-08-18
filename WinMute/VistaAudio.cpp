@@ -31,11 +31,11 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
+#include "common.h"
 #include <Functiondiscoverykeys_devpkey.h>
 #include <mmdeviceapi.h>
 
 #include "WinAudio.h"
-#include "common.h"
 
 Endpoint::~Endpoint()
 {

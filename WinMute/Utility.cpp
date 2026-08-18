@@ -32,10 +32,6 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "Common.h"
-
-// Must come after the precompiled header: with /Yu everything up to and
-// including the "Common.h" line is skipped, so an include placed above it
-// has no effect.
 #include <Functiondiscoverykeys_devpkey.h>
 
 // =========================================================================

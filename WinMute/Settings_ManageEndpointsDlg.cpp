@@ -31,11 +31,10 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
+#include "common.h"
 #include <Functiondiscoverykeys_devpkey.h>
 #include <atlbase.h>
 #include <mmdeviceapi.h>
-
-#include "common.h"
 
 static constexpr int ENDPOINT_NAME_MAX_LEN = 200;
 

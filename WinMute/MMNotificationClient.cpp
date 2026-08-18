@@ -31,12 +31,11 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#include "MMNotificationClient.h"
-
+#include "common.h"
 #include <Functiondiscoverykeys_devpkey.h>
 
+#include "MMNotificationClient.h"
 #include "WinAudio.h"
-#include "common.h"
 
 class WinAudio;
 
