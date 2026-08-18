@@ -59,9 +59,12 @@ class MMNotificationClient : public IMMNotificationClient {
                            const PROPERTYKEY key) override;
 
    private:
+    // These callbacks run on a WASAPI notification thread. Per the
+    // IMMNotificationClient contract they must not call back into the
+    // MMDevice API (no enumerator, no property stores) and must not block --
+    // doing so risks a deadlock with the audio service. Raw endpoint IDs are
+    // logged here; the friendly names follow from the re-enumeration that the
+    // main thread performs right after.
     std::atomic<LONG> ref_count_;
-    CComPtr<IMMDeviceEnumerator> deviceEnumerator_;
     WinAudio* notifyParent_;
-
-    std::wstring GetDeviceNameFromId(LPCWSTR pwstrDeviceId);
 };

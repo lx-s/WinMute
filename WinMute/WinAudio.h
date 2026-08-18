@@ -42,9 +42,11 @@ class WinAudio {
     virtual bool Init(HWND hParent) = 0;
     virtual void ShouldReInit() = 0;
     virtual void OnAudioServiceShutdown() = 0;
+    virtual void OnDeviceArrived() = 0;
     virtual bool AllEndpointsMuted() = 0;
     virtual bool SaveMuteStatus() = 0;
     virtual bool RestoreMuteStatus() = 0;
+    virtual void RestoreArrivedEndpoints() = 0;
     virtual void SetMute(bool mute) = 0;
     virtual void MuteSpecificEndpoints(bool muteSpecific) = 0;
     virtual void SetManagedEndpoints(const std::vector<std::wstring>& endpoints,
@@ -53,6 +55,10 @@ class WinAudio {
 };
 
 struct Endpoint {
+    // Stable identity of the endpoint. The friendly name is for logging and
+    // for the user-facing allow/block list only -- it is neither unique nor
+    // guaranteed to survive a driver update.
+    std::wstring deviceId;
     std::wstring deviceName;
     CComPtr<IAudioEndpointVolume> endpointVolume;
     CComPtr<IAudioSessionControl> sessionCtrl;
@@ -60,8 +66,6 @@ struct Endpoint {
     // CComPtr keeps its lifetime tied to the COM refcount instead of fighting
     // it with a second owner.
     CComPtr<VistaAudioSessionEvents> wasapiAudioEvents;
-
-    bool wasMuted = false;
 
     Endpoint() = default;
     ~Endpoint();
@@ -77,9 +81,11 @@ class VistaAudio : public WinAudio {
     bool Init(HWND hParent) override;
     void ShouldReInit() override;
     void OnAudioServiceShutdown() override;
+    void OnDeviceArrived() override;
     bool AllEndpointsMuted() override;
     bool SaveMuteStatus() override;
     bool RestoreMuteStatus() override;
+    void RestoreArrivedEndpoints() override;
     void SetMute(bool mute) override;
 
     void MuteSpecificEndpoints(bool muteSpecific) override;
@@ -92,10 +98,21 @@ class VistaAudio : public WinAudio {
 
     bool LoadAllEndpoints();
     bool IsEndpointManaged(const std::wstring& endpointName) const;
+    bool RestoreEndpoint(const Endpoint& ep, bool wasMuted);
 
     std::vector<std::unique_ptr<Endpoint>> endpoints_;
     CComPtr<MMNotificationClient> mmnAudioEvents_;
     CComPtr<IMMDeviceEnumerator> deviceEnumerator_;
+
+    // Saved mute state lives here, not on Endpoint: the endpoint objects are
+    // torn down and rebuilt on every re-init, which would otherwise discard
+    // the state saved just before a mute event (or between save and mute).
+    std::map<std::wstring, bool> savedMuteState_;
+
+    // Endpoints that were saved but absent when the restore came in, plus the
+    // deadline until which their late arrival still triggers a restore.
+    std::set<std::wstring> pendingRestoreIds_;
+    std::chrono::steady_clock::time_point restoreDeadline_{};
 
     std::atomic<bool> reInit_;
     bool muteSpecificEndpoints_;

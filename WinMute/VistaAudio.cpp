@@ -44,6 +44,29 @@ Endpoint::~Endpoint()
     }
 }
 
+// Endpoints attached to a monitor (HDMI/DisplayPort, typically exposed by the
+// GPU's audio driver) drop to DEVICE_STATE_UNPLUGGED while the display sleeps.
+// They must stay under management across that transition, otherwise a mute
+// applied before standby can never be undone afterwards.
+static constexpr DWORD MANAGED_DEVICE_STATES =
+    DEVICE_STATE_ACTIVE | DEVICE_STATE_UNPLUGGED;
+
+static const wchar_t* DeviceStateToString(DWORD state)
+{
+    switch (state) {
+        case DEVICE_STATE_ACTIVE:
+            return L"active";
+        case DEVICE_STATE_UNPLUGGED:
+            return L"unplugged";
+        case DEVICE_STATE_DISABLED:
+            return L"disabled";
+        case DEVICE_STATE_NOTPRESENT:
+            return L"not present";
+        default:
+            return L"unknown";
+    }
+}
+
 VistaAudio::VistaAudio()
     : deviceEnumerator_(nullptr),
       mmnAudioEvents_(nullptr),
@@ -67,7 +90,7 @@ bool VistaAudio::LoadAllEndpoints()
 
     CComPtr<IMMDeviceCollection> audioEndpoints;
     HRESULT hr = deviceEnumerator_->EnumAudioEndpoints(
-        eRender, DEVICE_STATE_ACTIVE, &audioEndpoints);
+        eRender, MANAGED_DEVICE_STATES, &audioEndpoints);
     if (FAILED(hr)) {
         return false;
     }
@@ -88,39 +111,54 @@ bool VistaAudio::LoadAllEndpoints()
             continue;
         }
 
+        const auto deviceId = GetAudioDeviceId(device);
+        if (!deviceId) {
+            log.LogError(L"Failed to get device id for audio endpoint #{}", i);
+            continue;
+        }
+        ep->deviceId = *deviceId;
+
         const auto deviceName = GetAudioDeviceName(device);
         if (!deviceName) {
             log.LogError(L"Failed to get device name for audio endpoint #{}",
                          i);
             continue;
         } else {
-            log.LogInfo(L"Found audio endpoint \"{}\"", *deviceName);
+            DWORD deviceState = 0;
+            if (FAILED(device->GetState(&deviceState))) {
+                deviceState = 0;
+            }
+            log.LogInfo(L"Found audio endpoint \"{}\" ({})", *deviceName,
+                        DeviceStateToString(deviceState));
             ep->deviceName = *deviceName;
         }
 
+        // Session notifications are a convenience (they trigger a re-init when
+        // a session drops), not a requirement for muting. An unplugged endpoint
+        // has no session manager, so a failure here must not disqualify it.
         CComPtr<IAudioSessionManager2> sessionManager2;
         if (FAILED(device->Activate(
                 __uuidof(IAudioSessionManager2), CLSCTX_INPROC_SERVER, nullptr,
                 reinterpret_cast<LPVOID*>(&sessionManager2))))
         {
-            log.LogError(L"Failed to retrieve audio session manager for \"{}\"",
-                         ep->deviceName);
-            continue;
+            log.LogInfo(
+                L"No audio session manager for \"{}\";"
+                L" continuing without session notifications",
+                ep->deviceName);
+        } else if (FAILED(sessionManager2->GetAudioSessionControl(
+                       nullptr, 0, &ep->sessionCtrl)))
+        {
+            log.LogInfo(
+                L"No audio session control for \"{}\";"
+                L" continuing without session notifications",
+                ep->deviceName);
+        } else {
+            // Attach: the CComPtr takes over the initial reference from new,
+            // so the refcount stays balanced.
+            ep->wasapiAudioEvents.Attach(new VistaAudioSessionEvents(this));
+            ep->sessionCtrl->RegisterAudioSessionNotification(
+                ep->wasapiAudioEvents);
         }
-
-        hr = sessionManager2->GetAudioSessionControl(nullptr, 0,
-                                                     &ep->sessionCtrl);
-        if (FAILED(hr)) {
-            log.LogError(L"Failed to retrieve audio session manager for \"{}\"",
-                         ep->deviceName);
-            continue;
-        }
-
-        // Attach: the CComPtr takes over the initial reference from new,
-        // so the refcount stays balanced.
-        ep->wasapiAudioEvents.Attach(new VistaAudioSessionEvents(this));
-        ep->sessionCtrl->RegisterAudioSessionNotification(
-            ep->wasapiAudioEvents);
 
         hr = device->Activate(__uuidof(IAudioEndpointVolume),
                               CLSCTX_INPROC_SERVER, nullptr,
@@ -181,11 +219,26 @@ void VistaAudio::OnAudioServiceShutdown()
     PostMessageW(hParent_, WM_WINMUTE_AUDIO_SERVICE_SHUTDOWN, 0, 0);
 }
 
+void VistaAudio::OnDeviceArrived()
+{
+    // Called from a WASAPI notification thread. Only post here; all COM work
+    // has to happen on the main thread.
+    PostMessageW(hParent_, WM_WINMUTE_AUDIO_DEVICE_ARRIVED, 0, 0);
+}
+
 bool VistaAudio::CheckForReInit()
 {
     if (reInit_.exchange(false)) {
         Uninit();
-        return Init(hParent_);
+        if (!Init(hParent_)) {
+            // Without re-arming, a single failed re-init would leave WinMute
+            // with an empty endpoint list and no way back: the flag is already
+            // consumed, so no later call would ever try again.
+            WMLog::GetInstance().LogError(
+                L"Audio re-initialization failed; will retry on next event");
+            reInit_ = true;
+            return false;
+        }
     }
     return true;
 }
@@ -217,12 +270,21 @@ bool VistaAudio::AllEndpointsMuted()
     return anyManaged;
 }
 
+// How long after a restore a late-arriving endpoint is still considered part
+// of that restore. Monitor-attached endpoints usually reappear within a few
+// seconds of the display waking; anything later is a genuinely new device that
+// must not be touched.
+static constexpr auto LATE_RESTORE_WINDOW = std::chrono::seconds(60);
+
 bool VistaAudio::SaveMuteStatus()
 {
     bool success = true;
     WMLog& log = WMLog::GetInstance();
 
     if (CheckForReInit()) {
+        // A new mute cycle supersedes any restore still waiting for a device.
+        pendingRestoreIds_.clear();
+        savedMuteState_.clear();
         for (auto& e : endpoints_) {
             BOOL isMuted = FALSE;
             if (FAILED(e->endpointVolume->GetMute(&isMuted))) {
@@ -230,11 +292,28 @@ bool VistaAudio::SaveMuteStatus()
                              e->deviceName);
                 success = false;
             } else {
-                e->wasMuted = isMuted;
+                savedMuteState_[e->deviceId] = !!isMuted;
             }
         }
     }
     return success;
+}
+
+bool VistaAudio::RestoreEndpoint(const Endpoint& ep, bool wasMuted)
+{
+    WMLog& log = WMLog::GetInstance();
+
+    log.LogInfo(L"Restoring: Mute {} for \"{}\"", wasMuted ? L"true" : L"false",
+                ep.deviceName);
+    if (wasMuted) {
+        return true;
+    }
+    if (FAILED(ep.endpointVolume->SetMute(false, nullptr))) {
+        log.LogError(L"Failed to restore mute status to false for \"{}\"",
+                     ep.deviceName);
+        return false;
+    }
+    return true;
 }
 
 bool VistaAudio::RestoreMuteStatus()
@@ -245,23 +324,79 @@ bool VistaAudio::RestoreMuteStatus()
     if (!CheckForReInit()) {
         return false;
     }
+
+    pendingRestoreIds_.clear();
+    std::set<std::wstring> presentIds;
     for (auto& e : endpoints_) {
+        presentIds.insert(e->deviceId);
         if (!IsEndpointManaged(e->deviceName)) {
             log.LogInfo(L"Skipping Endpoint {}", e->deviceName);
             continue;
         }
-        log.LogInfo(L"Restoring: Mute {} for \"{}\"",
-                    (e->wasMuted) ? L"true" : L"false", e->deviceName);
-        if (e->wasMuted != true) {
-            if (FAILED(e->endpointVolume->SetMute(false, nullptr))) {
-                log.LogError(L"Failed to restore mute status to {} for \"{}\"",
-                             (e->wasMuted) ? L"true" : L"false", e->deviceName);
-                success = false;
-            }
+        const auto saved = savedMuteState_.find(e->deviceId);
+        if (saved == savedMuteState_.end()) {
+            // Appeared after the mute event; nothing was remembered for it.
+            log.LogInfo(L"No saved mute state for \"{}\"; leaving it alone",
+                        e->deviceName);
+            continue;
+        }
+        if (!RestoreEndpoint(*e, saved->second)) {
+            success = false;
         }
     }
 
+    // Endpoints that were around when we muted but are gone now (a sleeping
+    // monitor's HDMI/DisplayPort audio, for example) keep the mute flag
+    // Windows persisted for them. Remember them so their reappearance within
+    // the next minute still completes the restore.
+    for (const auto& [deviceId, wasMuted] : savedMuteState_) {
+        if (presentIds.count(deviceId) == 0 && !wasMuted) {
+            pendingRestoreIds_.insert(deviceId);
+        }
+    }
+    if (!pendingRestoreIds_.empty()) {
+        restoreDeadline_ = std::chrono::steady_clock::now() +
+                           LATE_RESTORE_WINDOW;
+        log.LogInfo(
+            L"{} endpoint(s) were not present at restore time."
+            L" Waiting up to {}s for them to reappear",
+            pendingRestoreIds_.size(), LATE_RESTORE_WINDOW.count());
+    }
+
     return success;
+}
+
+void VistaAudio::RestoreArrivedEndpoints()
+{
+    WMLog& log = WMLog::GetInstance();
+
+    if (pendingRestoreIds_.empty()) {
+        return;
+    }
+    if (std::chrono::steady_clock::now() > restoreDeadline_) {
+        log.LogInfo(
+            L"Endpoint arrived, but the restore window has expired."
+            L" Discarding {} pending restore(s)",
+            pendingRestoreIds_.size());
+        pendingRestoreIds_.clear();
+        return;
+    }
+    if (!CheckForReInit()) {
+        return;
+    }
+    for (auto& e : endpoints_) {
+        if (pendingRestoreIds_.count(e->deviceId) == 0) {
+            continue;
+        }
+        if (!IsEndpointManaged(e->deviceName)) {
+            log.LogInfo(L"Skipping Endpoint {}", e->deviceName);
+            pendingRestoreIds_.erase(e->deviceId);
+            continue;
+        }
+        log.LogInfo(L"Endpoint \"{}\" reappeared after restore", e->deviceName);
+        RestoreEndpoint(*e, false);
+        pendingRestoreIds_.erase(e->deviceId);
+    }
 }
 
 void VistaAudio::SetMute(bool mute)
@@ -281,8 +416,7 @@ void VistaAudio::SetMute(bool mute)
             if (!!isMuted != mute) {
                 if (FAILED(e->endpointVolume->SetMute(mute, nullptr))) {
                     log.LogError(L"Failed to set mute status to {} for \"{}\"",
-                                 (e->wasMuted) ? L"true" : L"false",
-                                 e->deviceName);
+                                 mute ? L"true" : L"false", e->deviceName);
                 }
             }
         }

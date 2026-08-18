@@ -149,6 +149,19 @@ std::optional<std::wstring> GetAudioDeviceName(
     return deviceName;
 }
 
+std::optional<std::wstring> GetAudioDeviceId(const CComPtr<IMMDevice>& devicePtr)
+{
+    PWSTR deviceId = nullptr;
+    if (FAILED(devicePtr->GetId(&deviceId))) {
+        WMLog::GetInstance().LogError(
+            L"Failed to get device id for audio endpoint");
+        return std::nullopt;
+    }
+    std::wstring id{deviceId};
+    CoTaskMemFree(deviceId);
+    return id;
+}
+
 // =========================================================================
 //    String Conversion
 // =========================================================================

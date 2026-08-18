@@ -52,9 +52,13 @@ static bool GetAudioEndpoints(std::vector<std::wstring>& endpoints)
     {
         return false;
     }
+    // Must match the states VistaAudio manages, otherwise endpoints that are
+    // currently unplugged (a sleeping monitor's HDMI/DisplayPort audio) could
+    // not be put on the allow/block list while they are asleep.
     CComPtr<IMMDeviceCollection> audioEndpoints;
     if (FAILED(deviceEnumerator->EnumAudioEndpoints(
-            eRender, DEVICE_STATE_ACTIVE, &audioEndpoints)))
+            eRender, DEVICE_STATE_ACTIVE | DEVICE_STATE_UNPLUGGED,
+            &audioEndpoints)))
     {
         return false;
     }

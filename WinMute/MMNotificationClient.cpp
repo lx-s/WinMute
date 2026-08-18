@@ -40,7 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
 class WinAudio;
 
 MMNotificationClient::MMNotificationClient(WinAudio* notifyParent)
-    : ref_count_(1), deviceEnumerator_(nullptr), notifyParent_(notifyParent)
+    : ref_count_(1), notifyParent_(notifyParent)
 {
 }
 
@@ -88,9 +88,9 @@ STDMETHODIMP_(HRESULT)
 MMNotificationClient::OnDeviceAdded(LPCWSTR pwstrDeviceId)
 {
     if (notifyParent_ && pwstrDeviceId != nullptr) {
-        const auto deviceName = GetDeviceNameFromId(pwstrDeviceId);
-        WMLog::GetInstance().LogInfo(L"Device \"{}\" added", deviceName);
+        WMLog::GetInstance().LogInfo(L"Device \"{}\" added", pwstrDeviceId);
         notifyParent_->ShouldReInit();
+        notifyParent_->OnDeviceArrived();
     }
     return S_OK;
 }
@@ -99,8 +99,7 @@ STDMETHODIMP_(HRESULT)
 MMNotificationClient::OnDeviceRemoved(LPCWSTR pwstrDeviceId)
 {
     if (notifyParent_ && pwstrDeviceId != nullptr) {
-        const auto deviceName = GetDeviceNameFromId(pwstrDeviceId);
-        WMLog::GetInstance().LogInfo(L"Device \"{}\" removed", deviceName);
+        WMLog::GetInstance().LogInfo(L"Device \"{}\" removed", pwstrDeviceId);
         notifyParent_->ShouldReInit();
     }
     return S_OK;
@@ -127,10 +126,12 @@ MMNotificationClient::OnDeviceStateChanged(LPCWSTR pwstrDeviceId,
 
     if (notify && notifyParent_) {
         // TODO: Check if output device
-        const auto deviceName = GetDeviceNameFromId(pwstrDeviceId);
         WMLog::GetInstance().LogInfo(L"Device \"{}\" status changed to {}",
-                                     deviceName, what);
+                                     pwstrDeviceId, what);
         notifyParent_->ShouldReInit();
+        if (dwNewState == DEVICE_STATE_ACTIVE) {
+            notifyParent_->OnDeviceArrived();
+        }
     }
     return S_OK;
 }
@@ -139,28 +140,4 @@ STDMETHODIMP_(HRESULT)
 MMNotificationClient::OnPropertyValueChanged(LPCWSTR, const PROPERTYKEY)
 {
     return S_OK;
-}
-
-std::wstring MMNotificationClient::GetDeviceNameFromId(LPCWSTR pwstrDeviceId)
-{
-    HRESULT hr = S_OK;
-    if (deviceEnumerator_ == nullptr) {
-        // Get enumerator for audio endpoint devices.
-        hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr,
-                              CLSCTX_INPROC_SERVER,
-                              __uuidof(IMMDeviceEnumerator),
-                              reinterpret_cast<void**>(&deviceEnumerator_));
-    }
-
-    CComPtr<IMMDevice> devicePtr = nullptr;
-    if (SUCCEEDED(hr)) {
-        hr = deviceEnumerator_->GetDevice(pwstrDeviceId, &devicePtr);
-    }
-    if (SUCCEEDED(hr)) {
-        const auto device_name = GetAudioDeviceName(devicePtr);
-        if (device_name) {
-            return *device_name;
-        }
-    }
-    return L"Unknown device";
 }

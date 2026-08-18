@@ -79,6 +79,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <memory>
 #include <mutex>
 #include <optional>
+#include <set>
 #include <span>
 #include <string>
 #include <string_view>
@@ -149,3 +150,6 @@ constexpr int WM_LOG_UPDATED = WM_USER + 302;
 constexpr int WM_WINMUTE_AUDIO_SERVICE_SHUTDOWN = WM_USER + 303;
 /* wParam = success. lParam = UpdateInfo*, ownership passes to the receiver */
 constexpr int WM_WINMUTE_UPDATE_CHECK_DONE = WM_USER + 304;
+/* An audio endpoint appeared. Posted from a WASAPI notification thread so the
+   actual work happens on the main thread. */
+constexpr int WM_WINMUTE_AUDIO_DEVICE_ARRIVED = WM_USER + 305;

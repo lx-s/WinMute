@@ -98,6 +98,8 @@ class MuteControl {
 
     void NotifyQuietHours(bool active);
 
+    void NotifyAudioDeviceArrived();
+
     void SetManagedEndpoints(const std::vector<std::wstring>& endpoints,
                              bool isAllowList);
     void ClearManagedEndpoints();
@@ -152,6 +154,8 @@ class MuteControl {
     bool lidWasOpenedOnce_ = false;
 
     const TrayIcon* trayIcon_ = nullptr;
+
+    static const wchar_t* MuteTypeToString(MuteType type);
 
     void NotifyRestoreCondition(MuteType type, bool active,
                                 bool withDelay = false);

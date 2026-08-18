@@ -69,6 +69,8 @@ bool LaunchBrowser(HWND hParent, const std::wstring& url);
 std::optional<std::wstring> GetAudioDeviceName(
     const CComPtr<IMMDevice>& devicePtr);
 
+std::optional<std::wstring> GetAudioDeviceId(const CComPtr<IMMDevice>& devicePtr);
+
 // =============================================================================
 // COM Helper
 template <class Interface>

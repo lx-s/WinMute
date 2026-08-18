@@ -1019,6 +1019,9 @@ LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg, WPARAM wParam,
             return OnQuietHours(hWnd, msg, wParam, lParam);
         case WM_WINMUTE_AUDIO_SERVICE_SHUTDOWN:
             return OnAudioServiceShutdown(hWnd, wParam, lParam);
+        case WM_WINMUTE_AUDIO_DEVICE_ARRIVED:
+            muteCtrl_.NotifyAudioDeviceArrived();
+            return 0;
         case WM_DEVICECHANGE:
             return OnDeviceChange(hWnd, msg, wParam, lParam);
         case WM_WIFISTATUSCHANGED:

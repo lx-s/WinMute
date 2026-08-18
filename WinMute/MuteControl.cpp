@@ -47,6 +47,31 @@ static constexpr UINT_PTR BLUETOOTH_UNMUTE_TIMER_ID = 190502;
 
 static const wchar_t* MUTECONTROL_CLASS_NAME = L"WinMuteMuteControl";
 
+const wchar_t* MuteControl::MuteTypeToString(MuteType type)
+{
+    switch (type) {
+        case MuteTypeWorkstationLock:
+            return L"Workstation Lock";
+        case MuteTypeRemoteSession:
+            return L"Remote Session";
+        case MuteTypeDisplayStandby:
+            return L"Display Standby";
+        case MuteTypeLidClose:
+            return L"Lid Close";
+        case MuteTypeBluetoothDisconnect:
+            return L"Bluetooth Disconnect";
+        case MuteTypeLogout:
+            return L"Logout";
+        case MuteTypeSuspend:
+            return L"Suspend";
+        case MuteTypeShutdown:
+            return L"Shutdown";
+        case MuteTypeCount:
+        default:
+            return L"Unknown";
+    }
+}
+
 void CALLBACK DelayedMuteTimerProc(HWND hWnd, UINT, UINT_PTR, DWORD)
 {
     MuteControl* muteCtrl =
@@ -221,12 +246,16 @@ void MuteControl::RestoreVolume(bool withDelay)
         log.LogInfo(L"Volume Restore has been disabled");
         return;
     }
-    const bool restore = !std::any_of(
-        muteConfig_.begin(), muteConfig_.end(),
-        [](const MuteConfig& conf) { return conf.shouldMute && conf.active; });
-    if (!restore) {
+    const auto blocking =
+        std::find_if(muteConfig_.begin(), muteConfig_.end(),
+                     [](const MuteConfig& conf) {
+                         return conf.shouldMute && conf.active;
+                     });
+    if (blocking != muteConfig_.end()) {
         log.LogInfo(
-            L"Skipping restore since other mute event is currently active");
+            L"Skipping restore since mute event \"{}\" is currently active",
+            MuteTypeToString(static_cast<MuteType>(
+                std::distance(muteConfig_.begin(), blocking))));
     } else if (delayedMuteTimerId_ != 0) {
         KillTimer(hMuteCtrlWnd_, delayedMuteTimerId_);
         delayedMuteTimerId_ = 0;
@@ -399,10 +428,19 @@ void MuteControl::NotifyRestoreCondition(MuteType type, bool active,
             }
         }
     } else {
-        if (muteConfig_[type].active) {
+        if (!muteConfig_[type].active) {
+            WMLog::GetInstance().LogInfo(
+                L"Ignoring end of \"{}\": it was never seen as started",
+                MuteTypeToString(type));
+        } else {
             muteConfig_[type].active = false;
             if (muteConfig_[type].shouldMute) {
                 RestoreVolume(withDelay);
+            } else {
+                WMLog::GetInstance().LogInfo(
+                    L"Not restoring after \"{}\": muting for this event is"
+                    L" disabled",
+                    MuteTypeToString(type));
             }
         }
     }
@@ -487,6 +525,23 @@ void MuteControl::NotifyQuietHours(bool active)
         WMLog::GetInstance().LogInfo(L"Mute Event: Quiet Hours ended");
         RestoreVolume();
     }
+}
+
+void MuteControl::NotifyAudioDeviceArrived()
+{
+    if (!restoreVolume_) {
+        return;
+    }
+    // Only endpoints that went missing during a restore are eligible, and only
+    // while no mute event is active -- a device showing up mid-mute should stay
+    // as it is, not be unmuted behind the user's back.
+    const bool muteActive = std::any_of(
+        muteConfig_.begin(), muteConfig_.end(),
+        [](const MuteConfig& conf) { return conf.shouldMute && conf.active; });
+    if (muteActive) {
+        return;
+    }
+    winAudio_->RestoreArrivedEndpoints();
 }
 
 void MuteControl::SetManagedEndpoints(
