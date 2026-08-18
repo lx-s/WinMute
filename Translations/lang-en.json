@@ -45,6 +45,8 @@
   "popup.error.quiet-hours-start.text": "Failed to register quiet hours start with windows timer system",
   "popup.error.quiet-hours-stop.title": "Quiet Hours Stop",
   "popup.error.quiet-hours-stop.text": "Failed to register end of quiet hours with windows timer system",
+  "popup.error.global-mute-hotkey-register.title": "Failed to register mute hotkey",
+  "popup.error.global-mute-hotkey-register.text": "The hotkey could not be registered. Please check if other programs are using the same key combination.",
   "traymenu.info": "About",
   "traymenu.mute-when": "Mute when...",
   "traymenu.mute-on-lock": "... computer is locked",

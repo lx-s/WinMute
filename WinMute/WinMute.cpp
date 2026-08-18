@@ -54,6 +54,8 @@ static constexpr UINT_PTR WTS_RETRY_TIMER_ID = 190503;
 static constexpr UINT WTS_RETRY_INTERVAL_MS = 1000;
 static constexpr int WTS_RETRY_MAX_ATTEMPTS = 30;
 
+static constexpr int GLOBAL_HOTKEY_ID_MUTE = 1000;
+
 static LRESULT CALLBACK WinMuteWndProc(HWND hWnd, UINT msg, WPARAM wParam,
                                        LPARAM lParam)
 {
@@ -378,78 +380,94 @@ bool WinMute::LoadSettings()
 {
     WMLog& log = WMLog::GetInstance();
 
-    if (log.IsLogFileEnabled()) {
-        std::wstring versionNumber;
-        GetWinMuteVersion(versionNumber);
-        log.LogInfo(L"Starting WinMute {}", versionNumber);
-        log.LogInfo(L"Loading settings:");
-        log.LogInfo(L"Check for updates: {}",
-                    settings_.QueryValue(SettingsKey::CHECK_FOR_UPDATE)
-                        ? L"Yes"
-                        : L"No");
-        log.LogInfo(L"\tCheck for beta updates: {}",
-                    settings_.QueryValue(SettingsKey::CHECK_FOR_BETA_UPDATE)
-                        ? L"Yes"
-                        : L"No");
-        log.LogInfo(
-            L"\tRestore volume: {}",
-            settings_.QueryValue(SettingsKey::RESTORE_AUDIO) ? L"Yes" : L"No");
-        log.LogInfo(L"\tMute delay: {}",
-                    settings_.QueryValue(SettingsKey::MUTE_DELAY));
-        log.LogInfo(
-            L"\tMute on lock: {}",
-            settings_.QueryValue(SettingsKey::MUTE_ON_LOCK) ? L"Yes" : L"No");
-        log.LogInfo(L"\tMute on display standby: {}",
-                    settings_.QueryValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY)
-                        ? L"Yes"
-                        : L"No");
-        log.LogInfo(L"\tMute on display lid close: {}",
-                    settings_.QueryValue(SettingsKey::MUTE_ON_LIDCLOSE)
-                        ? L"Yes"
-                        : L"No");
-        log.LogInfo(
-            L"\tMute on logout: {}",
-            settings_.QueryValue(SettingsKey::MUTE_ON_LOGOUT) ? L"Yes" : L"No");
-        log.LogInfo(L"\tMute on suspend: {}",
-                    settings_.QueryValue(SettingsKey::MUTE_ON_SUSPEND) ? L"Yes"
-                                                                       : L"No");
-        log.LogInfo(L"\tMute on shutdown: {}",
-                    settings_.QueryValue(SettingsKey::MUTE_ON_SHUTDOWN)
-                        ? L"Yes"
-                        : L"No");
-        log.LogInfo(L"\tShow notifications: {}",
-                    settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED)
-                        ? L"Yes"
-                        : L"No");
-        log.LogInfo(L"\tMute on bluetooth: {}",
-                    settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH)
-                        ? L"Yes"
-                        : L"No");
-        log.LogInfo(L"\tTry pausing media when muting: {}",
-                    settings_.QueryValue(SettingsKey::MUTE_TRY_PAUSE_MEDIA)
-                        ? L"Yes"
-                        : L"No");
-        log.LogInfo(L"\tTry resuming media when unmuting: {}",
-                    settings_.QueryValue(SettingsKey::MUTE_TRY_RESUME_MEDIA)
-                        ? L"Yes"
-                        : L"No");
-        log.LogInfo(
-            L"\t\tUse devicelist: {}",
-            settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH_DEVICELIST)
-                ? L"Yes"
-                : L"No");
-        log.LogInfo(
-            L"\tMute on WLAN: {}",
-            settings_.QueryValue(SettingsKey::MUTE_ON_WLAN) ? L"Yes" : L"No");
-        log.LogInfo(L"\t\tUse allowlist: {}",
-                    settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST)
-                        ? L"Yes"
-                        : L"No");
-        log.LogInfo(L"\tMute specific endpoints only: {}",
-                    settings_.QueryValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS)
-                        ? L"Yes"
-                        : L"No");
+    std::wstring versionNumber;
+    GetWinMuteVersion(versionNumber);
+    log.LogInfo(L"Starting WinMute {}", versionNumber);
+    log.LogInfo(L"Loading settings:");
+    log.LogInfo(L"Enable global mute hotkey: {}",
+                settings_.QueryValue(SettingsKey::ENABLE_GLOBAL_MUTE_HOTKEY)
+                    ? L"Yes"
+                    : L"No");
+
+    std::wstring hotKeyStr;
+    const auto hotkeyValue =
+        settings_.QueryValue(SettingsKey::GLOBAL_MUTE_HOTKEY);
+    UINT hkMods = LOWORD(HIBYTE(hotkeyValue));
+    wchar_t vk = static_cast<wchar_t>(
+        MapVirtualKeyW(LOWORD(LOBYTE(hotkeyValue)), MAPVK_VK_TO_CHAR));
+    if (hkMods & HOTKEYF_ALT) {
+        hotKeyStr += L"Alt + ";
     }
+    if (hkMods & HOTKEYF_CONTROL) {
+        hotKeyStr += L"Ctrl + ";
+    }
+    if (hkMods & HOTKEYF_SHIFT) {
+        hotKeyStr += L"Shift + ";
+    }
+    hotKeyStr += vk;
+    log.LogInfo(L"\tHotkey: {}", hotKeyStr);
+
+    log.LogInfo(
+        L"Check for updates: {}",
+        settings_.QueryValue(SettingsKey::CHECK_FOR_UPDATE) ? L"Yes" : L"No");
+    log.LogInfo(L"\tCheck for beta updates: {}",
+                settings_.QueryValue(SettingsKey::CHECK_FOR_BETA_UPDATE)
+                    ? L"Yes"
+                    : L"No");
+    log.LogInfo(
+        L"\tRestore volume: {}",
+        settings_.QueryValue(SettingsKey::RESTORE_AUDIO) ? L"Yes" : L"No");
+    log.LogInfo(L"\tMute delay: {}",
+                settings_.QueryValue(SettingsKey::MUTE_DELAY));
+    log.LogInfo(
+        L"\tMute on lock: {}",
+        settings_.QueryValue(SettingsKey::MUTE_ON_LOCK) ? L"Yes" : L"No");
+    log.LogInfo(L"\tMute on display standby: {}",
+                settings_.QueryValue(SettingsKey::MUTE_ON_DISPLAYSTANDBY)
+                    ? L"Yes"
+                    : L"No");
+    log.LogInfo(
+        L"\tMute on display lid close: {}",
+        settings_.QueryValue(SettingsKey::MUTE_ON_LIDCLOSE) ? L"Yes" : L"No");
+    log.LogInfo(
+        L"\tMute on logout: {}",
+        settings_.QueryValue(SettingsKey::MUTE_ON_LOGOUT) ? L"Yes" : L"No");
+    log.LogInfo(
+        L"\tMute on suspend: {}",
+        settings_.QueryValue(SettingsKey::MUTE_ON_SUSPEND) ? L"Yes" : L"No");
+    log.LogInfo(
+        L"\tMute on shutdown: {}",
+        settings_.QueryValue(SettingsKey::MUTE_ON_SHUTDOWN) ? L"Yes" : L"No");
+    log.LogInfo(L"\tShow notifications: {}",
+                settings_.QueryValue(SettingsKey::NOTIFICATIONS_ENABLED)
+                    ? L"Yes"
+                    : L"No");
+    log.LogInfo(
+        L"\tMute on bluetooth: {}",
+        settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH) ? L"Yes" : L"No");
+    log.LogInfo(L"\tTry pausing media when muting: {}",
+                settings_.QueryValue(SettingsKey::MUTE_TRY_PAUSE_MEDIA)
+                    ? L"Yes"
+                    : L"No");
+    log.LogInfo(L"\tTry resuming media when unmuting: {}",
+                settings_.QueryValue(SettingsKey::MUTE_TRY_RESUME_MEDIA)
+                    ? L"Yes"
+                    : L"No");
+    log.LogInfo(L"\t\tUse devicelist: {}",
+                settings_.QueryValue(SettingsKey::MUTE_ON_BLUETOOTH_DEVICELIST)
+                    ? L"Yes"
+                    : L"No");
+    log.LogInfo(
+        L"\tMute on WLAN: {}",
+        settings_.QueryValue(SettingsKey::MUTE_ON_WLAN) ? L"Yes" : L"No");
+    log.LogInfo(L"\t\tUse allowlist: {}",
+                settings_.QueryValue(SettingsKey::MUTE_ON_WLAN_ALLOWLIST)
+                    ? L"Yes"
+                    : L"No");
+    log.LogInfo(L"\tMute specific endpoints only: {}",
+                settings_.QueryValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS)
+                    ? L"Yes"
+                    : L"No");
 
     if (!settings_.QueryValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS)) {
         muteCtrl_.ClearManagedEndpoints();
@@ -524,7 +542,8 @@ bool WinMute::LoadSettings()
         }
     }
 
-    // GUID_MONITOR_POWER_ON
+    LoadGlobalHotkeys();
+
     return true;
 }
 
@@ -576,6 +595,37 @@ void WinMute::LoadMainMenuText()
         mii.cch = static_cast<UINT>(mt.second.length());
         if (!SetMenuItemInfo(hTrayMenu_, mt.first, false, &mii)) {
             continue;
+        }
+    }
+}
+
+void WinMute::LoadGlobalHotkeys()
+{
+    const auto hotKey = settings_.QueryValue(SettingsKey::GLOBAL_MUTE_HOTKEY);
+    UINT modifiers = 0;
+    UINT hkMods = LOWORD(HIBYTE(hotKey));
+    UINT vk = LOWORD(LOBYTE(hotKey));
+    if (hkMods & HOTKEYF_ALT) {
+        modifiers |= MOD_ALT;
+    }
+    if (hkMods & HOTKEYF_CONTROL) {
+        modifiers |= MOD_CONTROL;
+    }
+    if (hkMods & HOTKEYF_SHIFT) {
+        modifiers |= MOD_SHIFT;
+    }
+    // Ignore return value, we don't care if it was registered or not
+    UnregisterHotKey(hWnd_, GLOBAL_HOTKEY_ID_MUTE);
+    if (settings_.QueryValue(SettingsKey::ENABLE_GLOBAL_MUTE_HOTKEY)) {
+        if (!RegisterHotKey(hWnd_, GLOBAL_HOTKEY_ID_MUTE, modifiers, vk)) {
+            WMLog::GetInstance().LogWinError(L"RegisterHotKey", GetLastError());
+            wmTray_.ShowPopup(
+                i18n_.GetTranslationW(
+                    "popup.error.global-mute-hotkey-register.title"),
+                i18n_.GetTranslationW(
+                    "popup.error.global-mute-hotkey-register.text"));
+        } else {
+            globalHotkeys_[MAKEWORD(vk, modifiers)] = GlobalHotKey::Mute;
         }
     }
 }
@@ -752,6 +802,21 @@ LRESULT WinMute::OnTrayIcon(HWND hWnd, WPARAM wParam, LPARAM lParam)
     return TRUE;
 }
 
+LRESULT WinMute::OnHotKey([[maybe_unused]] HWND hWnd,
+                          [[maybe_unused]] WPARAM wParam, LPARAM lParam)
+{
+    const UINT id = MAKEWORD(HIWORD(lParam), LOWORD(lParam));
+    auto hotKeyIt = globalHotkeys_.find(id);
+    if (hotKeyIt != globalHotkeys_.end()) {
+        switch (hotKeyIt->second) {
+            case GlobalHotKey::Mute:
+                muteCtrl_.SetMute(true);
+                break;
+        }
+    }
+    return LRESULT();
+}
+
 LRESULT WinMute::OnUpdatePopup(HWND hWnd, WPARAM, LPARAM lParam)
 {
     // NOTIFYICON_VERSION_4 semantics: LOWORD(lParam) carries the event.
@@ -905,6 +970,9 @@ LRESULT CALLBACK WinMute::WindowProc(HWND hWnd, UINT msg, WPARAM wParam,
         case WM_CLOSE:
             Close();
             return 0;
+        case WM_HOTKEY: {
+            return OnHotKey(hWnd, wParam, lParam);
+        }
         case WM_WTSSESSION_CHANGE: {
             if (wParam == WTS_SESSION_LOCK) {
                 muteCtrl_.NotifyWorkstationLock(true);

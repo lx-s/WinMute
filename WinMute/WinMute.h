@@ -66,6 +66,10 @@ private:
       bool muteOnBluetooth;
    } muteConfig_;
 
+   enum class GlobalHotKey {
+       Mute,
+   };
+
    bool wtsSessionNotificationRegistered_ = false;
    UINT_PTR wtsRetryTimerId_ = 0;
    int wtsRetryAttempts_ = 0;
@@ -81,6 +85,8 @@ private:
    QuietHoursTimer quietHours_;
    BluetoothDetector btDetector_;
    UpdateInfo updateInfo_;
+
+   std::map<LRESULT, GlobalHotKey> globalHotkeys_;
 
    void CheckForUpdates();
    bool RegisterWindowClass();
@@ -98,10 +104,12 @@ private:
    void ToggleMenuCheck(UINT item, bool* setting) noexcept;
 
    void LoadMainMenuText();
+   void LoadGlobalHotkeys();
 
    // Windows Callback
    LRESULT OnCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
    LRESULT OnTrayIcon(HWND hWnd, WPARAM wParam, LPARAM lParam);
+   LRESULT OnHotKey(HWND hWnd, WPARAM wParam, LPARAM lParam);
    LRESULT OnSettingChange(HWND hWnd, WPARAM wParam, LPARAM lParam);
    LRESULT OnPowerBroadcast(HWND hWnd, WPARAM wParam, LPARAM lParam);
    LRESULT OnWifiStatusChange(HWND hWnd, WPARAM wParam, LPARAM lParam);

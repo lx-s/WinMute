@@ -39,6 +39,8 @@
   "popup.error.quiet-hours-start.text": "Fehler beim Registrieren des Windows-Timers für den Ruhezeit-Beginn",
   "popup.error.quiet-hours-stop.title": "Ende der Ruhezeit",
   "popup.error.quiet-hours-stop.text": "Fehler beim Registrieren des Windows-Timers für das Ruhezeit-Ende",
+  "popup.error.global-mute-hotkey-register.title": "Fehler beim Registrieren des Mute-Hotkeys",
+  "popup.error.global-mute-hotkey-register.text": "Die Tastenkombination konnte nicht registriert werden. Bitte überprüfen Sie ob andere Programme diese Kombination bereits verwenden.",
   "traymenu.info": "Info",
   "traymenu.mute-when": "Stummschalten sobald...",
   "traymenu.mute-on-lock": "... PC gesperrt wird",
