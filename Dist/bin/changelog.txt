@@ -5,9 +5,12 @@ Version 2.6.0 (2026-08-18)
  * Added "Mute on Laptop Lid Close"
  * Added: New translations
  * Added: Program is now build with control-flow enforcement (CET)
- * Fixed some possible race conditions
- * Fixed memory leak in wifi detector
- * Fixed possible security issues in update checker
+ * Fixed: Display stand-by detection
+ * Fixed: 60 second cadence time to mute/unmute devices that take a few
+    seconds to wake up and register as "plugged in" again.
+ * Fixed: Possible race conditions
+ * Fixed: Memory leak in wifi detector
+ * Fixed: Hardened update checker
  * Fixed: No longer immediately exiting if the workstation-lock notification
    can not be registered. WinMute will retry registering with TermService
    for about half a minute and disable mute-on-lock if the service does not

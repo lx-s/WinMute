@@ -337,13 +337,31 @@ bool WinMute::Init()
         return false;
     }
 
+    // GUID_CONSOLE_DISPLAY_STATE is documented for kernel-mode/session 0
+    // consumers; interactive applications are supposed to use
+    // GUID_SESSION_DISPLAY_STATUS. Register for both, since neither is
+    // guaranteed to be delivered on every Windows version.
+    hSessionDisplayNotify_ = RegisterPowerSettingNotification(
+        hWnd_, &GUID_SESSION_DISPLAY_STATUS, DEVICE_NOTIFY_WINDOW_HANDLE);
+    if (hSessionDisplayNotify_ == nullptr) {
+        const DWORD lastError = GetLastError();
+        ShowWindowsError(L"RegisterPowerSettingNotification", lastError);
+        log.LogWinError(L"RegisterPowerSettingNotification", lastError);
+        UnregisterPowerSettingNotification(hPowerNotify_);
+        hPowerNotify_ = nullptr;
+        return false;
+    }
+
     hLidCloseNotify_ = RegisterPowerSettingNotification(
         hWnd_, &GUID_LIDSWITCH_STATE_CHANGE, DEVICE_NOTIFY_WINDOW_HANDLE);
     if (hLidCloseNotify_ == nullptr) {
         const DWORD lastError = GetLastError();
         ShowWindowsError(L"RegisterPowerSettingNotification", lastError);
         log.LogWinError(L"RegisterPowerSettingNotification", lastError);
+        UnregisterPowerSettingNotification(hSessionDisplayNotify_);
+        hSessionDisplayNotify_ = nullptr;
         UnregisterPowerSettingNotification(hPowerNotify_);
+        hPowerNotify_ = nullptr;
         return false;
     }
 
@@ -880,13 +898,25 @@ LRESULT WinMute::OnPowerBroadcast(HWND, WPARAM wParam, LPARAM lParam)
     } else if (wParam == PBT_POWERSETTINGCHANGE) {
         const PPOWERBROADCAST_SETTING bs =
             reinterpret_cast<PPOWERBROADCAST_SETTING>(lParam);
-        if (IsEqualGUID(bs->PowerSetting, GUID_CONSOLE_DISPLAY_STATE)) {
+        if (IsEqualGUID(bs->PowerSetting, GUID_CONSOLE_DISPLAY_STATE) ||
+            IsEqualGUID(bs->PowerSetting, GUID_SESSION_DISPLAY_STATUS))
+        {
             const DWORD state = bs->Data[0];
-            if (state == 0x0) {  // Display standby
-                muteCtrl_.NotifyDisplayStandby(true);
-            } else if (state == 0x1) {  // Display on
-                muteCtrl_.NotifyDisplayStandby(false);
-            } else if (state == 0x2) {  // Display dimmed
+            const bool isSession =
+                IsEqualGUID(bs->PowerSetting, GUID_SESSION_DISPLAY_STATUS);
+            WMLog::GetInstance().LogDebug(
+                L"Power event: {} display state {}",
+                isSession ? L"session" : L"console", state);
+            // Both notifications describe the same display, so ignore the
+            // duplicate that arrives for the second registration.
+            if (state != lastDisplayState_) {
+                lastDisplayState_ = state;
+                if (state == 0x0) {  // Display standby
+                    muteCtrl_.NotifyDisplayStandby(true);
+                } else if (state == 0x1) {  // Display on
+                    muteCtrl_.NotifyDisplayStandby(false);
+                } else if (state == 0x2) {  // Display dimmed
+                }
             }
         } else if (IsEqualGUID(bs->PowerSetting, GUID_LIDSWITCH_STATE_CHANGE)) {
             const DWORD state = bs->Data[0];
@@ -1057,6 +1087,10 @@ void WinMute::Unload() noexcept
     if (hPowerNotify_ != nullptr) {
         UnregisterPowerSettingNotification(hPowerNotify_);
         hPowerNotify_ = nullptr;
+    }
+    if (hSessionDisplayNotify_ != nullptr) {
+        UnregisterPowerSettingNotification(hSessionDisplayNotify_);
+        hSessionDisplayNotify_ = nullptr;
     }
     if (hLidCloseNotify_ != nullptr) {
         UnregisterPowerSettingNotification(hLidCloseNotify_);

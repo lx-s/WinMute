@@ -76,7 +76,11 @@ class WinMute {
     UINT_PTR wtsRetryTimerId_ = 0;
     int wtsRetryAttempts_ = 0;
     HPOWERNOTIFY hPowerNotify_ = nullptr;
+    HPOWERNOTIFY hSessionDisplayNotify_ = nullptr;
     HPOWERNOTIFY hLidCloseNotify_ = nullptr;
+    // Console and session display notifications can both fire for the same
+    // transition. 0xFFFFFFFF means "no state seen yet".
+    DWORD lastDisplayState_ = 0xFFFFFFFF;
 
     TrayIcon wmTray_;
     TrayIcon updateTray_;
