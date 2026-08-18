@@ -5,6 +5,7 @@ Version 2.6.0 (2026-08-18)
  * Added "Mute on Laptop Lid Close"
  * Added: New translations
  * Added: Program is now build with control-flow enforcement (CET)
+ * Added: Overhauled settings UI (it was getting a bit crowded in there)
  * Fixed: Display stand-by detection
  * Fixed: 60 second cadence time to mute/unmute devices that take a few
     seconds to wake up and register as "plugged in" again.
