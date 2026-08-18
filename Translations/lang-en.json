@@ -22,6 +22,8 @@
   "pupup.error.update-check-failed.text": "Unable to check for a new version.\nPlease check/enable logging for further details.",
   "popup.remote-session-detected.title": "Remote Session detected",
   "popup.remote-session-detected.text": "All audio devices have been muted",
+  "popup.session-notification-failed.title": "Muting on workstation lock disabled",
+  "popup.session-notification-failed.text": "WinMute could not register for session notifications.\nPlease check the log for further details.",
   "popup.bluetooth-muting-disabled.title": "Bluetooth muting disabled",
   "popup.bluetooth-muting-disabled.text": "Bluetooth is not available or disabled.\nBluetooth muting will be disabled on this computer.",
   "popup.wlan-muting-disabled.title": "WLAN muting disabled",

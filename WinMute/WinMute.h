@@ -51,6 +51,7 @@ public:
 
    // for internal use
    LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+   void RetrySessionNotification();
 private:
    HWND hWnd_;
    HMENU hTrayMenu_;
@@ -66,6 +67,8 @@ private:
    } muteConfig_;
 
    bool wtsSessionNotificationRegistered_ = false;
+   UINT_PTR wtsRetryTimerId_ = 0;
+   int wtsRetryAttempts_ = 0;
    HPOWERNOTIFY hPowerNotify_ = nullptr;
    HPOWERNOTIFY hLidCloseNotify_ = nullptr;
 
@@ -85,6 +88,10 @@ private:
    bool InitAudio();
    bool InitTrayMenu();
    bool LoadSettings();
+
+   bool TryRegisterSessionNotification();
+   void StartSessionNotificationRetry();
+   void StopSessionNotificationRetry() noexcept;
 
    void Unload() noexcept;
 

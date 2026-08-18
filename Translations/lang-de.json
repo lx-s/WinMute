@@ -16,6 +16,8 @@
   "general.error.audio-service-shutdown.text": "WinMute kann diese Situation nicht Beheben. Bitte starten Sie das Programm neu.",
   "popup.remote-session-detected.title": "Remote Session festgestellt",
   "popup.remote-session-detected.text": "Alle Audiogeräte wurden stumm geschaltet",
+  "popup.session-notification-failed.title": "Stummschalten bei Arbeitsplatz-Sperre deaktiviert",
+  "popup.session-notification-failed.text": "WinMute konnte sich nicht für Sperr-Benachrichtigungen registrieren.\nBitte prüfen Sie das Protokoll für weitere Details.",
   "popup.bluetooth-muting-disabled.title": "Bluetooth-Stummschalten deaktiviert",
   "popup.bluetooth-muting-disabled.text": "Bluetooth ist nicht verfügbar oder deaktiviert.\nDas Bluetooth-abhängige Stummschalten wurde deaktiviert.",
   "popup.wlan-muting-disabled.title": "WLAN-Stummschalten deaktiviert",

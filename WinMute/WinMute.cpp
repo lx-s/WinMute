@@ -46,6 +46,14 @@ static const wchar_t* TERMINAL_SERVER_KEY =
     L"SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\";
 static const wchar_t* GLASS_SESSION_ID = L"GlassSessionId";
 
+static constexpr UINT_PTR WTS_RETRY_TIMER_ID = 190503;
+// When WinMute is started from autostart, the services Remote Desktop
+// Services depends on can still be coming up, which makes
+// WTSRegisterSessionNotification fail with RPC_S_INVALID_BINDING. Retry for
+// roughly half a minute before giving up.
+static constexpr UINT WTS_RETRY_INTERVAL_MS = 1000;
+static constexpr int WTS_RETRY_MAX_ATTEMPTS = 30;
+
 static LRESULT CALLBACK WinMuteWndProc(HWND hWnd, UINT msg, WPARAM wParam,
                                        LPARAM lParam)
 {
@@ -62,6 +70,15 @@ static LRESULT CALLBACK WinMuteWndProc(HWND hWnd, UINT msg, WPARAM wParam,
     }
     return (wm) ? wm->WindowProc(hWnd, msg, wParam, lParam)
                 : DefWindowProcW(hWnd, msg, wParam, lParam);
+}
+
+static void CALLBACK WtsRetryTimerProc(HWND hWnd, UINT, UINT_PTR, DWORD)
+{
+    auto wm =
+        reinterpret_cast<WinMute*>(GetWindowLongPtrW(hWnd, GWLP_USERDATA));
+    if (wm != nullptr) {
+        wm->RetrySessionNotification();
+    }
 }
 
 static bool IsCurrentSessionRemoteable() noexcept
@@ -202,6 +219,72 @@ bool WinMute::InitTrayMenu()
 }
 #undef CHECK_MENU_ITEM
 
+bool WinMute::TryRegisterSessionNotification()
+{
+    if (wtsSessionNotificationRegistered_) {
+        return true;
+    }
+    if (!WTSRegisterSessionNotification(hWnd_, NOTIFY_FOR_THIS_SESSION)) {
+        WMLog::GetInstance().LogWinError(L"WTSRegisterSessionNotification",
+                                         GetLastError());
+        return false;
+    }
+    wtsSessionNotificationRegistered_ = true;
+    return true;
+}
+
+void WinMute::StartSessionNotificationRetry()
+{
+    WMLog& log = WMLog::GetInstance();
+
+    if (wtsRetryTimerId_ != 0) {
+        return;
+    }
+    if (SetTimer(hWnd_, WTS_RETRY_TIMER_ID, WTS_RETRY_INTERVAL_MS,
+                 WtsRetryTimerProc) == 0)
+    {
+        log.LogWinError(L"SetTimer (session notification retry)",
+                        GetLastError());
+        log.LogError(L"Muting on workstation lock is not available");
+        return;
+    }
+    wtsRetryTimerId_ = WTS_RETRY_TIMER_ID;
+    wtsRetryAttempts_ = 0;
+    log.LogInfo(L"Retrying to register for session notifications every {} ms",
+                WTS_RETRY_INTERVAL_MS);
+}
+
+void WinMute::StopSessionNotificationRetry() noexcept
+{
+    if (wtsRetryTimerId_ != 0) {
+        KillTimer(hWnd_, wtsRetryTimerId_);
+        wtsRetryTimerId_ = 0;
+    }
+}
+
+void WinMute::RetrySessionNotification()
+{
+    WMLog& log = WMLog::GetInstance();
+
+    ++wtsRetryAttempts_;
+    if (TryRegisterSessionNotification()) {
+        StopSessionNotificationRetry();
+        log.LogInfo(L"Registered for session notifications after {} attempts",
+                    wtsRetryAttempts_);
+        return;
+    }
+    if (wtsRetryAttempts_ >= WTS_RETRY_MAX_ATTEMPTS) {
+        StopSessionNotificationRetry();
+        log.LogError(
+            L"Giving up on registering for session notifications after {} "
+            L"attempts. Muting on workstation lock is not available",
+            wtsRetryAttempts_);
+        wmTray_.ShowPopup(
+            i18n_.GetTranslationW("popup.session-notification-failed.title"),
+            i18n_.GetTranslationW("popup.session-notification-failed.text"));
+    }
+}
+
 bool WinMute::Init()
 {
     WMLog& log = WMLog::GetInstance();
@@ -232,13 +315,12 @@ bool WinMute::Init()
         return false;
     }
 
-    if (!WTSRegisterSessionNotification(hWnd_, NOTIFY_FOR_THIS_SESSION)) {
-        const DWORD lastError = GetLastError();
-        ShowWindowsError(L"WTSRegisterSessionNotification");
-        log.LogWinError(L"WTSRegisterSessionNotification", lastError);
-        return false;
+    // Try to register session notification. This is needed for mute-on-lock
+    // to work. If it fails, try again for a few times in the background,
+    // but don't block startup on it.
+    if (!TryRegisterSessionNotification()) {
+        StartSessionNotificationRetry();
     }
-    wtsSessionNotificationRegistered_ = true;
 
     hPowerNotify_ = RegisterPowerSettingNotification(
         hWnd_, &GUID_CONSOLE_DISPLAY_STATE, DEVICE_NOTIFY_WINDOW_HANDLE);
@@ -878,6 +960,7 @@ void WinMute::Unload() noexcept
         UnregisterPowerSettingNotification(hLidCloseNotify_);
         hLidCloseNotify_ = nullptr;
     }
+    StopSessionNotificationRetry();
     if (wtsSessionNotificationRegistered_) {
         WTSUnRegisterSessionNotification(hWnd_);
         wtsSessionNotificationRegistered_ = false;
