@@ -501,7 +501,8 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
             }
 #pragma warning(push)
 #pragma warning( \
-    disable : 26454)  // Disable arithmetic overflow warning for TVN_SELCHANGED
+    disable      \
+    : 26454)  // Disable arithmetic overflow warning for TVN_SELCHANGED
             if (lpnmhdr->code == TVN_SELCHANGED) {
 #pragma warning(pop)
                 const LPNMTREEVIEW nmtv =
