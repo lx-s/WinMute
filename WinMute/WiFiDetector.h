@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -41,33 +41,34 @@ POSSIBILITY OF SUCH DAMAGE.
 constexpr int WM_WIFISTATUSCHANGED = WM_USER + 400;
 
 class WifiDetector {
-public:
-   WifiDetector() noexcept;
-   ~WifiDetector();
-   WifiDetector(const WifiDetector&) = delete;
-   WifiDetector(WifiDetector&&) = delete;
-   WifiDetector& operator=(const WifiDetector&) = delete;
-   WifiDetector &operator=(WifiDetector&&) = delete;
+   public:
+    WifiDetector() noexcept;
+    ~WifiDetector();
+    WifiDetector(const WifiDetector&) = delete;
+    WifiDetector(WifiDetector&&) = delete;
+    WifiDetector& operator=(const WifiDetector&) = delete;
+    WifiDetector& operator=(WifiDetector&&) = delete;
 
-   bool Init(HWND hNotifyWnd);
-   void Unload() noexcept;
-   void SetNetworkList(const std::vector<std::wstring>& networks, bool isMuteList);
+    bool Init(HWND hNotifyWnd);
+    void Unload() noexcept;
+    void SetNetworkList(const std::vector<std::wstring>& networks,
+                        bool isMuteList);
 
-   void CheckNetwork();
-   void WlanNotificationCallback(PWLAN_NOTIFICATION_DATA notifyData);
+    void CheckNetwork();
+    void WlanNotificationCallback(PWLAN_NOTIFICATION_DATA notifyData);
 
-private:
-   bool IsNetworkRelevant(const wchar_t *profileName) const;
+   private:
+    bool IsNetworkRelevant(const wchar_t* profileName) const;
 
-   HWND hNotifyWnd_;
-   HANDLE wlanHandle_;
-   // If "true" then networks_ contains all networks where the workstation should
-   // be muted. If false, then networks_ contains all networks where the ws should
-   // not be muted.
-   bool isMuteList_;
-   bool initialized_;
-   std::vector<std::wstring> networks_;
-   // WlanNotificationCallback is invoked on a WLAN service thread, while
-   // SetNetworkList is called from the UI thread.
-   mutable std::mutex networksMutex_;
+    HWND hNotifyWnd_;
+    HANDLE wlanHandle_;
+    // If "true" then networks_ contains all networks where the workstation
+    // should be muted. If false, then networks_ contains all networks where the
+    // ws should not be muted.
+    bool isMuteList_;
+    bool initialized_;
+    std::vector<std::wstring> networks_;
+    // WlanNotificationCallback is invoked on a WLAN service thread, while
+    // SetNetworkList is called from the UI thread.
+    mutable std::mutex networksMutex_;
 };

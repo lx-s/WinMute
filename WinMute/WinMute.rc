@@ -25,18 +25,18 @@ LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE 
+1 TEXTINCLUDE
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE 
+2 TEXTINCLUDE
 BEGIN
     "#include ""winres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE 
+3 TEXTINCLUDE
 BEGIN
     "\r\n"
     "\0"
@@ -571,7 +571,7 @@ BEGIN
             VALUE "FileDescription", "WinMute"
             VALUE "FileVersion", "2.6.0.0"
             VALUE "InternalName", "WinMute.exe"
-            VALUE "LegalCopyright", "Copyright (c) 2026 Alexander Steinhoefer"
+            VALUE "LegalCopyright", "Copyright (c) 2011-2026 Alexander Steinhoefer"
             VALUE "OriginalFilename", "WinMute.exe"
             VALUE "ProductName", "WinMute"
             VALUE "ProductVersion", "2.6.0.0"
@@ -597,4 +597,3 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-

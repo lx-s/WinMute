@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -34,26 +34,26 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "common.h"
 
 enum SettingsTabsIDs {
-   SETTINGS_TAB_GENERAL = 0,
-   SETTINGS_TAB_MUTE,
-   SETTINGS_TAB_QUIETHOURS,
-   SETTINGS_TAB_BLUETOOTH,
-   SETTINGS_TAB_WIFI,
-   SETTINGS_TAB_COUNT
+    SETTINGS_TAB_GENERAL = 0,
+    SETTINGS_TAB_MUTE,
+    SETTINGS_TAB_QUIETHOURS,
+    SETTINGS_TAB_BLUETOOTH,
+    SETTINGS_TAB_WIFI,
+    SETTINGS_TAB_COUNT
 };
 
 struct SettingsDlgData {
-   HWND hTabCtrl;
-   HWND hTabs[SETTINGS_TAB_COUNT];
+    HWND hTabCtrl;
+    HWND hTabs[SETTINGS_TAB_COUNT];
 
-   HWND hActiveTab;
-   WMSettings* settings;
+    HWND hActiveTab;
+    WMSettings* settings;
 
-   explicit SettingsDlgData(WMSettings* settings)
-      : settings(settings), hTabCtrl(nullptr), hActiveTab(nullptr)
-   {
-      ZeroMemory(hTabs, sizeof(hTabs));
-   }
+    explicit SettingsDlgData(WMSettings* settings)
+        : settings(settings), hTabCtrl(nullptr), hActiveTab(nullptr)
+    {
+        ZeroMemory(hTabs, sizeof(hTabs));
+    }
 };
 
 extern INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND, UINT, WPARAM, LPARAM);
@@ -64,182 +64,169 @@ extern INT_PTR CALLBACK Settings_WifiDlgProc(HWND, UINT, WPARAM, LPARAM);
 
 extern HINSTANCE hglobInstance;
 
-static void InsertTabItem(HWND hTabCtrl, UINT id, const wchar_t *itemName)
+static void InsertTabItem(HWND hTabCtrl, UINT id, const wchar_t* itemName)
 {
-   constexpr int bufSize = 50;
-   wchar_t buf[bufSize];
-   TC_ITEM tcItem;
-   ZeroMemory(&tcItem, sizeof(tcItem));
-   tcItem.mask |= TCIF_TEXT;
-   StringCchCopyW(buf, bufSize, itemName);
-   tcItem.pszText = buf;
-   tcItem.cchTextMax = bufSize;
+    constexpr int bufSize = 50;
+    wchar_t buf[bufSize];
+    TC_ITEM tcItem;
+    ZeroMemory(&tcItem, sizeof(tcItem));
+    tcItem.mask |= TCIF_TEXT;
+    StringCchCopyW(buf, bufSize, itemName);
+    tcItem.pszText = buf;
+    tcItem.cchTextMax = bufSize;
 
-   TabCtrl_InsertItem(hTabCtrl, id, &tcItem);
+    TabCtrl_InsertItem(hTabCtrl, id, &tcItem);
 }
 
 static void SwitchTab(SettingsDlgData* dlgData, HWND hNewTab)
 {
-   if (dlgData->hActiveTab != nullptr) {
-      ShowWindow(dlgData->hActiveTab, SW_HIDE);
-   }
-   dlgData->hActiveTab = hNewTab;
-   ShowWindow(dlgData->hActiveTab, SW_SHOW);
-   //SetFocus(dlgData->hActiveTab);
+    if (dlgData->hActiveTab != nullptr) {
+        ShowWindow(dlgData->hActiveTab, SW_HIDE);
+    }
+    dlgData->hActiveTab = hNewTab;
+    ShowWindow(dlgData->hActiveTab, SW_SHOW);
+    // SetFocus(dlgData->hActiveTab);
 }
 
 static void ResizeTabs(HWND hTabCtrl, HWND* hTabs, int tabCount)
 {
-   RECT tabCtrlRect = { 0 };
-   GetWindowRect(hTabCtrl, &tabCtrlRect);
-   POINT tabCtrlPos = { 0 };
-   tabCtrlPos.x = tabCtrlRect.left;
-   tabCtrlPos.y = tabCtrlRect.top;
-   ScreenToClient(GetParent(hTabCtrl), &tabCtrlPos);
+    RECT tabCtrlRect = {0};
+    GetWindowRect(hTabCtrl, &tabCtrlRect);
+    POINT tabCtrlPos = {0};
+    tabCtrlPos.x = tabCtrlRect.left;
+    tabCtrlPos.y = tabCtrlRect.top;
+    ScreenToClient(GetParent(hTabCtrl), &tabCtrlPos);
 
-   GetClientRect(hTabCtrl, &tabCtrlRect);
-   TabCtrl_AdjustRect(hTabCtrl, FALSE, &tabCtrlRect);
-   tabCtrlRect.left += tabCtrlPos.x;
-   tabCtrlRect.top += tabCtrlPos.y;
+    GetClientRect(hTabCtrl, &tabCtrlRect);
+    TabCtrl_AdjustRect(hTabCtrl, FALSE, &tabCtrlRect);
+    tabCtrlRect.left += tabCtrlPos.x;
+    tabCtrlRect.top += tabCtrlPos.y;
 
-   HDWP hdwp = BeginDeferWindowPos(tabCount);
-   if (hdwp == nullptr) {
-      ShowWindowsError(L"BeginDeferWindowPos", GetLastError());
-   } else {
-      for (int i = 0; i < tabCount; ++i) {
-         HDWP newHdwp = DeferWindowPos(
-            hdwp,
-            hTabs[i],
-            HWND_TOP,
-            tabCtrlRect.left,
-            tabCtrlRect.top,
-            tabCtrlRect.right - tabCtrlRect.left,
-            tabCtrlRect.bottom - tabCtrlRect.top,
-            0);
-         if (newHdwp == nullptr) {
-            ShowWindowsError(L"DeferWindowPos", GetLastError());
-            break;
-         } else {
-            hdwp = newHdwp;
-         }
-      }
-      EndDeferWindowPos(hdwp);
-   }
+    HDWP hdwp = BeginDeferWindowPos(tabCount);
+    if (hdwp == nullptr) {
+        ShowWindowsError(L"BeginDeferWindowPos", GetLastError());
+    } else {
+        for (int i = 0; i < tabCount; ++i) {
+            HDWP newHdwp = DeferWindowPos(
+                hdwp, hTabs[i], HWND_TOP, tabCtrlRect.left, tabCtrlRect.top,
+                tabCtrlRect.right - tabCtrlRect.left,
+                tabCtrlRect.bottom - tabCtrlRect.top, 0);
+            if (newHdwp == nullptr) {
+                ShowWindowsError(L"DeferWindowPos", GetLastError());
+                break;
+            } else {
+                hdwp = newHdwp;
+            }
+        }
+        EndDeferWindowPos(hdwp);
+    }
 }
 
-INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
+                                 LPARAM lParam)
 {
-   SettingsDlgData* dlgData =
-      reinterpret_cast<SettingsDlgData*>(GetWindowLongPtr(hDlg, DWLP_USER));
-   switch (msg) {
-   case WM_INITDIALOG: {
-      WMi18n &i18n = WMi18n::GetInstance();
+    SettingsDlgData* dlgData =
+        reinterpret_cast<SettingsDlgData*>(GetWindowLongPtr(hDlg, DWLP_USER));
+    switch (msg) {
+        case WM_INITDIALOG: {
+            WMi18n& i18n = WMi18n::GetInstance();
 
-      assert(dlgData == nullptr);
-      WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
-      dlgData = new SettingsDlgData(settings);
-      SetWindowLongPtr(hDlg, DWLP_USER, reinterpret_cast<LONG_PTR>(dlgData));
-      
-      dlgData->hTabCtrl = GetDlgItem(hDlg, IDC_SETTINGS_TAB);
+            assert(dlgData == nullptr);
+            WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
+            dlgData = new SettingsDlgData(settings);
+            SetWindowLongPtr(hDlg, DWLP_USER,
+                             reinterpret_cast<LONG_PTR>(dlgData));
 
-      SetWindowText(hDlg, i18n.GetTranslationW("settings.title").c_str());
+            dlgData->hTabCtrl = GetDlgItem(hDlg, IDC_SETTINGS_TAB);
 
-      i18n.SetItemText(hDlg, IDOK, "settings.btn-save");
-      i18n.SetItemText(hDlg, IDCANCEL, "settings.btn-cancel");
+            SetWindowText(hDlg, i18n.GetTranslationW("settings.title").c_str());
 
-      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_GENERAL,
-                    i18n.GetTranslationW("settings.tab.general").c_str());
-      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_MUTE,
-                    i18n.GetTranslationW("settings.tab.mute").c_str());
-      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_QUIETHOURS,
-                    i18n.GetTranslationW("settings.tab.quiet-hours").c_str());
-      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_BLUETOOTH,
-                    i18n.GetTranslationW("settings.tab.bluetooth").c_str());
-      InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_WIFI,
-                    i18n.GetTranslationW("settings.tab.wifi").c_str());
+            i18n.SetItemText(hDlg, IDOK, "settings.btn-save");
+            i18n.SetItemText(hDlg, IDCANCEL, "settings.btn-cancel");
 
-      dlgData->hTabs[SETTINGS_TAB_GENERAL] = CreateDialogParam(
-         hglobInstance,
-         MAKEINTRESOURCE(IDD_SETTINGS_GENERAL),
-         hDlg,
-         Settings_GeneralDlgProc,
-         reinterpret_cast<LPARAM>(settings));
-      dlgData->hTabs[SETTINGS_TAB_MUTE] = CreateDialogParam(
-         hglobInstance,
-         MAKEINTRESOURCE(IDD_SETTINGS_MUTE),
-         hDlg,
-         Settings_MuteDlgProc,
-         reinterpret_cast<LPARAM>(settings));
-      dlgData->hTabs[SETTINGS_TAB_QUIETHOURS] = CreateDialogParam(
-         hglobInstance,
-         MAKEINTRESOURCE(IDD_SETTINGS_QUIETHOURS),
-         hDlg,
-         Settings_QuietHoursDlgProc,
-         reinterpret_cast<LPARAM>(settings));
-      dlgData->hTabs[SETTINGS_TAB_WIFI] = CreateDialogParam(
-         hglobInstance,
-         MAKEINTRESOURCE(IDD_SETTINGS_WIFI),
-         hDlg,
-         Settings_WifiDlgProc,
-         reinterpret_cast<LPARAM>(settings));
-      dlgData->hTabs[SETTINGS_TAB_BLUETOOTH] = CreateDialogParam(
-         hglobInstance,
-         MAKEINTRESOURCE(IDD_SETTINGS_BLUETOOTH),
-         hDlg,
-         Settings_BluetoothDlgProc,
-         reinterpret_cast<LPARAM>(settings));
+            InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_GENERAL,
+                          i18n.GetTranslationW("settings.tab.general").c_str());
+            InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_MUTE,
+                          i18n.GetTranslationW("settings.tab.mute").c_str());
+            InsertTabItem(
+                dlgData->hTabCtrl, SETTINGS_TAB_QUIETHOURS,
+                i18n.GetTranslationW("settings.tab.quiet-hours").c_str());
+            InsertTabItem(
+                dlgData->hTabCtrl, SETTINGS_TAB_BLUETOOTH,
+                i18n.GetTranslationW("settings.tab.bluetooth").c_str());
+            InsertTabItem(dlgData->hTabCtrl, SETTINGS_TAB_WIFI,
+                          i18n.GetTranslationW("settings.tab.wifi").c_str());
 
-      // Init tab pages
-      ResizeTabs(dlgData->hTabCtrl, dlgData->hTabs, SETTINGS_TAB_COUNT);
-      for (int i = 0; i < SETTINGS_TAB_COUNT; ++i) {
-         HWND hCurTab = dlgData->hTabs[i];
-         ShowWindow(hCurTab, SW_HIDE);
-      }
+            dlgData->hTabs[SETTINGS_TAB_GENERAL] = CreateDialogParam(
+                hglobInstance, MAKEINTRESOURCE(IDD_SETTINGS_GENERAL), hDlg,
+                Settings_GeneralDlgProc, reinterpret_cast<LPARAM>(settings));
+            dlgData->hTabs[SETTINGS_TAB_MUTE] = CreateDialogParam(
+                hglobInstance, MAKEINTRESOURCE(IDD_SETTINGS_MUTE), hDlg,
+                Settings_MuteDlgProc, reinterpret_cast<LPARAM>(settings));
+            dlgData->hTabs[SETTINGS_TAB_QUIETHOURS] = CreateDialogParam(
+                hglobInstance, MAKEINTRESOURCE(IDD_SETTINGS_QUIETHOURS), hDlg,
+                Settings_QuietHoursDlgProc, reinterpret_cast<LPARAM>(settings));
+            dlgData->hTabs[SETTINGS_TAB_WIFI] = CreateDialogParam(
+                hglobInstance, MAKEINTRESOURCE(IDD_SETTINGS_WIFI), hDlg,
+                Settings_WifiDlgProc, reinterpret_cast<LPARAM>(settings));
+            dlgData->hTabs[SETTINGS_TAB_BLUETOOTH] = CreateDialogParam(
+                hglobInstance, MAKEINTRESOURCE(IDD_SETTINGS_BLUETOOTH), hDlg,
+                Settings_BluetoothDlgProc, reinterpret_cast<LPARAM>(settings));
 
-      HICON hIcon = LoadIcon(
-         GetModuleHandle(nullptr),
-         MAKEINTRESOURCE(IDI_SETTINGS));
-      SendMessageW(hDlg, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(hIcon));
+            // Init tab pages
+            ResizeTabs(dlgData->hTabCtrl, dlgData->hTabs, SETTINGS_TAB_COUNT);
+            for (int i = 0; i < SETTINGS_TAB_COUNT; ++i) {
+                HWND hCurTab = dlgData->hTabs[i];
+                ShowWindow(hCurTab, SW_HIDE);
+            }
 
-      SwitchTab(dlgData, dlgData->hTabs[SETTINGS_TAB_GENERAL]);
-      return TRUE;
-   }
-   case WM_COMMAND:
-      if (LOWORD(wParam) == IDOK) {
-         for (int i = 0; i < SETTINGS_TAB_COUNT; ++i) {
-            SendMessage(dlgData->hTabs[i], WM_SAVESETTINGS, 0, 0);
-            EndDialog(dlgData->hTabs[i], 0);
-         }
-         EndDialog(hDlg, 0); 
-      } else if (LOWORD(wParam) == IDCANCEL) {
-         for (int i = 0; i < SETTINGS_TAB_COUNT; ++i) {
-            EndDialog(dlgData->hTabs[i], 0);
-         }
-         EndDialog(hDlg, 1);
-      }
-      return 0;
-   case WM_NOTIFY: {
-      const LPNMHDR lpnmhdr = reinterpret_cast<LPNMHDR>(lParam);
+            HICON hIcon = LoadIcon(GetModuleHandle(nullptr),
+                                   MAKEINTRESOURCE(IDI_SETTINGS));
+            SendMessageW(hDlg, WM_SETICON, ICON_BIG,
+                         reinterpret_cast<LPARAM>(hIcon));
+
+            SwitchTab(dlgData, dlgData->hTabs[SETTINGS_TAB_GENERAL]);
+            return TRUE;
+        }
+        case WM_COMMAND:
+            if (LOWORD(wParam) == IDOK) {
+                for (int i = 0; i < SETTINGS_TAB_COUNT; ++i) {
+                    SendMessage(dlgData->hTabs[i], WM_SAVESETTINGS, 0, 0);
+                    EndDialog(dlgData->hTabs[i], 0);
+                }
+                EndDialog(hDlg, 0);
+            } else if (LOWORD(wParam) == IDCANCEL) {
+                for (int i = 0; i < SETTINGS_TAB_COUNT; ++i) {
+                    EndDialog(dlgData->hTabs[i], 0);
+                }
+                EndDialog(hDlg, 1);
+            }
+            return 0;
+        case WM_NOTIFY: {
+            const LPNMHDR lpnmhdr = reinterpret_cast<LPNMHDR>(lParam);
 #pragma warning(push)
-#pragma warning(disable : 26454) // Disable arithmetic overflow warning for TCN_SELCHANGE
-      if (lpnmhdr->code == TCN_SELCHANGE && lpnmhdr->hwndFrom == dlgData->hTabCtrl) {
+#pragma warning( \
+    disable : 26454)  // Disable arithmetic overflow warning for TCN_SELCHANGE
+            if (lpnmhdr->code == TCN_SELCHANGE &&
+                lpnmhdr->hwndFrom == dlgData->hTabCtrl)
+            {
 #pragma warning(pop)
-         const int curSel = TabCtrl_GetCurSel(dlgData->hTabCtrl);
-         if (curSel >= 0 && curSel < SETTINGS_TAB_COUNT) {
-            SwitchTab(dlgData, dlgData->hTabs[curSel]);
-         }
-      }
-      return 0;
-   }
-   case WM_CLOSE:
-      EndDialog(hDlg, 1);
-      return TRUE;
-   case WM_DESTROY:
-      delete dlgData;
-      SetWindowLongPtrW(hDlg, DWLP_USER, 0);
-      return 0;
-   default:
-      break;
-   }
-   return FALSE;
+                const int curSel = TabCtrl_GetCurSel(dlgData->hTabCtrl);
+                if (curSel >= 0 && curSel < SETTINGS_TAB_COUNT) {
+                    SwitchTab(dlgData, dlgData->hTabs[curSel]);
+                }
+            }
+            return 0;
+        }
+        case WM_CLOSE:
+            EndDialog(hDlg, 1);
+            return TRUE;
+        case WM_DESTROY:
+            delete dlgData;
+            SetWindowLongPtrW(hDlg, DWLP_USER, 0);
+            return 0;
+        default:
+            break;
+    }
+    return FALSE;
 }

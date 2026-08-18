@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -37,156 +37,143 @@ HINSTANCE hglobInstance;
 
 static bool SetWorkingDirectory()
 {
-   wchar_t wmFileName[MAX_PATH + 1];
-   if (GetModuleFileNameW(nullptr, wmFileName, ARRAY_SIZE(wmFileName)) > 0) {
-      wchar_t* p = wcsrchr(wmFileName, L'\\');
-      if (p != nullptr) {
-         *(p + 1) = L'\0';
-         SetCurrentDirectoryW(wmFileName);
-         return true;
-      }
-   }
-   return false;
+    wchar_t wmFileName[MAX_PATH + 1];
+    if (GetModuleFileNameW(nullptr, wmFileName, ARRAY_SIZE(wmFileName)) > 0) {
+        wchar_t* p = wcsrchr(wmFileName, L'\\');
+        if (p != nullptr) {
+            *(p + 1) = L'\0';
+            SetCurrentDirectoryW(wmFileName);
+            return true;
+        }
+    }
+    return false;
 }
 
-static void LoadLanguage(WMSettings &settings, WMi18n &i18n)
+static void LoadLanguage(WMSettings& settings, WMi18n& i18n)
 {
-   auto langFile = settings.QueryStrValue(SettingsKey::APP_LANGUAGE);
-   if (!langFile || langFile->empty()) {
-      const auto langId = GetUserDefaultUILanguage() & 0xFF;
-      if (langId == LANG_GERMAN) {
-         langFile = L"lang-de.json";
-      } else if (langId == LANG_ITALIAN) {
-         langFile = L"lang-it.json";
-      } else if (langId == LANG_DUTCH) {
-         langFile = L"lang-nl.json";
-      } else if (langId == LANG_SPANISH) {
-         langFile = L"lang-es.json";
-      } else {
-         langFile = L"lang-en.json";
-      }
-      settings.SetValue(SettingsKey::APP_LANGUAGE, *langFile);
-   }
-   if (langFile && !langFile->empty()) {
-      i18n.LoadLanguage(*langFile);
-   }
+    auto langFile = settings.QueryStrValue(SettingsKey::APP_LANGUAGE);
+    if (!langFile || langFile->empty()) {
+        const auto langId = GetUserDefaultUILanguage() & 0xFF;
+        if (langId == LANG_GERMAN) {
+            langFile = L"lang-de.json";
+        } else if (langId == LANG_ITALIAN) {
+            langFile = L"lang-it.json";
+        } else if (langId == LANG_DUTCH) {
+            langFile = L"lang-nl.json";
+        } else if (langId == LANG_SPANISH) {
+            langFile = L"lang-es.json";
+        } else {
+            langFile = L"lang-en.json";
+        }
+        settings.SetValue(SettingsKey::APP_LANGUAGE, *langFile);
+    }
+    if (langFile && !langFile->empty()) {
+        i18n.LoadLanguage(*langFile);
+    }
 }
 
 static bool InitWindowsComponents()
 {
-   INITCOMMONCONTROLSEX initComCtrl;
-   initComCtrl.dwSize = sizeof(INITCOMMONCONTROLSEX);
-   initComCtrl.dwICC = ICC_LINK_CLASS;
-   if (InitCommonControlsEx(&initComCtrl) == FALSE) {
-      WMLog::GetInstance().LogWinError(L"InitCommonControlsEx", GetLastError());
-      return false;
-   }
-   // The UI thread hosts windows and shell interactions, so it belongs in an
-   // STA. All blocking WinRT calls run on a dedicated MTA worker thread
-   // (see MediaPlaybackController).
-   const HRESULT hr = CoInitializeEx(
-      nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
-   if (FAILED(hr)) {
-      WMLog::GetInstance().LogWinError(L"CoInitializeEx", static_cast<DWORD>(hr));
-      return false;
-   }
-   return true;
+    INITCOMMONCONTROLSEX initComCtrl;
+    initComCtrl.dwSize = sizeof(INITCOMMONCONTROLSEX);
+    initComCtrl.dwICC = ICC_LINK_CLASS;
+    if (InitCommonControlsEx(&initComCtrl) == FALSE) {
+        WMLog::GetInstance().LogWinError(L"InitCommonControlsEx",
+                                         GetLastError());
+        return false;
+    }
+    // The UI thread hosts windows and shell interactions, so it belongs in an
+    // STA. All blocking WinRT calls run on a dedicated MTA worker thread
+    // (see MediaPlaybackController).
+    const HRESULT hr = CoInitializeEx(
+        nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    if (FAILED(hr)) {
+        WMLog::GetInstance().LogWinError(L"CoInitializeEx",
+                                         static_cast<DWORD>(hr));
+        return false;
+    }
+    return true;
 }
 
-int WINAPI wWinMain(
-   _In_ HINSTANCE hInstance,
-   _In_opt_ HINSTANCE,
-   _In_ PWSTR,
-   _In_ int)
+int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ PWSTR,
+                    _In_ int)
 {
-   // Harden the DLL search path against binary planting before anything
-   // is loaded dynamically.
-   SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_SYSTEM32);
+    // Harden the DLL search path against binary planting before anything
+    // is loaded dynamically.
+    SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_SYSTEM32);
 
-   hglobInstance = hInstance;
-   WMSettings settings;
-   WMi18n& i18n = WMi18n::GetInstance();
-   if (!i18n.Init()) {
-      return FALSE;
-   }
-   if (!settings.Init()) {
-      TaskDialog(
-         nullptr,
-         nullptr,
-         PROGRAM_NAME,
-         i18n.GetTranslationW("init.error.settings.title").c_str(),
-         i18n.GetTranslationW("init.error.settings.text").c_str(),
-         TDCBF_OK_BUTTON,
-         TD_ERROR_ICON,
-         nullptr);
-      return FALSE;
-   }
+    hglobInstance = hInstance;
+    WMSettings settings;
+    WMi18n& i18n = WMi18n::GetInstance();
+    if (!i18n.Init()) {
+        return FALSE;
+    }
+    if (!settings.Init()) {
+        TaskDialog(nullptr, nullptr, PROGRAM_NAME,
+                   i18n.GetTranslationW("init.error.settings.title").c_str(),
+                   i18n.GetTranslationW("init.error.settings.text").c_str(),
+                   TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
+        return FALSE;
+    }
 
-   LoadLanguage(settings, i18n);
+    LoadLanguage(settings, i18n);
 
-   HANDLE hMutex = CreateMutexW(nullptr, TRUE, L"LxSystemsWinMuteRunning");
-   if (hMutex == nullptr) {
-      return FALSE;
-   } else if (GetLastError() == ERROR_ALREADY_EXISTS) {
-      ReleaseMutex(hMutex);
-      CloseHandle(hMutex);
-      TaskDialog(
-         nullptr,
-         nullptr,
-         PROGRAM_NAME,
-         i18n.GetTranslationW("init.error.already-running.title").c_str(),
-         i18n.GetTranslationW("init.error.already-running.text").c_str(),
-         TDCBF_OK_BUTTON,
-         TD_INFORMATION_ICON,
-         nullptr);
-      return FALSE;
-   }
+    HANDLE hMutex = CreateMutexW(nullptr, TRUE, L"LxSystemsWinMuteRunning");
+    if (hMutex == nullptr) {
+        return FALSE;
+    } else if (GetLastError() == ERROR_ALREADY_EXISTS) {
+        ReleaseMutex(hMutex);
+        CloseHandle(hMutex);
+        TaskDialog(
+            nullptr, nullptr, PROGRAM_NAME,
+            i18n.GetTranslationW("init.error.already-running.title").c_str(),
+            i18n.GetTranslationW("init.error.already-running.text").c_str(),
+            TDCBF_OK_BUTTON, TD_INFORMATION_ICON, nullptr);
+        return FALSE;
+    }
 
-   SetWorkingDirectory();
+    SetWorkingDirectory();
 
-   HeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
+    HeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
 
-   if (!InitWindowsComponents()) {
-      TaskDialog(
-         nullptr,
-         nullptr,
-         PROGRAM_NAME,
-         i18n.GetTranslationW("init.error.winmute.title").c_str(),
-         i18n.GetTranslationW("init.error.winmute.text").c_str(),
-         TDCBF_OK_BUTTON,
-         TD_ERROR_ICON,
-         nullptr);
-      ReleaseMutex(hMutex);
-      CloseHandle(hMutex);
-      return FALSE;
-   }
+    if (!InitWindowsComponents()) {
+        TaskDialog(nullptr, nullptr, PROGRAM_NAME,
+                   i18n.GetTranslationW("init.error.winmute.title").c_str(),
+                   i18n.GetTranslationW("init.error.winmute.text").c_str(),
+                   TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
+        ReleaseMutex(hMutex);
+        CloseHandle(hMutex);
+        return FALSE;
+    }
 
-   MSG msg = { nullptr };
-   WinMute program(settings);
-   if (program.Init()) {
-      for (;;) {
-         const BOOL msgResult = GetMessage(&msg, nullptr, 0, 0);
-         if (msgResult == 0) { // WM_QUIT
-            break;
-         } else if (msgResult == -1) {
-            WMLog::GetInstance().LogWinError(L"GetMessage", GetLastError());
-            break;
-         }
-         // Only route through IsDialogMessage if the foreground window
-         // actually belongs to this thread; otherwise keystrokes meant for
-         // other applications would be inspected against a foreign HWND.
-         HWND hwnd = GetForegroundWindow();
-         if (hwnd == nullptr
-             || GetWindowThreadProcessId(hwnd, nullptr) != GetCurrentThreadId()
-             || !IsDialogMessage(hwnd, &msg)) {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-         }
-      }
-   }
+    MSG msg = {nullptr};
+    WinMute program(settings);
+    if (program.Init()) {
+        for (;;) {
+            const BOOL msgResult = GetMessage(&msg, nullptr, 0, 0);
+            if (msgResult == 0) {  // WM_QUIT
+                break;
+            } else if (msgResult == -1) {
+                WMLog::GetInstance().LogWinError(L"GetMessage", GetLastError());
+                break;
+            }
+            // Only route through IsDialogMessage if the foreground window
+            // actually belongs to this thread; otherwise keystrokes meant for
+            // other applications would be inspected against a foreign HWND.
+            HWND hwnd = GetForegroundWindow();
+            if (hwnd == nullptr ||
+                GetWindowThreadProcessId(hwnd, nullptr) !=
+                    GetCurrentThreadId() ||
+                !IsDialogMessage(hwnd, &msg))
+            {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+            }
+        }
+    }
 
-   CoUninitialize();
-   ReleaseMutex(hMutex);
-   CloseHandle(hMutex);
-   return static_cast<int>(msg.wParam);
+    CoUninitialize();
+    ReleaseMutex(hMutex);
+    CloseHandle(hMutex);
+    return static_cast<int>(msg.wParam);
 }

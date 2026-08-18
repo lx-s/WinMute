@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -33,81 +33,82 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "common.h"
-
 #include <format>
 
+#include "common.h"
+
 enum class LogLevel {
-   Debug,
-   Info,
-   Warning,
-   Error,
+    Debug,
+    Info,
+    Warning,
+    Error,
 };
 
 struct LogMessage {
-   LogLevel level = LogLevel::Info;
-   std::chrono::zoned_time<std::chrono::milliseconds> time;
-   std::wstring message;
+    LogLevel level = LogLevel::Info;
+    std::chrono::zoned_time<std::chrono::milliseconds> time;
+    std::wstring message;
 };
 
 class WMLog {
-public:
-   static WMLog& GetInstance();
+   public:
+    static WMLog& GetInstance();
 
-   // The format string is validated against the arguments at compile time.
-   template<typename... Args>
-   void LogDebug(std::wformat_string<Args...> fmt, Args&&... args)
-   {
-      StoreMessage(LogLevel::Debug,
-                   std::format(fmt, std::forward<Args>(args)...).c_str());
-   }
-   template<typename... Args>
-   void LogInfo(std::wformat_string<Args...> fmt, Args&&... args)
-   {
-      StoreMessage(LogLevel::Info,
-                   std::format(fmt, std::forward<Args>(args)...).c_str());
-   }
-   template<typename... Args>
-   void LogWarning(std::wformat_string<Args...> fmt, Args&&... args)
-   {
-      StoreMessage(LogLevel::Warning,
-                   std::format(fmt, std::forward<Args>(args)...).c_str());
-   }
-   template<typename... Args>
-   void LogError(std::wformat_string<Args...> fmt, Args&&... args)
-   {
-      StoreMessage(LogLevel::Error,
-                   std::format(fmt, std::forward<Args>(args)...).c_str());
-   }
-   void LogWinError(const wchar_t *functionName, DWORD errorCode = -1);
+    // The format string is validated against the arguments at compile time.
+    template <typename... Args>
+    void LogDebug(std::wformat_string<Args...> fmt, Args&&... args)
+    {
+        StoreMessage(LogLevel::Debug,
+                     std::format(fmt, std::forward<Args>(args)...).c_str());
+    }
+    template <typename... Args>
+    void LogInfo(std::wformat_string<Args...> fmt, Args&&... args)
+    {
+        StoreMessage(LogLevel::Info,
+                     std::format(fmt, std::forward<Args>(args)...).c_str());
+    }
+    template <typename... Args>
+    void LogWarning(std::wformat_string<Args...> fmt, Args&&... args)
+    {
+        StoreMessage(LogLevel::Warning,
+                     std::format(fmt, std::forward<Args>(args)...).c_str());
+    }
+    template <typename... Args>
+    void LogError(std::wformat_string<Args...> fmt, Args&&... args)
+    {
+        StoreMessage(LogLevel::Error,
+                     std::format(fmt, std::forward<Args>(args)...).c_str());
+    }
+    void LogWinError(const wchar_t* functionName, DWORD errorCode = -1);
 
-   void EnableLogFile(bool enable);
-   bool IsLogFileEnabled() const;
-   std::wstring GetLogFilePath();
+    void EnableLogFile(bool enable);
+    bool IsLogFileEnabled() const;
+    std::wstring GetLogFilePath();
 
-   std::vector<LogMessage> GetLogMessages() const;
+    std::vector<LogMessage> GetLogMessages() const;
 
-   void RegisterForLogUpdates(HWND hWnd);
-   void UnregisterForLogUpdates(HWND hWnd);
+    void RegisterForLogUpdates(HWND hWnd);
+    void UnregisterForLogUpdates(HWND hWnd);
 
-   std::wstring FormatLogMessage(const LogMessage &logMsg, bool new_line=false) const;
+    std::wstring FormatLogMessage(const LogMessage& logMsg,
+                                  bool new_line = false) const;
 
-private:
-   WMLog();
-   ~WMLog();
-   WMLog(const WMLog&) = delete;
-   WMLog& operator=(const WMLog&) = delete;
+   private:
+    WMLog();
+    ~WMLog();
+    WMLog(const WMLog&) = delete;
+    WMLog& operator=(const WMLog&) = delete;
 
-   const size_t kMaxLogEntries_ = 500;
+    const size_t kMaxLogEntries_ = 500;
 
-   void StoreMessage(LogLevel level, const wchar_t *msg);
-   void DeleteLogFile();
+    void StoreMessage(LogLevel level, const wchar_t* msg);
+    void DeleteLogFile();
 
-   mutable std::mutex logMutex_;
-   mutable std::mutex wndMutex_;
+    mutable std::mutex logMutex_;
+    mutable std::mutex wndMutex_;
 
-   bool enabled_;
-   std::wofstream logFile_;
-   std::vector<LogMessage> logMessages_;
-   std::vector<HWND> registeredWindows_;
+    bool enabled_;
+    std::wofstream logFile_;
+    std::vector<LogMessage> logMessages_;
+    std::vector<HWND> registeredWindows_;
 };

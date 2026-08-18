@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -36,44 +36,43 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "common.h"
 
 struct LanguageModule {
-   std::wstring langName;
-   std::wstring fileName;
+    std::wstring langName;
+    std::wstring fileName;
 };
 
 using TranslationMap = std::map<std::string, std::wstring>;
 
 class WMi18n {
-public:
-   static WMi18n& GetInstance();
+   public:
+    static WMi18n& GetInstance();
 
-   bool Init();
+    bool Init();
 
-   bool LoadLanguage(const std::wstring &fileName);
-   std::vector<LanguageModule> GetAvailableLanguages() const;
+    bool LoadLanguage(const std::wstring& fileName);
+    std::vector<LanguageModule> GetAvailableLanguages() const;
 
-   std::optional<fs::path> GetLanguageFilesPath() const;
-   std::wstring GetCurrentLanguageName() const;
+    std::optional<fs::path> GetLanguageFilesPath() const;
+    std::wstring GetCurrentLanguageName() const;
 
-   const std::wstring GetTranslationW(const std::string& textId) const;
-   const std::string GetTranslationA(const std::string& textId) const;
+    const std::wstring GetTranslationW(const std::string& textId) const;
+    const std::string GetTranslationA(const std::string& textId) const;
 
-   bool SetItemText(HWND hWnd, int dlgItem, const std::string &textId) const;
-   bool SetItemText(HWND hItem, const std::string &textId) const;
+    bool SetItemText(HWND hWnd, int dlgItem, const std::string& textId) const;
+    bool SetItemText(HWND hItem, const std::string& textId) const;
 
-private:
-   WMi18n() noexcept;
-   ~WMi18n() noexcept;
-   WMi18n(const WMi18n &) = delete;
-   WMi18n &operator=(const WMi18n &) = delete;
+   private:
+    WMi18n() noexcept;
+    ~WMi18n() noexcept;
+    WMi18n(const WMi18n&) = delete;
+    WMi18n& operator=(const WMi18n&) = delete;
 
-   mutable std::mutex langMutex_;
-   const std::wstring defaultLangName_ = L"lang-en.json";
-   std::wstring curModuleName_;
-   TranslationMap loadedLang_;
-   TranslationMap defaultLang_;
+    mutable std::mutex langMutex_;
+    const std::wstring defaultLangName_ = L"lang-en.json";
+    std::wstring curModuleName_;
+    TranslationMap loadedLang_;
+    TranslationMap defaultLang_;
 
-   void UnloadLanguage();
-   bool LoadDefaultLanguage();
-   bool LoadLanguage(const std::wstring &fileName, TranslationMap &strings);
+    void UnloadLanguage();
+    bool LoadDefaultLanguage();
+    bool LoadLanguage(const std::wstring& fileName, TranslationMap& strings);
 };
-

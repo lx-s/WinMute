@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -43,31 +43,31 @@ POSSIBILITY OF SUCH DAMAGE.
 // on a dedicated worker thread; the public methods only enqueue a task and
 // return immediately.
 class MediaPlaybackController {
-public:
-   MediaPlaybackController();
-   ~MediaPlaybackController() = default; // jthread stops and joins the worker
-   MediaPlaybackController(const MediaPlaybackController &) = delete;
-   MediaPlaybackController &operator=(const MediaPlaybackController &) = delete;
+   public:
+    MediaPlaybackController();
+    ~MediaPlaybackController() = default;  // jthread stops and joins the worker
+    MediaPlaybackController(const MediaPlaybackController&) = delete;
+    MediaPlaybackController& operator=(const MediaPlaybackController&) = delete;
 
-   // Pauses the current media session if it is currently playing.
-   void RequestPause();
-   // Resumes the current media session, but only if a previous RequestPause
-   // actually paused it.
-   void RequestResume();
+    // Pauses the current media session if it is currently playing.
+    void RequestPause();
+    // Resumes the current media session, but only if a previous RequestPause
+    // actually paused it.
+    void RequestResume();
 
-private:
-   enum class MediaTask { Pause, Resume };
+   private:
+    enum class MediaTask { Pause, Resume };
 
-   void WorkerLoop(std::stop_token stopToken);
-   bool TryPauseCurrentSession(bool &pausedMedia);
-   bool TryPlayCurrentSession();
+    void WorkerLoop(std::stop_token stopToken);
+    bool TryPauseCurrentSession(bool& pausedMedia);
+    bool TryPlayCurrentSession();
 
-   std::mutex taskMutex_;
-   std::condition_variable_any taskAvailable_;
-   std::deque<MediaTask> tasks_;
-   bool pausedByUs_ = false; // only accessed on the worker thread
+    std::mutex taskMutex_;
+    std::condition_variable_any taskAvailable_;
+    std::deque<MediaTask> tasks_;
+    bool pausedByUs_ = false;  // only accessed on the worker thread
 
-   // Declared last: it is destroyed (stopped and joined) first, while all
-   // other members are still alive.
-   std::jthread worker_;
+    // Declared last: it is destroyed (stopped and joined) first, while all
+    // other members are still alive.
+    std::jthread worker_;
 };

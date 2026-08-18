@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -34,43 +34,47 @@ POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include "WMSettings.h"
-
 #include "libs/json.hpp"
 
 enum class UpdateCheckInterval : int {
-   DISABLED = 0,
-   ON_STARTUP = 1,
+    DISABLED = 0,
+    ON_STARTUP = 1,
 };
 
 struct UpdateVersionInfo {
-   std::wstring version;
-   std::wstring downloadUrl;
-   bool shouldUpdate = false;
+    std::wstring version;
+    std::wstring downloadUrl;
+    bool shouldUpdate = false;
 };
 
 struct UpdateInfo {
-   std::wstring currentVersion;
-   UpdateVersionInfo stable;
-   UpdateVersionInfo beta;
+    std::wstring currentVersion;
+    UpdateVersionInfo stable;
+    UpdateVersionInfo beta;
 };
 
 class UpdateChecker {
-public:
-   UpdateChecker();
-   ~UpdateChecker();
+   public:
+    UpdateChecker();
+    ~UpdateChecker();
 
-   bool IsUpdateCheckDisabledViaFile() const;
-   bool IsUpdateCheckEnabled(const WMSettings &settings) const;
-   bool GetUpdateInfo(UpdateInfo& updateInfo) const;
-private:
-   UpdateChecker(const UpdateChecker &) = delete;
-   UpdateChecker &operator=(const UpdateChecker &) = delete;
-   UpdateChecker(const UpdateChecker &&) = delete;
-   UpdateChecker &operator=(const UpdateChecker &&) = delete;
+    bool IsUpdateCheckDisabledViaFile() const;
+    bool IsUpdateCheckEnabled(const WMSettings& settings) const;
+    bool GetUpdateInfo(UpdateInfo& updateInfo) const;
 
-   bool GetVersionFile(std::string &fileContents) const;
-   bool ParseVersionFile(const std::string &fileContents, UpdateInfo& updateInfo) const;
-   std::optional<bool> IsVersionGreater(const std::wstring &newVers, const std::wstring &curVers) const;
-   bool ParseVersion(const std::wstring &vers, std::vector<int>& parsedVers) const;
-   bool ParseVersionInfo(const nlohmann::json &json, UpdateVersionInfo &versInfo) const;
+   private:
+    UpdateChecker(const UpdateChecker&) = delete;
+    UpdateChecker& operator=(const UpdateChecker&) = delete;
+    UpdateChecker(const UpdateChecker&&) = delete;
+    UpdateChecker& operator=(const UpdateChecker&&) = delete;
+
+    bool GetVersionFile(std::string& fileContents) const;
+    bool ParseVersionFile(const std::string& fileContents,
+                          UpdateInfo& updateInfo) const;
+    std::optional<bool> IsVersionGreater(const std::wstring& newVers,
+                                         const std::wstring& curVers) const;
+    bool ParseVersion(const std::wstring& vers,
+                      std::vector<int>& parsedVers) const;
+    bool ParseVersionInfo(const nlohmann::json& json,
+                          UpdateVersionInfo& versInfo) const;
 };

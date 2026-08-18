@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -31,14 +31,15 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#include "common.h"
-#include "WinAudio.h"
 #include "VistaAudioSessionEvents.h"
 
-VistaAudioSessionEvents::VistaAudioSessionEvents(WinAudio* notifyParent) :
-   ref_(1)
+#include "WinAudio.h"
+#include "common.h"
+
+VistaAudioSessionEvents::VistaAudioSessionEvents(WinAudio* notifyParent)
+    : ref_(1)
 {
-   notifyParent_ = notifyParent;
+    notifyParent_ = notifyParent;
 }
 
 VistaAudioSessionEvents::~VistaAudioSessionEvents()
@@ -47,97 +48,94 @@ VistaAudioSessionEvents::~VistaAudioSessionEvents()
 
 ULONG STDMETHODCALLTYPE VistaAudioSessionEvents::AddRef()
 {
-   return InterlockedIncrement(&ref_);
+    return InterlockedIncrement(&ref_);
 }
 
 ULONG STDMETHODCALLTYPE VistaAudioSessionEvents::Release()
 {
-   ULONG ref = InterlockedDecrement(&ref_);
-   if (ref == 0) {
-      delete this;
-   }
-   return ref;
+    ULONG ref = InterlockedDecrement(&ref_);
+    if (ref == 0) {
+        delete this;
+    }
+    return ref;
 }
 
-HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::QueryInterface(
-   REFIID riid, VOID** ppvInterface)
+HRESULT STDMETHODCALLTYPE
+VistaAudioSessionEvents::QueryInterface(REFIID riid, VOID** ppvInterface)
 {
-   if (riid == IID_IUnknown) {
-      AddRef();
-      *ppvInterface = static_cast<IUnknown*>(this);
-   } else if (riid == __uuidof(IAudioSessionEvents)) {
-      AddRef();
-      *ppvInterface = static_cast<IAudioSessionEvents*>(this);
-   } else {
-      *ppvInterface = nullptr;
-      return E_NOINTERFACE;
-   }
-   return S_OK;
+    if (riid == IID_IUnknown) {
+        AddRef();
+        *ppvInterface = static_cast<IUnknown*>(this);
+    } else if (riid == __uuidof(IAudioSessionEvents)) {
+        AddRef();
+        *ppvInterface = static_cast<IAudioSessionEvents*>(this);
+    } else {
+        *ppvInterface = nullptr;
+        return E_NOINTERFACE;
+    }
+    return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnDisplayNameChanged(
-   LPCWSTR /*newDisplayName*/, LPCGUID /*eventContext*/) noexcept
+    LPCWSTR /*newDisplayName*/, LPCGUID /*eventContext*/) noexcept
 {
-   return S_OK;
+    return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnIconPathChanged(
-   LPCWSTR /*newIconPath*/, LPCGUID /*eventContext*/) noexcept
+    LPCWSTR /*newIconPath*/, LPCGUID /*eventContext*/) noexcept
 {
-   return S_OK;
+    return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnSimpleVolumeChanged(
-   float /*newVolume*/, BOOL /*newMute*/, LPCGUID /*eventContext*/) noexcept
+    float /*newVolume*/, BOOL /*newMute*/, LPCGUID /*eventContext*/) noexcept
 {
-   return S_OK;
+    return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnChannelVolumeChanged(
-   DWORD channelCount,
-   float newChannelVolumeArray[],
-   DWORD changedChannel,
-   LPCGUID eventContext) noexcept
+    DWORD channelCount, float newChannelVolumeArray[], DWORD changedChannel,
+    LPCGUID eventContext) noexcept
 {
-   UNREFERENCED_PARAMETER(channelCount);
-   UNREFERENCED_PARAMETER(newChannelVolumeArray);
-   UNREFERENCED_PARAMETER(changedChannel);
-   UNREFERENCED_PARAMETER(eventContext);
-   return S_OK;
+    UNREFERENCED_PARAMETER(channelCount);
+    UNREFERENCED_PARAMETER(newChannelVolumeArray);
+    UNREFERENCED_PARAMETER(changedChannel);
+    UNREFERENCED_PARAMETER(eventContext);
+    return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnGroupingParamChanged(
-   LPCGUID /*newGroupingParam*/, LPCGUID /*eventContext*/) noexcept
+    LPCGUID /*newGroupingParam*/, LPCGUID /*eventContext*/) noexcept
 {
-   return S_OK;
+    return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnStateChanged(
-   AudioSessionState /*newState*/) noexcept
+HRESULT STDMETHODCALLTYPE
+VistaAudioSessionEvents::OnStateChanged(AudioSessionState /*newState*/) noexcept
 {
-   return S_OK;
+    return S_OK;
 }
 
 /* See
  * http://blogs.msdn.com/b/larryosterman/archive/2007/10/31/what-happens-when-audio-rendering-fails.aspx
  * for detailed information about each of these entries */
 HRESULT STDMETHODCALLTYPE VistaAudioSessionEvents::OnSessionDisconnected(
-   AudioSessionDisconnectReason disconnectReason) noexcept
+    AudioSessionDisconnectReason disconnectReason) noexcept
 {
-
-   switch (disconnectReason) {
-   case DisconnectReasonDeviceRemoval:
-   case DisconnectReasonFormatChanged:
-   case DisconnectReasonSessionDisconnected:
-      notifyParent_->ShouldReInit();
-      break;
-   case DisconnectReasonServerShutdown:
-      notifyParent_->OnAudioServiceShutdown();
-      break;
-   case DisconnectReasonSessionLogoff:
-      break;
-   case DisconnectReasonExclusiveModeOverride:
-      break;
-   }
-   return S_OK;
+    switch (disconnectReason) {
+        case DisconnectReasonDeviceRemoval:
+        case DisconnectReasonFormatChanged:
+        case DisconnectReasonSessionDisconnected:
+            notifyParent_->ShouldReInit();
+            break;
+        case DisconnectReasonServerShutdown:
+            notifyParent_->OnAudioServiceShutdown();
+            break;
+        case DisconnectReasonSessionLogoff:
+            break;
+        case DisconnectReasonExclusiveModeOverride:
+            break;
+    }
+    return S_OK;
 }

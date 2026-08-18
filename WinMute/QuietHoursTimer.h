@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -33,37 +33,37 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "common.h"
-
 #include "WMSettings.h"
+#include "common.h"
 
 static constexpr int WM_WINMUTE_QUIETHOURS_START = WM_APP + 202;
 static constexpr int WM_WINMUTE_QUIETHOURS_END = WM_APP + 203;
 
 class QuietHoursTimer {
-public:
-   QuietHoursTimer();
-   ~QuietHoursTimer();
-   QuietHoursTimer(const QuietHoursTimer&) = delete;
-   QuietHoursTimer& operator=(const QuietHoursTimer&) = delete;
+   public:
+    QuietHoursTimer();
+    ~QuietHoursTimer();
+    QuietHoursTimer(const QuietHoursTimer&) = delete;
+    QuietHoursTimer& operator=(const QuietHoursTimer&) = delete;
 
-   bool Init(HWND hParent, WMSettings& settings);
+    bool Init(HWND hParent, WMSettings& settings);
 
-   bool IsQuietTime() const;
+    bool IsQuietTime() const;
 
-   bool SetStart();
-   bool SetEnd();
+    bool SetStart();
+    bool SetEnd();
 
-   bool Reset(WMSettings& settings);
+    bool Reset(WMSettings& settings);
 
-private:
-   HWND hParent_;
-   bool initialized_;
-   bool enabled_;
-   std::vector<std::pair<DWORD, DWORD>> windows_; // sorted by start, seconds since midnight
-   int activeWindowIdx_;                           // index of currently scheduled/active window
+   private:
+    HWND hParent_;
+    bool initialized_;
+    bool enabled_;
+    std::vector<std::pair<DWORD, DWORD>>
+        windows_;          // sorted by start, seconds since midnight
+    int activeWindowIdx_;  // index of currently scheduled/active window
 
-   bool LoadFromSettings(WMSettings& settings);
-   int FindActiveWindowIdx() const;
-   int FindNextWindowIdx() const;
+    bool LoadFromSettings(WMSettings& settings);
+    int FindActiveWindowIdx() const;
+    int FindNextWindowIdx() const;
 };

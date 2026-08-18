@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -33,81 +33,78 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
+#include "MMNotificationClient.h"
+#include "VistaAudioSessionEvents.h"
 #include "common.h"
 
-#include "VistaAudioSessionEvents.h"
-#include "MMNotificationClient.h"
-
 class WinAudio {
-public:
-   virtual bool Init(HWND hParent) = 0;
-   virtual void ShouldReInit() = 0;
-   virtual void OnAudioServiceShutdown() = 0;
-   virtual bool AllEndpointsMuted() = 0;
-   virtual bool SaveMuteStatus() = 0;
-   virtual bool RestoreMuteStatus() = 0;
-   virtual void SetMute(bool mute) = 0;
-   virtual void MuteSpecificEndpoints(bool muteSpecific) = 0;
-   virtual void SetManagedEndpoints(
-      const std::vector<std::wstring> &endpoints,
-      bool isAllowList) = 0;
-   virtual ~WinAudio() noexcept {};
+   public:
+    virtual bool Init(HWND hParent) = 0;
+    virtual void ShouldReInit() = 0;
+    virtual void OnAudioServiceShutdown() = 0;
+    virtual bool AllEndpointsMuted() = 0;
+    virtual bool SaveMuteStatus() = 0;
+    virtual bool RestoreMuteStatus() = 0;
+    virtual void SetMute(bool mute) = 0;
+    virtual void MuteSpecificEndpoints(bool muteSpecific) = 0;
+    virtual void SetManagedEndpoints(const std::vector<std::wstring>& endpoints,
+                                     bool isAllowList) = 0;
+    virtual ~WinAudio() noexcept {};
 };
 
 struct Endpoint {
-   std::wstring deviceName;
-   CComPtr<IAudioEndpointVolume> endpointVolume;
-   CComPtr<IAudioSessionControl> sessionCtrl;
-   // VistaAudioSessionEvents is a ref-counted COM object; holding it in a
-   // CComPtr keeps its lifetime tied to the COM refcount instead of fighting
-   // it with a second owner.
-   CComPtr<VistaAudioSessionEvents> wasapiAudioEvents;
+    std::wstring deviceName;
+    CComPtr<IAudioEndpointVolume> endpointVolume;
+    CComPtr<IAudioSessionControl> sessionCtrl;
+    // VistaAudioSessionEvents is a ref-counted COM object; holding it in a
+    // CComPtr keeps its lifetime tied to the COM refcount instead of fighting
+    // it with a second owner.
+    CComPtr<VistaAudioSessionEvents> wasapiAudioEvents;
 
-   bool wasMuted = false;
+    bool wasMuted = false;
 
-   Endpoint() = default;
-   ~Endpoint();
-   Endpoint(const Endpoint&) = delete;
-   Endpoint& operator=(const Endpoint&) = delete;
+    Endpoint() = default;
+    ~Endpoint();
+    Endpoint(const Endpoint&) = delete;
+    Endpoint& operator=(const Endpoint&) = delete;
 };
 
 class VistaAudio : public WinAudio {
-public:
-   VistaAudio();
-   ~VistaAudio() noexcept;
+   public:
+    VistaAudio();
+    ~VistaAudio() noexcept;
 
-   bool Init(HWND hParent) override;
-   void ShouldReInit() override;
-   void OnAudioServiceShutdown() override;
-   bool AllEndpointsMuted() override;
-   bool SaveMuteStatus() override;
-   bool RestoreMuteStatus() override;
-   void SetMute(bool mute) override;
+    bool Init(HWND hParent) override;
+    void ShouldReInit() override;
+    void OnAudioServiceShutdown() override;
+    bool AllEndpointsMuted() override;
+    bool SaveMuteStatus() override;
+    bool RestoreMuteStatus() override;
+    void SetMute(bool mute) override;
 
-   void MuteSpecificEndpoints(bool muteSpecific) override;
-   void SetManagedEndpoints(
-      const std::vector<std::wstring> &endpoints,
-      bool isAllowList) override;
+    void MuteSpecificEndpoints(bool muteSpecific) override;
+    void SetManagedEndpoints(const std::vector<std::wstring>& endpoints,
+                             bool isAllowList) override;
 
-private:
-   void Uninit();
-   bool CheckForReInit();
+   private:
+    void Uninit();
+    bool CheckForReInit();
 
-   bool LoadAllEndpoints();
-   bool IsEndpointManaged(const std::wstring& endpointName) const;
+    bool LoadAllEndpoints();
+    bool IsEndpointManaged(const std::wstring& endpointName) const;
 
-   std::vector<std::unique_ptr<Endpoint>> endpoints_;
-   CComPtr<MMNotificationClient> mmnAudioEvents_;
-   CComPtr<IMMDeviceEnumerator> deviceEnumerator_;
+    std::vector<std::unique_ptr<Endpoint>> endpoints_;
+    CComPtr<MMNotificationClient> mmnAudioEvents_;
+    CComPtr<IMMDeviceEnumerator> deviceEnumerator_;
 
-   std::atomic<bool> reInit_;
-   bool muteSpecificEndpoints_;
-   bool muteSpecificEndpointsAllowList_;
-   HWND hParent_;
+    std::atomic<bool> reInit_;
+    bool muteSpecificEndpoints_;
+    bool muteSpecificEndpointsAllowList_;
+    HWND hParent_;
 
-   std::vector<std::wstring> managedEndpointNames_;
+    std::vector<std::wstring> managedEndpointNames_;
 
-   // non copy-able
-   VistaAudio(const VistaAudio& other) = delete;
-   VistaAudio& operator=(const VistaAudio& other) = delete;
+    // non copy-able
+    VistaAudio(const VistaAudio& other) = delete;
+    VistaAudio& operator=(const VistaAudio& other) = delete;
 };

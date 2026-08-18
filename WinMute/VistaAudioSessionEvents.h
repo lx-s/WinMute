@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -33,53 +33,48 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "common.h"
 #include <audiopolicy.h>
+
+#include "common.h"
 
 class WinAudio;
 
 class VistaAudioSessionEvents : public IAudioSessionEvents {
-public:
-   explicit VistaAudioSessionEvents(WinAudio* notifyParent);
-   ~VistaAudioSessionEvents();
+   public:
+    explicit VistaAudioSessionEvents(WinAudio* notifyParent);
+    ~VistaAudioSessionEvents();
 
-   // IUnknown methods -- AddRef, Release, and QueryInterface
-   ULONG STDMETHODCALLTYPE AddRef() override;
-   ULONG STDMETHODCALLTYPE Release() override;
+    // IUnknown methods -- AddRef, Release, and QueryInterface
+    ULONG STDMETHODCALLTYPE AddRef() override;
+    ULONG STDMETHODCALLTYPE Release() override;
 
-   HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, VOID** ppvInterface) override;
+    HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid,
+                                             VOID** ppvInterface) override;
 
-   // Notification methods for audio session events
-   HRESULT STDMETHODCALLTYPE OnDisplayNameChanged(
-      LPCWSTR newDisplayName,
-      LPCGUID eventContext) noexcept override;
+    // Notification methods for audio session events
+    HRESULT STDMETHODCALLTYPE OnDisplayNameChanged(
+        LPCWSTR newDisplayName, LPCGUID eventContext) noexcept override;
 
-   HRESULT STDMETHODCALLTYPE OnIconPathChanged(
-      LPCWSTR newIconPath,
-      LPCGUID eventContext) noexcept override;
+    HRESULT STDMETHODCALLTYPE OnIconPathChanged(
+        LPCWSTR newIconPath, LPCGUID eventContext) noexcept override;
 
-   HRESULT STDMETHODCALLTYPE OnSimpleVolumeChanged(
-      float newVolume,
-      BOOL newMute,
-      LPCGUID eventContext) noexcept override;
+    HRESULT STDMETHODCALLTYPE OnSimpleVolumeChanged(
+        float newVolume, BOOL newMute, LPCGUID eventContext) noexcept override;
 
-   HRESULT STDMETHODCALLTYPE OnChannelVolumeChanged(
-      DWORD channelCount,
-      float newChannelVolumeArray[],
-      DWORD changedChannel,
-      LPCGUID eventContext) noexcept override;
+    HRESULT STDMETHODCALLTYPE OnChannelVolumeChanged(
+        DWORD channelCount, float newChannelVolumeArray[], DWORD changedChannel,
+        LPCGUID eventContext) noexcept override;
 
-   HRESULT STDMETHODCALLTYPE OnGroupingParamChanged(
-      LPCGUID newGroupingParam,
-      LPCGUID eventContext) noexcept override;
+    HRESULT STDMETHODCALLTYPE OnGroupingParamChanged(
+        LPCGUID newGroupingParam, LPCGUID eventContext) noexcept override;
 
-   HRESULT STDMETHODCALLTYPE OnStateChanged(
-      AudioSessionState newState) noexcept override;
+    HRESULT STDMETHODCALLTYPE
+    OnStateChanged(AudioSessionState newState) noexcept override;
 
-   HRESULT STDMETHODCALLTYPE OnSessionDisconnected(
-      AudioSessionDisconnectReason disconnectReason) noexcept override;
+    HRESULT STDMETHODCALLTYPE OnSessionDisconnected(
+        AudioSessionDisconnectReason disconnectReason) noexcept override;
 
-private:
-   LONG ref_;
-   WinAudio* notifyParent_;
+   private:
+    LONG ref_;
+    WinAudio* notifyParent_;
 };

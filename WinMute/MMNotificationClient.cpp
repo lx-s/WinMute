@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -31,16 +31,17 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#include "common.h"
-#include "WinAudio.h"
 #include "MMNotificationClient.h"
 
 #include <Functiondiscoverykeys_devpkey.h>
 
+#include "WinAudio.h"
+#include "common.h"
+
 class WinAudio;
 
-MMNotificationClient::MMNotificationClient(WinAudio* notifyParent) :
-   ref_count_(1), deviceEnumerator_(nullptr), notifyParent_(notifyParent)
+MMNotificationClient::MMNotificationClient(WinAudio* notifyParent)
+    : ref_count_(1), deviceEnumerator_(nullptr), notifyParent_(notifyParent)
 {
 }
 
@@ -50,118 +51,117 @@ MMNotificationClient::~MMNotificationClient()
 
 STDMETHODIMP_(ULONG) MMNotificationClient::AddRef()
 {
-   return ++ref_count_;
+    return ++ref_count_;
 }
 
 STDMETHODIMP_(ULONG) MMNotificationClient::Release()
 {
-   const ULONG ref = --ref_count_;
-   if (ref == 0) {
-      delete this;
-   }
-   return ref;
+    const ULONG ref = --ref_count_;
+    if (ref == 0) {
+        delete this;
+    }
+    return ref;
 }
 
-STDMETHODIMP_(HRESULT) MMNotificationClient::QueryInterface(
-   REFIID riid, VOID** ppvInterface)
+STDMETHODIMP_(HRESULT)
+MMNotificationClient::QueryInterface(REFIID riid, VOID** ppvInterface)
 {
-   if (IID_IUnknown == riid) {
-      AddRef();
-      *ppvInterface = static_cast<IUnknown*>(this);
-   } else if (__uuidof(IMMNotificationClient) == riid) {
-      AddRef();
-      *ppvInterface = static_cast<IMMNotificationClient*>(this);
-   } else {
-      *ppvInterface = nullptr;
-      return E_NOINTERFACE;
-   }
-   return S_OK;
+    if (IID_IUnknown == riid) {
+        AddRef();
+        *ppvInterface = static_cast<IUnknown*>(this);
+    } else if (__uuidof(IMMNotificationClient) == riid) {
+        AddRef();
+        *ppvInterface = static_cast<IMMNotificationClient*>(this);
+    } else {
+        *ppvInterface = nullptr;
+        return E_NOINTERFACE;
+    }
+    return S_OK;
 }
 
-
-STDMETHODIMP_(HRESULT) MMNotificationClient::OnDefaultDeviceChanged(
-   EDataFlow, ERole, LPCWSTR)
+STDMETHODIMP_(HRESULT)
+MMNotificationClient::OnDefaultDeviceChanged(EDataFlow, ERole, LPCWSTR)
 {
-   return S_OK;
+    return S_OK;
 }
 
-STDMETHODIMP_(HRESULT) MMNotificationClient::OnDeviceAdded(LPCWSTR pwstrDeviceId)
+STDMETHODIMP_(HRESULT)
+MMNotificationClient::OnDeviceAdded(LPCWSTR pwstrDeviceId)
 {
-   if (notifyParent_ && pwstrDeviceId != nullptr) {
-      const auto deviceName = GetDeviceNameFromId(pwstrDeviceId);
-      WMLog::GetInstance().LogInfo(L"Device \"{}\" added", deviceName);
-      notifyParent_->ShouldReInit();
-   }
-   return S_OK;
+    if (notifyParent_ && pwstrDeviceId != nullptr) {
+        const auto deviceName = GetDeviceNameFromId(pwstrDeviceId);
+        WMLog::GetInstance().LogInfo(L"Device \"{}\" added", deviceName);
+        notifyParent_->ShouldReInit();
+    }
+    return S_OK;
 }
 
-STDMETHODIMP_(HRESULT) MMNotificationClient::OnDeviceRemoved(LPCWSTR pwstrDeviceId)
+STDMETHODIMP_(HRESULT)
+MMNotificationClient::OnDeviceRemoved(LPCWSTR pwstrDeviceId)
 {
-   if (notifyParent_ && pwstrDeviceId != nullptr) {
-      const auto deviceName = GetDeviceNameFromId(pwstrDeviceId);
-      WMLog::GetInstance().LogInfo(L"Device \"{}\" removed", deviceName);
-      notifyParent_->ShouldReInit();
-   }
-   return S_OK;
+    if (notifyParent_ && pwstrDeviceId != nullptr) {
+        const auto deviceName = GetDeviceNameFromId(pwstrDeviceId);
+        WMLog::GetInstance().LogInfo(L"Device \"{}\" removed", deviceName);
+        notifyParent_->ShouldReInit();
+    }
+    return S_OK;
 }
 
-STDMETHODIMP_(HRESULT) MMNotificationClient::OnDeviceStateChanged(
-   LPCWSTR pwstrDeviceId, DWORD dwNewState)
+STDMETHODIMP_(HRESULT)
+MMNotificationClient::OnDeviceStateChanged(LPCWSTR pwstrDeviceId,
+                                           DWORD dwNewState)
 {
-   bool notify = true;
-   std::wstring what;
-   if (pwstrDeviceId == nullptr) {
-      return S_OK;
-   }
-   if (dwNewState == DEVICE_STATE_NOTPRESENT) {
-      what = L"Not present";
-   } else if (dwNewState == DEVICE_STATE_UNPLUGGED) {
-      what = L"Unplugged";
-   } else if (dwNewState == DEVICE_STATE_ACTIVE) {
-      what = L"Active";
-   } else {
-      notify = false;
-   }
+    bool notify = true;
+    std::wstring what;
+    if (pwstrDeviceId == nullptr) {
+        return S_OK;
+    }
+    if (dwNewState == DEVICE_STATE_NOTPRESENT) {
+        what = L"Not present";
+    } else if (dwNewState == DEVICE_STATE_UNPLUGGED) {
+        what = L"Unplugged";
+    } else if (dwNewState == DEVICE_STATE_ACTIVE) {
+        what = L"Active";
+    } else {
+        notify = false;
+    }
 
-   if (notify && notifyParent_) {
-      // TODO: Check if output device
-      const auto deviceName = GetDeviceNameFromId(pwstrDeviceId);
-      WMLog::GetInstance().LogInfo(
-         L"Device \"{}\" status changed to {}",
-         deviceName,
-         what);
-      notifyParent_->ShouldReInit();
-   } 
-   return S_OK;
+    if (notify && notifyParent_) {
+        // TODO: Check if output device
+        const auto deviceName = GetDeviceNameFromId(pwstrDeviceId);
+        WMLog::GetInstance().LogInfo(L"Device \"{}\" status changed to {}",
+                                     deviceName, what);
+        notifyParent_->ShouldReInit();
+    }
+    return S_OK;
 }
 
-STDMETHODIMP_(HRESULT) MMNotificationClient::OnPropertyValueChanged(
-   LPCWSTR, const PROPERTYKEY)
+STDMETHODIMP_(HRESULT)
+MMNotificationClient::OnPropertyValueChanged(LPCWSTR, const PROPERTYKEY)
 {
-   return S_OK;
+    return S_OK;
 }
 
 std::wstring MMNotificationClient::GetDeviceNameFromId(LPCWSTR pwstrDeviceId)
 {
-   HRESULT hr = S_OK;
-   if (deviceEnumerator_ == nullptr) {
-      // Get enumerator for audio endpoint devices.
-      hr = CoCreateInstance(
-         __uuidof(MMDeviceEnumerator),
-         nullptr, CLSCTX_INPROC_SERVER,
-         __uuidof(IMMDeviceEnumerator),
-         reinterpret_cast<void **>(&deviceEnumerator_));
-   }
+    HRESULT hr = S_OK;
+    if (deviceEnumerator_ == nullptr) {
+        // Get enumerator for audio endpoint devices.
+        hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr,
+                              CLSCTX_INPROC_SERVER,
+                              __uuidof(IMMDeviceEnumerator),
+                              reinterpret_cast<void**>(&deviceEnumerator_));
+    }
 
-   CComPtr<IMMDevice> devicePtr = nullptr;
-   if (SUCCEEDED(hr)) {
-      hr = deviceEnumerator_->GetDevice(pwstrDeviceId, &devicePtr);
-   }
-   if (SUCCEEDED(hr)) {
-      const auto device_name = GetAudioDeviceName(devicePtr);
-      if (device_name) {
-         return *device_name;
-      }
-   }
-   return L"Unknown device";
+    CComPtr<IMMDevice> devicePtr = nullptr;
+    if (SUCCEEDED(hr)) {
+        hr = deviceEnumerator_->GetDevice(pwstrDeviceId, &devicePtr);
+    }
+    if (SUCCEEDED(hr)) {
+        const auto device_name = GetAudioDeviceName(devicePtr);
+        if (device_name) {
+            return *device_name;
+        }
+    }
+    return L"Unknown device";
 }

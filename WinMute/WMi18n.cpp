@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -45,213 +45,206 @@ WMi18n::~WMi18n() noexcept
 
 WMi18n& WMi18n::GetInstance()
 {
-   static WMi18n inst;
-   return inst;
+    static WMi18n inst;
+    return inst;
 }
 
 bool WMi18n::Init()
 {
-   return LoadDefaultLanguage();
+    return LoadDefaultLanguage();
 }
 
 std::optional<fs::path> WMi18n::GetLanguageFilesPath() const
 {
-   wchar_t wmPath[MAX_PATH + 1]{ 0 };
-   if (GetModuleFileNameW(nullptr, wmPath, MAX_PATH) <= 0) {
-      WMLog::GetInstance().LogWinError(L"GetModuleFileNameW", GetLastError());
-      return std::nullopt;
-   }
-   fs::path langPath = wmPath;
-   return langPath.remove_filename() / L"lang";
+    wchar_t wmPath[MAX_PATH + 1]{0};
+    if (GetModuleFileNameW(nullptr, wmPath, MAX_PATH) <= 0) {
+        WMLog::GetInstance().LogWinError(L"GetModuleFileNameW", GetLastError());
+        return std::nullopt;
+    }
+    fs::path langPath = wmPath;
+    return langPath.remove_filename() / L"lang";
 }
 
 std::vector<LanguageModule> WMi18n::GetAvailableLanguages() const
 {
-   std::vector<LanguageModule> langDlls;
-   const auto langPath = GetLanguageFilesPath();
-   if (langPath.has_value()) {
-      const fs::path searchPath = *langPath / L"*.json";
-      WIN32_FIND_DATAW wfd{ 0 };
-      HANDLE hFindFile = FindFirstFileExW(
-         searchPath.c_str(),
-         FindExInfoBasic,
-         &wfd,
-         FindExSearchNameMatch,
-         nullptr,
-         FIND_FIRST_EX_CASE_SENSITIVE);
-      if (hFindFile != INVALID_HANDLE_VALUE) {
-         do {
-            try {
-               const fs::path langFilePath = *langPath / wfd.cFileName;
-               std::ifstream json_file(langFilePath);
-               nlohmann::json file_info = nlohmann::json::parse(json_file);
-               if (file_info.contains("meta.lang.name")) {
-                  LanguageModule langMod;
-                  langMod.fileName = wfd.cFileName;
-                  langMod.langName = ConvertStringToWideString(file_info["meta.lang.name"]);
-                  langDlls.push_back(langMod);
-               }
-            } catch (const nlohmann::json::parse_error &pe) {
-               WMLog::GetInstance().LogError(L"Failed to parse language file \"{}\": {}",
-                                             wfd.cFileName, ConvertStringToWideString(pe.what()));
-            }
-         } while (FindNextFileW(hFindFile, &wfd));
-      }
-   }
-   return langDlls;
+    std::vector<LanguageModule> langDlls;
+    const auto langPath = GetLanguageFilesPath();
+    if (langPath.has_value()) {
+        const fs::path searchPath = *langPath / L"*.json";
+        WIN32_FIND_DATAW wfd{0};
+        HANDLE hFindFile = FindFirstFileExW(
+            searchPath.c_str(), FindExInfoBasic, &wfd, FindExSearchNameMatch,
+            nullptr, FIND_FIRST_EX_CASE_SENSITIVE);
+        if (hFindFile != INVALID_HANDLE_VALUE) {
+            do {
+                try {
+                    const fs::path langFilePath = *langPath / wfd.cFileName;
+                    std::ifstream json_file(langFilePath);
+                    nlohmann::json file_info = nlohmann::json::parse(json_file);
+                    if (file_info.contains("meta.lang.name")) {
+                        LanguageModule langMod;
+                        langMod.fileName = wfd.cFileName;
+                        langMod.langName = ConvertStringToWideString(
+                            file_info["meta.lang.name"]);
+                        langDlls.push_back(langMod);
+                    }
+                } catch (const nlohmann::json::parse_error& pe) {
+                    WMLog::GetInstance().LogError(
+                        L"Failed to parse language file \"{}\": {}",
+                        wfd.cFileName, ConvertStringToWideString(pe.what()));
+                }
+            } while (FindNextFileW(hFindFile, &wfd));
+        }
+    }
+    return langDlls;
 }
 
 std::wstring WMi18n::GetCurrentLanguageName() const
 {
-   return GetTranslationW("meta.lang.name");
+    return GetTranslationW("meta.lang.name");
 }
 
 bool WMi18n::LoadDefaultLanguage()
 {
-   const std::lock_guard lock(langMutex_);
-   if (!LoadLanguage(defaultLangName_, defaultLang_)) {
-      const std::wstring error = std::format(
-         L"Failed to load default language. Please make sure the langs-Folder exists and contains {}.",
-         defaultLangName_);
-      TaskDialog(
-         nullptr,
-         nullptr,
-         PROGRAM_NAME,
-         L"Failed to initialize translation framework",
-         error.c_str(),
-         TDCBF_OK_BUTTON,
-         TD_ERROR_ICON,
-         nullptr);
-      return false;
-   }
-   return true;
+    const std::lock_guard lock(langMutex_);
+    if (!LoadLanguage(defaultLangName_, defaultLang_)) {
+        const std::wstring error = std::format(
+            L"Failed to load default language. Please make sure the "
+            L"langs-Folder exists and contains {}.",
+            defaultLangName_);
+        TaskDialog(nullptr, nullptr, PROGRAM_NAME,
+                   L"Failed to initialize translation framework", error.c_str(),
+                   TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
+        return false;
+    }
+    return true;
 }
 
-bool WMi18n::LoadLanguage(const std::wstring &fileName, TranslationMap &strings)
+bool WMi18n::LoadLanguage(const std::wstring& fileName, TranslationMap& strings)
 {
-   WMLog &log = WMLog::GetInstance();
-   auto langFilePath = GetLanguageFilesPath();
-   if (!langFilePath) {
-      return false;
-   }
-   const fs::path loadFilePath{ fileName};
-   *langFilePath /= loadFilePath.filename(); // Sanitize
-   if (!fs::exists(*langFilePath)) {
-      log.LogError(L"Language module \"{}\" does not exist", langFilePath->wstring());
-      return false;
-   }
-   try {
-      std::ifstream json_file(*langFilePath);
-      nlohmann::json json_data = nlohmann::json::parse(json_file);
-      TranslationMap translations_temp;
-      for (auto it = json_data.begin(); it != json_data.end(); ++it) {
-         if (it->is_structured()) {
-            log.LogError(L"Language module \"{}\" has nested elements", langFilePath->wstring());
-            return false;
-         }
-         if (it.value() == L"") {
-            log.LogInfo(L"No translation for \"{}\" found in language file",
-                        ConvertStringToWideString(it.key()));
-         } else {
-            const auto value = ConvertStringToWideString(it.value());
-            if (value == L"") {
-               log.LogError(L"Unable to convert language element \"{}\"",
-                            ConvertStringToWideString(it.key()));
-               return false;
+    WMLog& log = WMLog::GetInstance();
+    auto langFilePath = GetLanguageFilesPath();
+    if (!langFilePath) {
+        return false;
+    }
+    const fs::path loadFilePath{fileName};
+    *langFilePath /= loadFilePath.filename();  // Sanitize
+    if (!fs::exists(*langFilePath)) {
+        log.LogError(L"Language module \"{}\" does not exist",
+                     langFilePath->wstring());
+        return false;
+    }
+    try {
+        std::ifstream json_file(*langFilePath);
+        nlohmann::json json_data = nlohmann::json::parse(json_file);
+        TranslationMap translations_temp;
+        for (auto it = json_data.begin(); it != json_data.end(); ++it) {
+            if (it->is_structured()) {
+                log.LogError(L"Language module \"{}\" has nested elements",
+                             langFilePath->wstring());
+                return false;
             }
-            if (translations_temp.contains(it.key())) {
-               log.LogError(L"Double entry for language key \"{}\" found.",
+            if (it.value() == L"") {
+                log.LogInfo(L"No translation for \"{}\" found in language file",
                             ConvertStringToWideString(it.key()));
-               return false;
+            } else {
+                const auto value = ConvertStringToWideString(it.value());
+                if (value == L"") {
+                    log.LogError(L"Unable to convert language element \"{}\"",
+                                 ConvertStringToWideString(it.key()));
+                    return false;
+                }
+                if (translations_temp.contains(it.key())) {
+                    log.LogError(L"Double entry for language key \"{}\" found.",
+                                 ConvertStringToWideString(it.key()));
+                    return false;
+                }
+                translations_temp[it.key()] = value;
             }
-            translations_temp[it.key()] = value;
-         }
-      }
-      strings = std::move(translations_temp);
-   } catch (const nlohmann::json::parse_error &pe) {
-      log.LogError(
-         L"Failed to parse language file \"{}\": {}",
-         langFilePath->filename().wstring(),
-         ConvertStringToWideString(pe.what()));
-      return false;
-   }
-   return true;
+        }
+        strings = std::move(translations_temp);
+    } catch (const nlohmann::json::parse_error& pe) {
+        log.LogError(L"Failed to parse language file \"{}\": {}",
+                     langFilePath->filename().wstring(),
+                     ConvertStringToWideString(pe.what()));
+        return false;
+    }
+    return true;
 }
 
-bool WMi18n::LoadLanguage(const std::wstring &fileName)
+bool WMi18n::LoadLanguage(const std::wstring& fileName)
 {
-   const std::lock_guard lock(langMutex_);
-   if (fileName.empty() || fileName == defaultLangName_) {
-      UnloadLanguage();
-      return true;
-   }
+    const std::lock_guard lock(langMutex_);
+    if (fileName.empty() || fileName == defaultLangName_) {
+        UnloadLanguage();
+        return true;
+    }
 
-   TranslationMap new_lang;
-   if (!LoadLanguage(fileName, new_lang)) {
-      WMLog::GetInstance().LogError(
-         L"Failed to load language \"{}\"",
-         fileName);
-      return false;
-   } else {
-      UnloadLanguage();
-      loadedLang_ = std::move(new_lang);
-   }
+    TranslationMap new_lang;
+    if (!LoadLanguage(fileName, new_lang)) {
+        WMLog::GetInstance().LogError(L"Failed to load language \"{}\"",
+                                      fileName);
+        return false;
+    } else {
+        UnloadLanguage();
+        loadedLang_ = std::move(new_lang);
+    }
 
-   return true;
+    return true;
 }
 
 void WMi18n::UnloadLanguage()
 {
-   loadedLang_.clear();
+    loadedLang_.clear();
 }
 
 const std::wstring WMi18n::GetTranslationW(const std::string& textId) const
 {
-   std::wstring text;
-   const std::lock_guard lock(langMutex_);
-   if (!loadedLang_.empty() && loadedLang_.contains(textId)) {
-      auto it = loadedLang_.find(textId);
-      if (it != loadedLang_.end() && !it->second.empty()) {
-         text = it->second;
-      }
-   }
-   if (text.empty() && defaultLang_.contains(textId)) {
-      auto it = defaultLang_.find(textId);
-      if (it != defaultLang_.cend() && !it->second.empty()) {
-         text = it->second;
-      }
-   }
-   if (text.empty()) {
-      std::wstring err = std::format(
-         L"Translation for {} not found",
-         ConvertStringToWideString(textId));
-      return err;
-   }
-   return text;
+    std::wstring text;
+    const std::lock_guard lock(langMutex_);
+    if (!loadedLang_.empty() && loadedLang_.contains(textId)) {
+        auto it = loadedLang_.find(textId);
+        if (it != loadedLang_.end() && !it->second.empty()) {
+            text = it->second;
+        }
+    }
+    if (text.empty() && defaultLang_.contains(textId)) {
+        auto it = defaultLang_.find(textId);
+        if (it != defaultLang_.cend() && !it->second.empty()) {
+            text = it->second;
+        }
+    }
+    if (text.empty()) {
+        std::wstring err = std::format(L"Translation for {} not found",
+                                       ConvertStringToWideString(textId));
+        return err;
+    }
+    return text;
 }
 
-const std::string WMi18n::GetTranslationA(const std::string &textId) const
+const std::string WMi18n::GetTranslationA(const std::string& textId) const
 {
-   const std::wstring wtext = GetTranslationW(textId);
-   return ConvertWideStringToString(wtext);
+    const std::wstring wtext = GetTranslationW(textId);
+    return ConvertWideStringToString(wtext);
 }
 
-bool WMi18n::SetItemText(HWND hWnd, int dlgItem, const std::string& textId) const
+bool WMi18n::SetItemText(HWND hWnd, int dlgItem,
+                         const std::string& textId) const
 {
-   const auto text = GetTranslationW(textId);
-   if (!SetDlgItemTextW(hWnd, dlgItem, text.c_str())) {
-      WMLog::GetInstance().LogWinError(L"SetDlgItemTextW", GetLastError());
-      return false;
-   }
-   return true;
+    const auto text = GetTranslationW(textId);
+    if (!SetDlgItemTextW(hWnd, dlgItem, text.c_str())) {
+        WMLog::GetInstance().LogWinError(L"SetDlgItemTextW", GetLastError());
+        return false;
+    }
+    return true;
 }
 
-bool WMi18n::SetItemText(HWND hItem, const std::string &textId) const
+bool WMi18n::SetItemText(HWND hItem, const std::string& textId) const
 {
-   const auto text = GetTranslationW(textId);
-   if (!SetWindowTextW(hItem, text.c_str())) {
-      WMLog::GetInstance().LogWinError(L"SetDlgItemTextW", GetLastError());
-      return false;
-   }
-   return true;
+    const auto text = GetTranslationW(textId);
+    if (!SetWindowTextW(hItem, text.c_str())) {
+        WMLog::GetInstance().LogWinError(L"SetDlgItemTextW", GetLastError());
+        return false;
+    }
+    return true;
 }

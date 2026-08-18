@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -36,215 +36,237 @@ POSSIBILITY OF SUCH DAMAGE.
 extern HINSTANCE hglobInstance;
 
 static constexpr UINT_PTR QUIETHOURS_TIMER_START_ID = 271020;
-static constexpr UINT_PTR QUIETHOURS_TIMER_END_ID   = 271021;
-static constexpr DWORD    SECONDS_PER_DAY           = 86400;
+static constexpr UINT_PTR QUIETHOURS_TIMER_END_ID = 271021;
+static constexpr DWORD SECONDS_PER_DAY = 86400;
 
 // Returns seconds since midnight for the current local time
 static DWORD GetNowSeconds() noexcept
 {
-   SYSTEMTIME now;
-   GetLocalTime(&now);
-   return static_cast<DWORD>(now.wHour) * 3600
-        + static_cast<DWORD>(now.wMinute) * 60
-        + static_cast<DWORD>(now.wSecond);
+    SYSTEMTIME now;
+    GetLocalTime(&now);
+    return static_cast<DWORD>(now.wHour) * 3600 +
+           static_cast<DWORD>(now.wMinute) * 60 +
+           static_cast<DWORD>(now.wSecond);
 }
 
 // Returns true if t falls within [wStart, wEnd) on the circular 24-hour clock
 static bool TimeInWindow(DWORD t, DWORD wStart, DWORD wEnd) noexcept
 {
-   if (wStart < wEnd) {
-      return t >= wStart && t < wEnd;
-   } else { // wraps midnight
-      return t >= wStart || t < wEnd;
-   }
+    if (wStart < wEnd) {
+        return t >= wStart && t < wEnd;
+    } else {  // wraps midnight
+        return t >= wStart || t < wEnd;
+    }
 }
 
-static VOID CALLBACK QuietHoursTimerProc(
-   HWND hWnd, UINT /*msg*/, UINT_PTR id, DWORD /*msSinceSysStart*/) noexcept
+static VOID CALLBACK QuietHoursTimerProc(HWND hWnd, UINT /*msg*/, UINT_PTR id,
+                                         DWORD /*msSinceSysStart*/) noexcept
 {
-   KillTimer(hWnd, id);
-   if (id == QUIETHOURS_TIMER_START_ID) {
-      SendMessageW(hWnd, WM_WINMUTE_QUIETHOURS_START, 0, 0);
-   } else if (id == QUIETHOURS_TIMER_END_ID) {
-      SendMessageW(hWnd, WM_WINMUTE_QUIETHOURS_END, 0, 0);
-   }
+    KillTimer(hWnd, id);
+    if (id == QUIETHOURS_TIMER_START_ID) {
+        SendMessageW(hWnd, WM_WINMUTE_QUIETHOURS_START, 0, 0);
+    } else if (id == QUIETHOURS_TIMER_END_ID) {
+        SendMessageW(hWnd, WM_WINMUTE_QUIETHOURS_END, 0, 0);
+    }
 }
 
 // ---------------------------------------------------------------------------
 
-QuietHoursTimer::QuietHoursTimer() :
-   hParent_(nullptr),
-   initialized_(false),
-   enabled_(false),
-   activeWindowIdx_(-1)
+QuietHoursTimer::QuietHoursTimer()
+    : hParent_(nullptr),
+      initialized_(false),
+      enabled_(false),
+      activeWindowIdx_(-1)
 {
 }
 
 QuietHoursTimer::~QuietHoursTimer()
 {
-   if (initialized_ && enabled_) {
-      KillTimer(hParent_, QUIETHOURS_TIMER_START_ID);
-      KillTimer(hParent_, QUIETHOURS_TIMER_END_ID);
-   }
+    if (initialized_ && enabled_) {
+        KillTimer(hParent_, QUIETHOURS_TIMER_START_ID);
+        KillTimer(hParent_, QUIETHOURS_TIMER_END_ID);
+    }
 }
 
 // Returns the index of the window that currently contains the local time,
 // or -1 if none is active.
 int QuietHoursTimer::FindActiveWindowIdx() const
 {
-   const DWORD now = GetNowSeconds();
-   for (int i = 0; i < static_cast<int>(windows_.size()); ++i) {
-      if (TimeInWindow(now, windows_[i].first, windows_[i].second)) {
-         return i;
-      }
-   }
-   return -1;
+    const DWORD now = GetNowSeconds();
+    for (int i = 0; i < static_cast<int>(windows_.size()); ++i) {
+        if (TimeInWindow(now, windows_[i].first, windows_[i].second)) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 // Returns the index of the window whose start time is soonest in the future
 // (wrapping around midnight if necessary).
 int QuietHoursTimer::FindNextWindowIdx() const
 {
-   if (windows_.empty()) return -1;
+    if (windows_.empty())
+        return -1;
 
-   const DWORD now = GetNowSeconds();
-   int   bestIdx  = -1;
-   DWORD bestDiff = MAXDWORD;
+    const DWORD now = GetNowSeconds();
+    int bestIdx = -1;
+    DWORD bestDiff = MAXDWORD;
 
-   for (int i = 0; i < static_cast<int>(windows_.size()); ++i) {
-      const DWORD s = windows_[i].first;
-      const DWORD diff = (s >= now) ? (s - now) : (SECONDS_PER_DAY - now + s);
-      if (diff < bestDiff) {
-         bestDiff = diff;
-         bestIdx  = i;
-      }
-   }
-   return bestIdx;
+    for (int i = 0; i < static_cast<int>(windows_.size()); ++i) {
+        const DWORD s = windows_[i].first;
+        const DWORD diff = (s >= now) ? (s - now) : (SECONDS_PER_DAY - now + s);
+        if (diff < bestDiff) {
+            bestDiff = diff;
+            bestIdx = i;
+        }
+    }
+    return bestIdx;
 }
 
 bool QuietHoursTimer::SetStart()
 {
-   KillTimer(hParent_, QUIETHOURS_TIMER_START_ID);
+    KillTimer(hParent_, QUIETHOURS_TIMER_START_ID);
 
-   if (!enabled_ || windows_.empty()) return true;
+    if (!enabled_ || windows_.empty())
+        return true;
 
-   const int idx = FindNextWindowIdx();
-   if (idx == -1) return true;
+    const int idx = FindNextWindowIdx();
+    if (idx == -1)
+        return true;
 
-   activeWindowIdx_ = idx;
+    activeWindowIdx_ = idx;
 
-   const DWORD now     = GetNowSeconds();
-   const DWORD startSec = windows_[idx].first;
-   const DWORD diffSec  = (startSec >= now)
-      ? (startSec - now)
-      : (SECONDS_PER_DAY - now + startSec);
+    const DWORD now = GetNowSeconds();
+    const DWORD startSec = windows_[idx].first;
+    const DWORD diffSec = (startSec >= now)
+                              ? (startSec - now)
+                              : (SECONDS_PER_DAY - now + startSec);
 
-   // diffSec of 0 shouldn't happen here (caller checked FindActiveWindowIdx first),
-   // but guard against it so the timer fires without an infinite-delay edge case.
-   const UINT msDelay = (diffSec > 0) ? (diffSec * 1000u) : 1u;
+    // diffSec of 0 shouldn't happen here (caller checked FindActiveWindowIdx
+    // first), but guard against it so the timer fires without an infinite-delay
+    // edge case.
+    const UINT msDelay = (diffSec > 0) ? (diffSec * 1000u) : 1u;
 
-   if (SetTimer(hParent_, QUIETHOURS_TIMER_START_ID, msDelay, QuietHoursTimerProc) == 0) {
-      TaskDialog(
-         hParent_, hglobInstance, PROGRAM_NAME,
-         WMi18n::GetInstance().GetTranslationW("popup.error.quiet-hours-start.title").c_str(),
-         WMi18n::GetInstance().GetTranslationW("popup.error.quiet-hours-start.text").c_str(),
-         TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
-      return false;
-   }
+    if (SetTimer(hParent_, QUIETHOURS_TIMER_START_ID, msDelay,
+                 QuietHoursTimerProc) == 0)
+    {
+        TaskDialog(hParent_, hglobInstance, PROGRAM_NAME,
+                   WMi18n::GetInstance()
+                       .GetTranslationW("popup.error.quiet-hours-start.title")
+                       .c_str(),
+                   WMi18n::GetInstance()
+                       .GetTranslationW("popup.error.quiet-hours-start.text")
+                       .c_str(),
+                   TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
+        return false;
+    }
 
-   WMLog::GetInstance().LogInfo(
-      L"QuietHours: Next start scheduled in {} s (window {}, {:02}:{:02}-{:02}:{:02})",
-      diffSec, idx,
-      windows_[idx].first / 3600,  (windows_[idx].first % 3600) / 60,
-      windows_[idx].second / 3600, (windows_[idx].second % 3600) / 60);
+    WMLog::GetInstance().LogInfo(
+        L"QuietHours: Next start scheduled in {} s (window {}, "
+        L"{:02}:{:02}-{:02}:{:02})",
+        diffSec, idx, windows_[idx].first / 3600,
+        (windows_[idx].first % 3600) / 60, windows_[idx].second / 3600,
+        (windows_[idx].second % 3600) / 60);
 
-   return true;
+    return true;
 }
 
 bool QuietHoursTimer::SetEnd()
 {
-   KillTimer(hParent_, QUIETHOURS_TIMER_END_ID);
+    KillTimer(hParent_, QUIETHOURS_TIMER_END_ID);
 
-   if (!enabled_ || windows_.empty() || activeWindowIdx_ < 0) return true;
+    if (!enabled_ || windows_.empty() || activeWindowIdx_ < 0)
+        return true;
 
-   const DWORD now    = GetNowSeconds();
-   const DWORD endSec = windows_[activeWindowIdx_].second;
-   const DWORD diffSec = (endSec > now)
-      ? (endSec - now)
-      : (SECONDS_PER_DAY - now + endSec);
+    const DWORD now = GetNowSeconds();
+    const DWORD endSec = windows_[activeWindowIdx_].second;
+    const DWORD diffSec =
+        (endSec > now) ? (endSec - now) : (SECONDS_PER_DAY - now + endSec);
 
-   if (diffSec == 0) {
-      // End is right now — fire the message immediately instead of a 0-ms timer
-      SendMessageW(hParent_, WM_WINMUTE_QUIETHOURS_END, 0, 0);
-      return true;
-   }
+    if (diffSec == 0) {
+        // End is right now — fire the message immediately instead of a 0-ms
+        // timer
+        SendMessageW(hParent_, WM_WINMUTE_QUIETHOURS_END, 0, 0);
+        return true;
+    }
 
-   if (SetTimer(hParent_, QUIETHOURS_TIMER_END_ID, diffSec * 1000u, QuietHoursTimerProc) == 0) {
-      TaskDialog(
-         hParent_, hglobInstance, PROGRAM_NAME,
-         WMi18n::GetInstance().GetTranslationW("popup.error.quiet-hours-stop.title").c_str(),
-         WMi18n::GetInstance().GetTranslationW("popup.error.quiet-hours-stop.text").c_str(),
-         TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
-      return false;
-   }
+    if (SetTimer(hParent_, QUIETHOURS_TIMER_END_ID, diffSec * 1000u,
+                 QuietHoursTimerProc) == 0)
+    {
+        TaskDialog(hParent_, hglobInstance, PROGRAM_NAME,
+                   WMi18n::GetInstance()
+                       .GetTranslationW("popup.error.quiet-hours-stop.title")
+                       .c_str(),
+                   WMi18n::GetInstance()
+                       .GetTranslationW("popup.error.quiet-hours-stop.text")
+                       .c_str(),
+                   TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
+        return false;
+    }
 
-   WMLog::GetInstance().LogInfo(
-      L"QuietHours: End scheduled in {} s (window {})", diffSec, activeWindowIdx_);
+    WMLog::GetInstance().LogInfo(
+        L"QuietHours: End scheduled in {} s (window {})", diffSec,
+        activeWindowIdx_);
 
-   return true;
+    return true;
 }
 
 bool QuietHoursTimer::IsQuietTime() const
 {
-   if (!enabled_ || windows_.empty()) return false;
-   return FindActiveWindowIdx() != -1;
+    if (!enabled_ || windows_.empty())
+        return false;
+    return FindActiveWindowIdx() != -1;
 }
 
 bool QuietHoursTimer::LoadFromSettings(WMSettings& settings)
 {
-   KillTimer(hParent_, QUIETHOURS_TIMER_START_ID);
-   KillTimer(hParent_, QUIETHOURS_TIMER_END_ID);
-   windows_.clear();
-   activeWindowIdx_ = -1;
+    KillTimer(hParent_, QUIETHOURS_TIMER_START_ID);
+    KillTimer(hParent_, QUIETHOURS_TIMER_END_ID);
+    windows_.clear();
+    activeWindowIdx_ = -1;
 
-   enabled_ = settings.QueryValue(SettingsKey::QUIETHOURS_ENABLE) != 0;
-   if (!enabled_) return true;
+    enabled_ = settings.QueryValue(SettingsKey::QUIETHOURS_ENABLE) != 0;
+    if (!enabled_)
+        return true;
 
-   // Load all defined time windows and sort them by start time
-   auto loaded = settings.GetQuietHoursTimes();
-   for (const auto& t : loaded) {
-      if (t.first != t.second) { // skip degenerate entries
-         windows_.push_back(t);
-      }
-   }
-   if (windows_.empty()) return true;
+    // Load all defined time windows and sort them by start time
+    auto loaded = settings.GetQuietHoursTimes();
+    for (const auto& t : loaded) {
+        if (t.first != t.second) {  // skip degenerate entries
+            windows_.push_back(t);
+        }
+    }
+    if (windows_.empty())
+        return true;
 
-   std::sort(windows_.begin(), windows_.end(),
-      [](const auto& a, const auto& b) { return a.first < b.first; });
+    std::sort(windows_.begin(), windows_.end(),
+              [](const auto& a, const auto& b) { return a.first < b.first; });
 
-   // Check if we are already inside a quiet-hours window at startup
-   const int activeIdx = FindActiveWindowIdx();
-   if (activeIdx != -1) {
-      activeWindowIdx_ = activeIdx;
-      WMLog::GetInstance().LogInfo(L"QuietHours: Currently inside window {} — muting now", activeIdx);
-      // Sending START will cause WinMute to mute and call SetEnd()
-      SendMessageW(hParent_, WM_WINMUTE_QUIETHOURS_START, 0, 0);
-   } else {
-      SetStart();
-   }
+    // Check if we are already inside a quiet-hours window at startup
+    const int activeIdx = FindActiveWindowIdx();
+    if (activeIdx != -1) {
+        activeWindowIdx_ = activeIdx;
+        WMLog::GetInstance().LogInfo(
+            L"QuietHours: Currently inside window {} — muting now", activeIdx);
+        // Sending START will cause WinMute to mute and call SetEnd()
+        SendMessageW(hParent_, WM_WINMUTE_QUIETHOURS_START, 0, 0);
+    } else {
+        SetStart();
+    }
 
-   return true;
+    return true;
 }
 
 bool QuietHoursTimer::Init(HWND hParent, WMSettings& settings)
 {
-   if (initialized_) return true;
-   hParent_     = hParent;
-   initialized_ = true;
-   return LoadFromSettings(settings);
+    if (initialized_)
+        return true;
+    hParent_ = hParent;
+    initialized_ = true;
+    return LoadFromSettings(settings);
 }
 
 bool QuietHoursTimer::Reset(WMSettings& settings)
 {
-   return LoadFromSettings(settings);
+    return LoadFromSettings(settings);
 }

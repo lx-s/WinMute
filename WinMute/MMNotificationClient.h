@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -38,28 +38,30 @@ POSSIBILITY OF SUCH DAMAGE.
 class WinAudio;
 
 class MMNotificationClient : public IMMNotificationClient {
-public:
-   explicit MMNotificationClient(WinAudio* notifyParent);
-   ~MMNotificationClient();
+   public:
+    explicit MMNotificationClient(WinAudio* notifyParent);
+    ~MMNotificationClient();
 
-   STDMETHODIMP_(ULONG) AddRef() override;
-   STDMETHODIMP_(ULONG) Release() override;
-   STDMETHODIMP_(HRESULT) QueryInterface(REFIID riid, VOID** ppvInterface) override;
+    STDMETHODIMP_(ULONG) AddRef() override;
+    STDMETHODIMP_(ULONG) Release() override;
+    STDMETHODIMP_(HRESULT)
+    QueryInterface(REFIID riid, VOID** ppvInterface) override;
 
-   STDMETHODIMP_(HRESULT) OnDefaultDeviceChanged(EDataFlow flow, ERole role,
-      LPCWSTR pwstrDeviceId) override;
-   STDMETHODIMP_(HRESULT) OnDeviceAdded(LPCWSTR pwstrDeviceId) override;
-   STDMETHODIMP_(HRESULT) OnDeviceRemoved(LPCWSTR pwstrDeviceId) override;
-   STDMETHODIMP_(HRESULT) OnDeviceStateChanged(LPCWSTR pwstrDeviceId,
-      DWORD dwNewState) override;
-   STDMETHODIMP_(HRESULT) OnPropertyValueChanged(LPCWSTR pwstrDeviceId,
-      const PROPERTYKEY key) override;
+    STDMETHODIMP_(HRESULT)
+    OnDefaultDeviceChanged(EDataFlow flow, ERole role,
+                           LPCWSTR pwstrDeviceId) override;
+    STDMETHODIMP_(HRESULT) OnDeviceAdded(LPCWSTR pwstrDeviceId) override;
+    STDMETHODIMP_(HRESULT) OnDeviceRemoved(LPCWSTR pwstrDeviceId) override;
+    STDMETHODIMP_(HRESULT)
+    OnDeviceStateChanged(LPCWSTR pwstrDeviceId, DWORD dwNewState) override;
+    STDMETHODIMP_(HRESULT)
+    OnPropertyValueChanged(LPCWSTR pwstrDeviceId,
+                           const PROPERTYKEY key) override;
 
-private:
-   std::atomic<LONG> ref_count_;
-   CComPtr<IMMDeviceEnumerator> deviceEnumerator_;
-   WinAudio* notifyParent_;
+   private:
+    std::atomic<LONG> ref_count_;
+    CComPtr<IMMDeviceEnumerator> deviceEnumerator_;
+    WinAudio* notifyParent_;
 
-   std::wstring GetDeviceNameFromId(LPCWSTR pwstrDeviceId);
+    std::wstring GetDeviceNameFromId(LPCWSTR pwstrDeviceId);
 };
-

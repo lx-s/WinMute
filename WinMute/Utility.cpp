@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "Common.h"
 
+// Must come after the precompiled header: with /Yu everything up to and
+// including the "Common.h" line is skipped, so an include placed above it
+// has no effect.
 #include <Functiondiscoverykeys_devpkey.h>
 
 // =========================================================================
@@ -40,75 +43,73 @@ POSSIBILITY OF SUCH DAMAGE.
 // =========================================================================
 
 struct WINDOWPROCESSINFO {
-   DWORD pid;
-   HWND hWnd;
+    DWORD pid;
+    HWND hWnd;
 };
 
 // =========================================================================
 //    ShowWindowsError
 // =========================================================================
 
-void ShowWindowsError(const wchar_t *functionName, DWORD lastError)
+void ShowWindowsError(const wchar_t* functionName, DWORD lastError)
 {
-   // Retrieve the system error message for the last-error code
-   if (lastError == -1) {
-      lastError = GetLastError();
-   }
+    // Retrieve the system error message for the last-error code
+    if (lastError == -1) {
+        lastError = GetLastError();
+    }
 
-   LPVOID lpMsgBuf;
-   if (FormatMessageW(
-         FORMAT_MESSAGE_ALLOCATE_BUFFER |
-         FORMAT_MESSAGE_FROM_SYSTEM |
-         FORMAT_MESSAGE_IGNORE_INSERTS,
-         nullptr,
-         lastError,
-         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-         reinterpret_cast<wchar_t*>(&lpMsgBuf),
-         0,
-         nullptr) == 0) {
-      return;
-   }
-   // Display the error message and exit the process
-   const std::wstring errorMsgText{ reinterpret_cast<wchar_t *>(lpMsgBuf) };
-   const std::wstring errorMsg = SafeVFormat(
-      WMi18n::GetInstance().GetTranslationW("general.error.winapi.text"),
-      functionName,
-      lastError,
-      errorMsgText);
-   TaskDialog(
-      nullptr, nullptr, PROGRAM_NAME, errorMsg.c_str(),
-      nullptr, TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
-   LocalFree(lpMsgBuf);
+    LPVOID lpMsgBuf;
+    if (FormatMessageW(
+            FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
+                FORMAT_MESSAGE_IGNORE_INSERTS,
+            nullptr, lastError, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+            reinterpret_cast<wchar_t*>(&lpMsgBuf), 0, nullptr) == 0)
+    {
+        return;
+    }
+    // Display the error message and exit the process
+    const std::wstring errorMsgText{reinterpret_cast<wchar_t*>(lpMsgBuf)};
+    const std::wstring errorMsg = SafeVFormat(
+        WMi18n::GetInstance().GetTranslationW("general.error.winapi.text"),
+        functionName, lastError, errorMsgText);
+    TaskDialog(nullptr, nullptr, PROGRAM_NAME, errorMsg.c_str(), nullptr,
+               TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
+    LocalFree(lpMsgBuf);
 }
 
 // =========================================================================
 //    GetWinMuteversion
 // =========================================================================
 
-bool GetWinMuteVersion(std::wstring &versNumber)
+bool GetWinMuteVersion(std::wstring& versNumber)
 {
-   DWORD unused;
-   wchar_t fileName[MAX_PATH];
-   if (GetModuleFileNameW(nullptr, fileName, sizeof(fileName) / sizeof(fileName[0])) == 0) {
-      return false;
-   }
-   const DWORD versSize = GetFileVersionInfoSizeEx(FILE_VER_GET_NEUTRAL, fileName, &unused);
-   std::vector<std::byte> versData(versSize);
-   if (!GetFileVersionInfoExW(FILE_VER_GET_NEUTRAL, fileName, 0, versSize, versData.data())) {
-      return false;
-   }
-   VS_FIXEDFILEINFO *pvi = nullptr;
-   UINT pviLen = sizeof(*pvi);
-   if (!VerQueryValueW(versData.data(), L"\\", reinterpret_cast<LPVOID *>(&pvi), &pviLen)) {
-      return false;
-   }
-   versNumber = std::format(
-      L"{}.{}.{}.{}",
-      pvi->dwProductVersionMS >> 16,
-      pvi->dwFileVersionMS & 0xFFFF,
-      pvi->dwFileVersionLS >> 16,
-      pvi->dwFileVersionLS & 0xFFFF);
-   return true;
+    DWORD unused;
+    wchar_t fileName[MAX_PATH];
+    if (GetModuleFileNameW(nullptr, fileName,
+                           sizeof(fileName) / sizeof(fileName[0])) == 0)
+    {
+        return false;
+    }
+    const DWORD versSize =
+        GetFileVersionInfoSizeEx(FILE_VER_GET_NEUTRAL, fileName, &unused);
+    std::vector<std::byte> versData(versSize);
+    if (!GetFileVersionInfoExW(FILE_VER_GET_NEUTRAL, fileName, 0, versSize,
+                               versData.data()))
+    {
+        return false;
+    }
+    VS_FIXEDFILEINFO* pvi = nullptr;
+    UINT pviLen = sizeof(*pvi);
+    if (!VerQueryValueW(versData.data(), L"\\", reinterpret_cast<LPVOID*>(&pvi),
+                        &pviLen))
+    {
+        return false;
+    }
+    versNumber =
+        std::format(L"{}.{}.{}.{}", pvi->dwProductVersionMS >> 16,
+                    pvi->dwFileVersionMS & 0xFFFF, pvi->dwFileVersionLS >> 16,
+                    pvi->dwFileVersionLS & 0xFFFF);
+    return true;
 }
 
 // =========================================================================
@@ -116,100 +117,109 @@ bool GetWinMuteVersion(std::wstring &versNumber)
 // =========================================================================
 
 std::optional<std::wstring> GetAudioDeviceName(
-   const CComPtr<IMMDevice> &devicePtr) {
-   WMLog &log = WMLog::GetInstance();
+    const CComPtr<IMMDevice>& devicePtr)
+{
+    WMLog& log = WMLog::GetInstance();
 
-   CComPtr<IPropertyStore> propStore = nullptr;
-   if (FAILED(devicePtr->OpenPropertyStore(STGM_READ, &propStore))) {
-      log.LogError(L"Failed to open property store for audio endpoint");
-      return std::nullopt;
-   }
+    CComPtr<IPropertyStore> propStore = nullptr;
+    if (FAILED(devicePtr->OpenPropertyStore(STGM_READ, &propStore))) {
+        log.LogError(L"Failed to open property store for audio endpoint");
+        return std::nullopt;
+    }
 
-   PROPVARIANT propValue;
-   PropVariantInit(&propValue);
-   std::wstring deviceName;
-   if (SUCCEEDED(propStore->GetValue(PKEY_Device_FriendlyName, &propValue)) &&
-       propValue.vt == VT_LPWSTR) {
-      deviceName = propValue.pwszVal;
-   } else {
-      log.LogInfo(L"Failed to get device name for audio endpoint."
-                  L" Falling back to ID");
-   }
-   PropVariantClear(&propValue);
-   if (deviceName.empty()) { // Try to get the device ID as fallback
-      PWSTR deviceId;
-      if (SUCCEEDED(devicePtr->GetId(&deviceId))) {
-         deviceName = L"Device:" + std::wstring(deviceId);
-         CoTaskMemFree(deviceId);
-      } else {
-         log.LogError(L"Failed to get device id for audio endpoint");
-         return std::nullopt;
-      }
-   }
-   return deviceName;
+    PROPVARIANT propValue;
+    PropVariantInit(&propValue);
+    std::wstring deviceName;
+    if (SUCCEEDED(propStore->GetValue(PKEY_Device_FriendlyName, &propValue)) &&
+        propValue.vt == VT_LPWSTR)
+    {
+        deviceName = propValue.pwszVal;
+    } else {
+        log.LogInfo(
+            L"Failed to get device name for audio endpoint."
+            L" Falling back to ID");
+    }
+    PropVariantClear(&propValue);
+    if (deviceName.empty()) {  // Try to get the device ID as fallback
+        PWSTR deviceId;
+        if (SUCCEEDED(devicePtr->GetId(&deviceId))) {
+            deviceName = L"Device:" + std::wstring(deviceId);
+            CoTaskMemFree(deviceId);
+        } else {
+            log.LogError(L"Failed to get device id for audio endpoint");
+            return std::nullopt;
+        }
+    }
+    return deviceName;
 }
 
 // =========================================================================
 //    String Conversion
 // =========================================================================
 
-std::wstring ConvertStringToWideString(const std::string &ansiString)
+std::wstring ConvertStringToWideString(const std::string& ansiString)
 {
-   // For CP_UTF8 the only valid flags are 0 and MB_ERR_INVALID_CHARS.
-   std::wstring unicodeString;
-   auto wideCharSize = MultiByteToWideChar(CP_UTF8, 0, ansiString.c_str(), -1, nullptr, 0);
-   if (wideCharSize == 0) {
-      return L"";
-   }
-   unicodeString.reserve(wideCharSize);
-   unicodeString.resize(wideCharSize - 1);
-   wideCharSize = MultiByteToWideChar(CP_UTF8, 0, ansiString.c_str(), -1, &unicodeString[0], wideCharSize);
-   return unicodeString;
+    // For CP_UTF8 the only valid flags are 0 and MB_ERR_INVALID_CHARS.
+    std::wstring unicodeString;
+    auto wideCharSize =
+        MultiByteToWideChar(CP_UTF8, 0, ansiString.c_str(), -1, nullptr, 0);
+    if (wideCharSize == 0) {
+        return L"";
+    }
+    unicodeString.reserve(wideCharSize);
+    unicodeString.resize(wideCharSize - 1);
+    wideCharSize = MultiByteToWideChar(CP_UTF8, 0, ansiString.c_str(), -1,
+                                       &unicodeString[0], wideCharSize);
+    return unicodeString;
 }
 
-std::string ConvertWideStringToString(const std::wstring &wideString)
+std::string ConvertWideStringToString(const std::wstring& wideString)
 {
-   std::string ansiString;
-   auto ansiStringSize = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, wideString.c_str(), -1, nullptr, 0, "?", nullptr);
-   if (ansiStringSize == 0) {
-      return "";
-   }
-   ansiString.reserve(ansiStringSize);
-   ansiString.resize(ansiStringSize - 1);
-   ansiStringSize = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, wideString.c_str(), -1, &ansiString[0], ansiStringSize, "?", nullptr);
-   return ansiString;
+    std::string ansiString;
+    auto ansiStringSize =
+        WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, wideString.c_str(),
+                            -1, nullptr, 0, "?", nullptr);
+    if (ansiStringSize == 0) {
+        return "";
+    }
+    ansiString.reserve(ansiStringSize);
+    ansiString.resize(ansiStringSize - 1);
+    ansiStringSize =
+        WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, wideString.c_str(),
+                            -1, &ansiString[0], ansiStringSize, "?", nullptr);
+    return ansiString;
 }
 
 // =========================================================================
 //    Launch Browser
 // =========================================================================
 
-bool LaunchBrowser(HWND hParent, const std::wstring &url)
+bool LaunchBrowser(HWND hParent, const std::wstring& url)
 {
-   // Only hand real web URLs to the shell. Anything else (local file paths,
-   // UNC shares, other protocol handlers) would be executed/opened directly
-   // by ShellExecute, which is dangerous for URLs that come from the
-   // update file or other external sources.
-   auto hasPrefix = [&url](const wchar_t *prefix) {
-      const size_t prefixLen = wcslen(prefix);
-      return url.length() > prefixLen
-          && _wcsnicmp(url.c_str(), prefix, prefixLen) == 0;
-   };
-   if (!hasPrefix(L"https://") && !hasPrefix(L"http://")) {
-      WMLog::GetInstance().LogError(
-         L"Refused to open \"{}\": not a http(s) URL", url);
-      return false;
-   }
+    // Only hand real web URLs to the shell. Anything else (local file paths,
+    // UNC shares, other protocol handlers) would be executed/opened directly
+    // by ShellExecute, which is dangerous for URLs that come from the
+    // update file or other external sources.
+    auto hasPrefix = [&url](const wchar_t* prefix) {
+        const size_t prefixLen = wcslen(prefix);
+        return url.length() > prefixLen &&
+               _wcsnicmp(url.c_str(), prefix, prefixLen) == 0;
+    };
+    if (!hasPrefix(L"https://") && !hasPrefix(L"http://")) {
+        WMLog::GetInstance().LogError(
+            L"Refused to open \"{}\": not a http(s) URL", url);
+        return false;
+    }
 
-   SHELLEXECUTEINFOW sxi = { 0 };
-   sxi.cbSize = sizeof(sxi);
-   sxi.nShow = SW_SHOWNORMAL;
-   sxi.hwnd = hParent;
-   sxi.lpVerb = L"open";
-   sxi.lpFile = url.c_str();
-   if (!ShellExecuteExW(&sxi)) {
-      WMLog::GetInstance().LogWinError(L"ShellExecuteEx", GetLastError());
-      return false;
-   }
-   return true;
+    SHELLEXECUTEINFOW sxi = {0};
+    sxi.cbSize = sizeof(sxi);
+    sxi.nShow = SW_SHOWNORMAL;
+    sxi.hwnd = hParent;
+    sxi.lpVerb = L"open";
+    sxi.lpFile = url.c_str();
+    if (!ShellExecuteExW(&sxi)) {
+        WMLog::GetInstance().LogWinError(L"ShellExecuteEx", GetLastError());
+        return false;
+    }
+    return true;
 }

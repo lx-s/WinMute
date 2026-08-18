@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -38,41 +38,41 @@ POSSIBILITY OF SUCH DAMAGE.
 constexpr int WM_TRAYICON = WM_APP + 700;
 
 struct TrayIconPopup {
-   std::wstring title;
-   std::wstring text;
+    std::wstring title;
+    std::wstring text;
 };
 
 class TrayIcon {
-public:
-   TrayIcon();
-   TrayIcon(HWND hWnd, UINT trayID, HICON hIcon, const std::wstring& tooltip,
-      bool show, int callbackId = WM_TRAYICON);
-   ~TrayIcon();
-   void Init(HWND hWnd, UINT trayID, HICON hIcon, const std::wstring& tooltip,
-      bool show, int callbackId = WM_TRAYICON);
-   void Hide();
-   void Show();
-   bool IsShown() const noexcept { return iconVisible_; }
-   void ChangeIcon(HICON hNewIcon);
-   void ChangeText(const std::wstring& tooltip);
-   void ShowPopup(
-      const std::wstring& title,
-      const std::wstring& text) const;
+   public:
+    TrayIcon();
+    TrayIcon(HWND hWnd, UINT trayID, HICON hIcon, const std::wstring& tooltip,
+             bool show, int callbackId = WM_TRAYICON);
+    ~TrayIcon();
+    void Init(HWND hWnd, UINT trayID, HICON hIcon, const std::wstring& tooltip,
+              bool show, int callbackId = WM_TRAYICON);
+    void Hide();
+    void Show();
+    bool IsShown() const noexcept
+    {
+        return iconVisible_;
+    }
+    void ChangeIcon(HICON hNewIcon);
+    void ChangeText(const std::wstring& tooltip);
+    void ShowPopup(const std::wstring& title, const std::wstring& text) const;
 
-private:
-   void DestroyTrayIcon();
-   bool AddNotifyIcon();
-   bool RemoveNotifyIcon();
-   bool ChangeText();
+   private:
+    void DestroyTrayIcon();
+    bool AddNotifyIcon();
+    bool RemoveNotifyIcon();
+    bool ChangeText();
 
+    mutable std::vector<TrayIconPopup> popupQueue_;
 
-   mutable std::vector<TrayIconPopup> popupQueue_;
-
-   int callbackId_ = WM_TRAYICON;
-   bool initialized_ = false;
-   bool iconVisible_ = false;
-   UINT trayID_ = 0;
-   HICON hIcon_ = 0;
-   HWND hWnd_ = 0;
-   std::wstring tooltip_;
+    int callbackId_ = WM_TRAYICON;
+    bool initialized_ = false;
+    bool iconVisible_ = false;
+    UINT trayID_ = 0;
+    HICON hIcon_ = 0;
+    HWND hWnd_ = 0;
+    std::wstring tooltip_;
 };

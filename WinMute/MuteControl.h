@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -33,10 +33,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "common.h"
-
-#include "WinAudio.h"
 #include "TrayIcon.h"
+#include "WinAudio.h"
+#include "common.h"
 
 class MuteControl {
    public:

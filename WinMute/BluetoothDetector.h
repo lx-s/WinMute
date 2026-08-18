@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -39,33 +39,34 @@ POSSIBILITY OF SUCH DAMAGE.
 constexpr int WM_BTSTATUSCHANGED = WM_USER + 500;
 
 class BluetoothDetector {
-public:
-   enum class BluetoothStatus { Unknown, Connected, Disconnected };
-   BluetoothDetector();
-   ~BluetoothDetector();
-   BluetoothDetector(const BluetoothDetector&) = delete;
-   BluetoothDetector(BluetoothDetector&&) = delete;
-   BluetoothDetector& operator=(const BluetoothDetector&) = delete;
-   BluetoothDetector& operator=(BluetoothDetector&&) = delete;
+   public:
+    enum class BluetoothStatus { Unknown, Connected, Disconnected };
+    BluetoothDetector();
+    ~BluetoothDetector();
+    BluetoothDetector(const BluetoothDetector&) = delete;
+    BluetoothDetector(BluetoothDetector&&) = delete;
+    BluetoothDetector& operator=(const BluetoothDetector&) = delete;
+    BluetoothDetector& operator=(BluetoothDetector&&) = delete;
 
-   void SetDeviceList(const std::vector<std::wstring>& devices, bool useDeviceList);
+    void SetDeviceList(const std::vector<std::wstring>& devices,
+                       bool useDeviceList);
 
-   bool Init(HWND hNotifyWnd);
-   void Unload();
+    bool Init(HWND hNotifyWnd);
+    void Unload();
 
-   BluetoothStatus GetBluetoothStatus(
-      const UINT message, const WPARAM wParam, const LPARAM lParam);
+    BluetoothStatus GetBluetoothStatus(const UINT message, const WPARAM wParam,
+                                       const LPARAM lParam);
 
-private:
-   HWND hNotifyWnd_;
-   HDEVNOTIFY hBluetoothNotify_;
+   private:
+    HWND hNotifyWnd_;
+    HDEVNOTIFY hBluetoothNotify_;
 
-   std::vector<HDEVNOTIFY> notificationHandles_;
+    std::vector<HDEVNOTIFY> notificationHandles_;
 
-   bool LoadRadioNotifications();
-   void UnloadRadioNotifications() noexcept;
+    bool LoadRadioNotifications();
+    void UnloadRadioNotifications() noexcept;
 
-   bool initialized_;
-   bool useDeviceList_;
-   std::vector<std::wstring> deviceNames_;
+    bool initialized_;
+    bool useDeviceList_;
+    std::vector<std::wstring> deviceNames_;
 };

@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -129,13 +129,16 @@ bool UpdateChecker::ParseVersionFile(const std::string& fileContents,
         }
 
     } catch (const nlohmann::json::parse_error& pe) {
-        log.LogError(L"Failed to parse update: {}", ConvertStringToWideString(pe.what()));
+        log.LogError(L"Failed to parse update: {}",
+                     ConvertStringToWideString(pe.what()));
         return false;
     } catch (const nlohmann::json::type_error& te) {
-        log.LogError(L"Failed to parse update: {}", ConvertStringToWideString(te.what()));
+        log.LogError(L"Failed to parse update: {}",
+                     ConvertStringToWideString(te.what()));
         return false;
     } catch (const std::exception& e) {
-        log.LogError(L"Failed to parse update: {}", ConvertStringToWideString(e.what()));
+        log.LogError(L"Failed to parse update: {}",
+                     ConvertStringToWideString(e.what()));
         return false;
     }
     return true;
@@ -168,16 +171,14 @@ std::optional<bool> UpdateChecker::IsVersionGreater(
     std::vector<int> curVersParsed;
     WMLog& log = WMLog::GetInstance();
     if (!ParseVersion(newVers, newVersParsed)) {
-        log.LogError(L"Failed to parse new version string \"{}\"",
-                     newVers);
+        log.LogError(L"Failed to parse new version string \"{}\"", newVers);
         return std::nullopt;
     } else if (!ParseVersion(curVers, curVersParsed)) {
-        log.LogError(L"Failed to parse current version string \"{}\"",
-                     curVers);
+        log.LogError(L"Failed to parse current version string \"{}\"", curVers);
         return std::nullopt;
     } else if (newVersParsed.size() != curVersParsed.size()) {
-        log.LogError(L"Version format mismatch \"{}\" / \"{}\"",
-                     curVers, newVers);
+        log.LogError(L"Version format mismatch \"{}\" / \"{}\"", curVers,
+                     newVers);
         return std::nullopt;
     }
     for (size_t i = 0; i < newVersParsed.size(); ++i) {

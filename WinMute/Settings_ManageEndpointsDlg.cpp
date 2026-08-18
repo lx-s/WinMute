@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2026 Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -31,311 +31,369 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#include "common.h"
+#include <Functiondiscoverykeys_devpkey.h>
 #include <atlbase.h>
 #include <mmdeviceapi.h>
-#include <Functiondiscoverykeys_devpkey.h>
+
+#include "common.h"
 
 static constexpr int ENDPOINT_NAME_MAX_LEN = 200;
 
 struct EndpointData {
-   std::wstring name;
+    std::wstring name;
 };
 
 static bool GetAudioEndpoints(std::vector<std::wstring>& endpoints)
 {
-   WMLog &log = WMLog::GetInstance();
+    WMLog& log = WMLog::GetInstance();
 
-   CComPtr<IMMDeviceEnumerator> deviceEnumerator;
-   if (FAILED(deviceEnumerator.CoCreateInstance(
-         __uuidof(MMDeviceEnumerator),
-         nullptr,
-         CLSCTX_INPROC_SERVER))) {
-      return false;
-   }
-   CComPtr<IMMDeviceCollection> audioEndpoints;
-   if (FAILED(deviceEnumerator->EnumAudioEndpoints(
-         eRender,
-         DEVICE_STATE_ACTIVE,
-         &audioEndpoints))) {
-      return false;
-   }
+    CComPtr<IMMDeviceEnumerator> deviceEnumerator;
+    if (FAILED(deviceEnumerator.CoCreateInstance(
+            __uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER)))
+    {
+        return false;
+    }
+    CComPtr<IMMDeviceCollection> audioEndpoints;
+    if (FAILED(deviceEnumerator->EnumAudioEndpoints(
+            eRender, DEVICE_STATE_ACTIVE, &audioEndpoints)))
+    {
+        return false;
+    }
 
-   UINT epCount = 0;
-   if (FAILED(audioEndpoints->GetCount(&epCount))) {
-      return false;
-   }
+    UINT epCount = 0;
+    if (FAILED(audioEndpoints->GetCount(&epCount))) {
+        return false;
+    }
 
-   for (UINT i = 0; i < epCount; ++i) {
-      CComPtr<IMMDevice> device = nullptr;
-      if (FAILED(audioEndpoints->Item(i, &device))) {
-         log.LogError(L"Failed to get audio endpoint #{}", i);
-         continue;
-      }
+    for (UINT i = 0; i < epCount; ++i) {
+        CComPtr<IMMDevice> device = nullptr;
+        if (FAILED(audioEndpoints->Item(i, &device))) {
+            log.LogError(L"Failed to get audio endpoint #{}", i);
+            continue;
+        }
 
-      const auto deviceName = GetAudioDeviceName(device);
-      if (deviceName) {
-         endpoints.push_back(*deviceName);
-      }
-   }
+        const auto deviceName = GetAudioDeviceName(device);
+        if (deviceName) {
+            endpoints.push_back(*deviceName);
+        }
+    }
 
-   return true;
+    return true;
 }
 
 static void LoadManageEndpointsAddDlgTranslation(HWND hDlg, bool isEdit)
 {
-   WMi18n &i18n = WMi18n::GetInstance();
-   if (isEdit) {
-      i18n.SetItemText(hDlg, "settings.mute.manage-endpoints.add-edit.edit-title");
-   } else {
-      i18n.SetItemText(hDlg, "settings.mute.manage-endpoints.add-edit.add-title");
-   }
-   i18n.SetItemText(hDlg, IDC_ENDPOINT_NAME_LABEL, "settings.bluetooth.add-edit.device-name-label");
-   i18n.SetItemText(hDlg, IDOK, "settings.btn-save");
-   i18n.SetItemText(hDlg, IDCANCEL, "settings.btn-cancel");
+    WMi18n& i18n = WMi18n::GetInstance();
+    if (isEdit) {
+        i18n.SetItemText(hDlg,
+                         "settings.mute.manage-endpoints.add-edit.edit-title");
+    } else {
+        i18n.SetItemText(hDlg,
+                         "settings.mute.manage-endpoints.add-edit.add-title");
+    }
+    i18n.SetItemText(hDlg, IDC_ENDPOINT_NAME_LABEL,
+                     "settings.bluetooth.add-edit.device-name-label");
+    i18n.SetItemText(hDlg, IDOK, "settings.btn-save");
+    i18n.SetItemText(hDlg, IDCANCEL, "settings.btn-cancel");
 
-   const auto placeholder = i18n.GetTranslationW("settings.mute.manage-endpoints.add-edit.endpoint-name-placeholder");
-   ComboBox_SetCueBannerText(
-      GetDlgItem(hDlg, IDC_ENDPOINT_NAME),
-      placeholder.c_str());
+    const auto placeholder = i18n.GetTranslationW(
+        "settings.mute.manage-endpoints.add-edit.endpoint-name-placeholder");
+    ComboBox_SetCueBannerText(GetDlgItem(hDlg, IDC_ENDPOINT_NAME),
+                              placeholder.c_str());
 }
 
-static INT_PTR CALLBACK Settings_EndpointAddDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK Settings_EndpointAddDlgProc(HWND hDlg, UINT msg,
+                                                    WPARAM wParam,
+                                                    LPARAM lParam)
 {
-   switch (msg) {
-   case WM_INITDIALOG:
-   {
-      HWND hEndpointName = GetDlgItem(hDlg, IDC_ENDPOINT_NAME);
-      EndpointData *endpointData = reinterpret_cast<EndpointData*>(lParam);
-      if (endpointData == nullptr) {
-         return FALSE;
-      }
-      SetWindowLongPtr(hDlg, DWLP_USER, reinterpret_cast<LONG_PTR>(endpointData));
-
-      LoadManageEndpointsAddDlgTranslation(hDlg, endpointData->name.length() != 0);
-      if (endpointData->name.length() != 0) {
-         SetWindowTextW(GetDlgItem(hDlg, IDC_ENDPOINT_NAME),
-                        endpointData->name.c_str());
-      }
-
-      // Disable save button until at least one string change is made
-      EnableWindow(GetDlgItem(hDlg, IDOK), FALSE);
-
-      // Fill Combobox
-      std::vector<std::wstring> audioEndpoints;
-      if (GetAudioEndpoints(audioEndpoints)) {
-         for (const auto &devName : audioEndpoints) {
-            ComboBox_AddString(hEndpointName, devName.c_str());
-         }
-      }
-
-      Edit_LimitText(hEndpointName, ENDPOINT_NAME_MAX_LEN);
-      if (GetDlgCtrlID(reinterpret_cast<HWND>(wParam)) != IDC_ENDPOINT_NAME) {
-         SetFocus(hEndpointName);
-         return FALSE;
-      }
-      return TRUE;
-   }
-   case WM_COMMAND:
-      if (LOWORD(wParam) == IDC_ENDPOINT_NAME) {
-         HWND hDevName = GetDlgItem(hDlg, IDC_ENDPOINT_NAME);
-         if (HIWORD(wParam) == CBN_EDITUPDATE) {
-            const int textLen = Edit_GetTextLength(hDevName);
-            EnableWindow(GetDlgItem(hDlg, IDOK), textLen > 0);
-         } else if (HIWORD(wParam) == CBN_SELCHANGE) {
-            const auto curSelIdx = SendMessage(hDevName, CB_GETCURSEL, 0, 0);
-            EnableWindow(GetDlgItem(hDlg, IDOK), curSelIdx != CB_ERR);
-         }
-      } else if (LOWORD(wParam) == IDOK) {
-         HWND hEpName = GetDlgItem(hDlg, IDC_ENDPOINT_NAME);
-         const int textLen = Edit_GetTextLength(hEpName);
-         if (textLen != 0) {
-            wchar_t epNameBuf[ENDPOINT_NAME_MAX_LEN + 1] = { 'L\0' };
-            EndpointData *epData = reinterpret_cast<EndpointData*>(GetWindowLongPtr(hDlg, DWLP_USER));
-            if (epData != nullptr) {
-               Edit_GetText(hEpName, epNameBuf, ARRAY_SIZE(epNameBuf));
-               epData->name = epNameBuf;
-               EndDialog(hDlg, 0);
-            } else {
-               EndDialog(hDlg, 1);
+    switch (msg) {
+        case WM_INITDIALOG: {
+            HWND hEndpointName = GetDlgItem(hDlg, IDC_ENDPOINT_NAME);
+            EndpointData* endpointData =
+                reinterpret_cast<EndpointData*>(lParam);
+            if (endpointData == nullptr) {
+                return FALSE;
             }
-         }
-      } else if (LOWORD(wParam) == IDCANCEL) {
-         EndDialog(hDlg, 1);
-      }
-      return FALSE;
-   case WM_CLOSE:
-      EndDialog(hDlg, 1);
-      return TRUE;
-   default:
-      break;
-   }
-   return FALSE;
+            SetWindowLongPtr(hDlg, DWLP_USER,
+                             reinterpret_cast<LONG_PTR>(endpointData));
+
+            LoadManageEndpointsAddDlgTranslation(
+                hDlg, endpointData->name.length() != 0);
+            if (endpointData->name.length() != 0) {
+                SetWindowTextW(GetDlgItem(hDlg, IDC_ENDPOINT_NAME),
+                               endpointData->name.c_str());
+            }
+
+            // Disable save button until at least one string change is made
+            EnableWindow(GetDlgItem(hDlg, IDOK), FALSE);
+
+            // Fill Combobox
+            std::vector<std::wstring> audioEndpoints;
+            if (GetAudioEndpoints(audioEndpoints)) {
+                for (const auto& devName : audioEndpoints) {
+                    ComboBox_AddString(hEndpointName, devName.c_str());
+                }
+            }
+
+            Edit_LimitText(hEndpointName, ENDPOINT_NAME_MAX_LEN);
+            if (GetDlgCtrlID(reinterpret_cast<HWND>(wParam)) !=
+                IDC_ENDPOINT_NAME)
+            {
+                SetFocus(hEndpointName);
+                return FALSE;
+            }
+            return TRUE;
+        }
+        case WM_COMMAND:
+            if (LOWORD(wParam) == IDC_ENDPOINT_NAME) {
+                HWND hDevName = GetDlgItem(hDlg, IDC_ENDPOINT_NAME);
+                if (HIWORD(wParam) == CBN_EDITUPDATE) {
+                    const int textLen = Edit_GetTextLength(hDevName);
+                    EnableWindow(GetDlgItem(hDlg, IDOK), textLen > 0);
+                } else if (HIWORD(wParam) == CBN_SELCHANGE) {
+                    const auto curSelIdx =
+                        SendMessage(hDevName, CB_GETCURSEL, 0, 0);
+                    EnableWindow(GetDlgItem(hDlg, IDOK), curSelIdx != CB_ERR);
+                }
+            } else if (LOWORD(wParam) == IDOK) {
+                HWND hEpName = GetDlgItem(hDlg, IDC_ENDPOINT_NAME);
+                const int textLen = Edit_GetTextLength(hEpName);
+                if (textLen != 0) {
+                    wchar_t epNameBuf[ENDPOINT_NAME_MAX_LEN + 1] = {'L\0'};
+                    EndpointData* epData = reinterpret_cast<EndpointData*>(
+                        GetWindowLongPtr(hDlg, DWLP_USER));
+                    if (epData != nullptr) {
+                        Edit_GetText(hEpName, epNameBuf, ARRAY_SIZE(epNameBuf));
+                        epData->name = epNameBuf;
+                        EndDialog(hDlg, 0);
+                    } else {
+                        EndDialog(hDlg, 1);
+                    }
+                }
+            } else if (LOWORD(wParam) == IDCANCEL) {
+                EndDialog(hDlg, 1);
+            }
+            return FALSE;
+        case WM_CLOSE:
+            EndDialog(hDlg, 1);
+            return TRUE;
+        default:
+            break;
+    }
+    return FALSE;
 }
 
 static std::vector<std::wstring> ExportEndpointNameList(HWND hList)
 {
-   std::vector<std::wstring> items;
-   DWORD itemCount = ListBox_GetCount(hList);
-   for (DWORD i = 0; i < itemCount; ++i) {
-      wchar_t textBuf[ENDPOINT_NAME_MAX_LEN + 1] = { 0 };
-      DWORD textLen = ListBox_GetTextLen(hList, i);
-      if (textLen < ARRAY_SIZE(textBuf)) {
-         ListBox_GetText(hList, i, textBuf);
-         items.push_back(textBuf);
-      }
-   }
-   return items;
+    std::vector<std::wstring> items;
+    DWORD itemCount = ListBox_GetCount(hList);
+    for (DWORD i = 0; i < itemCount; ++i) {
+        wchar_t textBuf[ENDPOINT_NAME_MAX_LEN + 1] = {0};
+        DWORD textLen = ListBox_GetTextLen(hList, i);
+        if (textLen < ARRAY_SIZE(textBuf)) {
+            ListBox_GetText(hList, i, textBuf);
+            items.push_back(textBuf);
+        }
+    }
+    return items;
 }
 
 static void LoadManageEndpointsDlgTranslation(HWND hDlg)
 {
-   WMi18n &i18n = WMi18n::GetInstance();
+    WMi18n& i18n = WMi18n::GetInstance();
 
-   SetWindowText(hDlg, i18n.GetTranslationW("settings.mute.manage-endpoints.title").c_str());
-   i18n.SetItemText(hDlg, IDC_GROUP_LIST_BEHAVIOUR, "settings.mute.manage-endpoints.list-behaviour.title");
-   i18n.SetItemText(hDlg, IDC_ENDPOINT_LIST_IS_ALLOWLIST, "settings.mute.manage-endpoints.list-behaviour.mute-only-listed");
-   i18n.SetItemText(hDlg, IDC_ENDPOINT_LIST_IS_BLOCKLIST, "settings.mute.manage-endpoints.list-behaviour.mute-all-but-listed");
-   i18n.SetItemText(hDlg, IDC_GROUP_ENDPOINTS, "settings.mute.manage-endpoints.endpoints.title");
+    SetWindowText(
+        hDlg,
+        i18n.GetTranslationW("settings.mute.manage-endpoints.title").c_str());
+    i18n.SetItemText(hDlg, IDC_GROUP_LIST_BEHAVIOUR,
+                     "settings.mute.manage-endpoints.list-behaviour.title");
+    i18n.SetItemText(
+        hDlg, IDC_ENDPOINT_LIST_IS_ALLOWLIST,
+        "settings.mute.manage-endpoints.list-behaviour.mute-only-listed");
+    i18n.SetItemText(
+        hDlg, IDC_ENDPOINT_LIST_IS_BLOCKLIST,
+        "settings.mute.manage-endpoints.list-behaviour.mute-all-but-listed");
+    i18n.SetItemText(hDlg, IDC_GROUP_ENDPOINTS,
+                     "settings.mute.manage-endpoints.endpoints.title");
 
-   i18n.SetItemText(hDlg, IDC_ENDPOINT_ADD, "settings.btn-add");
-   i18n.SetItemText(hDlg, IDC_ENDPOINT_EDIT, "settings.btn-edit");
-   i18n.SetItemText(hDlg, IDC_ENDPOINT_REMOVE, "settings.btn-remove");
-   i18n.SetItemText(hDlg, IDC_ENDPOINT_REMOVEALL, "settings.btn-remove-all");
-   i18n.SetItemText(hDlg, IDOK, "settings.btn-save");
-   i18n.SetItemText(hDlg, IDCANCEL, "settings.btn-cancel");
+    i18n.SetItemText(hDlg, IDC_ENDPOINT_ADD, "settings.btn-add");
+    i18n.SetItemText(hDlg, IDC_ENDPOINT_EDIT, "settings.btn-edit");
+    i18n.SetItemText(hDlg, IDC_ENDPOINT_REMOVE, "settings.btn-remove");
+    i18n.SetItemText(hDlg, IDC_ENDPOINT_REMOVEALL, "settings.btn-remove-all");
+    i18n.SetItemText(hDlg, IDOK, "settings.btn-save");
+    i18n.SetItemText(hDlg, IDCANCEL, "settings.btn-cancel");
 }
 
-INT_PTR CALLBACK Settings_ManageEndpointsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK Settings_ManageEndpointsDlgProc(HWND hDlg, UINT msg,
+                                                 WPARAM wParam, LPARAM lParam)
 {
-   switch (msg) {
-   case WM_INITDIALOG:
-   {
-      if (IsAppThemed()) {
-         EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
-      }
-      LoadManageEndpointsDlgTranslation(hDlg);
-
-      WMSettings *settings = reinterpret_cast<WMSettings *>(lParam);
-      assert(settings != nullptr);
-      SetWindowLongPtr(hDlg, DWLP_USER, reinterpret_cast<LONG_PTR>(settings));
-
-      DWORD endpointMode = settings->QueryValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS_MODE);
-      if (endpointMode == MUTE_ENDPOINT_MODE_INDIVIDUAL_ALLOW_LIST) {
-         Button_SetCheck(GetDlgItem(hDlg, IDC_ENDPOINT_LIST_IS_ALLOWLIST), BST_CHECKED);
-         Button_SetCheck(GetDlgItem(hDlg, IDC_ENDPOINT_LIST_IS_BLOCKLIST), BST_UNCHECKED);
-      } else if (endpointMode == MUTE_ENDPOINT_MODE_INDIVIDUAL_BLOCK_LIST) {
-         Button_SetCheck(GetDlgItem(hDlg, IDC_ENDPOINT_LIST_IS_ALLOWLIST), BST_UNCHECKED);
-         Button_SetCheck(GetDlgItem(hDlg, IDC_ENDPOINT_LIST_IS_BLOCKLIST), BST_CHECKED);
-      }
-
-      HWND hList = GetDlgItem(hDlg, IDC_ENDPOINT_LIST);
-      const auto devices = settings->GetManagedAudioEndpoints();
-      for (const auto &dev : devices) {
-         ListBox_AddString(hList, dev.c_str());
-      }
-      Button_Enable(
-         GetDlgItem(hDlg, IDC_ENDPOINT_REMOVEALL),
-         ListBox_GetCount(hList) > 0);
-
-      return TRUE;
-   }
-   case WM_COMMAND:
-   {
-      if (LOWORD(wParam) == IDC_ENDPOINT_LIST) {
-         HWND hList = GetDlgItem(hDlg, IDC_ENDPOINT_LIST);
-         if (HIWORD(wParam) == LBN_SELCHANGE || HIWORD(wParam) == LBN_SELCANCEL) {
-            const bool entrySelected = (ListBox_GetCurSel(hList) != LB_ERR);
-            Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_EDIT), entrySelected);
-            Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVE), entrySelected);
-         } else if (HIWORD(wParam) == LBN_KILLFOCUS) {
-            const bool entrySelected = (ListBox_GetCurSel(hList) != LB_ERR);
-            Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_EDIT), entrySelected);
-            Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVE), entrySelected);
-         }
-      } else if (LOWORD(wParam) == IDC_ENDPOINT_ADD) {
-         EndpointData epData;
-         if (DialogBoxParam(
-               nullptr,
-               MAKEINTRESOURCE(IDD_MANAGE_ENDPOINTS_ADD),
-               hDlg,
-               Settings_EndpointAddDlgProc,
-               reinterpret_cast<LPARAM>(&epData)) == 0) {
-            std::vector<std::wstring> devices = ExportEndpointNameList(GetDlgItem(hDlg, IDC_ENDPOINT_LIST));
-            if (std::find(begin(devices), end(devices), epData.name) == end(devices)) {
-               ListBox_AddString(
-                  GetDlgItem(hDlg, IDC_ENDPOINT_LIST),
-                  epData.name.c_str());
-               HWND hRemoveAll = GetDlgItem(hDlg, IDC_ENDPOINT_REMOVEALL);
-               if (!IsWindowEnabled(hRemoveAll)) {
-                  Button_Enable(hRemoveAll, TRUE);
-               }
+    switch (msg) {
+        case WM_INITDIALOG: {
+            if (IsAppThemed()) {
+                EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
             }
-         }
-      } else if (LOWORD(wParam) == IDC_ENDPOINT_EDIT) {
-         HWND hList = GetDlgItem(hDlg, IDC_ENDPOINT_LIST);
-         const WPARAM sel = ListBox_GetCurSel(hList);
-         if (sel != LB_ERR) {
-            const int len = ListBox_GetTextLen(hList, sel);
-            wchar_t *textBuf = nullptr;
-            if (len != LB_ERR) {
-               if ((textBuf = new wchar_t[static_cast<size_t>(len) + 1]) != nullptr) {
-                  ListBox_GetText(hList, sel, textBuf);
+            LoadManageEndpointsDlgTranslation(hDlg);
 
-                  EndpointData epData;
-                  epData.name = textBuf;
-                  delete[] textBuf;
+            WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
+            assert(settings != nullptr);
+            SetWindowLongPtr(hDlg, DWLP_USER,
+                             reinterpret_cast<LONG_PTR>(settings));
 
-                  if (DialogBoxParam(
-                        nullptr,
-                        MAKEINTRESOURCE(IDD_MANAGE_ENDPOINTS_ADD),
-                        hDlg,
-                        Settings_EndpointAddDlgProc,
-                        reinterpret_cast<LPARAM>(&epData)) == 0) {
-                     std::vector<std::wstring> networks = ExportEndpointNameList(GetDlgItem(hDlg, IDC_WIFI_LIST));
-                     if (std::find(begin(networks), end(networks), epData.name) == end(networks)) {
-                        ListBox_InsertString(hList, sel, epData.name.c_str());
-                        ListBox_DeleteString(hList, sel + 1);
-                     } else {
-                        ListBox_DeleteString(hList, sel);
-                     }
-                  }
-               }
+            DWORD endpointMode = settings->QueryValue(
+                SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS_MODE);
+            if (endpointMode == MUTE_ENDPOINT_MODE_INDIVIDUAL_ALLOW_LIST) {
+                Button_SetCheck(
+                    GetDlgItem(hDlg, IDC_ENDPOINT_LIST_IS_ALLOWLIST),
+                    BST_CHECKED);
+                Button_SetCheck(
+                    GetDlgItem(hDlg, IDC_ENDPOINT_LIST_IS_BLOCKLIST),
+                    BST_UNCHECKED);
+            } else if (endpointMode == MUTE_ENDPOINT_MODE_INDIVIDUAL_BLOCK_LIST)
+            {
+                Button_SetCheck(
+                    GetDlgItem(hDlg, IDC_ENDPOINT_LIST_IS_ALLOWLIST),
+                    BST_UNCHECKED);
+                Button_SetCheck(
+                    GetDlgItem(hDlg, IDC_ENDPOINT_LIST_IS_BLOCKLIST),
+                    BST_CHECKED);
             }
-         }
-      } else if (LOWORD(wParam) == IDC_ENDPOINT_REMOVE) {
-         HWND hList = GetDlgItem(hDlg, IDC_ENDPOINT_LIST);
-         const WPARAM sel = ListBox_GetCurSel(hList);
-         if (sel != LB_ERR) {
-            ListBox_DeleteString(hList, sel);
-            if (ListBox_GetCount(hList) == 0) {
-               Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_EDIT), FALSE);
-               Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVE), FALSE);
-               Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVEALL), FALSE);
+
+            HWND hList = GetDlgItem(hDlg, IDC_ENDPOINT_LIST);
+            const auto devices = settings->GetManagedAudioEndpoints();
+            for (const auto& dev : devices) {
+                ListBox_AddString(hList, dev.c_str());
             }
-         }
-      } else if (LOWORD(wParam) == IDC_ENDPOINT_REMOVEALL) {
-         ListBox_ResetContent(GetDlgItem(hDlg, IDC_ENDPOINT_LIST));
-         Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_EDIT), FALSE);
-         Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVE), FALSE);
-         Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVEALL), FALSE);
-      } else if (LOWORD(wParam) == IDOK) {
-         WMSettings *settings = reinterpret_cast<WMSettings *>(GetWindowLongPtr(hDlg, DWLP_USER));
-         std::vector<std::wstring> devices = ExportEndpointNameList(GetDlgItem(hDlg, IDC_ENDPOINT_LIST));
-         settings->StoreManagedAudioEndpoints(devices);
-         if (Button_GetCheck(GetDlgItem(hDlg, IDC_ENDPOINT_LIST_IS_ALLOWLIST))) {
-            settings->SetValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS_MODE, MUTE_ENDPOINT_MODE_INDIVIDUAL_ALLOW_LIST);
-         } else if (Button_GetCheck(GetDlgItem(hDlg, IDC_ENDPOINT_LIST_IS_BLOCKLIST))) {
-            settings->SetValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS_MODE, MUTE_ENDPOINT_MODE_INDIVIDUAL_BLOCK_LIST);
-         }
-         EndDialog(hDlg, 0);
-      } else if (LOWORD(wParam) == IDCANCEL) {
-         EndDialog(hDlg, 0);
-      }
-      return 0;
-   }
-   default:
-      break;
-   }
-   return FALSE;
+            Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVEALL),
+                          ListBox_GetCount(hList) > 0);
+
+            return TRUE;
+        }
+        case WM_COMMAND: {
+            if (LOWORD(wParam) == IDC_ENDPOINT_LIST) {
+                HWND hList = GetDlgItem(hDlg, IDC_ENDPOINT_LIST);
+                if (HIWORD(wParam) == LBN_SELCHANGE ||
+                    HIWORD(wParam) == LBN_SELCANCEL)
+                {
+                    const bool entrySelected =
+                        (ListBox_GetCurSel(hList) != LB_ERR);
+                    Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_EDIT),
+                                  entrySelected);
+                    Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVE),
+                                  entrySelected);
+                } else if (HIWORD(wParam) == LBN_KILLFOCUS) {
+                    const bool entrySelected =
+                        (ListBox_GetCurSel(hList) != LB_ERR);
+                    Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_EDIT),
+                                  entrySelected);
+                    Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVE),
+                                  entrySelected);
+                }
+            } else if (LOWORD(wParam) == IDC_ENDPOINT_ADD) {
+                EndpointData epData;
+                if (DialogBoxParam(nullptr,
+                                   MAKEINTRESOURCE(IDD_MANAGE_ENDPOINTS_ADD),
+                                   hDlg, Settings_EndpointAddDlgProc,
+                                   reinterpret_cast<LPARAM>(&epData)) == 0)
+                {
+                    std::vector<std::wstring> devices = ExportEndpointNameList(
+                        GetDlgItem(hDlg, IDC_ENDPOINT_LIST));
+                    if (std::find(begin(devices), end(devices), epData.name) ==
+                        end(devices))
+                    {
+                        ListBox_AddString(GetDlgItem(hDlg, IDC_ENDPOINT_LIST),
+                                          epData.name.c_str());
+                        HWND hRemoveAll =
+                            GetDlgItem(hDlg, IDC_ENDPOINT_REMOVEALL);
+                        if (!IsWindowEnabled(hRemoveAll)) {
+                            Button_Enable(hRemoveAll, TRUE);
+                        }
+                    }
+                }
+            } else if (LOWORD(wParam) == IDC_ENDPOINT_EDIT) {
+                HWND hList = GetDlgItem(hDlg, IDC_ENDPOINT_LIST);
+                const WPARAM sel = ListBox_GetCurSel(hList);
+                if (sel != LB_ERR) {
+                    const int len = ListBox_GetTextLen(hList, sel);
+                    wchar_t* textBuf = nullptr;
+                    if (len != LB_ERR) {
+                        if ((textBuf =
+                                 new wchar_t[static_cast<size_t>(len) + 1]) !=
+                            nullptr)
+                        {
+                            ListBox_GetText(hList, sel, textBuf);
+
+                            EndpointData epData;
+                            epData.name = textBuf;
+                            delete[] textBuf;
+
+                            if (DialogBoxParam(
+                                    nullptr,
+                                    MAKEINTRESOURCE(IDD_MANAGE_ENDPOINTS_ADD),
+                                    hDlg, Settings_EndpointAddDlgProc,
+                                    reinterpret_cast<LPARAM>(&epData)) == 0)
+                            {
+                                std::vector<std::wstring> networks =
+                                    ExportEndpointNameList(
+                                        GetDlgItem(hDlg, IDC_WIFI_LIST));
+                                if (std::find(begin(networks), end(networks),
+                                              epData.name) == end(networks))
+                                {
+                                    ListBox_InsertString(hList, sel,
+                                                         epData.name.c_str());
+                                    ListBox_DeleteString(hList, sel + 1);
+                                } else {
+                                    ListBox_DeleteString(hList, sel);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else if (LOWORD(wParam) == IDC_ENDPOINT_REMOVE) {
+                HWND hList = GetDlgItem(hDlg, IDC_ENDPOINT_LIST);
+                const WPARAM sel = ListBox_GetCurSel(hList);
+                if (sel != LB_ERR) {
+                    ListBox_DeleteString(hList, sel);
+                    if (ListBox_GetCount(hList) == 0) {
+                        Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_EDIT),
+                                      FALSE);
+                        Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVE),
+                                      FALSE);
+                        Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVEALL),
+                                      FALSE);
+                    }
+                }
+            } else if (LOWORD(wParam) == IDC_ENDPOINT_REMOVEALL) {
+                ListBox_ResetContent(GetDlgItem(hDlg, IDC_ENDPOINT_LIST));
+                Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_EDIT), FALSE);
+                Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVE), FALSE);
+                Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVEALL), FALSE);
+            } else if (LOWORD(wParam) == IDOK) {
+                WMSettings* settings = reinterpret_cast<WMSettings*>(
+                    GetWindowLongPtr(hDlg, DWLP_USER));
+                std::vector<std::wstring> devices =
+                    ExportEndpointNameList(GetDlgItem(hDlg, IDC_ENDPOINT_LIST));
+                settings->StoreManagedAudioEndpoints(devices);
+                if (Button_GetCheck(
+                        GetDlgItem(hDlg, IDC_ENDPOINT_LIST_IS_ALLOWLIST)))
+                {
+                    settings->SetValue(
+                        SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS_MODE,
+                        MUTE_ENDPOINT_MODE_INDIVIDUAL_ALLOW_LIST);
+                } else if (Button_GetCheck(GetDlgItem(
+                               hDlg, IDC_ENDPOINT_LIST_IS_BLOCKLIST)))
+                {
+                    settings->SetValue(
+                        SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS_MODE,
+                        MUTE_ENDPOINT_MODE_INDIVIDUAL_BLOCK_LIST);
+                }
+                EndDialog(hDlg, 0);
+            } else if (LOWORD(wParam) == IDCANCEL) {
+                EndDialog(hDlg, 0);
+            }
+            return 0;
+        }
+        default:
+            break;
+    }
+    return FALSE;
 }
