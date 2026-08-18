@@ -1,18 +1,18 @@
-Version 2.6.0 (2026-08-14)
- * QuietHours are now configurable multiple time slots per day.
- * Added a configurable global hotkey that toggles muting of all managed
+Version 2.6.0 (2026-08-18)
+ * Added: Configurable global hotkey that toggles muting of all managed
    audio endpoints.
+ * Added: QuietHours are now configurable multiple time slots per day.
  * Added "Mute on Laptop Lid Close"
- * Updated translations
+ * Added: New translations
+ * Added: Program is now build with control-flow enforcement (CET)
  * Fixed some possible race conditions
  * Fixed memory leak in wifi detector
  * Fixed possible security issues in update checker
- * WinMute is now build with control-flow enforcement (CET)
- * Chocolatey uninstall now removes all settings.
- * WinMute now no longer immediately exits if the workstation-lock notification
+ * Fixed: No longer immediately exiting if the workstation-lock notification
    can not be registered. WinMute will retry registering with TermService
    for about half a minute and disable mute-on-lock if the service does not
    respond until then.
+ * Fixed: Chocolatey uninstall now removes all settings.
 
 Version 2.5.5 (2026-01-23)
  * Added feature to also try pausing/resuming currently playing media when muting/unmuting.
