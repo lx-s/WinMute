@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace fs = std::filesystem;
 
-extern INT_PTR CALLBACK LogDlgProc(HWND, UINT, WPARAM, LPARAM);
+extern void ShowLogDialog(HWND hParent);
 extern HINSTANCE hglobInstance;
 
 struct SettingsGeneralData {
@@ -230,9 +230,7 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
                     GetDlgItem(hDlg, IDC_ENABLE_GLOBAL_MUTE_HOTKEY));
                 EnableWindow(GetDlgItem(hDlg, IDC_GLOBAL_MUTE_HOTKEY), checked);
             } else if (LOWORD(wParam) == IDC_OPENLOGDLG) {
-                auto hLogDlg = CreateDialogW(
-                    hglobInstance, MAKEINTRESOURCEW(IDD_LOG), hDlg, LogDlgProc);
-                ShowWindow(hLogDlg, SW_SHOW);
+                ShowLogDialog(hDlg);
             } else if (LOWORD(wParam) == IDC_CHECK_FOR_UPDATES_ON_STARTUP) {
                 const int enabled = Button_GetCheck(
                     GetDlgItem(hDlg, IDC_CHECK_FOR_UPDATES_ON_STARTUP));

@@ -1,6 +1,6 @@
 /*
  WinMute
-           Copyright (c) 2024, Alexander Steinhoefer
+           Copyright (c) 2011-2026 Alexander Steinhoefer
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -33,99 +33,118 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
+extern HINSTANCE hglobInstance;
+
 struct LogDlgData {
-   HWND hLogContent;
+    HWND hLogContent;
 };
 
-INT_PTR CALLBACK LogDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+static HWND hLogDlg_ = nullptr;
+
+static INT_PTR CALLBACK LogDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
+                                   LPARAM lParam)
 {
-   auto *dlgData =
-      reinterpret_cast<LogDlgData *>(GetWindowLongPtr(hDlg, DWLP_USER));
-   UNREFERENCED_PARAMETER(wParam);
-   UNREFERENCED_PARAMETER(lParam);
-   switch (msg) {
-   case WM_INITDIALOG:
-   {
-      dlgData = new LogDlgData();
-      SetWindowLongPtr(hDlg, DWLP_USER, reinterpret_cast<LONG_PTR>(dlgData));
+    auto* dlgData =
+        reinterpret_cast<LogDlgData*>(GetWindowLongPtr(hDlg, DWLP_USER));
+    UNREFERENCED_PARAMETER(wParam);
+    UNREFERENCED_PARAMETER(lParam);
+    switch (msg) {
+        case WM_INITDIALOG: {
+            dlgData = new LogDlgData();
+            SetWindowLongPtr(hDlg, DWLP_USER,
+                             reinterpret_cast<LONG_PTR>(dlgData));
+            hLogDlg_ = hDlg;
 
-      WMi18n &i18n = WMi18n::GetInstance();
-      SetWindowText(hDlg, i18n.GetTranslationW("log.title").c_str());
+            WMi18n& i18n = WMi18n::GetInstance();
+            SetWindowText(hDlg, i18n.GetTranslationW("log.title").c_str());
 
-      HICON hIcon = LoadIcon(
-         GetModuleHandle(nullptr),
-         MAKEINTRESOURCE(IDI_TRAY_DARK));
-      SendMessageW(hDlg, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(hIcon));
+            HICON hIcon = LoadIcon(GetModuleHandle(nullptr),
+                                   MAKEINTRESOURCE(IDI_TRAY_DARK));
+            SendMessageW(hDlg, WM_SETICON, ICON_BIG,
+                         reinterpret_cast<LPARAM>(hIcon));
 
-      auto& wmLog = WMLog::GetInstance();
-      const auto logMessages = wmLog.GetLogMessages();
-      std::wstring logText;
-      logText.reserve(logMessages.size() * 30);
-      for (auto &lm : logMessages) {
-         logText.append(wmLog.FormatLogMessage(lm, true));
-      }
+            auto& wmLog = WMLog::GetInstance();
+            const auto logMessages = wmLog.GetLogMessages();
+            std::wstring logText;
+            logText.reserve(logMessages.size() * 30);
+            for (auto& lm : logMessages) {
+                logText.append(wmLog.FormatLogMessage(lm, true));
+            }
 
-      dlgData->hLogContent = GetDlgItem(hDlg, IDC_LOG_CONTENT);
-      Edit_SetText(dlgData->hLogContent, logText.c_str());
-      wmLog.RegisterForLogUpdates(hDlg);
+            dlgData->hLogContent = GetDlgItem(hDlg, IDC_LOG_CONTENT);
+            Edit_SetText(dlgData->hLogContent, logText.c_str());
+            Edit_SetSel(dlgData->hLogContent, static_cast<WPARAM>(-1), 0);
+            wmLog.RegisterForLogUpdates(hDlg);
+            SetFocus(dlgData->hLogContent);
 
-      // Initial sizing
-      RECT rcClient;
-      GetClientRect(hDlg, &rcClient);
-      SetWindowPos(
-         dlgData->hLogContent,
-         nullptr,
-         0,
-         0,
-         rcClient.right - rcClient.left,
-         rcClient.bottom - rcClient.top,
-         SWP_NOZORDER);
+            // Initial sizing
+            RECT rcClient;
+            GetClientRect(hDlg, &rcClient);
+            SetWindowPos(dlgData->hLogContent, nullptr, 0, 0,
+                         rcClient.right - rcClient.left,
+                         rcClient.bottom - rcClient.top, SWP_NOZORDER);
+            return FALSE;
+        }
+        case WM_COMMAND:
+            return 0;
+        case WM_SIZE: {
+            // WM_SIZE arrives before WM_INITDIALOG, when dlgData is not set yet
+            if (dlgData == nullptr) {
+                return 0;
+            }
+            RECT rcClient;
+            GetClientRect(hDlg, &rcClient);
+            SetWindowPos(dlgData->hLogContent, nullptr, 0, 0,
+                         rcClient.right - rcClient.left,
+                         rcClient.bottom - rcClient.top, SWP_NOZORDER);
+            return 0;
+        }
+        case WM_LOG_UPDATED: {
+            const WMLog& wmLog = WMLog::GetInstance();
+            auto logMsg = reinterpret_cast<LogMessage*>(lParam);
+            if (dlgData == nullptr || logMsg == nullptr) {
+                return FALSE;
+            }
+            const auto formattedMsg = wmLog.FormatLogMessage(*logMsg, true);
+            const auto textLen = Edit_GetTextLength(dlgData->hLogContent);
+            Edit_SetSel(dlgData->hLogContent, textLen, textLen);
+            Edit_ReplaceSel(dlgData->hLogContent, formattedMsg.c_str());
+            return TRUE;
+        }
+        case WM_DESTROY:
+            delete dlgData;
+            SetWindowLongPtrW(hDlg, DWLP_USER, 0);
+            WMLog::GetInstance().UnregisterForLogUpdates(hDlg);
+            if (hLogDlg_ == hDlg) {
+                hLogDlg_ = nullptr;
+            }
+            return 0;
+        case WM_CLOSE:
+            // EndDialog(hDlg, 0);
+            DestroyWindow(hDlg);
+            return TRUE;
+        default:
+            break;
+    }
+    return FALSE;
+}
 
-      return TRUE;
-   }
-   case WM_COMMAND:
-      return 0;
-   case WM_SIZE:
-      {
-      // WM_SIZE arrives before WM_INITDIALOG, when dlgData is not set yet
-      if (dlgData == nullptr) {
-         return 0;
-      }
-      RECT rcClient;
-      GetClientRect(hDlg, &rcClient);
-      SetWindowPos(
-         dlgData->hLogContent,
-         nullptr,
-         0,
-         0,
-         rcClient.right - rcClient.left,
-         rcClient.bottom - rcClient.top,
-         SWP_NOZORDER);
-      return 0;
-   }
-   case WM_LOG_UPDATED: {
-      const WMLog &wmLog = WMLog::GetInstance();
-      auto logMsg = reinterpret_cast<LogMessage*>(lParam);
-      if (dlgData == nullptr || logMsg == nullptr) {
-         return FALSE;
-      }
-      const auto formattedMsg = wmLog.FormatLogMessage(*logMsg, true);
-      const auto textLen = Edit_GetTextLength(dlgData->hLogContent);
-      Edit_SetSel(dlgData->hLogContent, textLen, textLen);
-      Edit_ReplaceSel(dlgData->hLogContent, formattedMsg.c_str());
-      return TRUE;
-   }
-   case WM_DESTROY:
-      delete dlgData;
-      SetWindowLongPtrW(hDlg, DWLP_USER, 0);
-      WMLog::GetInstance().UnregisterForLogUpdates(hDlg);
-      return 0;
-   case WM_CLOSE:
-      //EndDialog(hDlg, 0);
-      DestroyWindow(hDlg);
-      return TRUE;
-   default:
-      break;
-   }
-   return FALSE;
+void ShowLogDialog(HWND hParent)
+{
+    if (hLogDlg_ != nullptr) {
+        // Already open: surface the existing window instead of a second copy.
+        if (IsIconic(hLogDlg_)) {
+            ShowWindow(hLogDlg_, SW_RESTORE);
+        }
+        SetForegroundWindow(hLogDlg_);
+        return;
+    }
+
+    HWND hLogDlg = CreateDialogW(hglobInstance, MAKEINTRESOURCEW(IDD_LOG),
+                                 hParent, LogDlgProc);
+    if (hLogDlg == nullptr) {
+        ShowWindowsError(L"CreateDialog");
+        return;
+    }
+    ShowWindow(hLogDlg, SW_SHOW);
 }

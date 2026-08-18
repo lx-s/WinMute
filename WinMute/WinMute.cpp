@@ -56,6 +56,8 @@ static constexpr int WTS_RETRY_MAX_ATTEMPTS = 30;
 
 static constexpr int GLOBAL_HOTKEY_ID_MUTE = 1000;
 
+extern void ShowLogDialog(HWND hParent);
+
 static LRESULT CALLBACK WinMuteWndProc(HWND hWnd, UINT msg, WPARAM wParam,
                                        LPARAM lParam)
 {
@@ -735,6 +737,9 @@ LRESULT WinMute::OnCommand(HWND hWnd, WPARAM wParam, LPARAM)
         }
         case ID_TRAYMENU_EXIT:
             SendMessage(hWnd, WM_CLOSE, 0, 0);
+            break;
+        case ID_TRAYMENU_SHOWLOG:
+            ShowLogDialog(hWnd);
             break;
         case ID_TRAYMENU_SETTINGS: {
             static bool dialogOpen = false;
