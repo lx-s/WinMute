@@ -54,6 +54,7 @@
 #define IDC_ABOUT_TAB                   1016
 #define IDC_OPENLOG2                    1016
 #define IDC_OPENLOGDLG                  1016
+#define IDC_ENABLE_GLOBAL_MUTE_HOTKEY   1017
 #define IDC_ABOUTTEXT                   1019
 #define IDC_TITLE                       1020
 #define IDC_ABOUT_TITLE                 1020
@@ -133,6 +134,8 @@
 #define IDC_QUIET_HOURS_EDIT            1080
 #define IDC_QUIET_HOURS_REMOVE          1081
 #define IDC_QUIET_HOURS_REMOVEALL       1082
+#define IDC_HOTKEY1                     1082
+#define IDC_GLOBAL_MUTE_HOTKEY          1082
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_                    40002
 #define ID_TRAYMENU_MUTEON              40003
@@ -181,7 +184,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        146
 #define _APS_NEXT_COMMAND_VALUE         40042
-#define _APS_NEXT_CONTROL_VALUE         1082
+#define _APS_NEXT_CONTROL_VALUE         1083
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
