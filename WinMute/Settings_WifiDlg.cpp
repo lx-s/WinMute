@@ -137,13 +137,20 @@ static std::vector<std::wstring> ExportSsidListItems(HWND hList)
 
 static bool IsWlanAvailable() noexcept
 {
-    HANDLE wlanHandle;
+    HANDLE wlanHandle = nullptr;
     DWORD vers = 2;
     if (WlanOpenHandle(vers, nullptr, &vers, &wlanHandle) != ERROR_SUCCESS) {
         return false;
     }
+
+    bool available = false;
+    PWLAN_INTERFACE_INFO_LIST ifList = nullptr;
+    if (WlanEnumInterfaces(wlanHandle, nullptr, &ifList) == ERROR_SUCCESS) {
+        available = ifList->dwNumberOfItems > 0;
+        WlanFreeMemory(ifList);
+    }
     WlanCloseHandle(wlanHandle, nullptr);
-    return true;
+    return available;
 }
 
 static BOOL CALLBACK ShowChildWindow(HWND hWnd, LPARAM lParam)
@@ -173,9 +180,6 @@ INT_PTR CALLBACK Settings_WifiDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 {
     switch (msg) {
         case WM_INITDIALOG: {
-            if (IsAppThemed()) {
-                EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
-            }
             LoadWifiDlgTranslation(hDlg);
             WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
             assert(settings != nullptr);

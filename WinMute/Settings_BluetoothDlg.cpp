@@ -184,13 +184,14 @@ static std::vector<std::wstring> ExportBluetoothDeviceList(HWND hList)
 
 static bool IsBluetoothAvailable() noexcept
 {
-    HANDLE btHandle;
+    HANDLE btHandle = nullptr;
     BLUETOOTH_FIND_RADIO_PARAMS bfrp = {sizeof(BLUETOOTH_FIND_RADIO_PARAMS)};
     HBLUETOOTH_RADIO_FIND hRadiosFind =
         BluetoothFindFirstRadio(&bfrp, &btHandle);
     if (hRadiosFind == nullptr) {
         return false;
     }
+    CloseHandle(btHandle);
     BluetoothFindRadioClose(hRadiosFind);
     return true;
 }
@@ -222,9 +223,6 @@ INT_PTR CALLBACK Settings_BluetoothDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 {
     switch (msg) {
         case WM_INITDIALOG: {
-            if (IsAppThemed()) {
-                EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
-            }
             LoadBluetoothDlgTranslation(hDlg);
 
             WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);

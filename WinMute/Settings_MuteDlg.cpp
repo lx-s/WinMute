@@ -31,10 +31,11 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#include "common.h"
+// The "Mute events" and "Media control" pages below the "Muting" node of the
+// settings navigation tree. The endpoint list lives in
+// Settings_ManageEndpointsDlg.cpp.
 
-extern INT_PTR CALLBACK Settings_ManageEndpointsDlgProc(HWND, UINT, WPARAM,
-                                                        LPARAM);
+#include "common.h"
 
 static void SetCheckButton(HWND hBtn, const WMSettings& settings,
                            SettingsKey key)
@@ -49,17 +50,20 @@ static void SetOption(HWND hBtn, WMSettings& settings, SettingsKey key)
     settings.SetValue(key, enable);
 }
 
+static WMSettings* GetPageSettings(HWND hDlg)
+{
+    return reinterpret_cast<WMSettings*>(GetWindowLongPtr(hDlg, DWLP_USER));
+}
+
+// =============================================================================
+// Mute events
+
 static void LoadMuteDlgTranslation(HWND hDlg)
 {
     WMi18n& i18n = WMi18n::GetInstance();
 
-    i18n.SetItemText(hDlg, IDC_GROUP_GENERAL, "settings.mute.general-title");
     i18n.SetItemText(hDlg, IDC_SHOWNOTIFICATIONS,
                      "settings.mute.show-mute-event-notifications");
-    i18n.SetItemText(hDlg, IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY,
-                     "settings.mute.manage-endpoints-individually");
-    i18n.SetItemText(hDlg, IDC_MANAGE_ENDPOINTS,
-                     "settings.mute.btn-manage-endpoints");
 
     i18n.SetItemText(hDlg, IDC_GROUP_MUTE_WITH_RESTORE,
                      "settings.mute.mute-with-restore.title");
@@ -89,11 +93,6 @@ static void LoadMuteDlgTranslation(HWND hDlg)
     i18n.SetItemText(
         hDlg, IDC_MUTE_WHEN_RDP_SESSION,
         "settings.mute.mute-without-restore.when-rdp-session-starts");
-
-    i18n.SetItemText(hDlg, IDC_MUTE_TRY_PAUSE_MEDIA,
-                     "settings.mute.try-pause-media-on-mute");
-    i18n.SetItemText(hDlg, IDC_MUTE_TRY_RESUME_MEDIA,
-                     "settings.mute.try-resume-media-on-unmute");
 }
 
 INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
@@ -103,15 +102,9 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 
     switch (msg) {
         case WM_INITDIALOG: {
-            if (IsAppThemed()) {
-                EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
-            }
-
             LoadMuteDlgTranslation(hDlg);
 
             HWND hNotify = GetDlgItem(hDlg, IDC_SHOWNOTIFICATIONS);
-            HWND hManageEndpoints =
-                GetDlgItem(hDlg, IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY);
 
             HWND hMuteOnLock = GetDlgItem(hDlg, IDC_MUTE_WHEN_WS_LOCKED);
             HWND hMuteOnScreenOff = GetDlgItem(hDlg, IDC_MUTE_WHEN_SCREEN_OFF);
@@ -123,21 +116,13 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
             HWND hMuteOnSleep = GetDlgItem(hDlg, IDC_MUTE_WHEN_SLEEP);
             HWND hMuteOnLogout = GetDlgItem(hDlg, IDC_MUTE_WHEN_LOGOUT);
 
-            HWND hTryPauseMedia = GetDlgItem(hDlg, IDC_MUTE_TRY_PAUSE_MEDIA);
-            HWND hTryResumeMedia = GetDlgItem(hDlg, IDC_MUTE_TRY_RESUME_MEDIA);
-
             WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
             assert(settings != nullptr);
             SetWindowLongPtr(hDlg, DWLP_USER,
                              reinterpret_cast<LONG_PTR>(settings));
 
-            // General
             SetCheckButton(hNotify, *settings,
                            SettingsKey::NOTIFICATIONS_ENABLED);
-            SetCheckButton(hManageEndpoints, *settings,
-                           SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS);
-            Button_Enable(GetDlgItem(hDlg, IDC_MANAGE_ENDPOINTS),
-                          Button_GetCheck(hManageEndpoints) == BST_CHECKED);
             const DWORD muteDelay =
                 settings->QueryValue(SettingsKey::MUTE_DELAY);
             SetDlgItemInt(hDlg, IDC_MUTEDELAY, (muteDelay < 0) ? 0 : muteDelay,
@@ -161,38 +146,13 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
             SetCheckButton(hMuteOnLogout, *settings,
                            SettingsKey::MUTE_ON_LOGOUT);
 
-            SetCheckButton(hTryPauseMedia, *settings,
-                           SettingsKey::MUTE_TRY_PAUSE_MEDIA);
-            SetCheckButton(hTryResumeMedia, *settings,
-                           SettingsKey::MUTE_TRY_RESUME_MEDIA);
-
             return TRUE;
         }
-        case WM_COMMAND:
-            if (LOWORD(wParam) == IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY) {
-                int isEnabled = Button_GetCheck(
-                    GetDlgItem(hDlg, IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY));
-                Button_Enable(GetDlgItem(hDlg, IDC_MANAGE_ENDPOINTS),
-                              isEnabled);
-            } else if (LOWORD(wParam) == IDC_MANAGE_ENDPOINTS) {
-                WMSettings* settings = reinterpret_cast<WMSettings*>(
-                    GetWindowLongPtr(hDlg, DWLP_USER));
-                if (!DialogBoxParam(nullptr,
-                                    MAKEINTRESOURCE(IDD_MANAGE_ENDPOINTS), hDlg,
-                                    Settings_ManageEndpointsDlgProc,
-                                    reinterpret_cast<LPARAM>(settings)) == 0)
-                {
-                    ShowWindowsError(L"DialogBoxParam", GetLastError());
-                }
-            }
-            return 0;
         case WM_SAVESETTINGS: {
-            WMSettings* settings = reinterpret_cast<WMSettings*>(
-                GetWindowLongPtr(hDlg, DWLP_USER));
+            WMSettings* settings = GetPageSettings(hDlg);
+            assert(settings != nullptr);
 
             HWND hNotify = GetDlgItem(hDlg, IDC_SHOWNOTIFICATIONS);
-            HWND hManageEndpoints =
-                GetDlgItem(hDlg, IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY);
 
             HWND hMuteOnLock = GetDlgItem(hDlg, IDC_MUTE_WHEN_WS_LOCKED);
             HWND hMuteOnScreenOff = GetDlgItem(hDlg, IDC_MUTE_WHEN_SCREEN_OFF);
@@ -204,13 +164,7 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
             HWND hMuteOnSleep = GetDlgItem(hDlg, IDC_MUTE_WHEN_SLEEP);
             HWND hMuteOnLogout = GetDlgItem(hDlg, IDC_MUTE_WHEN_LOGOUT);
 
-            HWND hTryPauseMedia = GetDlgItem(hDlg, IDC_MUTE_TRY_PAUSE_MEDIA);
-            HWND hTryResumeMedia = GetDlgItem(hDlg, IDC_MUTE_TRY_RESUME_MEDIA);
-
-            // General
             SetOption(hNotify, *settings, SettingsKey::NOTIFICATIONS_ENABLED);
-            SetOption(hManageEndpoints, *settings,
-                      SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS);
             const DWORD muteDelay =
                 GetDlgItemInt(hDlg, IDC_MUTEDELAY, nullptr, TRUE);
             settings->SetValue(SettingsKey::MUTE_DELAY,
@@ -232,10 +186,49 @@ INT_PTR CALLBACK Settings_MuteDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
             SetOption(hMuteOnSleep, *settings, SettingsKey::MUTE_ON_SUSPEND);
             SetOption(hMuteOnLogout, *settings, SettingsKey::MUTE_ON_LOGOUT);
 
-            // Media
-            SetOption(hTryPauseMedia, *settings,
+            return 0;
+        }
+        default:
+            break;
+    }
+    return FALSE;
+}
+
+// =============================================================================
+// Media control
+
+INT_PTR CALLBACK Settings_MediaDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
+                                       LPARAM lParam)
+{
+    UNREFERENCED_PARAMETER(wParam);
+
+    switch (msg) {
+        case WM_INITDIALOG: {
+            WMi18n& i18n = WMi18n::GetInstance();
+            i18n.SetItemText(hDlg, IDC_MUTE_TRY_PAUSE_MEDIA,
+                             "settings.mute.try-pause-media-on-mute");
+            i18n.SetItemText(hDlg, IDC_MUTE_TRY_RESUME_MEDIA,
+                             "settings.mute.try-resume-media-on-unmute");
+
+            WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
+            assert(settings != nullptr);
+            SetWindowLongPtr(hDlg, DWLP_USER,
+                             reinterpret_cast<LONG_PTR>(settings));
+
+            SetCheckButton(GetDlgItem(hDlg, IDC_MUTE_TRY_PAUSE_MEDIA),
+                           *settings, SettingsKey::MUTE_TRY_PAUSE_MEDIA);
+            SetCheckButton(GetDlgItem(hDlg, IDC_MUTE_TRY_RESUME_MEDIA),
+                           *settings, SettingsKey::MUTE_TRY_RESUME_MEDIA);
+
+            return TRUE;
+        }
+        case WM_SAVESETTINGS: {
+            WMSettings* settings = GetPageSettings(hDlg);
+            assert(settings != nullptr);
+
+            SetOption(GetDlgItem(hDlg, IDC_MUTE_TRY_PAUSE_MEDIA), *settings,
                       SettingsKey::MUTE_TRY_PAUSE_MEDIA);
-            SetOption(hTryResumeMedia, *settings,
+            SetOption(GetDlgItem(hDlg, IDC_MUTE_TRY_RESUME_MEDIA), *settings,
                       SettingsKey::MUTE_TRY_RESUME_MEDIA);
 
             return 0;

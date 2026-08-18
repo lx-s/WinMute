@@ -361,9 +361,6 @@ INT_PTR CALLBACK Settings_QuietHoursDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
             SetWindowLongPtr(hDlg, DWLP_USER,
                              reinterpret_cast<LONG_PTR>(qhdata));
 
-            if (IsAppThemed()) {
-                EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
-            }
             LoadQuietHoursDlgTranslation(hDlg);
 
             const DWORD qhEnabled =

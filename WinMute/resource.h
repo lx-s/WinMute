@@ -20,7 +20,6 @@
 #define IDD_SETTINGS_BLUETOOTH          131
 #define IDD_DIALOG1                     133
 #define IDD_SETTINGS_BLUETOOTH_ADD      133
-#define IDD_MANAGE_ENDPOINTS            135
 #define IDD_DIALOG2                     137
 #define IDD_MANAGE_ENDPOINTS_ADD        137
 #define IDI_APP_UPDATE                  141
@@ -28,6 +27,12 @@
 #define IDD_LOG                         142
 #define IDD_EDIT_QUIET_HOURS_ENTRY      144
 #define IDD_SETTINGS_QUIETHOURS_ADD     144
+#define IDD_SETTINGS_LANGUAGE           146
+#define IDD_SETTINGS_UPDATES            147
+#define IDD_SETTINGS_HOTKEYS            148
+#define IDD_SETTINGS_LOGGING            149
+#define IDD_SETTINGS_ENDPOINTS          150
+#define IDD_SETTINGS_MEDIA              151
 #define IDC_LINK_HOMEPAGE               1001
 #define IDC_LINK_SUPPORT                1002
 #define IDC_LINK_PROJECT                1002
@@ -39,8 +44,6 @@
 #define IDC_SHOWNOTIFICATIONS           1007
 #define IDC_TREE1                       1008
 #define IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY 1008
-#define IDC_TAB1                        1010
-#define IDC_SETTINGS_TAB                1010
 #define IDC_CHECK1                      1011
 #define IDC_RUNONSTARTUP                1011
 #define IDC_MUTE_WHEN_WS_LOCKED         1011
@@ -136,6 +139,7 @@
 #define IDC_QUIET_HOURS_REMOVEALL       1082
 #define IDC_HOTKEY1                     1082
 #define IDC_GLOBAL_MUTE_HOTKEY          1082
+#define IDC_SETTINGS_TREE               1083
 #define ID_TRAYMENU_INFO                40001
 #define ID_TRAYMENU_                    40002
 #define ID_TRAYMENU_MUTEON              40003
@@ -184,9 +188,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        146
+#define _APS_NEXT_RESOURCE_VALUE        152
 #define _APS_NEXT_COMMAND_VALUE         40044
-#define _APS_NEXT_CONTROL_VALUE         1083
+#define _APS_NEXT_CONTROL_VALUE         1084
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

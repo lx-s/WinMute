@@ -31,6 +31,9 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
+// The pages below the "General" node of the settings navigation tree:
+// Language, Startup & Updates, Hotkeys and Logging.
+
 #include "common.h"
 
 namespace fs = std::filesystem;
@@ -38,13 +41,21 @@ namespace fs = std::filesystem;
 extern void ShowLogDialog(HWND hParent);
 extern HINSTANCE hglobInstance;
 
-struct SettingsGeneralData {
+static WMSettings* GetPageSettings(HWND hDlg)
+{
+    return reinterpret_cast<WMSettings*>(GetWindowLongPtr(hDlg, DWLP_USER));
+}
+
+// =============================================================================
+// Language
+
+struct SettingsLanguageData {
     WMSettings* settings = nullptr;
     std::vector<LanguageModule> langModules;
 };
 
 static void FillLanguageList(HWND hLanguageList,
-                             const SettingsGeneralData& dlgData)
+                             const SettingsLanguageData& dlgData)
 {
     SendMessage(hLanguageList, CB_INITSTORAGE,
                 static_cast<WPARAM>(dlgData.langModules.size() + 1),
@@ -66,7 +77,7 @@ static void FillLanguageList(HWND hLanguageList,
         WMi18n::GetInstance().GetCurrentLanguageName().c_str());
 }
 
-static void LoadSettingsGeneralDlgTranslation(HWND hDlg)
+static void LoadLanguageDlgTranslation(HWND hDlg)
 {
     WMi18n& i18n = WMi18n::GetInstance();
 
@@ -80,117 +91,33 @@ static void LoadSettingsGeneralDlgTranslation(HWND hDlg)
     SetDlgItemText(hDlg, IDC_LINK_HELP_TRANSLATING, helpTranslateLink.c_str());
     i18n.SetItemText(hDlg, IDC_SELECT_LANGUAGE_LABEL,
                      "settings.general.select-language-label");
-    i18n.SetItemText(hDlg, IDC_RUNONSTARTUP, "settings.general.run-on-startup");
-    i18n.SetItemText(hDlg, IDC_CHECK_FOR_UPDATES_ON_STARTUP,
-                     "settings.general.check-for-updates-on-start");
-    i18n.SetItemText(hDlg, IDC_CHECK_FOR_BETA_UPDATES,
-                     "settings.general.check-for-beta-updates-on-start");
-    i18n.SetItemText(hDlg, IDC_ENABLE_GLOBAL_MUTE_HOTKEY,
-                     "settings.general.enable-global-mute-hotkey");
-    i18n.SetItemText(hDlg, IDC_ENABLELOGGING,
-                     "settings.general.enable-logging");
-    i18n.SetItemText(hDlg, IDC_OPENLOG, "settings.general.btn-open-log-file");
-    i18n.SetItemText(hDlg, IDC_UPDATE_OPTIONS_DISABLED,
-                     "settings.general.updates-handled-externally");
-    i18n.SetItemText(hDlg, IDC_OPENLOGDLG,
-                     "settings.general.btn-open-log-window");
 }
 
-INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
-                                         LPARAM lParam)
+INT_PTR CALLBACK Settings_LanguageDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
+                                          LPARAM lParam)
 {
+    UNREFERENCED_PARAMETER(wParam);
+
     switch (msg) {
         case WM_INITDIALOG: {
-            HWND hAutostart = GetDlgItem(hDlg, IDC_RUNONSTARTUP);
-            HWND hUpdateCheck =
-                GetDlgItem(hDlg, IDC_CHECK_FOR_UPDATES_ON_STARTUP);
-            HWND hBetaUpdateCheck =
-                GetDlgItem(hDlg, IDC_CHECK_FOR_BETA_UPDATES);
-            HWND hLogging = GetDlgItem(hDlg, IDC_ENABLELOGGING);
-            HWND hOpenLog = GetDlgItem(hDlg, IDC_OPENLOG);
-            HWND hUpdatesDisabledNotice =
-                GetDlgItem(hDlg, IDC_UPDATE_OPTIONS_DISABLED);
-            HWND hEnableGlobalMuteHotkey =
-                GetDlgItem(hDlg, IDC_ENABLE_GLOBAL_MUTE_HOTKEY);
-            HWND hGlobalMuteHotkey = GetDlgItem(hDlg, IDC_GLOBAL_MUTE_HOTKEY);
+            LoadLanguageDlgTranslation(hDlg);
 
-            if (IsAppThemed()) {
-                EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
-            }
-            LoadSettingsGeneralDlgTranslation(hDlg);
-
-            SettingsGeneralData* dlgData = new SettingsGeneralData;
+            SettingsLanguageData* dlgData = new SettingsLanguageData;
             dlgData->langModules =
                 WMi18n::GetInstance().GetAvailableLanguages();
             dlgData->settings = reinterpret_cast<WMSettings*>(lParam);
             assert(dlgData->settings != nullptr);
-
             SetWindowLongPtr(hDlg, DWLP_USER,
                              reinterpret_cast<LONG_PTR>(dlgData));
 
             FillLanguageList(GetDlgItem(hDlg, IDC_LANGUAGE), *dlgData);
 
-            DWORD enabled = dlgData->settings->IsAutostartEnabled();
-            Button_SetCheck(hAutostart, enabled ? BST_CHECKED : BST_UNCHECKED);
-
-            enabled =
-                !!dlgData->settings->QueryValue(SettingsKey::CHECK_FOR_UPDATE);
-            Button_SetCheck(hUpdateCheck,
-                            enabled ? BST_CHECKED : BST_UNCHECKED);
-
-            EnableWindow(hBetaUpdateCheck, enabled);
-            enabled = !!dlgData->settings->QueryValue(
-                SettingsKey::CHECK_FOR_BETA_UPDATE);
-            Button_SetCheck(hBetaUpdateCheck,
-                            enabled ? BST_CHECKED : BST_UNCHECKED);
-
-            // Hotkey
-            const auto hotkey =
-                dlgData->settings->QueryValue(SettingsKey::GLOBAL_MUTE_HOTKEY);
-            SendMessage(hGlobalMuteHotkey, HKM_SETHOTKEY, hotkey, 0);
-            enabled = !!dlgData->settings->QueryValue(
-                SettingsKey::ENABLE_GLOBAL_MUTE_HOTKEY);
-            Button_SetCheck(hEnableGlobalMuteHotkey,
-                            enabled ? BST_CHECKED : BST_UNCHECKED);
-            EnableWindow(hGlobalMuteHotkey, enabled);
-
-            // If the disable-update file is present, then also hide all options
-            UpdateChecker updateChecker;
-            if (updateChecker.IsUpdateCheckDisabledViaFile()) {
-                EnableWindow(hUpdateCheck, FALSE);
-                EnableWindow(hBetaUpdateCheck, FALSE);
-                Button_SetCheck(hUpdateCheck, BST_UNCHECKED);
-                Button_SetCheck(hBetaUpdateCheck, BST_UNCHECKED);
-                ShowWindow(hUpdatesDisabledNotice, SW_SHOW);
-            } else {
-                ShowWindow(hUpdatesDisabledNotice, SW_HIDE);
-            }
-
-            enabled =
-                !!dlgData->settings->QueryValue(SettingsKey::LOGGING_ENABLED);
-            Button_SetCheck(hLogging, enabled ? BST_CHECKED : BST_UNCHECKED);
-            Button_Enable(hOpenLog, enabled);
-            if (enabled) {
-                WMLog& log = WMLog::GetInstance();
-                const std::wstring filePath = log.GetLogFilePath().c_str();
-                SendMessageW(GetDlgItem(hDlg, IDC_LOGFILEPATH), WM_SETTEXT, 0,
-                             reinterpret_cast<LPARAM>(filePath.c_str()));
-
-            } else {
-                SendMessageW(GetDlgItem(hDlg, IDC_LOGFILEPATH), WM_SETTEXT, 0,
-                             reinterpret_cast<LPARAM>(L""));
-            }
-
             return TRUE;
         }
         case WM_DESTROY: {
-            SettingsGeneralData* dlgData =
-                reinterpret_cast<SettingsGeneralData*>(
-                    GetWindowLongPtr(hDlg, DWLP_USER));
-            if (dlgData != nullptr) {
-                delete dlgData;
-                SetWindowLongPtr(hDlg, DWLP_USER, 0);
-            }
+            delete reinterpret_cast<SettingsLanguageData*>(
+                GetWindowLongPtr(hDlg, DWLP_USER));
+            SetWindowLongPtr(hDlg, DWLP_USER, 0);
             return FALSE;
         }
         case WM_NOTIFY: {
@@ -209,61 +136,11 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
             }
             return TRUE;
         }
-        case WM_COMMAND: {
-            if (LOWORD(wParam) == IDC_ENABLELOGGING) {
-                DWORD checked =
-                    Button_GetCheck(GetDlgItem(hDlg, IDC_ENABLELOGGING));
-                Button_Enable(GetDlgItem(hDlg, IDC_OPENLOG),
-                              checked == BST_CHECKED);
-                if (checked == BST_CHECKED) {
-                    WMLog& log = WMLog::GetInstance();
-                    const std::wstring filePath = log.GetLogFilePath().c_str();
-                    SendMessageW(GetDlgItem(hDlg, IDC_LOGFILEPATH), WM_SETTEXT,
-                                 0, reinterpret_cast<LPARAM>(filePath.c_str()));
-
-                } else {
-                    SendMessageW(GetDlgItem(hDlg, IDC_LOGFILEPATH), WM_SETTEXT,
-                                 0, reinterpret_cast<LPARAM>(L""));
-                }
-            } else if (LOWORD(wParam) == IDC_ENABLE_GLOBAL_MUTE_HOTKEY) {
-                const auto checked = Button_GetCheck(
-                    GetDlgItem(hDlg, IDC_ENABLE_GLOBAL_MUTE_HOTKEY));
-                EnableWindow(GetDlgItem(hDlg, IDC_GLOBAL_MUTE_HOTKEY), checked);
-            } else if (LOWORD(wParam) == IDC_OPENLOGDLG) {
-                ShowLogDialog(hDlg);
-            } else if (LOWORD(wParam) == IDC_CHECK_FOR_UPDATES_ON_STARTUP) {
-                const int enabled = Button_GetCheck(
-                    GetDlgItem(hDlg, IDC_CHECK_FOR_UPDATES_ON_STARTUP));
-                EnableWindow(GetDlgItem(hDlg, IDC_CHECK_FOR_BETA_UPDATES),
-                             enabled);
-            } else if (LOWORD(wParam) == IDC_OPENLOG) {
-                WMLog& log = WMLog::GetInstance();
-                const std::wstring filePath = log.GetLogFilePath().c_str();
-                ShellExecuteW(nullptr, L"open", filePath.c_str(), nullptr,
-                              nullptr, SW_SHOW);
-            }
-            return 0;
-        }
         case WM_SAVESETTINGS: {
-            SettingsGeneralData* dlgData =
-                reinterpret_cast<SettingsGeneralData*>(
+            SettingsLanguageData* dlgData =
+                reinterpret_cast<SettingsLanguageData*>(
                     GetWindowLongPtr(hDlg, DWLP_USER));
             assert(dlgData != nullptr);
-
-            HWND hAutostart = GetDlgItem(hDlg, IDC_RUNONSTARTUP);
-            HWND hLogging = GetDlgItem(hDlg, IDC_ENABLELOGGING);
-            HWND hUpdateCheck =
-                GetDlgItem(hDlg, IDC_CHECK_FOR_UPDATES_ON_STARTUP);
-            HWND hBetaUpdateCheck =
-                GetDlgItem(hDlg, IDC_CHECK_FOR_BETA_UPDATES);
-            HWND hEnableGlobalMuteHotkey =
-                GetDlgItem(hDlg, IDC_ENABLE_GLOBAL_MUTE_HOTKEY);
-            HWND hGlobalMuteHotkey = GetDlgItem(hDlg, IDC_GLOBAL_MUTE_HOTKEY);
-
-            const int enableLog = Button_GetCheck(hLogging) == BST_CHECKED;
-            dlgData->settings->SetValue(SettingsKey::LOGGING_ENABLED,
-                                        enableLog);
-            WMLog::GetInstance().EnableLogFile(enableLog);
 
             HWND hLanguageSelector = GetDlgItem(hDlg, IDC_LANGUAGE);
             const auto curLangSel = ComboBox_GetCurSel(hLanguageSelector);
@@ -283,31 +160,252 @@ INT_PTR CALLBACK Settings_GeneralDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
                     }
                 }
             }
+            return 0;
+        }
+        default:
+            break;
+    }
+    return FALSE;
+}
+
+// =============================================================================
+// Startup & Updates
+
+static void LoadUpdatesDlgTranslation(HWND hDlg)
+{
+    WMi18n& i18n = WMi18n::GetInstance();
+
+    i18n.SetItemText(hDlg, IDC_RUNONSTARTUP, "settings.general.run-on-startup");
+    i18n.SetItemText(hDlg, IDC_CHECK_FOR_UPDATES_ON_STARTUP,
+                     "settings.general.check-for-updates-on-start");
+    i18n.SetItemText(hDlg, IDC_CHECK_FOR_BETA_UPDATES,
+                     "settings.general.check-for-beta-updates-on-start");
+    i18n.SetItemText(hDlg, IDC_UPDATE_OPTIONS_DISABLED,
+                     "settings.general.updates-handled-externally");
+}
+
+INT_PTR CALLBACK Settings_UpdatesDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
+                                         LPARAM lParam)
+{
+    switch (msg) {
+        case WM_INITDIALOG: {
+            LoadUpdatesDlgTranslation(hDlg);
+
+            WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
+            assert(settings != nullptr);
+            SetWindowLongPtr(hDlg, DWLP_USER,
+                             reinterpret_cast<LONG_PTR>(settings));
+
+            HWND hAutostart = GetDlgItem(hDlg, IDC_RUNONSTARTUP);
+            HWND hUpdateCheck =
+                GetDlgItem(hDlg, IDC_CHECK_FOR_UPDATES_ON_STARTUP);
+            HWND hBetaUpdateCheck =
+                GetDlgItem(hDlg, IDC_CHECK_FOR_BETA_UPDATES);
+            HWND hUpdatesDisabledNotice =
+                GetDlgItem(hDlg, IDC_UPDATE_OPTIONS_DISABLED);
+
+            DWORD enabled = settings->IsAutostartEnabled();
+            Button_SetCheck(hAutostart, enabled ? BST_CHECKED : BST_UNCHECKED);
+
+            enabled = !!settings->QueryValue(SettingsKey::CHECK_FOR_UPDATE);
+            Button_SetCheck(hUpdateCheck,
+                            enabled ? BST_CHECKED : BST_UNCHECKED);
+
+            EnableWindow(hBetaUpdateCheck, enabled);
+            enabled =
+                !!settings->QueryValue(SettingsKey::CHECK_FOR_BETA_UPDATE);
+            Button_SetCheck(hBetaUpdateCheck,
+                            enabled ? BST_CHECKED : BST_UNCHECKED);
+
+            // If the disable-update file is present, then also hide all options
+            UpdateChecker updateChecker;
+            if (updateChecker.IsUpdateCheckDisabledViaFile()) {
+                EnableWindow(hUpdateCheck, FALSE);
+                EnableWindow(hBetaUpdateCheck, FALSE);
+                Button_SetCheck(hUpdateCheck, BST_UNCHECKED);
+                Button_SetCheck(hBetaUpdateCheck, BST_UNCHECKED);
+                ShowWindow(hUpdatesDisabledNotice, SW_SHOW);
+            } else {
+                ShowWindow(hUpdatesDisabledNotice, SW_HIDE);
+            }
+
+            return TRUE;
+        }
+        case WM_COMMAND: {
+            if (LOWORD(wParam) == IDC_CHECK_FOR_UPDATES_ON_STARTUP) {
+                const int enabled = Button_GetCheck(
+                    GetDlgItem(hDlg, IDC_CHECK_FOR_UPDATES_ON_STARTUP));
+                EnableWindow(GetDlgItem(hDlg, IDC_CHECK_FOR_BETA_UPDATES),
+                             enabled);
+            }
+            return 0;
+        }
+        case WM_SAVESETTINGS: {
+            WMSettings* settings = GetPageSettings(hDlg);
+            assert(settings != nullptr);
+
+            HWND hAutostart = GetDlgItem(hDlg, IDC_RUNONSTARTUP);
+            HWND hUpdateCheck =
+                GetDlgItem(hDlg, IDC_CHECK_FOR_UPDATES_ON_STARTUP);
+            HWND hBetaUpdateCheck =
+                GetDlgItem(hDlg, IDC_CHECK_FOR_BETA_UPDATES);
 
             const int enableUpdateCheck =
                 Button_GetCheck(hUpdateCheck) == BST_CHECKED;
-            dlgData->settings->SetValue(SettingsKey::CHECK_FOR_UPDATE,
-                                        enableUpdateCheck);
+            settings->SetValue(SettingsKey::CHECK_FOR_UPDATE,
+                               enableUpdateCheck);
 
             const int enableBetaUpdateCheck =
                 Button_GetCheck(hBetaUpdateCheck) == BST_CHECKED;
-            dlgData->settings->SetValue(SettingsKey::CHECK_FOR_BETA_UPDATE,
-                                        enableBetaUpdateCheck);
+            settings->SetValue(SettingsKey::CHECK_FOR_BETA_UPDATE,
+                               enableBetaUpdateCheck);
 
-            if (Button_GetCheck(hAutostart) == BST_CHECKED) {
-                dlgData->settings->EnableAutostart(true);
-            } else {
-                dlgData->settings->EnableAutostart(false);
+            settings->EnableAutostart(Button_GetCheck(hAutostart) ==
+                                      BST_CHECKED);
+
+            return 0;
+        }
+        default:
+            break;
+    }
+    return FALSE;
+}
+
+// =============================================================================
+// Hotkeys
+
+INT_PTR CALLBACK Settings_HotkeysDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
+                                         LPARAM lParam)
+{
+    switch (msg) {
+        case WM_INITDIALOG: {
+            WMi18n::GetInstance().SetItemText(
+                hDlg, IDC_ENABLE_GLOBAL_MUTE_HOTKEY,
+                "settings.general.enable-global-mute-hotkey");
+
+            WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
+            assert(settings != nullptr);
+            SetWindowLongPtr(hDlg, DWLP_USER,
+                             reinterpret_cast<LONG_PTR>(settings));
+
+            HWND hEnableGlobalMuteHotkey =
+                GetDlgItem(hDlg, IDC_ENABLE_GLOBAL_MUTE_HOTKEY);
+            HWND hGlobalMuteHotkey = GetDlgItem(hDlg, IDC_GLOBAL_MUTE_HOTKEY);
+
+            const auto hotkey =
+                settings->QueryValue(SettingsKey::GLOBAL_MUTE_HOTKEY);
+            SendMessage(hGlobalMuteHotkey, HKM_SETHOTKEY, hotkey, 0);
+            const DWORD enabled =
+                !!settings->QueryValue(SettingsKey::ENABLE_GLOBAL_MUTE_HOTKEY);
+            Button_SetCheck(hEnableGlobalMuteHotkey,
+                            enabled ? BST_CHECKED : BST_UNCHECKED);
+            EnableWindow(hGlobalMuteHotkey, enabled);
+
+            return TRUE;
+        }
+        case WM_COMMAND: {
+            if (LOWORD(wParam) == IDC_ENABLE_GLOBAL_MUTE_HOTKEY) {
+                const auto checked = Button_GetCheck(
+                    GetDlgItem(hDlg, IDC_ENABLE_GLOBAL_MUTE_HOTKEY));
+                EnableWindow(GetDlgItem(hDlg, IDC_GLOBAL_MUTE_HOTKEY), checked);
             }
+            return 0;
+        }
+        case WM_SAVESETTINGS: {
+            WMSettings* settings = GetPageSettings(hDlg);
+            assert(settings != nullptr);
+
+            HWND hEnableGlobalMuteHotkey =
+                GetDlgItem(hDlg, IDC_ENABLE_GLOBAL_MUTE_HOTKEY);
+            HWND hGlobalMuteHotkey = GetDlgItem(hDlg, IDC_GLOBAL_MUTE_HOTKEY);
 
             const int enableGlobalMuteHotkey =
                 Button_GetCheck(hEnableGlobalMuteHotkey) == BST_CHECKED;
-            dlgData->settings->SetValue(SettingsKey::ENABLE_GLOBAL_MUTE_HOTKEY,
-                                        enableGlobalMuteHotkey);
+            settings->SetValue(SettingsKey::ENABLE_GLOBAL_MUTE_HOTKEY,
+                               enableGlobalMuteHotkey);
             const auto hotkey =
                 SendMessage(hGlobalMuteHotkey, HKM_GETHOTKEY, 0, 0);
-            dlgData->settings->SetValue(SettingsKey::GLOBAL_MUTE_HOTKEY,
-                                        static_cast<DWORD>(hotkey));
+            settings->SetValue(SettingsKey::GLOBAL_MUTE_HOTKEY,
+                               static_cast<DWORD>(hotkey));
+
+            return 0;
+        }
+        default:
+            break;
+    }
+    return FALSE;
+}
+
+// =============================================================================
+// Logging
+
+static void UpdateLogFilePath(HWND hDlg, bool loggingEnabled)
+{
+    const std::wstring filePath = loggingEnabled
+                                      ? WMLog::GetInstance().GetLogFilePath()
+                                      : std::wstring();
+    SendMessageW(GetDlgItem(hDlg, IDC_LOGFILEPATH), WM_SETTEXT, 0,
+                 reinterpret_cast<LPARAM>(filePath.c_str()));
+}
+
+static void LoadLoggingDlgTranslation(HWND hDlg)
+{
+    WMi18n& i18n = WMi18n::GetInstance();
+
+    i18n.SetItemText(hDlg, IDC_ENABLELOGGING,
+                     "settings.general.enable-logging");
+    i18n.SetItemText(hDlg, IDC_OPENLOG, "settings.general.btn-open-log-file");
+    i18n.SetItemText(hDlg, IDC_OPENLOGDLG,
+                     "settings.general.btn-open-log-window");
+}
+
+INT_PTR CALLBACK Settings_LoggingDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
+                                         LPARAM lParam)
+{
+    switch (msg) {
+        case WM_INITDIALOG: {
+            LoadLoggingDlgTranslation(hDlg);
+
+            WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
+            assert(settings != nullptr);
+            SetWindowLongPtr(hDlg, DWLP_USER,
+                             reinterpret_cast<LONG_PTR>(settings));
+
+            HWND hLogging = GetDlgItem(hDlg, IDC_ENABLELOGGING);
+            const DWORD enabled =
+                !!settings->QueryValue(SettingsKey::LOGGING_ENABLED);
+            Button_SetCheck(hLogging, enabled ? BST_CHECKED : BST_UNCHECKED);
+            Button_Enable(GetDlgItem(hDlg, IDC_OPENLOG), enabled);
+            UpdateLogFilePath(hDlg, !!enabled);
+
+            return TRUE;
+        }
+        case WM_COMMAND: {
+            if (LOWORD(wParam) == IDC_ENABLELOGGING) {
+                const DWORD checked =
+                    Button_GetCheck(GetDlgItem(hDlg, IDC_ENABLELOGGING));
+                Button_Enable(GetDlgItem(hDlg, IDC_OPENLOG),
+                              checked == BST_CHECKED);
+                UpdateLogFilePath(hDlg, checked == BST_CHECKED);
+            } else if (LOWORD(wParam) == IDC_OPENLOGDLG) {
+                ShowLogDialog(hDlg);
+            } else if (LOWORD(wParam) == IDC_OPENLOG) {
+                const std::wstring filePath =
+                    WMLog::GetInstance().GetLogFilePath();
+                ShellExecuteW(nullptr, L"open", filePath.c_str(), nullptr,
+                              nullptr, SW_SHOW);
+            }
+            return 0;
+        }
+        case WM_SAVESETTINGS: {
+            WMSettings* settings = GetPageSettings(hDlg);
+            assert(settings != nullptr);
+
+            const int enableLog =
+                Button_GetCheck(GetDlgItem(hDlg, IDC_ENABLELOGGING)) ==
+                BST_CHECKED;
+            settings->SetValue(SettingsKey::LOGGING_ENABLED, enableLog);
+            WMLog::GetInstance().EnableLogFile(enableLog);
 
             return 0;
         }

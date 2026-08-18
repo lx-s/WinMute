@@ -53,7 +53,7 @@ struct EndpointAddCtx {
 // selection index on its own says nothing about which device was picked.
 static constexpr LONG_PTR ENDPOINT_ITEM_LEGACY_NAME = -1;
 
-// State of the endpoint list dialog. The list box only renders friendly
+// State of the endpoint page. The list box only renders friendly
 // names, so the endpoint ids have to be tracked alongside it.
 struct ManageEndpointsDlgState {
     WMSettings* settings = nullptr;
@@ -190,9 +190,8 @@ static void LoadManageEndpointsDlgTranslation(HWND hDlg)
 {
     WMi18n& i18n = WMi18n::GetInstance();
 
-    SetWindowText(
-        hDlg,
-        i18n.GetTranslationW("settings.mute.manage-endpoints.title").c_str());
+    i18n.SetItemText(hDlg, IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY,
+                     "settings.mute.manage-endpoints-individually");
     i18n.SetItemText(hDlg, IDC_GROUP_LIST_BEHAVIOUR,
                      "settings.mute.manage-endpoints.list-behaviour.title");
     i18n.SetItemText(
@@ -208,8 +207,32 @@ static void LoadManageEndpointsDlgTranslation(HWND hDlg)
     i18n.SetItemText(hDlg, IDC_ENDPOINT_EDIT, "settings.btn-edit");
     i18n.SetItemText(hDlg, IDC_ENDPOINT_REMOVE, "settings.btn-remove");
     i18n.SetItemText(hDlg, IDC_ENDPOINT_REMOVEALL, "settings.btn-remove-all");
-    i18n.SetItemText(hDlg, IDOK, "settings.btn-save");
-    i18n.SetItemText(hDlg, IDCANCEL, "settings.btn-cancel");
+}
+
+// The list only means anything while endpoints are managed individually, so
+// the master check box gates the whole page.
+static void UpdateEndpointControlStates(HWND hDlg)
+{
+    const bool individual =
+        Button_GetCheck(GetDlgItem(
+            hDlg, IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY)) == BST_CHECKED;
+    HWND hList = GetDlgItem(hDlg, IDC_ENDPOINT_LIST);
+    const bool hasSelection = ListBox_GetCurSel(hList) != LB_ERR;
+    const bool hasItems = ListBox_GetCount(hList) > 0;
+
+    static constexpr int gatedItems[] = {
+        IDC_GROUP_LIST_BEHAVIOUR, IDC_ENDPOINT_LIST_IS_ALLOWLIST,
+        IDC_ENDPOINT_LIST_IS_BLOCKLIST, IDC_GROUP_ENDPOINTS, IDC_ENDPOINT_LIST,
+        IDC_ENDPOINT_ADD};
+    for (const int itemId : gatedItems) {
+        EnableWindow(GetDlgItem(hDlg, itemId), individual);
+    }
+    EnableWindow(GetDlgItem(hDlg, IDC_ENDPOINT_EDIT),
+                 individual && hasSelection);
+    EnableWindow(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVE),
+                 individual && hasSelection);
+    EnableWindow(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVEALL),
+                 individual && hasItems);
 }
 
 INT_PTR CALLBACK Settings_ManageEndpointsDlgProc(HWND hDlg, UINT msg,
@@ -217,9 +240,6 @@ INT_PTR CALLBACK Settings_ManageEndpointsDlgProc(HWND hDlg, UINT msg,
 {
     switch (msg) {
         case WM_INITDIALOG: {
-            if (IsAppThemed()) {
-                EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
-            }
             LoadManageEndpointsDlgTranslation(hDlg);
 
             WMSettings* settings = reinterpret_cast<WMSettings*>(lParam);
@@ -228,6 +248,12 @@ INT_PTR CALLBACK Settings_ManageEndpointsDlgProc(HWND hDlg, UINT msg,
             state->settings = settings;
             SetWindowLongPtr(hDlg, DWLP_USER,
                              reinterpret_cast<LONG_PTR>(state));
+
+            Button_SetCheck(
+                GetDlgItem(hDlg, IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY),
+                settings->QueryValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS)
+                    ? BST_CHECKED
+                    : BST_UNCHECKED);
 
             DWORD endpointMode = settings->QueryValue(
                 SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS_MODE);
@@ -251,8 +277,7 @@ INT_PTR CALLBACK Settings_ManageEndpointsDlgProc(HWND hDlg, UINT msg,
             HWND hList = GetDlgItem(hDlg, IDC_ENDPOINT_LIST);
             state->entries = settings->GetManagedAudioEndpoints();
             RebuildEndpointList(hList, state->entries);
-            Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVEALL),
-                          ListBox_GetCount(hList) > 0);
+            UpdateEndpointControlStates(hDlg);
 
             return TRUE;
         }
@@ -268,24 +293,14 @@ INT_PTR CALLBACK Settings_ManageEndpointsDlgProc(HWND hDlg, UINT msg,
             if (state == nullptr) {
                 return FALSE;
             }
-            if (LOWORD(wParam) == IDC_ENDPOINT_LIST) {
-                HWND hList = GetDlgItem(hDlg, IDC_ENDPOINT_LIST);
+            if (LOWORD(wParam) == IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY) {
+                UpdateEndpointControlStates(hDlg);
+            } else if (LOWORD(wParam) == IDC_ENDPOINT_LIST) {
                 if (HIWORD(wParam) == LBN_SELCHANGE ||
-                    HIWORD(wParam) == LBN_SELCANCEL)
+                    HIWORD(wParam) == LBN_SELCANCEL ||
+                    HIWORD(wParam) == LBN_KILLFOCUS)
                 {
-                    const bool entrySelected =
-                        (ListBox_GetCurSel(hList) != LB_ERR);
-                    Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_EDIT),
-                                  entrySelected);
-                    Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVE),
-                                  entrySelected);
-                } else if (HIWORD(wParam) == LBN_KILLFOCUS) {
-                    const bool entrySelected =
-                        (ListBox_GetCurSel(hList) != LB_ERR);
-                    Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_EDIT),
-                                  entrySelected);
-                    Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVE),
-                                  entrySelected);
+                    UpdateEndpointControlStates(hDlg);
                 }
             } else if (LOWORD(wParam) == IDC_ENDPOINT_ADD) {
                 ManagedEndpoint epData;
@@ -305,11 +320,7 @@ INT_PTR CALLBACK Settings_ManageEndpointsDlgProc(HWND hDlg, UINT msg,
                         state->entries.push_back(epData);
                         RebuildEndpointList(GetDlgItem(hDlg, IDC_ENDPOINT_LIST),
                                             state->entries);
-                        HWND hRemoveAll =
-                            GetDlgItem(hDlg, IDC_ENDPOINT_REMOVEALL);
-                        if (!IsWindowEnabled(hRemoveAll)) {
-                            Button_Enable(hRemoveAll, TRUE);
-                        }
+                        UpdateEndpointControlStates(hDlg);
                     }
                 }
             } else if (LOWORD(wParam) == IDC_ENDPOINT_EDIT) {
@@ -347,12 +358,8 @@ INT_PTR CALLBACK Settings_ManageEndpointsDlgProc(HWND hDlg, UINT msg,
                         RebuildEndpointList(hList, state->entries);
                         if (static_cast<size_t>(sel) < state->entries.size()) {
                             ListBox_SetCurSel(hList, sel);
-                        } else {
-                            Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_EDIT),
-                                          FALSE);
-                            Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVE),
-                                          FALSE);
                         }
+                        UpdateEndpointControlStates(hDlg);
                     }
                 }
             } else if (LOWORD(wParam) == IDC_ENDPOINT_REMOVE) {
@@ -364,38 +371,39 @@ INT_PTR CALLBACK Settings_ManageEndpointsDlgProc(HWND hDlg, UINT msg,
                     state->entries.erase(state->entries.begin() + sel);
                     // Nothing is selected after the rebuild.
                     RebuildEndpointList(hList, state->entries);
-                    Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_EDIT), FALSE);
-                    Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVE), FALSE);
-                    if (ListBox_GetCount(hList) == 0) {
-                        Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVEALL),
-                                      FALSE);
-                    }
+                    UpdateEndpointControlStates(hDlg);
                 }
             } else if (LOWORD(wParam) == IDC_ENDPOINT_REMOVEALL) {
                 state->entries.clear();
                 ListBox_ResetContent(GetDlgItem(hDlg, IDC_ENDPOINT_LIST));
-                Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_EDIT), FALSE);
-                Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVE), FALSE);
-                Button_Enable(GetDlgItem(hDlg, IDC_ENDPOINT_REMOVEALL), FALSE);
-            } else if (LOWORD(wParam) == IDOK) {
-                WMSettings* settings = state->settings;
-                settings->StoreManagedAudioEndpoints(state->entries);
-                if (Button_GetCheck(
-                        GetDlgItem(hDlg, IDC_ENDPOINT_LIST_IS_ALLOWLIST)))
-                {
-                    settings->SetValue(
-                        SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS_MODE,
-                        MUTE_ENDPOINT_MODE_INDIVIDUAL_ALLOW_LIST);
-                } else if (Button_GetCheck(GetDlgItem(
-                               hDlg, IDC_ENDPOINT_LIST_IS_BLOCKLIST)))
-                {
-                    settings->SetValue(
-                        SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS_MODE,
-                        MUTE_ENDPOINT_MODE_INDIVIDUAL_BLOCK_LIST);
-                }
-                EndDialog(hDlg, 0);
-            } else if (LOWORD(wParam) == IDCANCEL) {
-                EndDialog(hDlg, 0);
+                UpdateEndpointControlStates(hDlg);
+            }
+            return 0;
+        }
+        case WM_SAVESETTINGS: {
+            auto* state = reinterpret_cast<ManageEndpointsDlgState*>(
+                GetWindowLongPtr(hDlg, DWLP_USER));
+            if (state == nullptr) {
+                return FALSE;
+            }
+            WMSettings* settings = state->settings;
+
+            settings->SetValue(
+                SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS,
+                Button_GetCheck(GetDlgItem(
+                    hDlg, IDC_MANAGE_AUDIO_ENDPOINTS_INDIVIDUALLY)) ==
+                    BST_CHECKED);
+            settings->StoreManagedAudioEndpoints(state->entries);
+            if (Button_GetCheck(
+                    GetDlgItem(hDlg, IDC_ENDPOINT_LIST_IS_ALLOWLIST)))
+            {
+                settings->SetValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS_MODE,
+                                   MUTE_ENDPOINT_MODE_INDIVIDUAL_ALLOW_LIST);
+            } else if (Button_GetCheck(
+                           GetDlgItem(hDlg, IDC_ENDPOINT_LIST_IS_BLOCKLIST)))
+            {
+                settings->SetValue(SettingsKey::MUTE_INDIVIDUAL_ENDPOINTS_MODE,
+                                   MUTE_ENDPOINT_MODE_INDIVIDUAL_BLOCK_LIST);
             }
             return 0;
         }
