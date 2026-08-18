@@ -31,8 +31,11 @@ computer whenever I left the room and forgot to mute my it.
 
 ## Screenshots
 
-![Screenshot of WinMute](Dist/screenshots/app.png? "Screenshot of WinMute")
-![Screenshot of the Settings](Dist/screenshots/settings.webp? "Settings dialog")
+![Screenshot of WinMute](Dist/screenshots/app.png? "Screenshot of WinMute")  
+*WinMute's taskbar notification area icon (a.k.a. "tray icon")*
+
+![Screenshot of the Settings](Dist/screenshots/settings.webp? "Settings dialog")  
+*WinMute's settings dialogue*
 
 ## Languages
 
