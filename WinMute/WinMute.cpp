@@ -277,7 +277,8 @@ void WinMute::RetrySessionNotification()
         StopSessionNotificationRetry();
         log.LogError(
             L"Giving up on registering for session notifications after {} "
-            L"attempts. Muting on workstation lock is not available",
+            L"attempts. Muting on workstation lock is not available. "
+            L"Please check if TermService is running.",
             wtsRetryAttempts_);
         wmTray_.ShowPopup(
             i18n_.GetTranslationW("popup.session-notification-failed.title"),

@@ -7,6 +7,10 @@ Version 2.6.0 (2026-08-14)
  * Fixed possible security issues in update checker
  * WinMute is now build with control-flow enforcement (CET)
  * Chocolatey uninstall now removes all settings.
+ * WinMute now no longer immediately exits if the workstation-lock notification
+   can not be registered. WinMute will retry registering with TermService
+   for about half a minute and disable mute-on-lock if the service does not
+   respond until then.
 
 Version 2.5.5 (2026-01-23)
  * Added feature to also try pausing/resuming currently playing media when muting/unmuting.
