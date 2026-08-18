@@ -195,7 +195,12 @@ bool VistaAudio::AllEndpointsMuted()
    if (!CheckForReInit()) {
       return false;
    }
+   bool anyManaged = false;
    for (auto& e : endpoints_) {
+      if (!IsEndpointManaged(e->deviceName)) {
+         continue;
+      }
+      anyManaged = true;
       BOOL isMuted = FALSE;
       if (FAILED(e->endpointVolume->GetMute(&isMuted))) {
          log.LogError(
@@ -206,7 +211,9 @@ bool VistaAudio::AllEndpointsMuted()
          return false;
       }
    }
-   return true;
+   // Without a single managed endpoint there is nothing that could be muted,
+   // so don't report "everything is muted" for an empty selection.
+   return anyManaged;
 }
 
 bool VistaAudio::SaveMuteStatus()

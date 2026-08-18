@@ -559,6 +559,13 @@ void WinMute::ToggleMenuCheck(UINT item, bool* setting) noexcept
     }
 }
 
+void WinMute::ToggleMute()
+{
+    const bool muted = muteCtrl_.ToggleMute();
+    CheckMenuItem(hTrayMenu_, ID_TRAYMENU_MUTE,
+                  muted ? MF_CHECKED : MF_UNCHECKED);
+}
+
 void WinMute::LoadMainMenuText()
 {
     std::map<UINT, std::wstring> menuText;
@@ -614,8 +621,13 @@ void WinMute::LoadGlobalHotkeys()
     if (hkMods & HOTKEYF_SHIFT) {
         modifiers |= MOD_SHIFT;
     }
+    // The hotkey toggles, so auto-repeat while the key is held down would
+    // make the mute state flap.
+    modifiers |= MOD_NOREPEAT;
+
     // Ignore return value, we don't care if it was registered or not
     UnregisterHotKey(hWnd_, GLOBAL_HOTKEY_ID_MUTE);
+    globalHotkeys_.erase(GLOBAL_HOTKEY_ID_MUTE);
     if (settings_.QueryValue(SettingsKey::ENABLE_GLOBAL_MUTE_HOTKEY)) {
         if (!RegisterHotKey(hWnd_, GLOBAL_HOTKEY_ID_MUTE, modifiers, vk)) {
             WMLog::GetInstance().LogWinError(L"RegisterHotKey", GetLastError());
@@ -625,7 +637,7 @@ void WinMute::LoadGlobalHotkeys()
                 i18n_.GetTranslationW(
                     "popup.error.global-mute-hotkey-register.text"));
         } else {
-            globalHotkeys_[MAKEWORD(vk, modifiers)] = GlobalHotKey::Mute;
+            globalHotkeys_[GLOBAL_HOTKEY_ID_MUTE] = GlobalHotKey::Mute;
         }
     }
 }
@@ -732,9 +744,7 @@ LRESULT WinMute::OnCommand(HWND hWnd, WPARAM wParam, LPARAM)
             break;
         }
         case ID_TRAYMENU_MUTE: {
-            bool state = false;
-            ToggleMenuCheck(ID_TRAYMENU_MUTE, &state);
-            muteCtrl_.SetMute(state);
+            ToggleMute();
             break;
         }
         case ID_TRAYMENU_MUTEONLOCK: {
@@ -802,15 +812,15 @@ LRESULT WinMute::OnTrayIcon(HWND hWnd, WPARAM wParam, LPARAM lParam)
     return TRUE;
 }
 
-LRESULT WinMute::OnHotKey([[maybe_unused]] HWND hWnd,
-                          [[maybe_unused]] WPARAM wParam, LPARAM lParam)
+LRESULT WinMute::OnHotKey([[maybe_unused]] HWND hWnd, WPARAM wParam,
+                          [[maybe_unused]] LPARAM lParam)
 {
-    const UINT id = MAKEWORD(HIWORD(lParam), LOWORD(lParam));
-    auto hotKeyIt = globalHotkeys_.find(id);
+    // wParam is the id that was passed to RegisterHotKey.
+    auto hotKeyIt = globalHotkeys_.find(static_cast<int>(wParam));
     if (hotKeyIt != globalHotkeys_.end()) {
         switch (hotKeyIt->second) {
             case GlobalHotKey::Mute:
-                muteCtrl_.SetMute(true);
+                ToggleMute();
                 break;
         }
     }

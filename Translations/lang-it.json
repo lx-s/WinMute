@@ -44,7 +44,7 @@
     "traymenu.mute-on-shutdown": "... il computer viene spento",
     "traymenu.mute-on-sleep": "... il computer va in sospensione",
     "traymenu.mute-on-logout": "... l'utente si scollega",
-    "traymenu.mute-all-devices": "Disattiva audio per tutti i dispositivi",
+    "traymenu.mute-all-devices": "Disattiva audio",
     "traymenu.settings": "Impostazioni...",
     "traymenu.exit": "Esci",
     "settings.title": "Impostazioni",

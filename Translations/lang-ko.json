@@ -50,7 +50,7 @@
     "traymenu.mute-on-shutdown": "... 컴퓨터 종료",
     "traymenu.mute-on-sleep": "... 절전 모드",
     "traymenu.mute-on-logout": "... 로그아웃",
-    "traymenu.mute-all-devices": "지금 모든 장치 음소거",
+    "traymenu.mute-all-devices": "오디오 음소거",
     "traymenu.settings": "설정...",
     "traymenu.exit": "종료",
     "settings.title": "설정",

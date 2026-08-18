@@ -148,6 +148,15 @@ void MuteControl::SetMute(bool mute)
     winAudio_->SetMute(mute);
 }
 
+bool MuteControl::ToggleMute()
+{
+    // A partially muted setup counts as "not muted", so the first toggle
+    // normalizes every managed endpoint to muted.
+    const bool mute = !winAudio_->AllEndpointsMuted();
+    SetMute(mute);
+    return mute;
+}
+
 void MuteControl::SaveMuteStatus()
 {
     const bool alreadySaved = std::any_of(

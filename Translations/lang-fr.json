@@ -50,7 +50,7 @@
     "traymenu.mute-on-shutdown": "... arrêter",
     "traymenu.mute-on-sleep": "... veille",
     "traymenu.mute-on-logout": "... déconnexion",
-    "traymenu.mute-all-devices": "Couper le son de tous les périphériques maintenant",
+    "traymenu.mute-all-devices": "Couper le son",
     "traymenu.settings": "Paramètres...",
     "traymenu.exit": "Quitter",
     "settings.title": "Paramètres",

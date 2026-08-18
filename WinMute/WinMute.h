@@ -38,91 +38,94 @@ POSSIBILITY OF SUCH DAMAGE.
 class WinAudio;
 
 class WinMute {
-public:
-   explicit WinMute(WMSettings& settings);
-   WinMute(const WinMute&) = delete;
-   WinMute(WinMute&&) = delete;
-   WinMute& operator=(const WinMute &) = delete;
-   WinMute& operator=(WinMute&&) = delete;
-   ~WinMute() noexcept;
+   public:
+    explicit WinMute(WMSettings& settings);
+    WinMute(const WinMute&) = delete;
+    WinMute(WinMute&&) = delete;
+    WinMute& operator=(const WinMute&) = delete;
+    WinMute& operator=(WinMute&&) = delete;
+    ~WinMute() noexcept;
 
-   bool Init();
-   void Close();
+    bool Init();
+    void Close();
 
-   // for internal use
-   LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-   void RetrySessionNotification();
-private:
-   HWND hWnd_;
-   HMENU hTrayMenu_;
-   HICON hAppIcon_;
-   HICON hTrayIcon_;
-   HICON hUpdateIcon_;
+    // for internal use
+    LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam,
+                                LPARAM lParam);
+    void RetrySessionNotification();
 
-   struct MuteConfig {
-      MuteConfig();
-      bool showNotifications;
-      bool muteOnWlan;
-      bool muteOnBluetooth;
-   } muteConfig_;
+   private:
+    HWND hWnd_;
+    HMENU hTrayMenu_;
+    HICON hAppIcon_;
+    HICON hTrayIcon_;
+    HICON hUpdateIcon_;
 
-   enum class GlobalHotKey {
-       Mute,
-   };
+    struct MuteConfig {
+        MuteConfig();
+        bool showNotifications;
+        bool muteOnWlan;
+        bool muteOnBluetooth;
+    } muteConfig_;
 
-   bool wtsSessionNotificationRegistered_ = false;
-   UINT_PTR wtsRetryTimerId_ = 0;
-   int wtsRetryAttempts_ = 0;
-   HPOWERNOTIFY hPowerNotify_ = nullptr;
-   HPOWERNOTIFY hLidCloseNotify_ = nullptr;
+    enum class GlobalHotKey {
+        Mute,
+    };
 
-   TrayIcon wmTray_;
-   TrayIcon updateTray_;
-   WifiDetector wifiDetector_;
-   WMSettings& settings_;
-   WMi18n &i18n_;
-   MuteControl muteCtrl_;
-   QuietHoursTimer quietHours_;
-   BluetoothDetector btDetector_;
-   UpdateInfo updateInfo_;
+    bool wtsSessionNotificationRegistered_ = false;
+    UINT_PTR wtsRetryTimerId_ = 0;
+    int wtsRetryAttempts_ = 0;
+    HPOWERNOTIFY hPowerNotify_ = nullptr;
+    HPOWERNOTIFY hLidCloseNotify_ = nullptr;
 
-   std::map<LRESULT, GlobalHotKey> globalHotkeys_;
+    TrayIcon wmTray_;
+    TrayIcon updateTray_;
+    WifiDetector wifiDetector_;
+    WMSettings& settings_;
+    WMi18n& i18n_;
+    MuteControl muteCtrl_;
+    QuietHoursTimer quietHours_;
+    BluetoothDetector btDetector_;
+    UpdateInfo updateInfo_;
 
-   void CheckForUpdates();
-   bool RegisterWindowClass();
-   bool InitWindow();
-   bool InitAudio();
-   bool InitTrayMenu();
-   bool LoadSettings();
+    std::map<int, GlobalHotKey> globalHotkeys_;
 
-   bool TryRegisterSessionNotification();
-   void StartSessionNotificationRetry();
-   void StopSessionNotificationRetry() noexcept;
+    void CheckForUpdates();
+    bool RegisterWindowClass();
+    bool InitWindow();
+    bool InitAudio();
+    bool InitTrayMenu();
+    bool LoadSettings();
 
-   void Unload() noexcept;
+    bool TryRegisterSessionNotification();
+    void StartSessionNotificationRetry();
+    void StopSessionNotificationRetry() noexcept;
 
-   void ToggleMenuCheck(UINT item, bool* setting) noexcept;
+    void Unload() noexcept;
 
-   void LoadMainMenuText();
-   void LoadGlobalHotkeys();
+    void ToggleMenuCheck(UINT item, bool* setting) noexcept;
+    void ToggleMute();
 
-   // Windows Callback
-   LRESULT OnCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-   LRESULT OnTrayIcon(HWND hWnd, WPARAM wParam, LPARAM lParam);
-   LRESULT OnHotKey(HWND hWnd, WPARAM wParam, LPARAM lParam);
-   LRESULT OnSettingChange(HWND hWnd, WPARAM wParam, LPARAM lParam);
-   LRESULT OnPowerBroadcast(HWND hWnd, WPARAM wParam, LPARAM lParam);
-   LRESULT OnWifiStatusChange(HWND hWnd, WPARAM wParam, LPARAM lParam);
-   LRESULT OnUpdatePopup(HWND hWnd, WPARAM wParam, LPARAM lParam);
-   LRESULT OnUpdateCheckDone(HWND hWnd, WPARAM wParam, LPARAM lParam);
+    void LoadMainMenuText();
+    void LoadGlobalHotkeys();
 
-   LRESULT OnDeviceChange(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-   LRESULT OnQuietHours(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-   LRESULT OnAudioServiceShutdown(HWND hWnd, WPARAM wParam, LPARAM lParam);
+    // Windows Callback
+    LRESULT OnCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+    LRESULT OnTrayIcon(HWND hWnd, WPARAM wParam, LPARAM lParam);
+    LRESULT OnHotKey(HWND hWnd, WPARAM wParam, LPARAM lParam);
+    LRESULT OnSettingChange(HWND hWnd, WPARAM wParam, LPARAM lParam);
+    LRESULT OnPowerBroadcast(HWND hWnd, WPARAM wParam, LPARAM lParam);
+    LRESULT OnWifiStatusChange(HWND hWnd, WPARAM wParam, LPARAM lParam);
+    LRESULT OnUpdatePopup(HWND hWnd, WPARAM wParam, LPARAM lParam);
+    LRESULT OnUpdateCheckDone(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
-   // Runs on updateThread_; must only touch its own locals and post the
-   // result to hWnd. Declared last so it is joined (destroyed) before any
-   // other member goes away.
-   static void CheckForUpdatesAsync(HWND hWnd);
-   std::jthread updateThread_;
+    LRESULT OnDeviceChange(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+    LRESULT OnQuietHours(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+    LRESULT OnAudioServiceShutdown(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+    // Runs on updateThread_; must only touch its own locals and post the
+    // result to hWnd. Declared last so it is joined (destroyed) before any
+    // other member goes away.
+    static void CheckForUpdatesAsync(HWND hWnd);
+    std::jthread updateThread_;
 };

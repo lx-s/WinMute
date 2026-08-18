@@ -1,5 +1,7 @@
 Version 2.6.0 (2026-08-14)
  * QuietHours are now configurable multiple time slots per day.
+ * Added a configurable global hotkey that toggles muting of all managed
+   audio endpoints.
  * Added "Mute on Laptop Lid Close"
  * Updated translations
  * Fixed some possible race conditions

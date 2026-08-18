@@ -51,6 +51,10 @@ class MuteControl {
 
     void SetMute(bool mute);
 
+    // Flips the current mute state of all managed endpoints and returns the
+    // state that was set.
+    bool ToggleMute();
+
     void SetRestoreVolume(bool enable);
 
     void SetMuteDelay(int delaySeconds);

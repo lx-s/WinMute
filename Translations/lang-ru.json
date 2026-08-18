@@ -50,7 +50,7 @@
     "traymenu.mute-on-shutdown": "... выключение",
     "traymenu.mute-on-sleep": "... спящий режим",
     "traymenu.mute-on-logout": "... выход из системы",
-    "traymenu.mute-all-devices": "Выключить звук на всех устройствах сейчас",
+    "traymenu.mute-all-devices": "Выключить звук",
     "traymenu.settings": "Настройки...",
     "traymenu.exit": "Выйти",
     "settings.title": "Настройки",

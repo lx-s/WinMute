@@ -50,7 +50,7 @@
   "traymenu.mute-on-shutdown": "",
   "traymenu.mute-on-sleep": "",
   "traymenu.mute-on-logout": "",
-  "traymenu.mute-all-devices": "",
+  "traymenu.mute-all-devices": "Izslēgt skaņu",
   "traymenu.settings": "Iestatījumi…",
   "traymenu.exit": "Iziet",
   "settings.title": "Iestatījumi",
