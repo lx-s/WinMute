@@ -61,7 +61,7 @@ enum SettingsPageId {
     SETTINGS_PAGE_QUIETHOURS,
     SETTINGS_PAGE_WIFI,
     SETTINGS_PAGE_BLUETOOTH,
-    SETTINGS_PAGE_COUNT
+    SETTINGS_PAGE_COUNT  // Meta element, not a real page. Must be last.
 };
 
 struct SettingsPageDesc {
@@ -76,35 +76,37 @@ struct SettingsGroupDesc {
     int pageCount;
 };
 
-static const SettingsPageDesc SETTINGS_PAGES[SETTINGS_PAGE_COUNT] = {
-    {IDD_SETTINGS_LANGUAGE, Settings_LanguageDlgProc,
-     "settings.nav.general.language"},
-    {IDD_SETTINGS_UPDATES, Settings_UpdatesDlgProc,
-     "settings.nav.general.startup"},
-    {IDD_SETTINGS_HOTKEYS, Settings_HotkeysDlgProc,
-     "settings.nav.general.hotkeys"},
-    {IDD_SETTINGS_LOGGING, Settings_LoggingDlgProc,
-     "settings.nav.general.logging"},
-    {IDD_SETTINGS_MUTE, Settings_MuteDlgProc, "settings.nav.muting.events"},
-    {IDD_SETTINGS_ENDPOINTS, Settings_ManageEndpointsDlgProc,
-     "settings.nav.muting.endpoints"},
-    {IDD_SETTINGS_MEDIA, Settings_MediaDlgProc, "settings.nav.muting.media"},
-    {IDD_SETTINGS_QUIETHOURS, Settings_QuietHoursDlgProc,
-     "settings.nav.triggers.quiet-hours"},
-    {IDD_SETTINGS_WIFI, Settings_WifiDlgProc, "settings.nav.triggers.wifi"},
-    {IDD_SETTINGS_BLUETOOTH, Settings_BluetoothDlgProc,
-     "settings.nav.triggers.bluetooth"},
-};
+static const std::array<SettingsPageDesc, SETTINGS_PAGE_COUNT> kSettingsPages =
+    {{
+        {IDD_SETTINGS_LANGUAGE, Settings_LanguageDlgProc,
+         "settings.nav.general.language"},
+        {IDD_SETTINGS_UPDATES, Settings_UpdatesDlgProc,
+         "settings.nav.general.startup"},
+        {IDD_SETTINGS_HOTKEYS, Settings_HotkeysDlgProc,
+         "settings.nav.general.hotkeys"},
+        {IDD_SETTINGS_LOGGING, Settings_LoggingDlgProc,
+         "settings.nav.general.logging"},
+        {IDD_SETTINGS_MUTE, Settings_MuteDlgProc, "settings.nav.muting.events"},
+        {IDD_SETTINGS_ENDPOINTS, Settings_ManageEndpointsDlgProc,
+         "settings.nav.muting.endpoints"},
+        {IDD_SETTINGS_MEDIA, Settings_MediaDlgProc,
+         "settings.nav.muting.media"},
+        {IDD_SETTINGS_QUIETHOURS, Settings_QuietHoursDlgProc,
+         "settings.nav.triggers.quiet-hours"},
+        {IDD_SETTINGS_WIFI, Settings_WifiDlgProc, "settings.nav.triggers.wifi"},
+        {IDD_SETTINGS_BLUETOOTH, Settings_BluetoothDlgProc,
+         "settings.nav.triggers.bluetooth"},
+    }};
 
-static const SettingsGroupDesc SETTINGS_GROUPS[] = {
+static const std::array<SettingsGroupDesc, 3> kSettingsGroups = {{
     {"settings.nav.general", SETTINGS_PAGE_LANGUAGE, 4},
     {"settings.nav.muting", SETTINGS_PAGE_MUTE, 3},
     {"settings.nav.triggers", SETTINGS_PAGE_QUIETHOURS, 3},
-};
+}};
 
 // lParam of a tree item that only groups other items and has no page of its
 // own.
-static constexpr LPARAM SETTINGS_NAV_GROUP = -1;
+static constexpr LPARAM kSettingsNavGroup = -1;
 
 // =============================================================================
 // Page host
@@ -115,7 +117,7 @@ static constexpr LPARAM SETTINGS_NAV_GROUP = -1;
 // here -- a page taller than the viewport gets a scroll bar, everything else
 // is shown as-is.
 
-static const wchar_t* SETTINGS_HOST_CLASS = L"WinMuteSettingsPageHost";
+static const wchar_t* kSettingsHostClass = L"WinMuteSettingsPageHost";
 
 struct PageHostData {
     HWND hPage = nullptr;
@@ -310,7 +312,7 @@ static bool RegisterPageHostClass()
     wc.hInstance = hglobInstance;
     wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
     wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_BTNFACE + 1);
-    wc.lpszClassName = SETTINGS_HOST_CLASS;
+    wc.lpszClassName = kSettingsHostClass;
     if (RegisterClassEx(&wc) == 0) {
         ShowWindowsError(L"RegisterClassEx", GetLastError());
         return false;
@@ -353,15 +355,15 @@ static HTREEITEM BuildNavTree(HWND hTree, int selectPage)
     WMi18n& i18n = WMi18n::GetInstance();
     HTREEITEM hSelect = nullptr;
 
-    for (const auto& group : SETTINGS_GROUPS) {
+    for (const auto& group : kSettingsGroups) {
         const HTREEITEM hGroup =
             InsertNavItem(hTree, nullptr, i18n.GetTranslationW(group.titleId),
-                          SETTINGS_NAV_GROUP);
+                          kSettingsNavGroup);
         for (int i = 0; i < group.pageCount; ++i) {
             const int page = group.firstPage + i;
             const HTREEITEM hItem = InsertNavItem(
                 hTree, hGroup,
-                i18n.GetTranslationW(SETTINGS_PAGES[page].titleId), page);
+                i18n.GetTranslationW(kSettingsPages[page].titleId), page);
             if (page == selectPage) {
                 hSelect = hItem;
             }
@@ -393,7 +395,7 @@ static HWND CreatePageHost(HWND hDlg, HWND hTree)
     const int left = treeRect.right + gap;
 
     const HWND hHost = CreateWindowEx(
-        WS_EX_CONTROLPARENT, SETTINGS_HOST_CLASS, nullptr,
+        WS_EX_CONTROLPARENT, kSettingsHostClass, nullptr,
         WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_VSCROLL, left,
         treeRect.top, dlgRect.right - treeRect.left - left,
         treeRect.bottom - treeRect.top, hDlg, nullptr, hglobInstance,
@@ -444,7 +446,7 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
             }
 
             for (int i = 0; i < SETTINGS_PAGE_COUNT; ++i) {
-                const SettingsPageDesc& desc = SETTINGS_PAGES[i];
+                const SettingsPageDesc& desc = kSettingsPages[i];
                 HWND hPage = CreateDialogParam(
                     hglobInstance, MAKEINTRESOURCE(desc.templateId),
                     dlgData->hHost, desc.dlgProc,
@@ -500,14 +502,13 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
                 return 0;
             }
 #pragma warning(push)
-#pragma warning( \
-    disable      \
-    : 26454)  // Disable arithmetic overflow warning for TVN_SELCHANGED
+// Disable arithmetic overflow warning for TVN_SELCHANGED
+#pragma warning(disable : 26454)
             if (lpnmhdr->code == TVN_SELCHANGED) {
 #pragma warning(pop)
                 const LPNMTREEVIEW nmtv =
                     reinterpret_cast<LPNMTREEVIEW>(lParam);
-                if (nmtv->itemNew.lParam == SETTINGS_NAV_GROUP) {
+                if (nmtv->itemNew.lParam == kSettingsNavGroup) {
                     // Group items carry no page of their own; show the first
                     // page below them instead.
                     const HTREEITEM hChild =
