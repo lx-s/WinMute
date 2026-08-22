@@ -3,6 +3,7 @@ Version 2.6.0 (2026-08-22)
    audio endpoints.
  * Added: QuietHours are now configurable multiple time slots per day.
  * Added "Mute on Laptop Lid Close"
+ * Added: Pause music (https://github.com/lx-s/WinMute/issues/51)
  * Added: New translations
  * Added: Program is now build with control-flow enforcement (CET)
  * Added: Overhauled settings UI (it was getting a bit crowded in there)
