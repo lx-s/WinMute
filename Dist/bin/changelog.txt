@@ -1,4 +1,4 @@
-Version 2.6.0 (2026-08-18)
+Version 2.6.0 (2026-08-22)
  * Added: Configurable global hotkey that toggles muting of all managed
    audio endpoints.
  * Added: QuietHours are now configurable multiple time slots per day.
