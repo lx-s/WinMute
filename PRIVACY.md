@@ -1,5 +1,7 @@
 # WinMute Privacy Policy
 
+*Deutsche Fassung: [PRIVACY.de.md](PRIVACY.de.md)*
+
 **Applies to:** WinMute for Windows, all versions and distribution channels
 **Effective date:** 2026-08-25
 **Publisher:** Alexander Steinhoefer (lx-systems)
