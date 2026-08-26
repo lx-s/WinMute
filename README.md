@@ -32,7 +32,7 @@ computer whenever I left the room and forgot to mute my it.
 ## Install
 
  - [Download from the Releases-Page](./releases)
- - Install via Winget: `winget install LX-Systems.WinMute"
+ - Install via Winget: `winget install LX-Systems.WinMute`
  - Install via Chocolatey: `choco install winmute`
  - [Install from the Microsoft-Store](https://apps.microsoft.com/store/detail/XP8CF56L8DPLDQ)
 
