@@ -90,8 +90,12 @@ class WMSettings {
     bool Init();
     void Unload() noexcept;
 
-    bool IsAutostartEnabled();
-    void EnableAutostart(bool enable);
+    // Autostart is backed by the "Run" registry key in a classic install and
+    // by the package manifest's StartupTask in an MSIX/Store install; both
+    // calls pick the right one. EnableAutostart returns the state that is
+    // actually in effect afterwards, which need not be the requested one.
+    AutostartState GetAutostartState();
+    AutostartState EnableAutostart(bool enable);
 
     bool StoreWifiNetworks(std::vector<std::wstring>& networks);
     std::vector<std::wstring> GetWifiNetworks() const;

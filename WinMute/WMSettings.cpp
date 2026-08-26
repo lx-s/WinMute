@@ -438,8 +438,12 @@ HKEY WMSettings::OpenAutostartKey(REGSAM samDesired)
     return hRunKey;
 }
 
-bool WMSettings::IsAutostartEnabled()
+AutostartState WMSettings::GetAutostartState()
 {
+    if (IsPackagedApp()) {
+        return GetPackagedAutostartState();
+    }
+
     bool isEnabled = false;
     WMLog& log = WMLog::GetInstance();
     wchar_t wmPath[MAX_PATH + 1];
@@ -476,11 +480,19 @@ bool WMSettings::IsAutostartEnabled()
             RegCloseKey(hRunKey);
         }
     }
-    return isEnabled;
+    return isEnabled ? AutostartState::Enabled : AutostartState::Disabled;
 }
 
-void WMSettings::EnableAutostart(bool enable)
+AutostartState WMSettings::EnableAutostart(bool enable)
 {
+    if (IsPackagedApp()) {
+        // A packaged WinMute lives in a versioned directory below WindowsApps
+        // that changes with every update, so a path stored in the "Run" key
+        // would go stale; the manifest's StartupTask is the supported way.
+        return SetPackagedAutostart(enable);
+    }
+
+    AutostartState newState = AutostartState::Unknown;
     WMLog& log = WMLog::GetInstance();
     HKEY hRunKey = OpenAutostartKey(KEY_WRITE);
     if (hRunKey != nullptr) {
@@ -500,6 +512,8 @@ void WMSettings::EnableAutostart(bool enable)
                                        sizeof(wchar_t)));
                 if (regError != ERROR_SUCCESS) {
                     ShowWindowsError(L"RegSetKeyValue", regError);
+                } else {
+                    newState = AutostartState::Enabled;
                 }
             }
         } else {
@@ -507,10 +521,13 @@ void WMSettings::EnableAutostart(bool enable)
                 RegDeleteKeyValueW(hRunKey, nullptr, LX_SYSTEMS_AUTOSTART_KEY);
             if (regError != ERROR_SUCCESS && regError != ERROR_FILE_NOT_FOUND) {
                 ShowWindowsError(L"RegDeleteKeyValue", regError);
+            } else {
+                newState = AutostartState::Disabled;
             }
         }
         RegCloseKey(hRunKey);
     }
+    return newState;
 }
 
 DWORD WMSettings::QueryValue(SettingsKey key) const

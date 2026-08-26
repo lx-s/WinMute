@@ -78,6 +78,8 @@
     "settings.bluetooth.add-edit.edit-title": "Bluetooth-Gerät bearbeiten",
     "settings.bluetooth.add-edit.device-name-label": "Bluetooth Gerätename:",
     "settings.general.run-on-startup": "WinMute mit Windows starten",
+    "settings.general.autostart-blocked.title": "Autostart wird von Windows blockiert",
+    "settings.general.autostart-blocked.text": "Der Autostart-Eintrag von WinMute wurde im Task-Manager deaktiviert. Windows erlaubt es einer App nicht, das rückgängig zu machen. Um ihn wieder zu aktivieren, öffnen Sie den Task-Manager, wechseln Sie zu \"Autostart von Apps\" und aktivieren Sie WinMute dort.",
     "settings.general.enable-global-mute-hotkey": "Globalen Hotkey zum Umschalten der Stummschaltung aktivieren",
     "settings.general.enable-logging": "Protokoll in Datei speichern",
     "settings.general.btn-open-log-file": "Protokolldatei öffnen...",

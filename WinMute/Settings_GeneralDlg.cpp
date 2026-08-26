@@ -204,10 +204,24 @@ INT_PTR CALLBACK Settings_UpdatesDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
             HWND hUpdatesDisabledNotice =
                 GetDlgItem(hDlg, IDC_UPDATE_OPTIONS_DISABLED);
 
-            DWORD enabled = settings->IsAutostartEnabled();
-            Button_SetCheck(hAutostart, enabled ? BST_CHECKED : BST_UNCHECKED);
+            const AutostartState autostart = settings->GetAutostartState();
+            Button_SetCheck(hAutostart,
+                            (autostart == AutostartState::Enabled ||
+                             autostart == AutostartState::EnabledByPolicy)
+                                ? BST_CHECKED
+                                : BST_UNCHECKED);
+            // Group policy has the final say in a packaged install, so show the
+            // state it forces but do not pretend WinMute can change it.
+            // DisabledByUser stays clickable on purpose: the attempt is what
+            // produces the hint pointing at the Task Manager.
+            if (autostart == AutostartState::EnabledByPolicy ||
+                autostart == AutostartState::DisabledByPolicy)
+            {
+                EnableWindow(hAutostart, FALSE);
+            }
 
-            enabled = !!settings->QueryValue(SettingsKey::CHECK_FOR_UPDATE);
+            DWORD enabled =
+                !!settings->QueryValue(SettingsKey::CHECK_FOR_UPDATE);
             Button_SetCheck(hUpdateCheck,
                             enabled ? BST_CHECKED : BST_UNCHECKED);
 
@@ -260,8 +274,29 @@ INT_PTR CALLBACK Settings_UpdatesDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
             settings->SetValue(SettingsKey::CHECK_FOR_BETA_UPDATE,
                                enableBetaUpdateCheck);
 
-            settings->EnableAutostart(Button_GetCheck(hAutostart) ==
-                                      BST_CHECKED);
+            if (IsWindowEnabled(hAutostart)) {
+                const bool wantAutostart =
+                    Button_GetCheck(hAutostart) == BST_CHECKED;
+                const AutostartState autostart =
+                    settings->EnableAutostart(wantAutostart);
+                if (wantAutostart &&
+                    autostart == AutostartState::DisabledByUser)
+                {
+                    // Windows refuses to undo a startup entry the user switched
+                    // off in the Task Manager; only they can turn it back on.
+                    const WMi18n& i18n = WMi18n::GetInstance();
+                    TaskDialog(
+                        hDlg, hglobInstance, PROGRAM_NAME,
+                        i18n.GetTranslationW(
+                                "settings.general.autostart-blocked.title")
+                            .c_str(),
+                        i18n.GetTranslationW(
+                                "settings.general.autostart-blocked.text")
+                            .c_str(),
+                        TDCBF_OK_BUTTON, TD_WARNING_ICON, nullptr);
+                    Button_SetCheck(hAutostart, BST_UNCHECKED);
+                }
+            }
 
             return 0;
         }

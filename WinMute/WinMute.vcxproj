@@ -118,6 +118,7 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Autostart.h" />
     <ClInclude Include="BluetoothDetector.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="libs\json.hpp" />
@@ -149,6 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AboutDlg.cpp" />
+    <ClCompile Include="Autostart.cpp" />
     <ClCompile Include="BluetoothDetector.cpp" />
     <ClCompile Include="common.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

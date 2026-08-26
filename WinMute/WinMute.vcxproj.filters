@@ -123,6 +123,9 @@
     <ClInclude Include="MediaController.h">
       <Filter>Source Files\Controllers\MediaPlayback</Filter>
     </ClInclude>
+    <ClInclude Include="Autostart.h">
+      <Filter>Source Files\Base\Settings</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinMute.rc">
@@ -218,6 +221,9 @@
     </ClCompile>
     <ClCompile Include="MediaController.cpp">
       <Filter>Source Files\Controllers\MediaPlayback</Filter>
+    </ClCompile>
+    <ClCompile Include="Autostart.cpp">
+      <Filter>Source Files\Base\Settings</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
