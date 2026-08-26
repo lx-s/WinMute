@@ -29,6 +29,13 @@ computer whenever I left the room and forgot to mute my it.
 * WinMute is small and only needs a few kilobytes of disk space.
 * WinMute is ad-free, telemetry-free and generally does not send any data whatsoever.
 
+## Install
+
+ - [Download from the Releases-Page](./releases)
+ - Install via Winget: `winget install LX-Systems.WinMute"
+ - Install via Chocolatey: `choco install winmute`
+ - [Install from the Microsoft-Store](https://apps.microsoft.com/store/detail/XP8CF56L8DPLDQ)
+
 ## Screenshots
 
 ![Screenshot of WinMute](Dist/screenshots/app.png? "Screenshot of WinMute")  
