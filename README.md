@@ -7,7 +7,7 @@
 </div>
 
 <div align="center">
-  <img alt="WinMute's logo" title="WinMute" src="WinMute/icons/app.svg" style="height:128px; margin-bottom: 20px">
+  <img alt="WinMute's logo" title="WinMute" src="dist/screenshots/hero.png" style="height:128px; margin-bottom: 20px">
 </div>
 
 **WinMute** is a small and simple tool that automatically mutes (and unmutes) your workstation
