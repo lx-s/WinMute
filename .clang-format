@@ -29,3 +29,15 @@ BraceWrapping:
   BeforeElse: false
   BeforeCatch: false
   IndentBraces: false
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex:    '^"common\.h"$'
+    Priority: -1
+  - Regex:    '^<ext/.*\.h>'
+    Priority: 2
+  - Regex:    '^<.*\.h>'
+    Priority: 1
+  - Regex:    '^<.*'
+    Priority: 2
+  - Regex:    '.*'
+    Priority: 3
