@@ -40,14 +40,12 @@ POSSIBILITY OF SUCH DAMAGE.
 // package manifest, which Windows resolves by TaskId and surfaces in the Task
 // Manager "Startup apps" tab.
 
-// clang-format off
 // don't reorder. common.h is pre-compiled so headers above it get ignored.
 #include "common.h"
 
 #include <appmodel.h>
 #include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.Foundation.h>
-// clang-format on
 
 using namespace winrt::Windows::ApplicationModel;
 
