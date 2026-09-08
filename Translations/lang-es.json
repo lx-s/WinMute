@@ -4,7 +4,7 @@
     "init.error.settings.title": "No se pudo inicializar la configuración",
     "init.error.settings.text": "Error crítico al inicializar WinMute",
     "init.error.already-running.title": "WinMute ya se está ejecutando",
-    "init.error.already-running.text": "Por favor busque el ícono de la aplicación WinMute en el área de notificación de la barra de tareas de Windows.",
+    "init.error.already-running.text": "Por favor, busque el icono de la aplicación WinMute en el área de notificación de la barra de tareas de Windows.",
     "init.error.winmute.title": "No se pudo iniciar WinMute.",
     "init.error.winmute.text": "WinMute encontró un error crítico durante la inicialización y debe cerrarse.",
     "init.error.winmute.platform-support.title": "Solo se soporta Windows Vista y versiones más recientes",
