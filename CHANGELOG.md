@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.6.1.0 - 2026-xx-yy
+
+### Fixed
+ - Quiet Hours timers get recalculated when a the PC resumes from
+   sleep
+
 ## 2.6.0.0 - 2026-08-22
 
 ### Added

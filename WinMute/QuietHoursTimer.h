@@ -55,10 +55,15 @@ class QuietHoursTimer {
 
     bool Reset(WMSettings& settings);
 
+    // Re-evaluates the schedule after the system resumes from sleep/hibernate,
+    // since SetTimer-based timers do not account for time spent suspended.
+    void OnResume();
+
    private:
     HWND hParent_;
     bool initialized_;
     bool enabled_;
+    bool quietActive_;  // true between a handled START and the next END
     std::vector<std::pair<DWORD, DWORD>>
         windows_;          // sorted by start, seconds since midnight
     int activeWindowIdx_;  // index of currently scheduled/active window
