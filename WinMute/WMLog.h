@@ -46,7 +46,11 @@ enum class LogLevel {
 
 struct LogMessage {
     LogLevel level = LogLevel::Info;
-    std::chrono::zoned_time<std::chrono::milliseconds> time;
+    // Stored as local time + UTC offset instead of zoned_time, so creating a
+    // log entry never depends on the tzdb being able to resolve the system
+    // time zone (see issue #59).
+    std::chrono::local_time<std::chrono::milliseconds> time;
+    std::chrono::minutes utcOffset{0};
     std::wstring message;
 };
 

@@ -120,6 +120,10 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ PWSTR,
 
     HANDLE hMutex = CreateMutexW(nullptr, TRUE, L"LxSystemsWinMuteRunning");
     if (hMutex == nullptr) {
+        WMLog::GetInstance().LogWinError(L"CreateMutex", GetLastError());
+        TaskDialog(nullptr, nullptr, PROGRAM_NAME, L"Failed to create Mutex",
+                   L"Error creating program mutex",
+                   TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
         return FALSE;
     } else if (GetLastError() == ERROR_ALREADY_EXISTS) {
         ReleaseMutex(hMutex);
