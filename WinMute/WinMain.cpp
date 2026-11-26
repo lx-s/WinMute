@@ -33,6 +33,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "common.h"
 
+#include "CrashHandler.h"
+
 HINSTANCE hglobInstance;
 
 static bool SetWorkingDirectory()
@@ -95,8 +97,7 @@ static bool InitWindowsComponents()
     return true;
 }
 
-int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ PWSTR,
-                    _In_ int)
+static int RunProgram(HINSTANCE hInstance)
 {
     // Harden the DLL search path against binary planting before anything
     // is loaded dynamically.
@@ -122,8 +123,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ PWSTR,
     if (hMutex == nullptr) {
         WMLog::GetInstance().LogWinError(L"CreateMutex", GetLastError());
         TaskDialog(nullptr, nullptr, PROGRAM_NAME, L"Failed to create Mutex",
-                   L"Error creating program mutex",
-                   TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
+                   L"Error creating program mutex", TDCBF_OK_BUTTON,
+                   TD_ERROR_ICON, nullptr);
         return FALSE;
     } else if (GetLastError() == ERROR_ALREADY_EXISTS) {
         ReleaseMutex(hMutex);
@@ -180,4 +181,15 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ PWSTR,
     ReleaseMutex(hMutex);
     CloseHandle(hMutex);
     return static_cast<int>(msg.wParam);
+}
+
+int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ PWSTR,
+                    _In_ int)
+{
+    // No try/catch here on purpose: an exception escaping RunProgram reaches
+    // the crash handler's std::terminate hook before the stack is unwound, so
+    // the minidump still shows where it was thrown. The handler also shows
+    // the exception message to the user.
+    CrashHandler::Install();
+    return RunProgram(hInstance);
 }

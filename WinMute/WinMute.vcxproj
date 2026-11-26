@@ -120,6 +120,7 @@
   <ItemGroup>
     <ClInclude Include="BluetoothDetector.h" />
     <ClInclude Include="common.h" />
+    <ClInclude Include="CrashHandler.h" />
     <ClInclude Include="libs\json.hpp" />
     <ClInclude Include="ManagedEndpoint.hpp" />
     <ClInclude Include="MediaController.h" />
@@ -154,6 +155,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="CrashHandler.cpp" />
     <ClCompile Include="LogDialog.cpp" />
     <ClCompile Include="MediaController.cpp" />
     <ClCompile Include="Settings_BluetoothDlg.cpp" />

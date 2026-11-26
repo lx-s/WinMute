@@ -92,6 +92,9 @@
     <ClInclude Include="common.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="CrashHandler.h">
+      <Filter>Source Files\Main</Filter>
+    </ClInclude>
     <ClInclude Include="TrayIcon.h">
       <Filter>Source Files\UI\TrayIcon</Filter>
     </ClInclude>
@@ -158,6 +161,9 @@
     </ClCompile>
     <ClCompile Include="WMSettings.cpp">
       <Filter>Source Files\Base\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="CrashHandler.cpp">
+      <Filter>Source Files\Main</Filter>
     </ClCompile>
     <ClCompile Include="WinMain.cpp">
       <Filter>Source Files\Main</Filter>

@@ -1,3 +1,10 @@
+Version 2.6.1 (2026-11-26)
+ * Added: Updated Translations
+ * Fixed: QuietHours start/end times get recalculated when the pc resumes from
+    standby or hibernate
+ * Fixed: WinMute no longer crashes startup when users time zone is not yet
+    correctly registered in the c++ timezone database.
+
 Version 2.6.0 (2026-08-22)
  * Added: Configurable global hotkey that toggles muting of all managed
    audio endpoints.
