@@ -30,3 +30,7 @@ winmute-cppcheck-build-dir/
 
 # AI Stuff
 .claude/
+
+# winget manifests written by wingetcreate (the real ones live in microsoft/winget-pkgs)
+Dist/manifests/
+Dist/winget/
