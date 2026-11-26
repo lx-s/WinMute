@@ -1,12 +1,14 @@
 <#
 .SYNOPSIS
-    Packages the already-published, already-signed GitHub Release assets for
-    Chocolatey and winget, and walks you through pushing/submitting them.
+    Packages the already-published GitHub Release assets for Chocolatey and
+    winget, and walks you through pushing/submitting them.
 
 .DESCRIPTION
-    Run this after .github/workflows/release.yml has finished and published a
-    GitHub Release for the given tag. It does not build or sign anything
-    itself - it downloads the signed WinMute.exe from that release, stages
+    Run this after a GitHub Release for the given tag has been published,
+    either by .github/workflows/release.yml or by hand. It does not build or
+    sign anything itself - it downloads WinMute.exe from that release (the
+    WinMute.exe asset if there is one, otherwise from WinMute-<Version>.zip),
+    warns if that exe is not signed, stages
     Dist\bin, packs the Chocolatey nupkg, and prints/prompts for the
     `choco push` and `wingetcreate update --submit` commands.
 
@@ -61,9 +63,46 @@ Write-Host ''
 
 New-Item -ItemType Directory -Force -Path (Join-Path $binDir 'lang') | Out-Null
 
-Write-Host 'Downloading signed WinMute.exe from the GitHub Release...'
-Invoke-Checked 'gh release download' {
-    gh release download $Version --repo $repo --pattern 'WinMute.exe' --dir $binDir --clobber
+$exePath = Join-Path $binDir 'WinMute.exe'
+$zipAssetName = "WinMute-$Version.zip"
+
+$assetNames = gh release view $Version --repo $repo --json assets --jq '.assets[].name'
+if ($LASTEXITCODE -ne 0) {
+    throw "Could not read the assets of release '$Version'"
+}
+
+if ($assetNames -contains 'WinMute.exe') {
+    # Release published by .github/workflows/release.yml.
+    Write-Host 'Downloading WinMute.exe from the GitHub Release...'
+    Invoke-Checked 'gh release download' {
+        gh release download $Version --repo $repo --pattern 'WinMute.exe' --dir $binDir --clobber
+    }
+} elseif ($assetNames -contains $zipAssetName) {
+    # Release created by hand: it only carries the setup and the zip, so take
+    # WinMute.exe out of the zip.
+    Write-Host "Release has no WinMute.exe asset, extracting it from $zipAssetName..."
+    $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "WinMute-publish-$([guid]::NewGuid())"
+    New-Item -ItemType Directory -Path $tempDir | Out-Null
+    try {
+        Invoke-Checked 'gh release download' {
+            gh release download $Version --repo $repo --pattern $zipAssetName --dir $tempDir --clobber
+        }
+        Expand-Archive -Path (Join-Path $tempDir $zipAssetName) -DestinationPath (Join-Path $tempDir 'zip')
+        $zipExe = Join-Path $tempDir 'zip\WinMute.exe'
+        if (-not (Test-Path $zipExe)) {
+            throw "$zipAssetName does not contain WinMute.exe"
+        }
+        Copy-Item $zipExe $exePath -Force
+    } finally {
+        Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+} else {
+    throw "Release '$Version' has neither a WinMute.exe nor a $zipAssetName asset"
+}
+
+$signature = Get-AuthenticodeSignature $exePath
+if ($signature.Status -ne 'Valid') {
+    Write-Warning "WinMute.exe is not signed (signature status: $($signature.Status)). The packages will contain an unsigned binary."
 }
 
 Copy-Item (Join-Path $repoRoot 'Translations\*.json') (Join-Path $binDir 'lang') -Force
@@ -92,7 +131,11 @@ try {
     Remove-Item $nuspecGenerated -ErrorAction SilentlyContinue
 }
 
-$nupkgPath = Join-Path $chocoDir "winmute.$Version.nupkg"
+# Chocolatey v2 normalizes package versions the NuGet way and drops a zero
+# fourth part from the file name: 2.6.1.0 -> winmute.2.6.1.nupkg.
+$versionParts = $Version.Split('.')
+$packageVersion = if ([int]$versionParts[3] -eq 0) { $versionParts[0..2] -join '.' } else { $Version }
+$nupkgPath = Join-Path $chocoDir "winmute.$packageVersion.nupkg"
 if (-not (Test-Path $nupkgPath)) {
     throw "Expected package '$nupkgPath' was not created by choco pack"
 }
