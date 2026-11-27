@@ -140,7 +140,7 @@
     "settings.general.updates-handled-externally": "Opzioni disabilitate: aggiornamenti gestiti esternamente",
     "log.title": "WinMute Registro Eventi",
     "settings.general.btn-open-log-window": "Visualizza registro...",
-    "init.error.winmute.migrating-settings-error": "Impossibile eseguire la migrazione delle impostazioni.\nConsulta il registro degli errori e/o crea un ticket di supporto.",
+    "init.error.winmute.migrating-settings-error": "Impossibile eseguire la migrazione delle impostazioni. Consulta il registro degli errori e/o crea un ticket di supporto.",
     "init.error.winmute.quiet-hours-corrupted-settings": "Le impostazioni delle ore di silenzio sono danneggiate.\nGli orari delle ore di silenzio sono stati reimpostati.",
     "popup.session-notification-failed.title": "Audio disabilitato con blocco computer disabilitato",
     "popup.session-notification-failed.text": "WinMute non è riuscito a registrarsi per le notifiche di sessione.\nPer ulteriori dettagli controlla il registro.",
