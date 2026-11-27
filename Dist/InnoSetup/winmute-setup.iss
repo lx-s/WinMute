@@ -15,8 +15,6 @@ AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppVerName={#MyAppName} {#MyAppVersion}
 
-AppCopyright=(c) {#CurrentYear} {#MyAppPublisher}
-AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
@@ -24,14 +22,18 @@ AppUpdatesURL={#MyAppURL}
 VersionInfoDescription={#MyAppName} installer
 VersionInfoProductName={#MyAppName}
 VersionInfoVersion={#MyAppVersion}
+AppCopyright=(c) {#CurrentYear} {#MyAppPublisher}
 
 UninstallDisplayName={#MyAppName}
 UninstallDisplayIcon={app}\{#MyAppExeName}
+AppPublisher={#MyAppPublisher}
 
 WizardStyle=modern
 ShowLanguageDialog=yes
 UsePreviousLanguage=no
 LanguageDetectionMethod=uilanguage
+
+SetupIconFile=..\..\WinMute\icons\app.ico
 
 DefaultDirName={autopf}\{#MyAppPublisher}\{#MyAppName}
 DisableProgramGroupPage=yes
@@ -43,15 +45,14 @@ PrivilegesRequired=lowest
 OutputDir=..\bin\
 OutputBaseFilename=WinMute-{#MyAppVersion}-Setup
 
-SetupIconFile=..\..\WinMute\icons\app.ico
 ArchitecturesInstallIn64BitMode=x64os
 Compression=lzma
 SolidCompression=yes
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: "autostart" ; Description: "{cm:StartpAppLogon}" ; GroupDescription: "Autostart"; Flags: unchecked
-Name: "updates"; Description: "{cm:CheckForUpdates}";  GroupDescription: "Updates"; Flags: unchecked
+Name: "autostart" ; Description: "{cm:StartpAppLogon}" ; GroupDescription: "{cm:Autostart}"; Flags: unchecked
+Name: "updates"; Description: "{cm:CheckForUpdates}";  GroupDescription: "{cm:Updates}"; Flags: unchecked
 
 [Files]
 Source: "..\bin\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
