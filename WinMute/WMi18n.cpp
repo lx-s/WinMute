@@ -35,6 +35,32 @@ POSSIBILITY OF SUCH DAMAGE.
 
 extern HINSTANCE hglobInstance;
 
+namespace {
+   std::wstring LfToCrLf(const std::wstring& in)
+   {
+       // Count bare LFs so we allocate exactly once
+       size_t bareLf = 0;
+       for (size_t i = 0; i < in.size(); ++i) {
+           if (in[i] == L'\n' && (i == 0 || in[i - 1] != L'\r')) {
+               ++bareLf;
+           }
+       }
+       if (bareLf == 0) {
+           return in;
+       }
+
+       std::wstring out;
+       out.reserve(in.size() + bareLf);
+       for (size_t i = 0; i < in.size(); ++i) {
+           if (in[i] == L'\n' && (i == 0 || in[i - 1] != L'\r')) {
+               out.push_back(L'\r');
+           }
+           out.push_back(in[i]);
+       }
+       return out;
+   }
+}
+
 WMi18n::WMi18n() noexcept
 {
 }
@@ -231,7 +257,7 @@ const std::string WMi18n::GetTranslationA(const std::string& textId) const
 bool WMi18n::SetItemText(HWND hWnd, int dlgItem,
                          const std::string& textId) const
 {
-    const auto text = GetTranslationW(textId);
+    const auto text = LfToCrLf(GetTranslationW(textId));
     if (!SetDlgItemTextW(hWnd, dlgItem, text.c_str())) {
         WMLog::GetInstance().LogWinError(L"SetDlgItemTextW", GetLastError());
         return false;
