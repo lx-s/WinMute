@@ -15,6 +15,8 @@ Name: "ru"; MessagesFile:   "compiler:Languages\Russian.isl";           InfoBefo
 ; used also for other languages if not defined
 StartpAppLogon=Start WinMute when you log on
 CheckForUpdates=Automatically check for updates
+Autostart=Autostart
+Updates=Updates
 
 ; Chinese Simplified custom strings
 ch_s.StartpAppLogon=开机启动WinMute
@@ -35,6 +37,16 @@ fr.CheckForUpdates=Vérifier automatiquement les mises à jour
 ; Italian custom strings
 it.StartpAppLogon=Esegui WinMute all'accesso
 it.CheckForUpdates=Verifica automaticamente la disponibilità di aggiornamenti.
+it.Autostart=Avvio automatatico
+it.Updates=Aggiornamenti
+; Custom strings that ovverrid some issue in original Italian.isl file
+it.NameAndVersion=%1 %2
+it.LaunchProgram=Esegui %1
+it.AdditionalIcons=Attività aggiuntive:
+it.CreateDesktopIcon=Crea collegamento programma sul &desktop
+it.CreateQuickLaunchIcon=Crea collegamento programma nella &barra 'Avvio veloce'
+it.AssocFileExtension=&Associa i file con estensione '%2' a '%1'
+it.AssocingFileExtension=Associazione file con estensione '%2' a '%1'...
 
 ; Korean custom strings
 ko.StartpAppLogon=로그온 시 WinMute 시작
