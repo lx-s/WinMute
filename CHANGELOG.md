@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.6.1.0 - 2026-11-26
+
+### Added
+ - Updated Translations
+
+### Fixed
+ - QuietHours start/end times get recalculated when the pc resumes
+   from standby or hibernate
+ - WinMute no longer crashes startup when users time zone is not yet
+   correctly registered in the c++ timezone database.
+
 ## 2.6.0.0 - 2026-08-22
 
 ### Added

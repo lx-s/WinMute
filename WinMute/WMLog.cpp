@@ -125,22 +125,83 @@ bool WMLog::IsLogFileEnabled() const
 std::wstring WMLog::FormatLogMessage(const LogMessage& logMsg,
                                      bool new_line) const
 {
-    auto msg = std::format(L"{:%F %T%Ez}  {}:  {}{}", logMsg.time,
-                           LogLevelToString(logMsg.level), logMsg.message,
-                           new_line ? L"\r\n" : L"");
+    // Same output as "%Ez" on a zoned_time, e.g. "-05:00".
+    const auto offsetMinutes = logMsg.utcOffset.count();
+    const auto absOffset = offsetMinutes < 0 ? -offsetMinutes : offsetMinutes;
+    auto msg = std::format(L"{:%F %T}{}{:02}:{:02}  {}:  {}{}", logMsg.time,
+                           offsetMinutes < 0 ? L'-' : L'+', absOffset / 60,
+                           absOffset % 60, LogLevelToString(logMsg.level),
+                           logMsg.message, new_line ? L"\r\n" : L"");
     return msg;
+}
+
+// Determines the UTC offset via the Win32 API. Used when the C++ tzdb cannot
+// resolve the system time zone.
+static std::chrono::minutes GetWin32UtcOffset(
+    std::chrono::sys_time<std::chrono::milliseconds> now)
+{
+    namespace ch = std::chrono;
+
+    // FILETIME counts 100ns intervals since 1601-01-01.
+    constexpr long long kUnixEpochAsFileTime = 116444736000000000LL;
+    const ULONGLONG utcTicks =
+        static_cast<ULONGLONG>(now.time_since_epoch().count()) * 10000ULL +
+        kUnixEpochAsFileTime;
+
+    FILETIME ftUtc;
+    ftUtc.dwLowDateTime = static_cast<DWORD>(utcTicks & 0xFFFFFFFF);
+    ftUtc.dwHighDateTime = static_cast<DWORD>(utcTicks >> 32);
+
+    SYSTEMTIME stUtc;
+    SYSTEMTIME stLocal;
+    FILETIME ftLocal;
+    if (!FileTimeToSystemTime(&ftUtc, &stUtc) ||
+        !SystemTimeToTzSpecificLocalTime(nullptr, &stUtc, &stLocal) ||
+        !SystemTimeToFileTime(&stLocal, &ftLocal))
+    {
+        return ch::minutes{0};
+    }
+    const ULONGLONG localTicks =
+        (static_cast<ULONGLONG>(ftLocal.dwHighDateTime) << 32) |
+        ftLocal.dwLowDateTime;
+    const auto diffTicks = static_cast<long long>(localTicks) -
+                           static_cast<long long>(utcTicks);
+    // Round to whole minutes; the conversion drops sub-millisecond precision.
+    return ch::round<ch::minutes>(ch::milliseconds{diffTicks / 10000});
+}
+
+static std::chrono::minutes GetUtcOffset(
+    std::chrono::sys_time<std::chrono::milliseconds> now)
+{
+    namespace ch = std::chrono;
+
+    // current_zone() throws if the system time zone reported by ICU is not
+    // in the tzdb (issue #59). Once that happened, don't retry on every log
+    // call but stick with the Win32 fallback.
+    static std::atomic<bool> tzdbFailed{false};
+    if (!tzdbFailed.load(std::memory_order_relaxed)) {
+        try {
+            const auto info = ch::current_zone()->get_info(now);
+            return ch::duration_cast<ch::minutes>(info.offset);
+        } catch (const std::exception&) {
+            tzdbFailed.store(true, std::memory_order_relaxed);
+        }
+    }
+    return GetWin32UtcOffset(now);
 }
 
 void WMLog::StoreMessage(LogLevel level, const wchar_t* msg)
 {
     namespace ch = std::chrono;
 
+    const auto now = ch::floor<ch::milliseconds>(ch::system_clock::now());
+
     LogMessage lm;
     lm.level = level;
     lm.message = msg;
-    lm.time = ch::zoned_time<ch::milliseconds>{
-        ch::current_zone(),
-        ch::floor<ch::milliseconds>(ch::system_clock::now())};
+    lm.utcOffset = GetUtcOffset(now);
+    lm.time = ch::local_time<ch::milliseconds>{now.time_since_epoch() +
+                                               lm.utcOffset};
 
     {
         // logMutex_ also guards logFile_, which EnableLogFile can close

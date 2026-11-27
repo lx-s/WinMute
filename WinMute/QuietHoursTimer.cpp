@@ -76,6 +76,7 @@ QuietHoursTimer::QuietHoursTimer()
     : hParent_(nullptr),
       initialized_(false),
       enabled_(false),
+      quietActive_(false),
       activeWindowIdx_(-1)
 {
 }
@@ -125,6 +126,9 @@ int QuietHoursTimer::FindNextWindowIdx() const
 
 bool QuietHoursTimer::SetStart()
 {
+    // SetStart() is only called once quiet hours are (or have become)
+    // inactive: after END was handled, or on (re)load outside of any window.
+    quietActive_ = false;
     KillTimer(hParent_, QUIETHOURS_TIMER_START_ID);
 
     if (!enabled_ || windows_.empty())
@@ -173,6 +177,11 @@ bool QuietHoursTimer::SetStart()
 
 bool QuietHoursTimer::SetEnd()
 {
+    // SetEnd() is only called after START was handled.
+    quietActive_ = true;
+    // No start timer may be pending while quiet hours are active, otherwise a
+    // second START would arrive before the matching END.
+    KillTimer(hParent_, QUIETHOURS_TIMER_START_ID);
     KillTimer(hParent_, QUIETHOURS_TIMER_END_ID);
 
     if (!enabled_ || windows_.empty() || activeWindowIdx_ < 0)
@@ -269,4 +278,40 @@ bool QuietHoursTimer::Init(HWND hParent, WMSettings& settings)
 bool QuietHoursTimer::Reset(WMSettings& settings)
 {
     return LoadFromSettings(settings);
+}
+
+void QuietHoursTimer::OnResume()
+{
+    if (!initialized_ || !enabled_ || windows_.empty()) {
+        return;
+    }
+
+    KillTimer(hParent_, QUIETHOURS_TIMER_START_ID);
+    KillTimer(hParent_, QUIETHOURS_TIMER_END_ID);
+
+    const int activeIdx = FindActiveWindowIdx();
+    WMLog::GetInstance().LogInfo(
+        L"QuietHours: Resumed from suspend (was {}, now in window {})",
+        quietActive_ ? L"active" : L"inactive", activeIdx);
+
+    if (quietActive_) {
+        if (activeIdx != -1) {
+            // Still (or again) inside a window: stay muted, re-arm the end.
+            activeWindowIdx_ = activeIdx;
+            SetEnd();
+        } else {
+            // The window ended while suspended. The END handler restores the
+            // volume and calls SetStart().
+            SendMessageW(hParent_, WM_WINMUTE_QUIETHOURS_END, 0, 0);
+        }
+    } else {
+        if (activeIdx != -1) {
+            // A window started while suspended. The START handler mutes and
+            // calls SetEnd().
+            activeWindowIdx_ = activeIdx;
+            SendMessageW(hParent_, WM_WINMUTE_QUIETHOURS_START, 0, 0);
+        } else {
+            SetStart();
+        }
+    }
 }

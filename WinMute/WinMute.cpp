@@ -895,6 +895,10 @@ LRESULT WinMute::OnPowerBroadcast(HWND, WPARAM wParam, LPARAM lParam)
 {
     if (wParam == PBT_APMSUSPEND) {
         muteCtrl_.NotifySuspend(true);
+    } else if (wParam == PBT_APMRESUMEAUTOMATIC) {
+        // Always sent on resume (PBT_APMRESUMESUSPEND only follows when user
+        // input is detected), so it is the single place to re-arm timers.
+        quietHours_.OnResume();
     } else if (wParam == PBT_POWERSETTINGCHANGE) {
         const PPOWERBROADCAST_SETTING bs =
             reinterpret_cast<PPOWERBROADCAST_SETTING>(lParam);
