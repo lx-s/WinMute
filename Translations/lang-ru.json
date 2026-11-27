@@ -134,7 +134,7 @@
     "about.general.author-site-label": "Автор: www.lx-s.de",
     "about.general.project-site-label": "Сайт проекта и код",
     "about.general.support-label": "Поддержка",
-    "about.general.description": "WinMute разрабатывается Александром Штайнхёфером (Alexander Steinhoefer) в свободное время. Код, а также новые версии этого инструмента можно найти на GitHub. Участие в виде кода, отчётов об ошибках или предложений очень приветствуется. Спасибо за использование этого маленького инструмента!",
+    "about.general.description": "WinMute разрабатывается Александром Штайнхёфером (Alexander Steinhoefer) в свободное время.\nКод, а также новые версии этого инструмента можно найти на GitHub.\nУчастие в виде кода, отчётов об ошибках или предложений очень приветствуется.\nСпасибо за использование этого маленького инструмента!",
     "about.tab.winmute": "WinMute",
     "about.tab.license": "Лицензия",
     "about.btn-close": "Хорошо",
@@ -142,8 +142,8 @@
     "settings.mute.try-pause-media-on-mute": "Остановить воспроизведение если звук заглушен.",
     "settings.mute.try-resume-media-on-unmute": "Продолжить воспроизведение когда звук включен.",
     "log.title": "Файл журнала WinMute",
-    "init.error.winmute.migrating-settings-error": "Ошибка применения настроек. Пожалуйста, проверьте логи ошибок и/или откройте тикет в поддержке",
-    "init.error.winmute.quiet-hours-corrupted-settings": "Ошибка настроек тихого часа. Время тихого часа было сброшено",
+    "init.error.winmute.migrating-settings-error": "Ошибка применения настроек. Пожалуйста, проверьте логи ошибок и/или откройте тикет в поддержке.",
+    "init.error.winmute.quiet-hours-corrupted-settings": "Ошибка настроек тихого часа.\nВремя тихого часа было сброшено.",
     "popup.session-notification-failed.text": "WinMute не смог получить доступ к уведомлениям.\nПожалуйста, проверьте логи для получения подробностей.",
     "popup.error.global-mute-hotkey-register.title": "Не удалось зарегистрировать кнопку беззвучного режима",
     "popup.error.global-mute-hotkey-register.text": "Не удалось зарегистрировать горячие клавиши. Пожалуйста, проверьте, не используются ли они в других программах.",
@@ -152,5 +152,7 @@
     "settings.quiet-hours.add-edit.add-title": "Добавить тихие часы",
     "settings.quiet-hours.add-edit.edit-title": "Редактировать тихие часы",
     "settings.quiet-hours.error.overlapping-time-range.title": "Пересечения диапазонов времени",
-    "settings.quiet-hours.error.overlapping-time-range.text": "Временной диапазон пересекается с уже существующим."
+    "settings.quiet-hours.error.overlapping-time-range.text": "Временной диапазон пересекается с уже существующим.",
+    "popup.session-notification-failed.title": "Отключение звука при блокировке компьютера выключено",
+    "about.tab.third-party": "Сторонние компоненты"
 }
